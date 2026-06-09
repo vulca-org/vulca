@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "run_id": "2.71",
+  "status": "run2_71_component_semantics_rerun_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_design_run_id": "2.66",
+  "source_generated_run_id": "2.70",
+  "database_expansion": false,
+  "workflow_expansion": true,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "component_semantics_scope": {
+    "source_run_id": "2.70",
+    "target_layer": "run2_70_component_semantics_content_binding",
+    "target_roles": [
+      "contrast",
+      "proof",
+      "climax"
+    ],
+    "required_component_archetypes": [
+      "before_after_product_scene",
+      "inspectable_evidence_workspace",
+      "editable_presentation_surface"
+    ],
+    "inherited_mock_surfaces": [
+      "product_scene_mock",
+      "inspectable_generated_slide_mock",
+      "editable_presentation_surface_mock"
+    ],
+    "visual_policy": "bind public copy into explicit product components, with non-rectangular primitives and parent-child component manifests"
+  },
+  "input_chain": {
+    "run2_70_result": "docs/product/ppt-run2-data-skill-quality/results/run2_70_high_fidelity_mock_content_rerun_result.json",
+    "run2_70_full_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-70-full-vulca/trace_manifest.json",
+    "run2_66_result": "docs/product/ppt-run2-data-skill-quality/results/run2_66_reference_first_redesign_result.json",
+    "run2_66_failure_audit": "docs/product/ppt-run2-data-skill-quality/run2_66_visual_failure_audit.json",
+    "run2_66_design_grammar": "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_design_grammar.json",
+    "run2_66_art_direction": "docs/product/ppt-run2-data-skill-quality/run2_66_slide_art_direction_contracts.json",
+    "run2_66_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_workflow_gates.json",
+    "run2_65_result": "docs/product/ppt-run2-data-skill-quality/results/run2_65_renderer_composition_rerun_result.json",
+    "run2_65_full_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-65-full-vulca/trace_manifest.json",
+    "commercial_usecase_bank": "docs/product/ppt-run2-data-skill-quality/commercial_usecase_bank.json",
+    "sources": "docs/product/ppt-run2-data-skill-quality/sources.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_71_component_semantics_arms.mjs",
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_71_full_component_semantics",
+      "bad_run2_70_without_component_semantics"
+    ],
+    "best_internal_arm": "run2_71_full_component_semantics",
+    "best_internal_arm_verdict": "Run 2.70 mock surfaces are consumed, then the weakest product-scene pages receive explicit component manifests and text-to-component bindings before native PPT drawing.",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-71-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "quality_delta": {
+    "target_layer": "run2_70_component_semantics_content_binding",
+    "source_data_status": "run2_71_component_semantics_consumed_before_native_ppt_drawing",
+    "full_slides_with_run2_66_reference_grammar": 6,
+    "full_slides_with_reference_archetypes": 6,
+    "full_slides_with_public_surface_aesthetic_gate": 6,
+    "full_slides_with_visible_trace_terms_removed": 6,
+    "full_slides_with_scene_business_objects": 6,
+    "full_slides_with_depth_layers": 6,
+    "full_slides_with_public_content_slots": 6,
+    "full_slides_without_visible_debug_terms": 6,
+    "full_slides_with_visual_slot_labels": 6,
+    "full_targeted_slides_with_high_fidelity_mock_content": 3,
+    "full_targeted_slides_without_empty_wireframes": 3,
+    "full_targeted_slides_with_realistic_mock_objects": 3,
+    "full_targeted_slides_with_component_manifests": 3,
+    "full_targeted_slides_with_text_component_bindings": 3,
+    "full_targeted_slides_with_non_rectangular_primitives": 3,
+    "full_targeted_slides_with_distinct_component_archetypes": 3,
+    "bad_control_targeted_slides_without_component_semantics": 3,
+    "repair_modules": [
+      "drawRun271ReferenceFirstCinematicDeckReveal",
+      "fillRun271SetupOperatingStageSlots",
+      "drawRun271BeforeAfterProductScene",
+      "fillRun271InspectableEvidenceWorkspace",
+      "fillRun271EditablePresentationSurface",
+      "fillRun271ReleaseDecisionBoardSlots"
+    ]
+  },
+  "control_boundary": {
+    "bad_run2_70_without_component_semantics": "may see Run 2.70 generated result and trace, but must not use the Run 2.71 component semantics layer",
+    "prompt_only": "commercial_case_only_no_run2_70_or_run2_71_component_semantics",
+    "run1_5_skill": "prior_baseline_no_run2_70_or_run2_71_component_semantics"
+  },
+  "visual_quality_boundary": "Run 2.71 is an internal generated rerun for visual review; public release remains blocked until human review approves the rendered deck.",
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "release_boundary": "public_blocked_until_human_visual_review_native_render_review_source_boundary_review_and_human_approval",
+  "next_required_action": "human_review_run2_71_component_semantics_then_decide_whether_text_is_bound_to_real_product_components"
+}

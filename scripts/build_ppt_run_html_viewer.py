@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.70"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.71"'
 
 
 @dataclass(frozen=True)
@@ -717,6 +717,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.71",
+        "Run 2.71",
+        "run2-71-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-71-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-71-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_71_full_component_semantics",
+                "Run 2.71 full",
+                "ppt-run2-71-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_70_without_component_semantics",
+                "Bad missing Run 2.71 component semantics",
+                "ppt-run2-71-bad-without-component-semantics",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -904,6 +925,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run268_result = read_json(pack / "results" / "run2_68_targeted_debug_rerun_result.json")
     run269_result = read_json(pack / "results" / "run2_69_public_content_fill_rerun_result.json")
     run270_result = read_json(pack / "results" / "run2_70_high_fidelity_mock_content_rerun_result.json")
+    run271_result = read_json(pack / "results" / "run2_71_component_semantics_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1403,6 +1425,20 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run270FullTracePath": "ppt-run2-70-full-vulca/trace_manifest.json",
         "run270BadTracePath": "ppt-run2-70-bad-without-high-fidelity-mock-content/trace_manifest.json",
         "run270FourArmSheetPath": "run2-70-four-arm-contact-sheet.png",
+        "run271ResultStatus": run271_result.get("status", ""),
+        "run271Result": run271_result,
+        "run271ResultPath": "run2_71_component_semantics_rerun_result.json",
+        "run271TargetLayer": (run271_result.get("quality_delta") or {}).get(
+            "target_layer", "run2_70_component_semantics_content_binding"
+        ),
+        "run271SourceDataStatus": (run271_result.get("quality_delta") or {}).get(
+            "source_data_status",
+            "run2_71_component_semantics_consumed_before_native_ppt_drawing",
+        ),
+        "run271GeneratorPath": "scripts/generate_ppt_run2_71_component_semantics_arms.mjs",
+        "run271FullTracePath": "ppt-run2-71-full-vulca/trace_manifest.json",
+        "run271BadTracePath": "ppt-run2-71-bad-without-component-semantics/trace_manifest.json",
+        "run271FourArmSheetPath": "run2-71-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2751,6 +2787,12 @@ def build_html(data: dict[str, Any]) -> str:
       const run270Quality = run270Result.quality_delta || {{}};
       const run270Control = run270Result.control_boundary || {{}};
       const run270MockScope = run270Result.mock_content_scope || {{}};
+      const run271Result = refs.run271Result || {{}};
+      const run271Rerun = run271Result.rerun || {{}};
+      const run271Inputs = run271Result.input_chain || {{}};
+      const run271Quality = run271Result.quality_delta || {{}};
+      const run271Control = run271Result.control_boundary || {{}};
+      const run271ComponentScope = run271Result.component_semantics_scope || {{}};
       const run266ArtDirectionByRole = Object.fromEntries((run266ArtDirection.slide_art_direction_contracts || []).map((record) => [record.role, record]));
       const run266GrammarCards = (run266DesignGrammar.role_design_grammar_records || []).map((record) => {{
         const art = run266ArtDirectionByRole[record.role] || {{}};
@@ -3100,6 +3142,57 @@ def build_html(data: dict[str, Any]) -> str:
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.71 component semantics rerun</h3><p>Run 2.71 consumes the Run 2.70 high-fidelity mock deck and trace, then targets the remaining boxiness bug: target slides must expose component manifests, text-to-component bindings, non-rectangular primitives, and weakness repair status before native drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run271ResultStatus || "missing")}}">${{escapeHtml(refs.run271ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.71 Component Semantics</h4>
+              ${{detailBlock("Result", refs.run271ResultPath || "run2_71_component_semantics_rerun_result.json")}}
+              ${{detailBlock("Generator", refs.run271GeneratorPath || "scripts/generate_ppt_run2_71_component_semantics_arms.mjs")}}
+              ${{detailBlock("Best internal arm", run271Rerun.best_internal_arm)}}
+              ${{detailBlock("Public ready", run271Result.public_ready)}}
+              ${{detailBlock("Release boundary", run271Result.release_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Generated outputs</h4>
+              ${{detailBlock("Four-arm sheet", refs.run271FourArmSheetPath || "run2-71-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full trace", refs.run271FullTracePath || "ppt-run2-71-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad trace", refs.run271BadTracePath || "ppt-run2-71-bad-without-component-semantics/trace_manifest.json")}}
+              ${{detailBlock("Full skill series", run271Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Component semantics scope</h4>
+              ${{detailBlock("Target roles", run271ComponentScope.target_roles)}}
+              ${{detailBlock("Required archetypes", run271ComponentScope.required_component_archetypes)}}
+              ${{detailBlock("Inherited mock surfaces", run271ComponentScope.inherited_mock_surfaces)}}
+              ${{detailBlock("Visual policy", run271ComponentScope.visual_policy)}}
+              ${{detailBlock("Source run", run271ComponentScope.source_run_id)}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality delta</h4>
+              ${{detailBlock("Target layer", refs.run271TargetLayer || run271Quality.target_layer)}}
+              ${{detailBlock("Source data status", refs.run271SourceDataStatus || run271Quality.source_data_status)}}
+              ${{detailBlock("Targeted slides with manifests", run271Quality.full_targeted_slides_with_component_manifests)}}
+              ${{detailBlock("Text-component bindings", run271Quality.full_targeted_slides_with_text_component_bindings)}}
+              ${{detailBlock("Non-rectangular primitives", run271Quality.full_targeted_slides_with_non_rectangular_primitives)}}
+              ${{detailBlock("Distinct archetypes", run271Quality.full_targeted_slides_with_distinct_component_archetypes)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Prompt-only boundary", run271Control.prompt_only)}}
+              ${{detailBlock("Run 1.5 boundary", run271Control.run1_5_skill)}}
+              ${{detailBlock("Bad control", run271Control.bad_run2_70_without_component_semantics)}}
+              ${{detailBlock("Bad missing semantics", run271Quality.bad_control_targeted_slides_without_component_semantics)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("2.70 result", run271Inputs.run2_70_result)}}
+              ${{detailBlock("2.70 full trace", run271Inputs.run2_70_full_trace)}}
+              ${{detailBlock("2.66 design grammar", run271Inputs.run2_66_design_grammar)}}
+              ${{detailBlock("2.66 art direction", run271Inputs.run2_66_art_direction)}}
+            </article>
+          </div>
+        </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.70 high-fidelity mock content rerun</h3><p>Run 2.70 consumes the Run 2.69 public-content deck and trace, then targets the weakest visual surfaces: slide 03 product scene, slide 04 generated slide scene, and slide 05 editable presentation surface. The goal is to replace abstract wireframes with richer native-shape product mock content.</p></div><span class="pill" title="${{escapeHtml(refs.run270ResultStatus || "missing")}}">${{escapeHtml(refs.run270ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
