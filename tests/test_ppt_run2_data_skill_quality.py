@@ -302,6 +302,28 @@ EXPECTED_RUN2_8_TRACE_FIELDS = {
     "run2_8_layout_budget",
     "run2_8_visual_delta_from_run2_7",
 }
+EXPECTED_RUN2_73_SOURCE_AUDIT_FIELDS = {
+    "source_id",
+    "title",
+    "role",
+    "source_type",
+    "modality",
+    "extracted_design_signal",
+        "generator_obligation",
+        "anti_copy_boundary",
+        "missing_decomposition",
+        "generator_ready",
+        "generator_use_status",
+}
+EXPECTED_RUN2_73_SOURCE_TYPES = {
+    "true_ppt_tutorial",
+    "product_keynote",
+    "brand_case",
+    "product_reference",
+    "design_language_reference",
+    "general_design_tutorial",
+}
+EXPECTED_RUN2_73_DECOMPOSITION_DEPTH_VALUES = {"absent", "partial", "usable"}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -1410,6 +1432,62 @@ def test_run2_7_has_real_usecase_and_multimodal_source_records() -> None:
         assert_contains(record["anti_copy_boundary"], ["do not copy"])
         assert_contains(record["qa_probe"], ["contact sheet"])
         assert_contains(record["release_boundary"], ["public_blocked"])
+
+
+def test_run2_73_source_quality_audit_covers_every_source() -> None:
+    sources = load_json(PACK / "sources.json")
+    audit = load_json(PACK / "run2_73_source_quality_audit.json")
+    source_ids = {source["id"] for source in sources["sources"]}
+    audit_source_ids = {record["source_id"] for record in audit["source_audit"]}
+
+    assert audit["status"] == "run2_73_source_quality_audit_public_blocked"
+    assert audit["stage_policy"] == "part_a_source_tutorial_audit_only"
+    assert audit["storage_policy"]["raw_media"] == "forbidden"
+    assert audit_source_ids == source_ids
+    assert audit["summary"]["total_sources"] == len(source_ids)
+    assert audit["summary"]["full_source_count"] == len(audit["source_audit"])
+    assert {
+        "true_ppt_tutorial",
+        "product_keynote",
+        "brand_case",
+    } <= set(audit["summary"]["source_type_counts"])
+    assert audit["summary"]["sources_with_extracted_design_signal"] < len(source_ids)
+    assert audit["summary"]["sources_missing_screenshot_or_shot_or_layout_decomposition"] > 0
+
+    grouped = audit["source_groups"]
+    assert grouped["true_ppt_tutorial"]
+    assert grouped["product_keynote"]
+    assert grouped["brand_case"]
+    assert grouped["missing_screenshot_level_or_shot_level_decomposition"]
+
+    for record in audit["source_audit"]:
+        assert EXPECTED_RUN2_73_SOURCE_AUDIT_FIELDS <= set(record), record["source_id"]
+        assert record["source_type"] in EXPECTED_RUN2_73_SOURCE_TYPES
+        assert record["modality"]
+        assert isinstance(record["extracted_design_signal"], list)
+        assert isinstance(record["generator_obligation"], list)
+        assert isinstance(record["generator_ready"], bool)
+        assert record["generator_obligation"]
+        assert_contains(record["anti_copy_boundary"], ["do not copy"])
+        assert "screenshot_level" in record["decomposition_depth"]
+        assert "shot_or_timestamp_level" in record["decomposition_depth"]
+        assert "layout_level" in record["decomposition_depth"]
+        assert set(record["decomposition_depth"].values()) <= EXPECTED_RUN2_73_DECOMPOSITION_DEPTH_VALUES
+
+    missing_signal_records = [
+        record for record in audit["source_audit"] if record["signal_status"] == "missing_in_focused_inputs"
+    ]
+    assert missing_signal_records
+    assert all(record["extracted_design_signal"] == [] for record in missing_signal_records)
+    assert all(
+        "blocked_from_generator_until_decomposed" in record["generator_obligation"]
+        for record in missing_signal_records
+    )
+    assert all(record["generator_ready"] is False for record in missing_signal_records)
+    assert all(
+        record["generator_use_status"] == "blocked_from_generator_until_decomposed"
+        for record in missing_signal_records
+    )
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
