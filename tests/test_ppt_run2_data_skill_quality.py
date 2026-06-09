@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import json
 import os
 import re
@@ -523,6 +524,47 @@ EXPECTED_RUN2_D2_EXPANDED_BINDING_FIELDS = {
     "layout_intent_binding",
     "renderer_resolution_policy",
 }
+EXPECTED_RUN2_D3_VALIDATION_CHECK_IDS = {
+    "required_components_present",
+    "allowed_element_types_only",
+    "components_bound_to_content_or_semantic_role",
+    "visual_containers_bound_to_components",
+    "visual_containers_not_empty",
+    "expanded_bindings_target_components",
+    "expanded_bindings_have_actions",
+    "forbidden_renderer_fields_absent",
+    "off_canvas_terms_not_on_canvas",
+    "renderer_scope_not_started",
+}
+EXPECTED_RUN2_D3_SCENE_VALIDATION_FIELDS = {
+    "validation_id",
+    "role",
+    "source_expansion_id",
+    "status",
+    "blocking_issues",
+    "checked_components",
+    "checked_visual_containers",
+    "checked_bindings",
+    "validation_checks",
+    "renderer_handoff",
+}
+EXPECTED_RUN2_D3_BLOCKING_ISSUE_IDS = {
+    "invalid_element_type",
+    "unbound_visual_container",
+    "forbidden_renderer_field",
+    "off_canvas_term_on_canvas",
+    "expanded_binding_missing_actions",
+}
+EXPECTED_RUN2_D3_FORBIDDEN_RUNTIME_IMPORTS = {
+    "importlib",
+    "subprocess",
+    "pptx",
+    "playwright",
+    "runpy",
+    "selenium",
+    "webbrowser",
+}
+EXPECTED_RUN2_D3_FORBIDDEN_DYNAMIC_IMPORT_CALLS = {"__import__", "eval", "exec"}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -2370,6 +2412,159 @@ def test_run2_73_scene_plan_expansion_builds_renderer_ready_structures() -> None
     assert summary["source_scene_compiler_contracts"] == "run2_73_scene_compiler_contracts.json"
     assert summary["empty_visual_container_count"] == 0
     assert expansion["next_required_action"] == "part_d3_renderer_input_validation"
+
+
+def test_run2_73_renderer_input_validation_blocks_bad_scene_inputs() -> None:
+    from scripts.build_ppt_run2_73_renderer_input_validation import validate_renderer_input
+
+    expansion = load_json(PACK / "run2_73_scene_plan_expansion.json")
+    validation = load_json(PACK / "run2_73_renderer_input_validation.json")
+
+    assert validation["artifact_id"] == "run2_73_renderer_input_validation"
+    assert validation["part"] == "Part D3"
+    assert validation["status"] == "run2_73_renderer_input_validation_passed_public_blocked"
+    assert validation["stage_policy"] == "part_d3_renderer_input_validation_only"
+    assert validation["source_scene_plan_expansion"] == "run2_73_scene_plan_expansion.json"
+    assert validation["artifact_scope"]["does_not_start"] == [
+        "renderer_rerun",
+        "pptx_output",
+        "html_viewer",
+        "public_release",
+    ]
+    guard = validation["execution_guard"]
+    assert guard["mode"] == "validation_only"
+    assert guard["rendering_subprocesses_allowed"] is False
+    assert guard["allowed_side_effects"] == [
+        "read_run2_73_scene_plan_expansion_json",
+        "write_run2_73_renderer_input_validation_json",
+    ]
+    assert guard["forbidden_invocations"] == validation["artifact_scope"]["does_not_start"]
+    assert set(guard["forbidden_runtime_imports"]) == (
+        EXPECTED_RUN2_D3_FORBIDDEN_RUNTIME_IMPORTS
+    )
+    assert set(guard["forbidden_dynamic_import_calls"]) == (
+        EXPECTED_RUN2_D3_FORBIDDEN_DYNAMIC_IMPORT_CALLS
+    )
+
+    script_path = ROOT / "scripts" / "build_ppt_run2_73_renderer_input_validation.py"
+    script_tree = ast.parse(script_path.read_text())
+    script_imports = set()
+    script_calls = set()
+    for node in ast.walk(script_tree):
+        if isinstance(node, ast.Import):
+            script_imports |= {alias.name.split(".")[0] for alias in node.names}
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            script_imports.add(node.module.split(".")[0])
+        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            script_calls.add(node.func.id)
+    assert not EXPECTED_RUN2_D3_FORBIDDEN_RUNTIME_IMPORTS & script_imports
+    assert not EXPECTED_RUN2_D3_FORBIDDEN_DYNAMIC_IMPORT_CALLS & script_calls
+
+    policy = validation["validation_policy"]
+    assert set(policy["required_check_ids"]) == EXPECTED_RUN2_D3_VALIDATION_CHECK_IDS
+    assert set(policy["allowed_element_types"]) == EXPECTED_RUN2_D2_ALLOWED_ELEMENT_TYPES
+    assert policy["failure_behavior"] == "block_renderer_handoff"
+    assert policy["off_canvas_term_sources"] == [
+        "scene_structures[*].off_canvas_contract.viewer_only",
+        "scene_structures[*].off_canvas_contract.must_delete_from_canvas",
+    ]
+    assert {
+        "layout_geometry",
+        "pptx_output",
+        "html_viewer",
+        "x_pct",
+        "width_pct",
+    } <= set(policy["forbidden_renderer_field_keys"])
+
+    forbidden_keys = {
+        "layout_geometry",
+        "pptx_output",
+        "html_viewer",
+        "slide_shapes",
+        "shape_rectangles",
+        "direct_shape_plan",
+        "x",
+        "y",
+        "w",
+        "h",
+        "width",
+        "height",
+        "left",
+        "top",
+        "x_pct",
+        "y_pct",
+        "width_pct",
+        "height_pct",
+    }
+    assert not forbidden_keys & nested_keys(validation["renderer_handoff_contract"])
+    assert validation["renderer_handoff_contract"]["input_status"] == "validated_renderer_ready_json"
+    assert validation["renderer_handoff_contract"]["input_contract_scope"] == (
+        "strictly_d2_renderer_ready_json_not_ppt_or_html_schema"
+    )
+    assert validation["renderer_handoff_contract"]["must_not_render_in_d3"] is True
+    assert validation["renderer_handoff_contract"]["must_consume_source_artifact"] == (
+        "run2_73_scene_plan_expansion.json"
+    )
+
+    scene_results = validation["scene_validation_results"]
+    assert [record["role"] for record in scene_results] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [record["status"] for record in scene_results] == ["pass"] * 6
+    assert len(scene_results) == 6
+
+    expansion_by_role = {structure["role"]: structure for structure in expansion["scene_structures"]}
+    for record in scene_results:
+        role = record["role"]
+        source_structure = expansion_by_role[role]
+        assert EXPECTED_RUN2_D3_SCENE_VALIDATION_FIELDS <= set(record), role
+        assert record["validation_id"] == f"renderer_input_validation_2_73_{role}"
+        assert record["source_expansion_id"] == source_structure["expansion_id"]
+        assert record["blocking_issues"] == []
+        assert record["checked_components"] == len(source_structure["semantic_components"])
+        assert record["checked_visual_containers"] == len(source_structure["visual_containers"])
+        assert record["checked_bindings"] == len(
+            source_structure["expanded_renderer_action_bindings"]
+        )
+        assert {check["check_id"] for check in record["validation_checks"]} == (
+            EXPECTED_RUN2_D3_VALIDATION_CHECK_IDS
+        )
+        assert all(check["status"] == "pass" for check in record["validation_checks"])
+        assert record["renderer_handoff"]["can_handoff_to_renderer"] is True
+        assert record["renderer_handoff"]["must_not_render_in_d3"] is True
+        assert record["renderer_handoff"]["component_manifest_count"] == 5
+        assert record["renderer_handoff"]["action_binding_count"] == 5
+
+    summary = validation["traceability_summary"]
+    assert summary["scene_count"] == 6
+    assert summary["component_count"] == 30
+    assert summary["visual_container_count"] == 60
+    assert summary["expanded_renderer_binding_count"] == 30
+    assert summary["blocking_issue_count"] == 0
+    assert summary["renderer_handoff_approved"] == "validated_renderer_ready_json_only"
+    assert validation["next_required_action"] == "part_e_renderer_rerun_from_validated_scene_plan"
+
+    bad = json.loads(json.dumps(expansion))
+    cover = bad["scene_structures"][0]
+    cover["semantic_components"]["hero_object"]["element_type"] = "placeholder_box"
+    cover["visual_containers"][0]["content_binding"]["value"] = ""
+    cover["visual_containers"][0]["semantic_role_binding"]["value"] = ""
+    cover["layout_geometry"] = {"x_pct": 1}
+    cover["pptx_output"] = "forbidden ppt schema"
+    cover["semantic_components"]["supporting_copy"]["content_binding"]["value"][
+        "proof_labels"
+    ].append(cover["off_canvas_contract"]["viewer_only"][0])
+    cover["expanded_renderer_action_bindings"][0]["source_b2_action_ids"] = []
+
+    bad_result = validate_renderer_input(bad)
+    issue_ids = {issue["issue_id"] for issue in bad_result["blocking_issues"]}
+    assert EXPECTED_RUN2_D3_BLOCKING_ISSUE_IDS <= issue_ids
+    assert any(
+        issue["issue_id"] == "forbidden_renderer_field" and "pptx_output" in issue["location"]
+        for issue in bad_result["blocking_issues"]
+    )
+    assert bad_result["status"] == "fail"
+    assert bad_result["traceability_summary"]["blocking_issue_count"] >= len(
+        EXPECTED_RUN2_D3_BLOCKING_ISSUE_IDS
+    )
 
 
 def test_run2_7_has_serializable_design_memory() -> None:

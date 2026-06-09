@@ -1,0 +1,542 @@
+{
+  "artifact_id": "run2_73_renderer_input_validation",
+  "part": "Part D3",
+  "schema_version": "1.0",
+  "status": "run2_73_renderer_input_validation_passed_public_blocked",
+  "stage_policy": "part_d3_renderer_input_validation_only",
+  "source_scene_plan_expansion": "run2_73_scene_plan_expansion.json",
+  "source_inputs": [
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+      "available": true,
+      "use_in_this_artifact": "Validate D2 renderer-ready JSON before any renderer rerun."
+    }
+  ],
+  "artifact_scope": {
+    "starts": [
+      "validate_d2_renderer_ready_json",
+      "block_bad_scene_inputs_before_renderer"
+    ],
+    "does_not_start": [
+      "renderer_rerun",
+      "pptx_output",
+      "html_viewer",
+      "public_release"
+    ]
+  },
+  "execution_guard": {
+    "mode": "validation_only",
+    "rendering_subprocesses_allowed": false,
+    "allowed_side_effects": [
+      "read_run2_73_scene_plan_expansion_json",
+      "write_run2_73_renderer_input_validation_json"
+    ],
+    "forbidden_invocations": [
+      "renderer_rerun",
+      "pptx_output",
+      "html_viewer",
+      "public_release"
+    ],
+    "forbidden_runtime_imports": [
+      "importlib",
+      "playwright",
+      "pptx",
+      "runpy",
+      "selenium",
+      "subprocess",
+      "webbrowser"
+    ],
+    "forbidden_dynamic_import_calls": [
+      "__import__",
+      "eval",
+      "exec"
+    ]
+  },
+  "validation_policy": {
+    "required_check_ids": [
+      "required_components_present",
+      "allowed_element_types_only",
+      "components_bound_to_content_or_semantic_role",
+      "visual_containers_bound_to_components",
+      "visual_containers_not_empty",
+      "expanded_bindings_target_components",
+      "expanded_bindings_have_actions",
+      "forbidden_renderer_fields_absent",
+      "off_canvas_terms_not_on_canvas",
+      "renderer_scope_not_started"
+    ],
+    "allowed_element_types": [
+      "connector",
+      "image",
+      "shape",
+      "svg",
+      "text"
+    ],
+    "forbidden_renderer_field_keys": [
+      "direct_shape_plan",
+      "h",
+      "height",
+      "height_pct",
+      "html_viewer",
+      "layout_geometry",
+      "left",
+      "pptx_output",
+      "shape_rectangles",
+      "slide_shapes",
+      "top",
+      "w",
+      "width",
+      "width_pct",
+      "x",
+      "x_pct",
+      "y",
+      "y_pct"
+    ],
+    "off_canvas_term_sources": [
+      "scene_structures[*].off_canvas_contract.viewer_only",
+      "scene_structures[*].off_canvas_contract.must_delete_from_canvas"
+    ],
+    "failure_behavior": "block_renderer_handoff"
+  },
+  "scene_validation_results": [
+    {
+      "validation_id": "renderer_input_validation_2_73_cover",
+      "role": "cover",
+      "source_expansion_id": "scene_expansion_2_73_cover",
+      "status": "pass",
+      "blocking_issues": [],
+      "checked_components": 5,
+      "checked_visual_containers": 10,
+      "checked_bindings": 5,
+      "validation_checks": [
+        {
+          "check_id": "required_components_present",
+          "status": "pass",
+          "evidence": "checked 5 semantic components"
+        },
+        {
+          "check_id": "allowed_element_types_only",
+          "status": "pass",
+          "evidence": "allowed types: ['connector', 'image', 'shape', 'svg', 'text']"
+        },
+        {
+          "check_id": "components_bound_to_content_or_semantic_role",
+          "status": "pass",
+          "evidence": "checked component content_binding and semantic_role_binding"
+        },
+        {
+          "check_id": "visual_containers_bound_to_components",
+          "status": "pass",
+          "evidence": "checked 10 visual containers"
+        },
+        {
+          "check_id": "visual_containers_not_empty",
+          "status": "pass",
+          "evidence": "checked empty_box_policy plus content/semantic bindings"
+        },
+        {
+          "check_id": "expanded_bindings_target_components",
+          "status": "pass",
+          "evidence": "checked 5 bindings"
+        },
+        {
+          "check_id": "expanded_bindings_have_actions",
+          "status": "pass",
+          "evidence": "checked source_b2_action_ids"
+        },
+        {
+          "check_id": "forbidden_renderer_fields_absent",
+          "status": "pass",
+          "evidence": "forbidden keys: ['direct_shape_plan', 'h', 'height', 'height_pct', 'html_viewer', 'layout_geometry', 'left', 'pptx_output', 'shape_rectangles', 'slide_shapes', 'top', 'w', 'width', 'width_pct', 'x', 'x_pct', 'y', 'y_pct']"
+        },
+        {
+          "check_id": "off_canvas_terms_not_on_canvas",
+          "status": "pass",
+          "evidence": "checked viewer_only and must_delete terms against on-canvas components"
+        },
+        {
+          "check_id": "renderer_scope_not_started",
+          "status": "pass",
+          "evidence": "checked renderer_ready_boundary.must_not_render_ppt"
+        }
+      ],
+      "renderer_handoff": {
+        "can_handoff_to_renderer": true,
+        "must_not_render_in_d3": true,
+        "component_manifest_count": 5,
+        "visual_container_count": 10,
+        "action_binding_count": 5,
+        "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+      }
+    },
+    {
+      "validation_id": "renderer_input_validation_2_73_setup",
+      "role": "setup",
+      "source_expansion_id": "scene_expansion_2_73_setup",
+      "status": "pass",
+      "blocking_issues": [],
+      "checked_components": 5,
+      "checked_visual_containers": 10,
+      "checked_bindings": 5,
+      "validation_checks": [
+        {
+          "check_id": "required_components_present",
+          "status": "pass",
+          "evidence": "checked 5 semantic components"
+        },
+        {
+          "check_id": "allowed_element_types_only",
+          "status": "pass",
+          "evidence": "allowed types: ['connector', 'image', 'shape', 'svg', 'text']"
+        },
+        {
+          "check_id": "components_bound_to_content_or_semantic_role",
+          "status": "pass",
+          "evidence": "checked component content_binding and semantic_role_binding"
+        },
+        {
+          "check_id": "visual_containers_bound_to_components",
+          "status": "pass",
+          "evidence": "checked 10 visual containers"
+        },
+        {
+          "check_id": "visual_containers_not_empty",
+          "status": "pass",
+          "evidence": "checked empty_box_policy plus content/semantic bindings"
+        },
+        {
+          "check_id": "expanded_bindings_target_components",
+          "status": "pass",
+          "evidence": "checked 5 bindings"
+        },
+        {
+          "check_id": "expanded_bindings_have_actions",
+          "status": "pass",
+          "evidence": "checked source_b2_action_ids"
+        },
+        {
+          "check_id": "forbidden_renderer_fields_absent",
+          "status": "pass",
+          "evidence": "forbidden keys: ['direct_shape_plan', 'h', 'height', 'height_pct', 'html_viewer', 'layout_geometry', 'left', 'pptx_output', 'shape_rectangles', 'slide_shapes', 'top', 'w', 'width', 'width_pct', 'x', 'x_pct', 'y', 'y_pct']"
+        },
+        {
+          "check_id": "off_canvas_terms_not_on_canvas",
+          "status": "pass",
+          "evidence": "checked viewer_only and must_delete terms against on-canvas components"
+        },
+        {
+          "check_id": "renderer_scope_not_started",
+          "status": "pass",
+          "evidence": "checked renderer_ready_boundary.must_not_render_ppt"
+        }
+      ],
+      "renderer_handoff": {
+        "can_handoff_to_renderer": true,
+        "must_not_render_in_d3": true,
+        "component_manifest_count": 5,
+        "visual_container_count": 10,
+        "action_binding_count": 5,
+        "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+      }
+    },
+    {
+      "validation_id": "renderer_input_validation_2_73_contrast",
+      "role": "contrast",
+      "source_expansion_id": "scene_expansion_2_73_contrast",
+      "status": "pass",
+      "blocking_issues": [],
+      "checked_components": 5,
+      "checked_visual_containers": 10,
+      "checked_bindings": 5,
+      "validation_checks": [
+        {
+          "check_id": "required_components_present",
+          "status": "pass",
+          "evidence": "checked 5 semantic components"
+        },
+        {
+          "check_id": "allowed_element_types_only",
+          "status": "pass",
+          "evidence": "allowed types: ['connector', 'image', 'shape', 'svg', 'text']"
+        },
+        {
+          "check_id": "components_bound_to_content_or_semantic_role",
+          "status": "pass",
+          "evidence": "checked component content_binding and semantic_role_binding"
+        },
+        {
+          "check_id": "visual_containers_bound_to_components",
+          "status": "pass",
+          "evidence": "checked 10 visual containers"
+        },
+        {
+          "check_id": "visual_containers_not_empty",
+          "status": "pass",
+          "evidence": "checked empty_box_policy plus content/semantic bindings"
+        },
+        {
+          "check_id": "expanded_bindings_target_components",
+          "status": "pass",
+          "evidence": "checked 5 bindings"
+        },
+        {
+          "check_id": "expanded_bindings_have_actions",
+          "status": "pass",
+          "evidence": "checked source_b2_action_ids"
+        },
+        {
+          "check_id": "forbidden_renderer_fields_absent",
+          "status": "pass",
+          "evidence": "forbidden keys: ['direct_shape_plan', 'h', 'height', 'height_pct', 'html_viewer', 'layout_geometry', 'left', 'pptx_output', 'shape_rectangles', 'slide_shapes', 'top', 'w', 'width', 'width_pct', 'x', 'x_pct', 'y', 'y_pct']"
+        },
+        {
+          "check_id": "off_canvas_terms_not_on_canvas",
+          "status": "pass",
+          "evidence": "checked viewer_only and must_delete terms against on-canvas components"
+        },
+        {
+          "check_id": "renderer_scope_not_started",
+          "status": "pass",
+          "evidence": "checked renderer_ready_boundary.must_not_render_ppt"
+        }
+      ],
+      "renderer_handoff": {
+        "can_handoff_to_renderer": true,
+        "must_not_render_in_d3": true,
+        "component_manifest_count": 5,
+        "visual_container_count": 10,
+        "action_binding_count": 5,
+        "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+      }
+    },
+    {
+      "validation_id": "renderer_input_validation_2_73_proof",
+      "role": "proof",
+      "source_expansion_id": "scene_expansion_2_73_proof",
+      "status": "pass",
+      "blocking_issues": [],
+      "checked_components": 5,
+      "checked_visual_containers": 10,
+      "checked_bindings": 5,
+      "validation_checks": [
+        {
+          "check_id": "required_components_present",
+          "status": "pass",
+          "evidence": "checked 5 semantic components"
+        },
+        {
+          "check_id": "allowed_element_types_only",
+          "status": "pass",
+          "evidence": "allowed types: ['connector', 'image', 'shape', 'svg', 'text']"
+        },
+        {
+          "check_id": "components_bound_to_content_or_semantic_role",
+          "status": "pass",
+          "evidence": "checked component content_binding and semantic_role_binding"
+        },
+        {
+          "check_id": "visual_containers_bound_to_components",
+          "status": "pass",
+          "evidence": "checked 10 visual containers"
+        },
+        {
+          "check_id": "visual_containers_not_empty",
+          "status": "pass",
+          "evidence": "checked empty_box_policy plus content/semantic bindings"
+        },
+        {
+          "check_id": "expanded_bindings_target_components",
+          "status": "pass",
+          "evidence": "checked 5 bindings"
+        },
+        {
+          "check_id": "expanded_bindings_have_actions",
+          "status": "pass",
+          "evidence": "checked source_b2_action_ids"
+        },
+        {
+          "check_id": "forbidden_renderer_fields_absent",
+          "status": "pass",
+          "evidence": "forbidden keys: ['direct_shape_plan', 'h', 'height', 'height_pct', 'html_viewer', 'layout_geometry', 'left', 'pptx_output', 'shape_rectangles', 'slide_shapes', 'top', 'w', 'width', 'width_pct', 'x', 'x_pct', 'y', 'y_pct']"
+        },
+        {
+          "check_id": "off_canvas_terms_not_on_canvas",
+          "status": "pass",
+          "evidence": "checked viewer_only and must_delete terms against on-canvas components"
+        },
+        {
+          "check_id": "renderer_scope_not_started",
+          "status": "pass",
+          "evidence": "checked renderer_ready_boundary.must_not_render_ppt"
+        }
+      ],
+      "renderer_handoff": {
+        "can_handoff_to_renderer": true,
+        "must_not_render_in_d3": true,
+        "component_manifest_count": 5,
+        "visual_container_count": 10,
+        "action_binding_count": 5,
+        "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+      }
+    },
+    {
+      "validation_id": "renderer_input_validation_2_73_climax",
+      "role": "climax",
+      "source_expansion_id": "scene_expansion_2_73_climax",
+      "status": "pass",
+      "blocking_issues": [],
+      "checked_components": 5,
+      "checked_visual_containers": 10,
+      "checked_bindings": 5,
+      "validation_checks": [
+        {
+          "check_id": "required_components_present",
+          "status": "pass",
+          "evidence": "checked 5 semantic components"
+        },
+        {
+          "check_id": "allowed_element_types_only",
+          "status": "pass",
+          "evidence": "allowed types: ['connector', 'image', 'shape', 'svg', 'text']"
+        },
+        {
+          "check_id": "components_bound_to_content_or_semantic_role",
+          "status": "pass",
+          "evidence": "checked component content_binding and semantic_role_binding"
+        },
+        {
+          "check_id": "visual_containers_bound_to_components",
+          "status": "pass",
+          "evidence": "checked 10 visual containers"
+        },
+        {
+          "check_id": "visual_containers_not_empty",
+          "status": "pass",
+          "evidence": "checked empty_box_policy plus content/semantic bindings"
+        },
+        {
+          "check_id": "expanded_bindings_target_components",
+          "status": "pass",
+          "evidence": "checked 5 bindings"
+        },
+        {
+          "check_id": "expanded_bindings_have_actions",
+          "status": "pass",
+          "evidence": "checked source_b2_action_ids"
+        },
+        {
+          "check_id": "forbidden_renderer_fields_absent",
+          "status": "pass",
+          "evidence": "forbidden keys: ['direct_shape_plan', 'h', 'height', 'height_pct', 'html_viewer', 'layout_geometry', 'left', 'pptx_output', 'shape_rectangles', 'slide_shapes', 'top', 'w', 'width', 'width_pct', 'x', 'x_pct', 'y', 'y_pct']"
+        },
+        {
+          "check_id": "off_canvas_terms_not_on_canvas",
+          "status": "pass",
+          "evidence": "checked viewer_only and must_delete terms against on-canvas components"
+        },
+        {
+          "check_id": "renderer_scope_not_started",
+          "status": "pass",
+          "evidence": "checked renderer_ready_boundary.must_not_render_ppt"
+        }
+      ],
+      "renderer_handoff": {
+        "can_handoff_to_renderer": true,
+        "must_not_render_in_d3": true,
+        "component_manifest_count": 5,
+        "visual_container_count": 10,
+        "action_binding_count": 5,
+        "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+      }
+    },
+    {
+      "validation_id": "renderer_input_validation_2_73_close",
+      "role": "close",
+      "source_expansion_id": "scene_expansion_2_73_close",
+      "status": "pass",
+      "blocking_issues": [],
+      "checked_components": 5,
+      "checked_visual_containers": 10,
+      "checked_bindings": 5,
+      "validation_checks": [
+        {
+          "check_id": "required_components_present",
+          "status": "pass",
+          "evidence": "checked 5 semantic components"
+        },
+        {
+          "check_id": "allowed_element_types_only",
+          "status": "pass",
+          "evidence": "allowed types: ['connector', 'image', 'shape', 'svg', 'text']"
+        },
+        {
+          "check_id": "components_bound_to_content_or_semantic_role",
+          "status": "pass",
+          "evidence": "checked component content_binding and semantic_role_binding"
+        },
+        {
+          "check_id": "visual_containers_bound_to_components",
+          "status": "pass",
+          "evidence": "checked 10 visual containers"
+        },
+        {
+          "check_id": "visual_containers_not_empty",
+          "status": "pass",
+          "evidence": "checked empty_box_policy plus content/semantic bindings"
+        },
+        {
+          "check_id": "expanded_bindings_target_components",
+          "status": "pass",
+          "evidence": "checked 5 bindings"
+        },
+        {
+          "check_id": "expanded_bindings_have_actions",
+          "status": "pass",
+          "evidence": "checked source_b2_action_ids"
+        },
+        {
+          "check_id": "forbidden_renderer_fields_absent",
+          "status": "pass",
+          "evidence": "forbidden keys: ['direct_shape_plan', 'h', 'height', 'height_pct', 'html_viewer', 'layout_geometry', 'left', 'pptx_output', 'shape_rectangles', 'slide_shapes', 'top', 'w', 'width', 'width_pct', 'x', 'x_pct', 'y', 'y_pct']"
+        },
+        {
+          "check_id": "off_canvas_terms_not_on_canvas",
+          "status": "pass",
+          "evidence": "checked viewer_only and must_delete terms against on-canvas components"
+        },
+        {
+          "check_id": "renderer_scope_not_started",
+          "status": "pass",
+          "evidence": "checked renderer_ready_boundary.must_not_render_ppt"
+        }
+      ],
+      "renderer_handoff": {
+        "can_handoff_to_renderer": true,
+        "must_not_render_in_d3": true,
+        "component_manifest_count": 5,
+        "visual_container_count": 10,
+        "action_binding_count": 5,
+        "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+      }
+    }
+  ],
+  "blocking_issues": [],
+  "renderer_handoff_contract": {
+    "input_status": "validated_renderer_ready_json",
+    "input_contract_scope": "strictly_d2_renderer_ready_json_not_ppt_or_html_schema",
+    "can_handoff_to_renderer": true,
+    "must_not_render_in_d3": true,
+    "must_consume_source_artifact": "run2_73_scene_plan_expansion.json",
+    "renderer_must_validate_again_before_ppt": true
+  },
+  "traceability_summary": {
+    "scene_count": 6,
+    "component_count": 30,
+    "visual_container_count": 60,
+    "expanded_renderer_binding_count": 30,
+    "blocking_issue_count": 0,
+    "source_scene_plan_expansion": "run2_73_scene_plan_expansion.json",
+    "renderer_handoff_approved": "validated_renderer_ready_json_only"
+  },
+  "next_required_action": "part_e_renderer_rerun_from_validated_scene_plan"
+}
