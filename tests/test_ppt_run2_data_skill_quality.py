@@ -351,6 +351,38 @@ EXPECTED_RUN2_73_RENDERER_ACTION_FIELDS = {
     "fallback_strategy",
     "traceability",
 }
+EXPECTED_RUN2_74_PRODUCT_CLAIM_NODE_IDS = {
+    "claim_product_identity",
+    "claim_input_boundary",
+    "claim_content_compiler",
+    "claim_design_move_binding",
+    "claim_native_ppt_output",
+    "claim_inspectable_trust",
+    "claim_release_boundary",
+}
+EXPECTED_RUN2_74_PRODUCT_CLAIM_NODE_FIELDS = {
+    "claim_id",
+    "claim_type",
+    "public_claim",
+    "product_capability_ids",
+    "product_logic_relation_ids",
+    "source_message_contract_ids",
+    "narrative_proof_ids",
+    "tutorial_design_rule_ids",
+    "user_benefit",
+    "visible_user_result",
+    "proof_standard",
+    "public_surface_route",
+}
+EXPECTED_RUN2_74_CAUSAL_EDGE_FIELDS = {
+    "edge_id",
+    "from_claim_id",
+    "to_claim_id",
+    "causal_relation",
+    "business_logic",
+    "user_value_delta",
+    "proof_refs",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -1582,6 +1614,109 @@ def test_run2_73_tutorial_to_design_moves_reconciles_renderer_actions() -> None:
     assert set(summary["visual_target_ids_covered"]) == visual_target_ids
     assert set(summary["motion_target_ids_covered"]) == motion_target_ids
     assert all(count > 0 for count in summary["coverage_counts_by_input_id"].values())
+
+
+def test_run2_74_product_claim_graph_defines_c1_product_logic() -> None:
+    capability_memory = load_json(PACK / "run2_57_product_capability_memory.json")
+    message_contracts = load_json(PACK / "run2_57_slide_message_contracts.json")
+    narrative_proof = load_json(PACK / "run2_61_narrative_proof_dataset.json")
+    tutorial_moves = load_json(PACK / "run2_73_tutorial_to_design_moves.json")
+    graph = load_json(PACK / "run2_74_product_claim_graph.json")
+
+    capability_ids = {record["id"] for record in capability_memory["product_capability_records"]}
+    logic_relation_ids = {
+        record["id"] for record in capability_memory["product_logic_relation_records"]
+    }
+    message_contract_ids = {
+        record["contract_id"] for record in message_contracts["slide_message_contracts"]
+    }
+    narrative_proof_ids = {
+        record["narrative_proof_id"] for record in narrative_proof["narrative_proof_records"]
+    }
+    tutorial_rule_ids = {rule["rule_id"] for rule in tutorial_moves["tutorial_rule_mappings"]}
+
+    assert graph["artifact_id"] == "run2_74_product_claim_graph"
+    assert graph["part"] == "Part C1"
+    assert graph["status"] == "run2_74_product_claim_graph_public_blocked"
+    assert graph["stage_policy"] == "part_c1_product_claim_graph_only"
+    assert graph["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert graph["artifact_scope"]["does_not_start"] == [
+        "part_c2_slide_story",
+        "part_c3_content_quality_audit",
+        "part_d_scene_compiler",
+        "renderer_rerun",
+        "public_release",
+    ]
+    forbidden_c1_root_keys = {
+        "slide_story",
+        "slide_stories",
+        "slide_scenes",
+        "scene_compiler",
+        "renderer_actions",
+        "layout_geometry",
+        "pptx_output",
+    }
+    assert not forbidden_c1_root_keys & set(graph)
+
+    for source_input in graph["source_inputs"]:
+        source_path = ROOT / source_input["path"]
+        assert source_input["available"] is True
+        assert source_path.exists(), source_input["path"]
+        assert source_input["use_in_this_artifact"]
+
+    product_definition = graph["product_definition"]
+    assert product_definition["product_category"] == "source-bound editable PPT generation system"
+    assert product_definition["primary_output"] == "code-generated editable PPT deck"
+    assert_contains(product_definition["one_sentence"], ["commercial brief", "editable PPT"])
+    assert "image-only slide generator" in product_definition["not_product"]
+    assert "generic template library" in product_definition["not_product"]
+
+    nodes = graph["product_claim_nodes"]
+    node_ids = {node["claim_id"] for node in nodes}
+    assert node_ids == EXPECTED_RUN2_74_PRODUCT_CLAIM_NODE_IDS
+
+    forbidden_empty_claims = {
+        claim.lower() for claim in capability_memory["forbidden_empty_claims"]
+    }
+    route_terms = {term.lower() for term in graph["public_surface_routing"]["viewer_or_note_only_terms"]}
+    for node in nodes:
+        assert EXPECTED_RUN2_74_PRODUCT_CLAIM_NODE_FIELDS <= set(node), node["claim_id"]
+        assert node["public_claim"]
+        assert not any(claim in node["public_claim"].lower() for claim in forbidden_empty_claims)
+        assert set(node["product_capability_ids"]) <= capability_ids
+        assert set(node["product_logic_relation_ids"]) <= logic_relation_ids
+        assert set(node["source_message_contract_ids"]) <= message_contract_ids
+        assert set(node["narrative_proof_ids"]) <= narrative_proof_ids
+        assert set(node["tutorial_design_rule_ids"]) <= tutorial_rule_ids
+        assert node["user_benefit"]
+        assert node["visible_user_result"]
+        assert node["proof_standard"]
+        assert node["public_surface_route"]["on_canvas"]
+        assert node["public_surface_route"]["speaker_note_or_viewer"]
+        assert "slide_index" not in node
+        assert "slide_title" not in node
+        assert "scene_layout" not in node
+        assert "renderer_actions" not in node
+        on_canvas_text = " ".join(node["public_surface_route"]["on_canvas"]).lower()
+        assert not any(term in on_canvas_text for term in route_terms)
+
+    edges = graph["causal_edges"]
+    assert len(edges) == 6
+    for edge in edges:
+        assert EXPECTED_RUN2_74_CAUSAL_EDGE_FIELDS <= set(edge), edge["edge_id"]
+        assert edge["from_claim_id"] in node_ids
+        assert edge["to_claim_id"] in node_ids
+        assert edge["causal_relation"]
+        assert edge["business_logic"]
+        assert edge["user_value_delta"]
+        assert edge["proof_refs"]
+
+    trust_model = graph["trust_model"]
+    assert len(trust_model["why_credible"]) >= 4
+    assert "public release remains blocked until review passes" in trust_model["release_truth"]
+    assert graph["traceability_summary"]["claim_node_count"] == 7
+    assert graph["traceability_summary"]["causal_edge_count"] == 6
+    assert graph["next_required_action"] == "run2_74_c2_create_slide_story_from_product_claim_graph"
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
