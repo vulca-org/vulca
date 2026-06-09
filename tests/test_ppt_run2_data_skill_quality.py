@@ -628,6 +628,23 @@ EXPECTED_RUN2_G_RESULT = (
     PACK / "results" / "run2_73_validated_scene_renderer_rerun_result.json"
 )
 EXPECTED_RUN2_G_SCRIPT = ROOT / "scripts" / "generate_ppt_run2_73_validated_scene_renderer_arms.mjs"
+EXPECTED_RUN2_H_RESULT = (
+    PACK / "results" / "run2_74_visual_quality_evaluation.json"
+)
+EXPECTED_RUN2_H_SCRIPT = ROOT / "scripts" / "audit_ppt_run2_74_visual_quality_evaluation.py"
+EXPECTED_RUN2_H_QUESTIONS = {
+    "is_2_73_better_than_2_72",
+    "is_text_fused_with_visual_structure",
+    "does_it_still_feel_like_engineering_report",
+    "do_six_pages_have_distinct_visual_grammar",
+    "which_pages_need_repair_and_which_layer",
+}
+EXPECTED_RUN2_H_ROOT_CAUSE_LAYERS = {
+    "renderer",
+    "visual_grammar",
+    "text_binding",
+    "content",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -3117,6 +3134,122 @@ def test_run2_73_validated_scene_renderer_rerun_consumes_a_f_and_updates_viewer(
     run = next(run for run in viewer_data["runs"] if run["id"] == "2.73")
     assert run["fullArm"]["id"] == "run2_73_full_validated_scene_renderer"
     assert len(run["fullArm"]["slides"]) == 6
+
+
+def test_run2_74_visual_quality_evaluation_closes_viewer_comparison_loop(tmp_path: Path) -> None:
+    assert EXPECTED_RUN2_H_SCRIPT.exists(), "missing Part H visual quality evaluation script"
+    result_json = tmp_path / "run2_74_visual_quality_evaluation.json"
+    result_md = tmp_path / "run2_74_visual_quality_evaluation.md"
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(EXPECTED_RUN2_H_SCRIPT),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    audit = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+    assert "run2_74_visual_quality_evaluation_public_blocked" in completed.stdout
+    assert audit["artifact_id"] == "run2_74_visual_quality_evaluation"
+    assert audit["part"] == "Part H"
+    assert audit["run_id"] == "2.74"
+    assert audit["status"] == "run2_74_visual_quality_evaluation_public_blocked"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["starts_renderer_rerun"] is False
+    assert audit["public_ready"] is False
+    assert audit["quality_claim_boundary"] == "part_h_evaluation_only_no_public_release_no_renderer_rerun"
+    assert audit["source_runs"] == {
+        "comparison_baseline": "2.72",
+        "evaluated_run": "2.73",
+    }
+
+    input_chain = audit["input_chain"]
+    assert input_chain["run2_72_full_trace_manifest"].endswith(
+        "ppt-run2-72-full-vulca/trace_manifest.json"
+    )
+    assert input_chain["run2_73_full_trace_manifest"].endswith(
+        "ppt-run2-73-full-vulca/trace_manifest.json"
+    )
+    assert input_chain["run2_72_result"].endswith("run2_72_shape_bound_text_rerun_result.json")
+    assert input_chain["run2_73_result"].endswith(
+        "run2_73_validated_scene_renderer_rerun_result.json"
+    )
+    assert input_chain["ppt_run_viewer"].endswith("ppt-run-viewer.html")
+
+    viewer = audit["viewer_comparison_closure"]
+    assert viewer["viewer_latest_run_id"] == "2.73"
+    assert viewer["viewer_can_compare_2_72_and_2_73"] is True
+    assert viewer["run2_72_full_preview_count"] == 6
+    assert viewer["run2_73_full_preview_count"] == 6
+    assert viewer["browser_check_required_for_handoff"] is True
+
+    questions = audit["evaluation_questions"]
+    assert set(questions) == EXPECTED_RUN2_H_QUESTIONS
+    assert questions["is_2_73_better_than_2_72"]["answer"] == "mixed_not_public_quality_pass"
+    assert questions["do_six_pages_have_distinct_visual_grammar"]["answer"] == "yes_trace_and_thumbnail"
+    assert questions["does_it_still_feel_like_engineering_report"]["answer"] == "yes_but_different_failure_mode"
+
+    assessment = audit["visual_quality_assessment"]
+    assert assessment["data_workflow_entry_gate"] == "pass_internal_only"
+    assert assessment["viewer_comparison_gate"] == "pass_internal_only"
+    assert assessment["design_quality_gate"] == "blocked"
+    assert assessment["public_video_readiness"] == "blocked"
+    assert assessment["global_delta_vs_2_72"] == "structural_variety_up_public_polish_down"
+    assert assessment["top_blocker"] == "thin_abstract_renderer_placeholders_do_not_read_as_product_presentation"
+    assert assessment["next_layer_to_fix"] == "renderer"
+
+    assert len(audit["role_assessments"]) == 6
+    assert [record["role"] for record in audit["role_assessments"]] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [record["slide_index"] for record in audit["role_assessments"]] == [1, 2, 3, 4, 5, 6]
+    assert len({record["visual_grammar_module"] for record in audit["role_assessments"]}) == 5
+    needs_repair = [record for record in audit["role_assessments"] if record["repair_required"]]
+    assert len(needs_repair) >= 4
+    for record in audit["role_assessments"]:
+        assert record["visual_grammar_module"] == EXPECTED_RUN2_E_PAGE_MODULE_MAP[record["role"]]
+        assert record["root_cause_layer"] in EXPECTED_RUN2_H_ROOT_CAUSE_LAYERS
+        assert record["text_visual_fusion"] in {"improved_but_weak", "partial", "weak"}
+        assert record["report_like_risk"] in {"low", "medium", "high"}
+        assert record["repair_instruction"]
+
+    assert audit["root_cause_summary"]["primary_layer"] == "renderer"
+    assert audit["root_cause_summary"]["not_primary_layer"] == "data_absence"
+    assert audit["next_required_action"] == "part_i_renderer_repair_from_visual_quality_evaluation"
+    assert_contains(
+        report,
+        [
+            "Run 2.74 Visual Quality Evaluation",
+            "2.73 vs 2.72",
+            "mixed",
+            "public polish down",
+            "Part I",
+        ],
+    )
+
+
+def test_run2_74_records_visual_quality_evaluation_result() -> None:
+    audit = load_json(EXPECTED_RUN2_H_RESULT)
+    report = (
+        PACK / "results" / "run2_74_visual_quality_evaluation.md"
+    ).read_text(encoding="utf-8")
+
+    assert audit["status"] == "run2_74_visual_quality_evaluation_public_blocked"
+    assert audit["public_ready"] is False
+    assert audit["visual_quality_assessment"]["design_quality_gate"] == "blocked"
+    assert audit["visual_quality_assessment"]["global_delta_vs_2_72"] == (
+        "structural_variety_up_public_polish_down"
+    )
+    assert audit["viewer_comparison_closure"]["viewer_latest_run_id"] == "2.73"
+    assert len(audit["role_assessments"]) == 6
+    assert "thin abstract renderer placeholders" in report
 
 
 def test_run2_7_has_serializable_design_memory() -> None:

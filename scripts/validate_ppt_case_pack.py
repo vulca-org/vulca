@@ -96,6 +96,7 @@ RUN2_73_REQUIRED_FILES = [
     "run2_73_renderer_adapter_contracts.json",
     "run2_73_text_binding_strategy.json",
     "results/run2_73_validated_scene_renderer_rerun_result.json",
+    "results/run2_74_visual_quality_evaluation.json",
 ]
 
 
@@ -436,6 +437,26 @@ RUN2_73_VALIDATED_RENDERER_REQUIRED_CHECKS = {
     "pages_using_expected_visual_grammar": 6,
     "pages_using_required_text_sockets": 6,
 }
+RUN2_74_VISUAL_QUALITY_EVALUATION_STATUS = "run2_74_visual_quality_evaluation_public_blocked"
+RUN2_74_VISUAL_QUALITY_QUESTION_IDS = {
+    "is_2_73_better_than_2_72",
+    "is_text_fused_with_visual_structure",
+    "does_it_still_feel_like_engineering_report",
+    "do_six_pages_have_distinct_visual_grammar",
+    "which_pages_need_repair_and_which_layer",
+}
+RUN2_74_VISUAL_QUALITY_ROOT_CAUSE_LAYERS = {
+    "renderer",
+    "visual_grammar",
+    "text_binding",
+    "content",
+}
+RUN2_74_TEXT_VISUAL_FUSION_VALUES = {
+    "improved_but_weak",
+    "partial",
+    "weak",
+}
+RUN2_74_REPORT_RISK_VALUES = {"low", "medium", "high"}
 
 
 @dataclass(frozen=True)
@@ -4324,6 +4345,267 @@ def validate_run2_73_validated_renderer_checks(label: str, value: Any, errors: l
             errors.append(f"{label}.{key} must be {expected}")
 
 
+def validate_run2_74_visual_quality_evaluation(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "results" / "run2_74_visual_quality_evaluation.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_74_visual_quality_evaluation"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "creates_new_ppt_deck",
+            "starts_renderer_rerun",
+            "public_ready",
+            "quality_claim_boundary",
+            "source_runs",
+            "input_chain",
+            "viewer_comparison_closure",
+            "evaluation_questions",
+            "visual_quality_assessment",
+            "role_assessments",
+            "root_cause_summary",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part H":
+        errors.append(f"{label}.part must be Part H")
+    if data.get("run_id") != "2.74":
+        errors.append(f"{label}.run_id must be 2.74")
+    if data.get("status") != RUN2_74_VISUAL_QUALITY_EVALUATION_STATUS:
+        errors.append(f"{label}.status must be {RUN2_74_VISUAL_QUALITY_EVALUATION_STATUS}")
+    if data.get("creates_new_ppt_deck") is not False:
+        errors.append(f"{label}.creates_new_ppt_deck must be false")
+    if data.get("starts_renderer_rerun") is not False:
+        errors.append(f"{label}.starts_renderer_rerun must be false")
+    if data.get("public_ready") is not False:
+        errors.append(f"{label}.public_ready must be false")
+    if data.get("quality_claim_boundary") != "part_h_evaluation_only_no_public_release_no_renderer_rerun":
+        errors.append(f"{label}.quality_claim_boundary must be part_h_evaluation_only_no_public_release_no_renderer_rerun")
+
+    validate_run2_74_visual_quality_source_runs(f"{label}.source_runs", data.get("source_runs", {}), errors)
+    validate_run2_74_visual_quality_input_chain(f"{label}.input_chain", data.get("input_chain", {}), errors)
+    validate_run2_74_visual_quality_viewer_closure(
+        f"{label}.viewer_comparison_closure",
+        data.get("viewer_comparison_closure", {}),
+        errors,
+    )
+    validate_run2_74_visual_quality_questions(
+        f"{label}.evaluation_questions",
+        data.get("evaluation_questions", {}),
+        errors,
+    )
+    validate_run2_74_visual_quality_assessment(
+        f"{label}.visual_quality_assessment",
+        data.get("visual_quality_assessment", {}),
+        errors,
+    )
+    validate_run2_74_visual_quality_role_assessments(
+        f"{label}.role_assessments",
+        data.get("role_assessments", []),
+        errors,
+    )
+    validate_run2_74_visual_quality_root_cause_summary(
+        f"{label}.root_cause_summary",
+        data.get("root_cause_summary", {}),
+        errors,
+    )
+    if data.get("next_required_action") != "part_i_renderer_repair_from_visual_quality_evaluation":
+        errors.append(f"{label}.next_required_action must be part_i_renderer_repair_from_visual_quality_evaluation")
+
+
+def validate_run2_74_visual_quality_source_runs(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["comparison_baseline", "evaluated_run"], errors)
+    if value.get("comparison_baseline") != "2.72":
+        errors.append(f"{label}.comparison_baseline must be 2.72")
+    if value.get("evaluated_run") != "2.73":
+        errors.append(f"{label}.evaluated_run must be 2.73")
+
+
+def validate_run2_74_visual_quality_input_chain(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    required = [
+        "run2_72_result",
+        "run2_73_result",
+        "run2_72_full_trace_manifest",
+        "run2_73_full_trace_manifest",
+        "ppt_run_viewer",
+    ]
+    require_keys(label, value, required, errors)
+    for key in required:
+        if key in value:
+            require_non_empty_string(f"{label}.{key}", value[key], errors)
+
+
+def validate_run2_74_visual_quality_viewer_closure(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        [
+            "viewer_latest_run_id",
+            "viewer_can_compare_2_72_and_2_73",
+            "run2_72_full_preview_count",
+            "run2_73_full_preview_count",
+            "browser_check_required_for_handoff",
+        ],
+        errors,
+    )
+    if value.get("viewer_latest_run_id") != "2.73":
+        errors.append(f"{label}.viewer_latest_run_id must be 2.73")
+    if value.get("viewer_can_compare_2_72_and_2_73") is not True:
+        errors.append(f"{label}.viewer_can_compare_2_72_and_2_73 must be true")
+    for key in ["run2_72_full_preview_count", "run2_73_full_preview_count"]:
+        if key in value and require_integer(f"{label}.{key}", value[key], errors) and value[key] != 6:
+            errors.append(f"{label}.{key} must be 6")
+    if value.get("browser_check_required_for_handoff") is not True:
+        errors.append(f"{label}.browser_check_required_for_handoff must be true")
+
+
+def validate_run2_74_visual_quality_questions(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    for question_id in sorted(RUN2_74_VISUAL_QUALITY_QUESTION_IDS):
+        if question_id not in value:
+            errors.append(f"{label} missing key: {question_id}")
+            continue
+        question = value[question_id]
+        question_label = f"{label}.{question_id}"
+        if not require_non_empty_dict(question_label, question, errors):
+            continue
+        require_keys(question_label, question, ["answer"], errors)
+        if "answer" in question:
+            require_non_empty_string(f"{question_label}.answer", question["answer"], errors)
+    for question_id in sorted(set(value) - RUN2_74_VISUAL_QUALITY_QUESTION_IDS):
+        errors.append(f"{label} unknown key: {question_id}")
+    expected_answers = {
+        "is_2_73_better_than_2_72": "mixed_not_public_quality_pass",
+        "is_text_fused_with_visual_structure": "partial",
+        "does_it_still_feel_like_engineering_report": "yes_but_different_failure_mode",
+        "do_six_pages_have_distinct_visual_grammar": "yes_trace_and_thumbnail",
+        "which_pages_need_repair_and_which_layer": "renderer_first",
+    }
+    for question_id, expected in expected_answers.items():
+        question = value.get(question_id)
+        if isinstance(question, dict) and question.get("answer") != expected:
+            errors.append(f"{label}.{question_id}.answer must be {expected}")
+
+
+def validate_run2_74_visual_quality_assessment(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    expected_values = {
+        "data_workflow_entry_gate": "pass_internal_only",
+        "viewer_comparison_gate": "pass_internal_only",
+        "design_quality_gate": "blocked",
+        "public_video_readiness": "blocked",
+        "global_delta_vs_2_72": "structural_variety_up_public_polish_down",
+        "top_blocker": "thin_abstract_renderer_placeholders_do_not_read_as_product_presentation",
+        "next_layer_to_fix": "renderer",
+    }
+    require_keys(label, value, list(expected_values), errors)
+    for key, expected in expected_values.items():
+        if value.get(key) != expected:
+            errors.append(f"{label}.{key} must be {expected}")
+
+
+def validate_run2_74_visual_quality_role_assessments(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    repair_required_count = 0
+    for index, record in enumerate(value):
+        record_label = f"{label}[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{record_label} must be an object")
+            continue
+        require_keys(
+            record_label,
+            record,
+            [
+                "role",
+                "slide_index",
+                "visual_grammar_module",
+                "delta_vs_2_72",
+                "text_visual_fusion",
+                "report_like_risk",
+                "root_cause_layer",
+                "repair_required",
+                "repair_instruction",
+            ],
+            errors,
+        )
+        role = record.get("role")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in record and require_integer(f"{record_label}.slide_index", record["slide_index"], errors):
+            if record["slide_index"] != index + 1:
+                errors.append(f"{record_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if record.get("visual_grammar_module") != expected_module:
+                errors.append(f"{record_label}.visual_grammar_module must be {expected_module} for {role}")
+        if "delta_vs_2_72" in record:
+            require_non_empty_string(f"{record_label}.delta_vs_2_72", record["delta_vs_2_72"], errors)
+        if "text_visual_fusion" in record:
+            validate_choice(
+                f"{record_label}.text_visual_fusion",
+                record["text_visual_fusion"],
+                RUN2_74_TEXT_VISUAL_FUSION_VALUES,
+                errors,
+            )
+        if "report_like_risk" in record:
+            validate_choice(
+                f"{record_label}.report_like_risk",
+                record["report_like_risk"],
+                RUN2_74_REPORT_RISK_VALUES,
+                errors,
+            )
+        if "root_cause_layer" in record:
+            validate_choice(
+                f"{record_label}.root_cause_layer",
+                record["root_cause_layer"],
+                RUN2_74_VISUAL_QUALITY_ROOT_CAUSE_LAYERS,
+                errors,
+            )
+        if record.get("repair_required") is True:
+            repair_required_count += 1
+        elif "repair_required" in record:
+            errors.append(f"{record_label}.repair_required must be true or false")
+        if "repair_instruction" in record:
+            require_non_empty_string(f"{record_label}.repair_instruction", record["repair_instruction"], errors)
+        if "visual_observation" in record:
+            require_non_empty_string(f"{record_label}.visual_observation", record["visual_observation"], errors)
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+    if repair_required_count < 4:
+        errors.append(f"{label} must mark at least 4 pages repair_required")
+
+
+def validate_run2_74_visual_quality_root_cause_summary(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["primary_layer", "not_primary_layer"], errors)
+    if value.get("primary_layer") != "renderer":
+        errors.append(f"{label}.primary_layer must be renderer")
+    if value.get("not_primary_layer") != "data_absence":
+        errors.append(f"{label}.not_primary_layer must be data_absence")
+    secondary = value.get("secondary_layers")
+    if secondary is not None:
+        validate_string_list(f"{label}.secondary_layers", secondary, errors)
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -4538,6 +4820,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_73_renderer_adapter_contracts(root, errors)
             validate_run2_73_text_binding_strategy(root, errors)
             validate_run2_73_validated_scene_renderer_result(root, errors)
+            validate_run2_74_visual_quality_evaluation(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)

@@ -1485,6 +1485,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_73_validated_scene_renderer_rerun_result(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_74_visual_quality_evaluation.json").write_text(
+        json.dumps(valid_run2_74_visual_quality_evaluation(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -2140,6 +2144,83 @@ def valid_run2_73_validated_scene_renderer_rerun_result() -> dict:
     }
 
 
+def valid_run2_74_visual_quality_evaluation() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    return {
+        "artifact_id": "run2_74_visual_quality_evaluation",
+        "part": "Part H",
+        "schema_version": "ppt_run2_74_visual_quality_evaluation.v1",
+        "run_id": "2.74",
+        "status": "run2_74_visual_quality_evaluation_public_blocked",
+        "creates_new_ppt_deck": False,
+        "starts_renderer_rerun": False,
+        "public_ready": False,
+        "quality_claim_boundary": "part_h_evaluation_only_no_public_release_no_renderer_rerun",
+        "source_runs": {
+            "comparison_baseline": "2.72",
+            "evaluated_run": "2.73",
+        },
+        "input_chain": {
+            "run2_72_result": "docs/product/ppt-run2-data-skill-quality/results/run2_72_shape_bound_text_rerun_result.json",
+            "run2_73_result": "docs/product/ppt-run2-data-skill-quality/results/run2_73_validated_scene_renderer_rerun_result.json",
+            "run2_72_full_trace_manifest": "outputs/thread/presentations/ppt-run2-72-full-vulca/trace_manifest.json",
+            "run2_73_full_trace_manifest": "outputs/thread/presentations/ppt-run2-73-full-vulca/trace_manifest.json",
+            "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+        },
+        "viewer_comparison_closure": {
+            "viewer_latest_run_id": "2.73",
+            "viewer_can_compare_2_72_and_2_73": True,
+            "run2_72_full_preview_count": 6,
+            "run2_73_full_preview_count": 6,
+            "browser_check_required_for_handoff": True,
+        },
+        "evaluation_questions": {
+            "is_2_73_better_than_2_72": {"answer": "mixed_not_public_quality_pass"},
+            "is_text_fused_with_visual_structure": {"answer": "partial"},
+            "does_it_still_feel_like_engineering_report": {"answer": "yes_but_different_failure_mode"},
+            "do_six_pages_have_distinct_visual_grammar": {"answer": "yes_trace_and_thumbnail"},
+            "which_pages_need_repair_and_which_layer": {"answer": "renderer_first"},
+        },
+        "visual_quality_assessment": {
+            "data_workflow_entry_gate": "pass_internal_only",
+            "viewer_comparison_gate": "pass_internal_only",
+            "design_quality_gate": "blocked",
+            "public_video_readiness": "blocked",
+            "global_delta_vs_2_72": "structural_variety_up_public_polish_down",
+            "top_blocker": "thin_abstract_renderer_placeholders_do_not_read_as_product_presentation",
+            "next_layer_to_fix": "renderer",
+        },
+        "role_assessments": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "delta_vs_2_72": "more_distinct_but_less_polished",
+                "text_visual_fusion": "partial",
+                "report_like_risk": "high",
+                "root_cause_layer": "renderer",
+                "repair_required": True,
+                "repair_instruction": "Redraw as a concrete product surface instead of thin abstract placeholders.",
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "root_cause_summary": {
+            "primary_layer": "renderer",
+            "not_primary_layer": "data_absence",
+            "secondary_layers": ["visual_grammar", "text_binding"],
+        },
+        "next_required_action": "part_i_renderer_repair_from_visual_quality_evaluation",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -2169,6 +2250,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: run2_73_renderer_adapter_contracts.json" in result.errors
     assert "missing required file: run2_73_text_binding_strategy.json" in result.errors
     assert "missing required file: results/run2_73_validated_scene_renderer_rerun_result.json" in result.errors
+    assert "missing required file: results/run2_74_visual_quality_evaluation.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -2446,6 +2528,51 @@ def test_run2_profile_rejects_validated_scene_renderer_bad_manifest_or_release_s
     )
     assert (
         "run2_73_validated_scene_renderer_rerun_result.render_quality_checks.empty_visual_container_count must be 0"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_visual_quality_evaluation_public_release_or_missing_questions(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    audit_path = pack / "results" / "run2_74_visual_quality_evaluation.json"
+    audit = json.loads(audit_path.read_text(encoding="utf-8"))
+    audit["public_ready"] = True
+    audit["starts_renderer_rerun"] = True
+    audit["evaluation_questions"].pop("is_2_73_better_than_2_72")
+    audit["viewer_comparison_closure"]["viewer_latest_run_id"] = "2.72"
+    audit["visual_quality_assessment"]["design_quality_gate"] = "pass"
+    audit["role_assessments"][0]["visual_grammar_module"] = "hero_field"
+    audit["role_assessments"][0]["root_cause_layer"] = "source_data"
+    audit_path.write_text(json.dumps(audit, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_74_visual_quality_evaluation.public_ready must be false" in result.errors
+    assert "run2_74_visual_quality_evaluation.starts_renderer_rerun must be false" in result.errors
+    assert (
+        "run2_74_visual_quality_evaluation.evaluation_questions missing key: is_2_73_better_than_2_72"
+        in result.errors
+    )
+    assert (
+        "run2_74_visual_quality_evaluation.viewer_comparison_closure.viewer_latest_run_id must be 2.73"
+        in result.errors
+    )
+    assert (
+        "run2_74_visual_quality_evaluation.visual_quality_assessment.design_quality_gate must be blocked"
+        in result.errors
+    )
+    assert (
+        "run2_74_visual_quality_evaluation.role_assessments[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_74_visual_quality_evaluation.role_assessments[0].root_cause_layer must be one of content, renderer, text_binding, visual_grammar"
         in result.errors
     )
 
