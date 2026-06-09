@@ -63,7 +63,7 @@ def test_run2_60_static_contract_is_ci_visible() -> None:
     assert_contains(
         viewer,
         [
-            'LATEST_RUN_PAYLOAD_HINT = \'"latestRunId": "2.69"\'',
+            'LATEST_RUN_PAYLOAD_HINT = \'"latestRunId": "2.70"\'',
             "Run 2.60",
             "ppt-run2-60-prompt-only",
             "ppt-run2-60-run1-5-skill",

@@ -55,7 +55,7 @@ def test_run2_66_static_contract_is_ci_visible() -> None:
             "Run 2.66 reference-first redesign",
             "run2_66_reference_first_redesign_result.json",
             "run2_66_reference_first_design_grammar.json",
-            '"latestRunId": "2.69"',
+            '"latestRunId": "2.70"',
         ],
     )
     assert_contains(
