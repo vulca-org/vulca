@@ -100,6 +100,7 @@ RUN2_73_REQUIRED_FILES = [
     "results/run2_75_renderer_repair_rerun_result.json",
     "results/run2_76_visual_quality_evaluation.json",
     "run2_76_visual_grammar_renderer_repair_plan.json",
+    "results/run2_77_visual_grammar_renderer_repair_rerun_result.json",
 ]
 
 
@@ -538,6 +539,25 @@ RUN2_76_K1_ACCEPTANCE_CHECK_KEYS = {
     "wireframe_reduction_check",
     "renderer_capability_check",
     "no_renderer_rerun_in_k1",
+}
+RUN2_77_VISUAL_GRAMMAR_RENDERER_REPAIR_STATUS = "run2_77_visual_grammar_renderer_repair_rerun_generated_public_blocked"
+RUN2_77_VISUAL_GRAMMAR_RENDERER_REPAIR_CONSUMED_SOURCE_PATHS = RUN2_76_K1_REPAIR_PLAN_CONSUMED_SOURCE_PATHS | {
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_input_validation.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_76_visual_grammar_renderer_repair_plan.json",
+}
+RUN2_77_VISUAL_GRAMMAR_RENDERER_REPAIR_DIRECTIVES = {
+    "k1_repair_plan_consumed",
+    "target_scene_direction_applied",
+    "page_differentiation_repaired",
+    "forbidden_fallbacks_removed",
+    "public_polish_not_claimed",
+}
+RUN2_77_VISUAL_GRAMMAR_RENDERER_REPAIR_REQUIRED_CHECKS = {
+    "pages_with_k1_repair_plan_consumed": 6,
+    "pages_using_expected_visual_grammar": 6,
+    "distinct_target_scene_directions": 6,
+    "pages_with_forbidden_fallbacks_absent": 6,
+    "pages_with_reduced_label_count": 6,
 }
 
 
@@ -5455,6 +5475,222 @@ def validate_run2_76_k1_acceptance_checks(label: str, value: Any, errors: list[s
         errors.append(f"{label}.no_renderer_rerun_in_k1 must be true")
 
 
+def validate_run2_77_visual_grammar_renderer_repair_rerun_result(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "results" / "run2_77_visual_grammar_renderer_repair_rerun_result.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_77_visual_grammar_renderer_repair_rerun_result"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "public_ready",
+            "public_release_started",
+            "quality_claim_boundary",
+            "consumed_sources",
+            "source_k1_repair_plan",
+            "visual_grammar_renderer_repair_manifest",
+            "rendered_pages",
+            "visual_grammar_renderer_repair_checks",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part K2":
+        errors.append(f"{label}.part must be Part K2")
+    if data.get("run_id") != "2.77":
+        errors.append(f"{label}.run_id must be 2.77")
+    if data.get("status") != RUN2_77_VISUAL_GRAMMAR_RENDERER_REPAIR_STATUS:
+        errors.append(f"{label}.status must be {RUN2_77_VISUAL_GRAMMAR_RENDERER_REPAIR_STATUS}")
+    if data.get("public_ready") is not False:
+        errors.append(f"{label}.public_ready must be false")
+    if data.get("public_release_started") is not False:
+        errors.append(f"{label}.public_release_started must be false")
+    if data.get("quality_claim_boundary") != "visual_grammar_renderer_repair_generated_viewer_check_only_no_part_l_quality_verdict":
+        errors.append(f"{label}.quality_claim_boundary must be visual_grammar_renderer_repair_generated_viewer_check_only_no_part_l_quality_verdict")
+    if "consumed_sources" in data:
+        validate_exact_string_set(
+            f"{label}.consumed_sources",
+            data["consumed_sources"],
+            RUN2_77_VISUAL_GRAMMAR_RENDERER_REPAIR_CONSUMED_SOURCE_PATHS,
+            errors,
+        )
+    validate_run2_77_source_k1_repair_plan(f"{label}.source_k1_repair_plan", data.get("source_k1_repair_plan", {}), errors)
+    validate_run2_77_repair_manifest(
+        f"{label}.visual_grammar_renderer_repair_manifest",
+        data.get("visual_grammar_renderer_repair_manifest", {}),
+        errors,
+    )
+    validate_run2_77_rendered_pages(f"{label}.rendered_pages", data.get("rendered_pages", []), errors)
+    validate_run2_77_repair_checks(
+        f"{label}.visual_grammar_renderer_repair_checks",
+        data.get("visual_grammar_renderer_repair_checks", {}),
+        errors,
+    )
+    if data.get("next_required_action") != "part_l_visual_quality_evaluation_for_run2_77":
+        errors.append(f"{label}.next_required_action must be part_l_visual_quality_evaluation_for_run2_77")
+
+
+def validate_run2_77_source_k1_repair_plan(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["status", "top_blocker", "next_required_action", "source_result"], errors)
+    if value.get("status") != RUN2_76_K1_REPAIR_PLAN_STATUS:
+        errors.append(f"{label}.status must be {RUN2_76_K1_REPAIR_PLAN_STATUS}")
+    if value.get("top_blocker") != "wireframe_blueprint_aesthetic_and_repeated_product_surfaces_still_read_as_internal_engineering_diagrams":
+        errors.append(f"{label}.top_blocker must match Run 2.76/K1 top blocker")
+    if value.get("next_required_action") != "part_k2_renderer_rerun_from_visual_grammar_renderer_repair_plan":
+        errors.append(f"{label}.next_required_action must be part_k2_renderer_rerun_from_visual_grammar_renderer_repair_plan")
+    if value.get("source_result") != "docs/product/ppt-run2-data-skill-quality/run2_76_visual_grammar_renderer_repair_plan.json":
+        errors.append(f"{label}.source_result must reference run2_76_visual_grammar_renderer_repair_plan.json")
+
+
+def validate_run2_77_repair_manifest(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["generator", "consumed_sources", "best_internal_arm", "outputs", "viewer_update"], errors)
+    if value.get("generator") != "scripts/generate_ppt_run2_77_visual_grammar_renderer_repair_arms.mjs":
+        errors.append(f"{label}.generator must be scripts/generate_ppt_run2_77_visual_grammar_renderer_repair_arms.mjs")
+    if "consumed_sources" in value:
+        validate_exact_string_set(
+            f"{label}.consumed_sources",
+            value["consumed_sources"],
+            RUN2_77_VISUAL_GRAMMAR_RENDERER_REPAIR_CONSUMED_SOURCE_PATHS,
+            errors,
+        )
+    if value.get("best_internal_arm") != "run2_77_full_visual_grammar_renderer_repair":
+        errors.append(f"{label}.best_internal_arm must be run2_77_full_visual_grammar_renderer_repair")
+    outputs = value.get("outputs", {})
+    if require_non_empty_dict(f"{label}.outputs", outputs, errors):
+        for key in ["html_viewer", "pptx", "ppt_run_viewer"]:
+            if key not in outputs:
+                errors.append(f"{label}.outputs missing key: {key}")
+            else:
+                require_non_empty_string(f"{label}.outputs.{key}", outputs[key], errors)
+    viewer_update = value.get("viewer_update", {})
+    if require_non_empty_dict(f"{label}.viewer_update", viewer_update, errors):
+        if viewer_update.get("latest_run_id") != "2.77":
+            errors.append(f"{label}.viewer_update.latest_run_id must be 2.77")
+        if viewer_update.get("viewer_can_reference_new_run") is not True:
+            errors.append(f"{label}.viewer_update.viewer_can_reference_new_run must be true")
+
+
+def validate_run2_77_rendered_pages(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    target_scene_directions: set[str] = set()
+    capability_union: set[str] = set()
+    for index, page in enumerate(value):
+        page_label = f"{label}[{index}]"
+        if not isinstance(page, dict):
+            errors.append(f"{page_label} must be an object")
+            continue
+        require_keys(
+            page_label,
+            page,
+            [
+                "role",
+                "slide_index",
+                "visual_grammar_module",
+                "target_scene_direction",
+                "source_k1_repair_plan",
+                "renderer_repair_directives_applied",
+                "renderer_capabilities_applied",
+                "forbidden_renderer_fallbacks_absent",
+                "label_count",
+                "source_trace_terms_visible_on_canvas",
+                "visual_containers",
+                "k1_acceptance_checks",
+            ],
+            errors,
+        )
+        role = page.get("role")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in page and require_integer(f"{page_label}.slide_index", page["slide_index"], errors):
+            if page["slide_index"] != index + 1:
+                errors.append(f"{page_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if page.get("visual_grammar_module") != expected_module:
+                errors.append(f"{page_label}.visual_grammar_module must be {expected_module} for {role}")
+        target = page.get("target_scene_direction")
+        if require_non_empty_string(f"{page_label}.target_scene_direction", target, errors):
+            if target in target_scene_directions:
+                errors.append(f"{page_label}.target_scene_direction duplicates {target}")
+            target_scene_directions.add(target)
+        if "renderer_repair_directives_applied" in page:
+            validate_exact_string_set(
+                f"{page_label}.renderer_repair_directives_applied",
+                page["renderer_repair_directives_applied"],
+                RUN2_77_VISUAL_GRAMMAR_RENDERER_REPAIR_DIRECTIVES,
+                errors,
+            )
+        if validate_string_list(f"{page_label}.renderer_capabilities_applied", page.get("renderer_capabilities_applied", []), errors):
+            capabilities = set(page["renderer_capabilities_applied"])
+            capability_union.update(capabilities)
+            for capability in sorted(capabilities - RUN2_76_K1_RENDERER_CAPABILITIES):
+                errors.append(f"{page_label}.renderer_capabilities_applied has unexpected value: {capability}")
+        if "forbidden_renderer_fallbacks_absent" in page:
+            validate_exact_string_set(
+                f"{page_label}.forbidden_renderer_fallbacks_absent",
+                page["forbidden_renderer_fallbacks_absent"],
+                RUN2_76_K1_FORBIDDEN_RENDERER_FALLBACKS,
+                errors,
+            )
+        if "label_count" in page and require_integer(f"{page_label}.label_count", page["label_count"], errors):
+            if page["label_count"] > 5:
+                errors.append(f"{page_label}.label_count must be at most 5")
+        if "source_trace_terms_visible_on_canvas" in page:
+            visible = page["source_trace_terms_visible_on_canvas"]
+            if not isinstance(visible, list):
+                errors.append(f"{page_label}.source_trace_terms_visible_on_canvas must be a list")
+            elif visible:
+                errors.append(f"{page_label}.source_trace_terms_visible_on_canvas must be empty")
+        if "visual_containers" in page:
+            require_non_empty_list(f"{page_label}.visual_containers", page["visual_containers"], errors)
+        validate_run2_76_k1_acceptance_checks(
+            f"{page_label}.k1_acceptance_checks",
+            page.get("k1_acceptance_checks", {}),
+            errors,
+        )
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+    if len(target_scene_directions) != 6:
+        errors.append(f"{label}.target_scene_direction values must be unique across six pages")
+    for capability in sorted(RUN2_76_K1_RENDERER_CAPABILITIES - capability_union):
+        errors.append(f"{label}.renderer_capabilities_applied missing required capability across pages: {capability}")
+
+
+def validate_run2_77_repair_checks(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    for key, expected in RUN2_77_VISUAL_GRAMMAR_RENDERER_REPAIR_REQUIRED_CHECKS.items():
+        if key not in value:
+            errors.append(f"{label} missing key: {key}")
+            continue
+        if require_integer(f"{label}.{key}", value[key], errors) and value[key] != expected:
+            errors.append(f"{label}.{key} must be {expected}")
+    if "required_renderer_capabilities_covered" in value:
+        validate_exact_string_set(
+            f"{label}.required_renderer_capabilities_covered",
+            value["required_renderer_capabilities_covered"],
+            RUN2_76_K1_RENDERER_CAPABILITIES,
+            errors,
+        )
+    else:
+        errors.append(f"{label} missing key: required_renderer_capabilities_covered")
+    if value.get("public_quality_verdict_started") is not False:
+        errors.append(f"{label}.public_quality_verdict_started must be false")
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -5673,6 +5909,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_75_renderer_repair_rerun_result(root, errors)
             validate_run2_76_visual_quality_evaluation(root, errors)
             validate_run2_76_visual_grammar_renderer_repair_plan(root, errors)
+            validate_run2_77_visual_grammar_renderer_repair_rerun_result(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)
