@@ -1,0 +1,3128 @@
+{
+  "artifact_id": "run2_73_tutorial_to_design_moves",
+  "part": "Part B",
+  "objective": "Translate tutorial principles into executable PPT renderer actions.",
+  "status": "run2_73_tutorial_to_design_moves_public_blocked",
+  "generated_at": "2026-06-09",
+  "source_inputs": [
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_8_tutorial_decomposition.json",
+      "required": true,
+      "available": true,
+      "schema_version": 1,
+      "status": "run2_8_tutorial_decomposition_public_blocked",
+      "record_count": 6,
+      "id_field": "units[].id",
+      "use_in_this_artifact": "source_rule_ids and tutorial_rule lineage"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/visual_learning_targets.json",
+      "required": true,
+      "available": true,
+      "schema_version": 1,
+      "status": "run2_2_visual_learning_targets_public_blocked",
+      "record_count": 5,
+      "id_field": "targets[].id",
+      "use_in_this_artifact": "visual_target_ids and visual behavior lineage"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/motion_learning_targets.json",
+      "required": true,
+      "available": true,
+      "schema_version": 1,
+      "status": "run2_4_motion_learning_targets_public_blocked",
+      "record_count": 5,
+      "id_field": "targets[].id",
+      "use_in_this_artifact": "motion_target_ids and sequencing lineage"
+    }
+  ],
+  "execution_contract": {
+    "coordinate_system": "slide_pct_origin_top_left",
+    "timing_unit": "milliseconds",
+    "targeting": "role_based_selectors_with_reconciled_source_rule_visual_target_motion_target_traceability",
+    "minimum_mapping_rule": "each tutorial_rule_mapping must contain at least one renderer_action with action_type, target_selector, parameters, fallback_strategy, and traceability back to tutorial, visual, and motion source ids",
+    "non_goal": "QA-only advice such as 'make it clearer' without layout, style, structure, or timing actions"
+  },
+  "renderer_action_vocabulary": {
+    "select_element": {
+      "purpose": "Resolve a role or semantic selector to one or more slide elements.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "role",
+        "roles",
+        "min_area_pct",
+        "prefer_center_bias",
+        "max_count"
+      ]
+    },
+    "set_geometry": {
+      "purpose": "Move, resize, or anchor a visual or text element in slide percentage coordinates.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "x_pct",
+        "y_pct",
+        "width_pct",
+        "height_pct",
+        "anchor",
+        "scale_factor"
+      ]
+    },
+    "set_style": {
+      "purpose": "Change visual salience through opacity, stroke, fill, font size, weight, or contrast.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "opacity",
+        "stroke_width_px",
+        "fill",
+        "font_scale_factor",
+        "font_weight",
+        "contrast_delta"
+      ]
+    },
+    "remove_element": {
+      "purpose": "Delete non-essential decorative or duplicate elements from the slide.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "roles",
+        "max_remove_count",
+        "preserve_if_contains_required_text"
+      ]
+    },
+    "hide_element": {
+      "purpose": "Keep an element in the document but make it invisible in the current build or slide.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "until_build_index",
+        "opacity"
+      ]
+    },
+    "reorder_element": {
+      "purpose": "Adjust z-order so primary objects read before supporting material.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "z_index",
+        "relative_to",
+        "position"
+      ]
+    },
+    "crop_media": {
+      "purpose": "Crop an image or video to emphasize the meaningful object or detail.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "crop_to_bbox_role",
+        "padding_pct",
+        "maintain_aspect_ratio"
+      ]
+    },
+    "align_elements": {
+      "purpose": "Snap related objects to a shared edge, centerline, or baseline.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "axis",
+        "reference",
+        "snap_tolerance_pct"
+      ]
+    },
+    "distribute_spacing": {
+      "purpose": "Normalize gaps between repeated elements or between content blocks.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "axis",
+        "gap_pct",
+        "min_margin_pct",
+        "max_group_width_pct"
+      ]
+    },
+    "group_elements": {
+      "purpose": "Combine a visual and its dependent labels into a stable layout unit.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "group_name",
+        "preserve_relative_offsets"
+      ]
+    },
+    "duplicate_slide": {
+      "purpose": "Create a build slide from a previous slide so a single change can be staged cleanly.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "source_slide",
+        "new_slide_suffix",
+        "carry_notes"
+      ]
+    },
+    "create_comparison_layout": {
+      "purpose": "Create before/after, old/new, or problem/solution contrast on one slide or slide pair.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "mode",
+        "left_label",
+        "right_label",
+        "divider",
+        "equalize_scale"
+      ]
+    },
+    "add_reveal_step": {
+      "purpose": "Convert dense simultaneous content into ordered click/build reveals.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "build_index",
+        "reveal_order",
+        "trigger",
+        "initial_visibility"
+      ]
+    },
+    "add_animation": {
+      "purpose": "Attach a specific animation effect to an element or group.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "effect",
+        "duration_ms",
+        "delay_ms",
+        "easing",
+        "direction"
+      ]
+    },
+    "set_timing": {
+      "purpose": "Set or adjust relative timing for existing build steps.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "build_index",
+        "delay_ms",
+        "duration_ms",
+        "after_previous"
+      ]
+    },
+    "set_transition": {
+      "purpose": "Set slide transition style and duration for rhythm between slides.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "transition",
+        "duration_ms",
+        "advance_on_click"
+      ]
+    },
+    "composite_preview": {
+      "purpose": "Render the slide/build preview after structural, visual, or timing changes.",
+      "required_fields": [
+        "target_selector",
+        "parameters"
+      ],
+      "typical_parameters": [
+        "slide_scope",
+        "build_scope",
+        "output"
+      ]
+    }
+  },
+  "principle_to_ppt_operations": {
+    "visual_hierarchy": {
+      "definition": "Make the primary idea visually dominant before supporting detail.",
+      "ppt_operations": [
+        "scale the main object up",
+        "place the main object on a strong anchor",
+        "dim or delete competing frames",
+        "raise the main object in z-order",
+        "crop to the meaningful detail",
+        "delay labels until after the object is seen"
+      ],
+      "renderer_actions": [
+        "select_element",
+        "set_geometry",
+        "set_style",
+        "remove_element",
+        "reorder_element",
+        "crop_media",
+        "add_reveal_step"
+      ]
+    },
+    "white_space": {
+      "definition": "Create quiet space around the message so the slide breathes and the eye has a path.",
+      "ppt_operations": [
+        "delete secondary boxes and decorative containers",
+        "increase outer margins and gutters",
+        "consolidate repeated labels",
+        "align objects to fewer axes",
+        "reduce strokes, fills, and background noise",
+        "keep one intentional empty zone"
+      ],
+      "renderer_actions": [
+        "remove_element",
+        "set_geometry",
+        "set_style",
+        "align_elements",
+        "distribute_spacing",
+        "group_elements"
+      ]
+    },
+    "keynote_rhythm": {
+      "definition": "Turn a dense explanation into a staged slide sequence with clear beats.",
+      "ppt_operations": [
+        "one idea per click or duplicate slide",
+        "build setup, change, result as separate beats",
+        "create before/after contrast",
+        "hold the visual before explaining it",
+        "reveal labels after the viewer has seen the object",
+        "use slide duplication for state changes instead of stacking everything"
+      ],
+      "renderer_actions": [
+        "duplicate_slide",
+        "create_comparison_layout",
+        "add_reveal_step",
+        "hide_element",
+        "set_transition",
+        "set_timing"
+      ]
+    },
+    "motion_pacing": {
+      "definition": "Make motion support comprehension by controlling order, speed, delay, and pauses.",
+      "ppt_operations": [
+        "animate object movement before label reveal",
+        "use short fades or moves for minor changes",
+        "use longer pauses after major reveals",
+        "stagger dependent elements by 150-350 ms",
+        "avoid simultaneous motion on competing elements",
+        "match motion direction to reading or causal flow"
+      ],
+      "renderer_actions": [
+        "add_animation",
+        "set_timing",
+        "add_reveal_step"
+      ]
+    }
+  },
+  "tutorial_rule_mappings": [
+    {
+      "rule_id": "vh_01_primary_subject_first_read",
+      "principle": "visual_hierarchy",
+      "tutorial_rule": "The main object must win the first read.",
+      "design_move": "Scale and anchor the primary subject, then reduce nearby competitors.",
+      "ppt_operations": [
+        "scale main object up",
+        "move main object to visual anchor",
+        "dim secondary objects"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "vh_01_a1",
+          "action_type": "select_element",
+          "target_selector": {
+            "role": "primary_subject"
+          },
+          "parameters": {
+            "min_area_pct": 8,
+            "prefer_center_bias": true,
+            "max_count": 1
+          },
+          "fallback_strategy": "choose the largest non-background image or grouped shape",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_climax_object_scale_and_pause"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta",
+              "target_public_demo_climax"
+            ],
+            "motion_target_ids": [
+              "motion_target_climax_scale_emphasis"
+            ]
+          }
+        },
+        {
+          "action_id": "vh_01_a2",
+          "action_type": "set_geometry",
+          "target_selector": {
+            "role": "primary_subject"
+          },
+          "parameters": {
+            "scale_factor": 1.25,
+            "anchor": "center_left",
+            "x_pct": 10,
+            "y_pct": 18,
+            "width_pct": 52,
+            "height_pct": 58
+          },
+          "fallback_strategy": "scale around current center by 1.15 if fixed coordinates would crop the element",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_climax_object_scale_and_pause"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta",
+              "target_public_demo_climax"
+            ],
+            "motion_target_ids": [
+              "motion_target_climax_scale_emphasis"
+            ]
+          }
+        },
+        {
+          "action_id": "vh_01_a3",
+          "action_type": "set_style",
+          "target_selector": {
+            "roles": [
+              "secondary_visual",
+              "decorative_shape"
+            ]
+          },
+          "parameters": {
+            "opacity": 0.55,
+            "contrast_delta": -0.18
+          },
+          "fallback_strategy": "skip style change when element contains required body text",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_climax_object_scale_and_pause"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta",
+              "target_public_demo_climax"
+            ],
+            "motion_target_ids": [
+              "motion_target_climax_scale_emphasis"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "primary_subject_area_pct",
+          "operator": ">=",
+          "value": 24
+        },
+        {
+          "metric": "primary_to_secondary_area_ratio",
+          "operator": ">=",
+          "value": 1.8
+        }
+      ],
+      "anti_patterns": [
+        "add a note saying the hierarchy should be clearer without changing size, position, or contrast"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_duarte_remove_nonessential_data",
+        "decomp_2_8_climax_object_scale_and_pause"
+      ],
+      "visual_target_ids": [
+        "target_report_to_visual_delta",
+        "target_public_demo_climax"
+      ],
+      "motion_target_ids": [
+        "motion_target_climax_scale_emphasis"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_duarte_remove_nonessential_data",
+            "derived_rule": "Each slide must declare the one decision-driving object before any proof detail is drawn.",
+            "observed_design_move": "The decisive claim is isolated first, then secondary evidence is delayed or routed away from the main canvas."
+          },
+          {
+            "id": "decomp_2_8_climax_object_scale_and_pause",
+            "derived_rule": "The climax slide must reserve the largest canvas zone for one native hero object before labels and secondary proof appear.",
+            "observed_design_move": "The strongest proof object expands while explanation waits until the focal object is understood."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_report_to_visual_delta",
+            "desired_behavior": "The full-skill arm shows a native before/after visual delta: the before side is visibly flat, the after side enlarges one supported proof object, removes nonessential labels, and routes detail to notes or trace.",
+            "slide_roles": [
+              "contrast",
+              "proof"
+            ]
+          },
+          {
+            "id": "target_public_demo_climax",
+            "desired_behavior": "The full-skill arm gives the climax the largest supported outcome object and makes the close a decision handoff with a visible public-blocked release gate.",
+            "slide_roles": [
+              "climax",
+              "close"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_climax_scale_emphasis",
+            "motion_role": "scale_emphasis",
+            "desired_behavior": "The climax should scale one native outcome object above prior proof objects and let minor labels become subordinate."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "vh_02_remove_competing_frames",
+      "principle": "visual_hierarchy",
+      "tutorial_rule": "Frames that do not carry meaning should not compete with the subject.",
+      "design_move": "Delete or fade secondary boxes, borders, and card shells around non-primary content.",
+      "ppt_operations": [
+        "delete secondary frames",
+        "reduce border weight",
+        "keep only the frame that defines the main comparison or crop"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "vh_02_a1",
+          "action_type": "remove_element",
+          "target_selector": {
+            "roles": [
+              "secondary_frame",
+              "decorative_container",
+              "redundant_card"
+            ]
+          },
+          "parameters": {
+            "max_remove_count": 6,
+            "preserve_if_contains_required_text": true
+          },
+          "fallback_strategy": "set stroke_width_px to 0 if the renderer cannot safely delete the object",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_source_brand_sanitized_case_evidence"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        },
+        {
+          "action_id": "vh_02_a2",
+          "action_type": "set_style",
+          "target_selector": {
+            "roles": [
+              "remaining_frame",
+              "supporting_container"
+            ]
+          },
+          "parameters": {
+            "stroke_width_px": 1,
+            "opacity": 0.35,
+            "fill": "transparent"
+          },
+          "fallback_strategy": "apply only opacity reduction if stroke controls are unavailable",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_source_brand_sanitized_case_evidence"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "decorative_container_count",
+          "operator": "<=",
+          "value": 1
+        },
+        {
+          "metric": "non_content_stroke_area_pct",
+          "operator": "<=",
+          "value": 3
+        }
+      ],
+      "anti_patterns": [
+        "wrap every point in a box because the tutorial mentioned grouping"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_duarte_remove_nonessential_data",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "visual_target_ids": [
+        "target_report_to_visual_delta"
+      ],
+      "motion_target_ids": [
+        "motion_target_before_after_reveal"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_duarte_remove_nonessential_data",
+            "derived_rule": "Each slide must declare the one decision-driving object before any proof detail is drawn.",
+            "observed_design_move": "The decisive claim is isolated first, then secondary evidence is delayed or routed away from the main canvas."
+          },
+          {
+            "id": "decomp_2_8_source_brand_sanitized_case_evidence",
+            "derived_rule": "Every proof object must use original naming, neutral shapes, and traceable source-boundary checks.",
+            "observed_design_move": "Commercial evidence supports the workflow claim while brand-specific surface details are removed."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_report_to_visual_delta",
+            "desired_behavior": "The full-skill arm shows a native before/after visual delta: the before side is visibly flat, the after side enlarges one supported proof object, removes nonessential labels, and routes detail to notes or trace.",
+            "slide_roles": [
+              "contrast",
+              "proof"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_before_after_reveal",
+            "motion_role": "before_after_reveal",
+            "desired_behavior": "The before thumbnail should reveal first, the after thumbnail should reveal second with a larger proof object, and the delta label should explain the edit."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "vh_03_z_order_guides_attention",
+      "principle": "visual_hierarchy",
+      "tutorial_rule": "Layer order should make the reading order obvious.",
+      "design_move": "Bring primary subject and active annotation forward; push context, shadows, and background back.",
+      "ppt_operations": [
+        "bring main subject to front",
+        "send context layer backward",
+        "place annotation above subject but below headline"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "vh_03_a1",
+          "action_type": "reorder_element",
+          "target_selector": {
+            "role": "primary_subject"
+          },
+          "parameters": {
+            "position": "front",
+            "relative_to": "secondary_visual"
+          },
+          "fallback_strategy": "increase z_index to highest visual z_index plus 1",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_type_hierarchy_readability_stack",
+              "decomp_2_8_design_first_code_second_pipeline"
+            ],
+            "visual_target_ids": [
+              "target_slide_mini_preview"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        },
+        {
+          "action_id": "vh_03_a2",
+          "action_type": "reorder_element",
+          "target_selector": {
+            "roles": [
+              "background_texture",
+              "context_image",
+              "shadow"
+            ]
+          },
+          "parameters": {
+            "position": "back",
+            "relative_to": "primary_subject"
+          },
+          "fallback_strategy": "set opacity to 0.4 when z-order is locked",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_type_hierarchy_readability_stack",
+              "decomp_2_8_design_first_code_second_pipeline"
+            ],
+            "visual_target_ids": [
+              "target_slide_mini_preview"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "primary_subject_z_index_rank",
+          "operator": ">=",
+          "value": 0.8
+        }
+      ],
+      "anti_patterns": [
+        "use animation order to fix a static z-order problem while the slide still opens cluttered"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_design_first_code_second_pipeline"
+      ],
+      "visual_target_ids": [
+        "target_slide_mini_preview"
+      ],
+      "motion_target_ids": [
+        "motion_target_proof_build"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_type_hierarchy_readability_stack",
+            "derived_rule": "Before generation, assign each text object to a type role with a minimum size and a maximum line length.",
+            "observed_design_move": "Headline, proof phrase, label, and note are separated by scale and placement instead of color alone."
+          },
+          {
+            "id": "decomp_2_8_design_first_code_second_pipeline",
+            "derived_rule": "Each slide role must receive selected decomposition units, executable memory bindings, and gate checks before native PPT code runs.",
+            "observed_design_move": "The design decision is named before implementation, so code renders a committed layout instead of improvising."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_slide_mini_preview",
+            "desired_behavior": "The full-skill arm includes original slide mini-previews built from native objects, showing selected memory ids, density budget, and release gate only where those controls clarify product behavior.",
+            "slide_roles": [
+              "setup",
+              "proof"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_proof_build",
+            "motion_role": "proof_build",
+            "desired_behavior": "The proof should build from headline to object to route marker, with a small pause between claim and evidence."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "vh_04_crop_to_decision_detail",
+      "principle": "visual_hierarchy",
+      "tutorial_rule": "If the audience needs to inspect a detail, crop to that detail instead of showing the full object small.",
+      "design_move": "Crop or zoom the media to the meaningful detail and move the uncropped reference to a smaller context slot.",
+      "ppt_operations": [
+        "crop media to subject bbox",
+        "zoom detail panel",
+        "move full reference into small context position"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "vh_04_a1",
+          "action_type": "crop_media",
+          "target_selector": {
+            "role": "primary_media"
+          },
+          "parameters": {
+            "crop_to_bbox_role": "decision_detail",
+            "padding_pct": 6,
+            "maintain_aspect_ratio": true
+          },
+          "fallback_strategy": "use the central 70 percent crop if no detail bbox is available",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps",
+              "decomp_2_8_source_brand_sanitized_case_evidence"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta",
+              "target_slide_mini_preview"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        },
+        {
+          "action_id": "vh_04_a2",
+          "action_type": "set_geometry",
+          "target_selector": {
+            "role": "primary_media"
+          },
+          "parameters": {
+            "x_pct": 8,
+            "y_pct": 14,
+            "width_pct": 60,
+            "height_pct": 68,
+            "anchor": "center_left"
+          },
+          "fallback_strategy": "fit within safe area while preserving aspect ratio",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps",
+              "decomp_2_8_source_brand_sanitized_case_evidence"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta",
+              "target_slide_mini_preview"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "decision_detail_area_in_view_pct",
+          "operator": ">=",
+          "value": 35
+        }
+      ],
+      "anti_patterns": [
+        "add a magnifier icon without increasing the inspectable detail size"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_makeover_split_text_into_visual_steps",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "visual_target_ids": [
+        "target_report_to_visual_delta",
+        "target_slide_mini_preview"
+      ],
+      "motion_target_ids": [
+        "motion_target_before_after_reveal"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_makeover_split_text_into_visual_steps",
+            "derived_rule": "Convert any long block into two to four native step objects with one visible delta per step.",
+            "observed_design_move": "A dense paragraph is split into a before state, an action, and an after state with fewer labels."
+          },
+          {
+            "id": "decomp_2_8_source_brand_sanitized_case_evidence",
+            "derived_rule": "Every proof object must use original naming, neutral shapes, and traceable source-boundary checks.",
+            "observed_design_move": "Commercial evidence supports the workflow claim while brand-specific surface details are removed."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_report_to_visual_delta",
+            "desired_behavior": "The full-skill arm shows a native before/after visual delta: the before side is visibly flat, the after side enlarges one supported proof object, removes nonessential labels, and routes detail to notes or trace.",
+            "slide_roles": [
+              "contrast",
+              "proof"
+            ]
+          },
+          {
+            "id": "target_slide_mini_preview",
+            "desired_behavior": "The full-skill arm includes original slide mini-previews built from native objects, showing selected memory ids, density budget, and release gate only where those controls clarify product behavior.",
+            "slide_roles": [
+              "setup",
+              "proof"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_before_after_reveal",
+            "motion_role": "before_after_reveal",
+            "desired_behavior": "The before thumbnail should reveal first, the after thumbnail should reveal second with a larger proof object, and the delta label should explain the edit."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "vh_05_labels_follow_visuals",
+      "principle": "visual_hierarchy",
+      "tutorial_rule": "Labels should explain the visual after the audience sees it, not compete with it at open.",
+      "design_move": "Hide labels on the first build, then reveal them after primary visual focus is established.",
+      "ppt_operations": [
+        "delay labels",
+        "fade in callouts after object reveal",
+        "keep first build mostly visual"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "vh_05_a1",
+          "action_type": "hide_element",
+          "target_selector": {
+            "roles": [
+              "annotation_label",
+              "callout_text"
+            ]
+          },
+          "parameters": {
+            "until_build_index": 2,
+            "opacity": 0
+          },
+          "fallback_strategy": "move labels to the next duplicated slide if build-level visibility is unsupported",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_climax_object_scale_and_pause"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget",
+              "target_transcript_headline_compression"
+            ],
+            "motion_target_ids": [
+              "motion_target_opening_attention_reset",
+              "motion_target_proof_build"
+            ]
+          }
+        },
+        {
+          "action_id": "vh_05_a2",
+          "action_type": "add_reveal_step",
+          "target_selector": {
+            "roles": [
+              "annotation_label",
+              "callout_text"
+            ]
+          },
+          "parameters": {
+            "build_index": 2,
+            "reveal_order": "after_primary_subject",
+            "trigger": "after_previous",
+            "initial_visibility": false
+          },
+          "fallback_strategy": "duplicate slide and make labels visible only on the duplicate",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_climax_object_scale_and_pause"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget",
+              "target_transcript_headline_compression"
+            ],
+            "motion_target_ids": [
+              "motion_target_opening_attention_reset",
+              "motion_target_proof_build"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "first_build_label_count",
+          "operator": "<=",
+          "value": 1
+        },
+        {
+          "metric": "label_reveal_after_primary_ms",
+          "operator": ">=",
+          "value": 250
+        }
+      ],
+      "anti_patterns": [
+        "show all labels at once and rely on the presenter to tell the audience where to look"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_duarte_remove_nonessential_data",
+        "decomp_2_8_climax_object_scale_and_pause"
+      ],
+      "visual_target_ids": [
+        "target_audio_rhythm_budget",
+        "target_transcript_headline_compression"
+      ],
+      "motion_target_ids": [
+        "motion_target_opening_attention_reset",
+        "motion_target_proof_build"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_duarte_remove_nonessential_data",
+            "derived_rule": "Each slide must declare the one decision-driving object before any proof detail is drawn.",
+            "observed_design_move": "The decisive claim is isolated first, then secondary evidence is delayed or routed away from the main canvas."
+          },
+          {
+            "id": "decomp_2_8_climax_object_scale_and_pause",
+            "derived_rule": "The climax slide must reserve the largest canvas zone for one native hero object before labels and secondary proof appear.",
+            "observed_design_move": "The strongest proof object expands while explanation waits until the focal object is understood."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_audio_rhythm_budget",
+            "desired_behavior": "The full-skill arm applies a rhythm budget: orientation beats stay sparse, proof beats add detail only after the focal object is established, and the climax has the largest proof object.",
+            "slide_roles": [
+              "cover",
+              "setup",
+              "proof",
+              "climax"
+            ]
+          },
+          {
+            "id": "target_transcript_headline_compression",
+            "desired_behavior": "The full-skill arm compresses long spoken or written explanation into one native headline, one short support line, and optional speaker-note or trace detail.",
+            "slide_roles": [
+              "setup",
+              "proof",
+              "close"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_opening_attention_reset",
+            "motion_role": "attention_reset",
+            "desired_behavior": "The opening should pause on a sparse native visual field, then reveal the editable headline before any proof marker appears."
+          },
+          {
+            "id": "motion_target_proof_build",
+            "motion_role": "proof_build",
+            "desired_behavior": "The proof should build from headline to object to route marker, with a small pause between claim and evidence."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "ws_01_create_outer_breathing_room",
+      "principle": "white_space",
+      "tutorial_rule": "The slide needs an intentional quiet margin before adding more content.",
+      "design_move": "Constrain content to a safe area and reserve a clear empty zone.",
+      "ppt_operations": [
+        "increase outer margins",
+        "shrink or reposition dense groups",
+        "reserve one empty zone"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "ws_01_a1",
+          "action_type": "set_geometry",
+          "target_selector": {
+            "role": "content_group"
+          },
+          "parameters": {
+            "x_pct": 8,
+            "y_pct": 10,
+            "width_pct": 84,
+            "height_pct": 78,
+            "anchor": "safe_area"
+          },
+          "fallback_strategy": "scale content group to fit within 8 percent margins",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_climax_object_scale_and_pause"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget",
+              "target_public_demo_climax"
+            ],
+            "motion_target_ids": [
+              "motion_target_opening_attention_reset"
+            ]
+          }
+        },
+        {
+          "action_id": "ws_01_a2",
+          "action_type": "distribute_spacing",
+          "target_selector": {
+            "roles": [
+              "content_block",
+              "visual_block"
+            ]
+          },
+          "parameters": {
+            "axis": "both",
+            "gap_pct": 4,
+            "min_margin_pct": 8,
+            "max_group_width_pct": 84
+          },
+          "fallback_strategy": "apply horizontal spacing only when vertical reflow would overflow",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_climax_object_scale_and_pause"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget",
+              "target_public_demo_climax"
+            ],
+            "motion_target_ids": [
+              "motion_target_opening_attention_reset"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "minimum_outer_margin_pct",
+          "operator": ">=",
+          "value": 6
+        },
+        {
+          "metric": "largest_empty_zone_pct",
+          "operator": ">=",
+          "value": 18
+        }
+      ],
+      "anti_patterns": [
+        "fill every remaining empty area with explanatory text or decoration"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_duarte_remove_nonessential_data",
+        "decomp_2_8_climax_object_scale_and_pause"
+      ],
+      "visual_target_ids": [
+        "target_audio_rhythm_budget",
+        "target_public_demo_climax"
+      ],
+      "motion_target_ids": [
+        "motion_target_opening_attention_reset"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_duarte_remove_nonessential_data",
+            "derived_rule": "Each slide must declare the one decision-driving object before any proof detail is drawn.",
+            "observed_design_move": "The decisive claim is isolated first, then secondary evidence is delayed or routed away from the main canvas."
+          },
+          {
+            "id": "decomp_2_8_climax_object_scale_and_pause",
+            "derived_rule": "The climax slide must reserve the largest canvas zone for one native hero object before labels and secondary proof appear.",
+            "observed_design_move": "The strongest proof object expands while explanation waits until the focal object is understood."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_audio_rhythm_budget",
+            "desired_behavior": "The full-skill arm applies a rhythm budget: orientation beats stay sparse, proof beats add detail only after the focal object is established, and the climax has the largest proof object.",
+            "slide_roles": [
+              "cover",
+              "setup",
+              "proof",
+              "climax"
+            ]
+          },
+          {
+            "id": "target_public_demo_climax",
+            "desired_behavior": "The full-skill arm gives the climax the largest supported outcome object and makes the close a decision handoff with a visible public-blocked release gate.",
+            "slide_roles": [
+              "climax",
+              "close"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_opening_attention_reset",
+            "motion_role": "attention_reset",
+            "desired_behavior": "The opening should pause on a sparse native visual field, then reveal the editable headline before any proof marker appears."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "ws_02_delete_redundant_boxes",
+      "principle": "white_space",
+      "tutorial_rule": "White space is often created by deleting containers, not by adding decoration.",
+      "design_move": "Remove card shells and redundant frames while preserving the content hierarchy.",
+      "ppt_operations": [
+        "delete secondary boxes",
+        "remove redundant fills",
+        "keep content aligned without containers"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "ws_02_a1",
+          "action_type": "remove_element",
+          "target_selector": {
+            "roles": [
+              "decorative_container",
+              "redundant_card",
+              "low_value_border"
+            ]
+          },
+          "parameters": {
+            "max_remove_count": 8,
+            "preserve_if_contains_required_text": true
+          },
+          "fallback_strategy": "set fill to transparent and stroke_width_px to 0",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        },
+        {
+          "action_id": "ws_02_a2",
+          "action_type": "align_elements",
+          "target_selector": {
+            "roles": [
+              "card_content",
+              "body_text",
+              "icon"
+            ]
+          },
+          "parameters": {
+            "axis": "left",
+            "reference": "content_group",
+            "snap_tolerance_pct": 1.5
+          },
+          "fallback_strategy": "leave current positions if alignment would overlap text",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "container_to_content_ratio",
+          "operator": "<=",
+          "value": 0.25
+        }
+      ],
+      "anti_patterns": [
+        "replace boxes with new separators that consume the same amount of attention"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_duarte_remove_nonessential_data"
+      ],
+      "visual_target_ids": [
+        "target_report_to_visual_delta"
+      ],
+      "motion_target_ids": [
+        "motion_target_before_after_reveal"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_duarte_remove_nonessential_data",
+            "derived_rule": "Each slide must declare the one decision-driving object before any proof detail is drawn.",
+            "observed_design_move": "The decisive claim is isolated first, then secondary evidence is delayed or routed away from the main canvas."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_report_to_visual_delta",
+            "desired_behavior": "The full-skill arm shows a native before/after visual delta: the before side is visibly flat, the after side enlarges one supported proof object, removes nonessential labels, and routes detail to notes or trace.",
+            "slide_roles": [
+              "contrast",
+              "proof"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_before_after_reveal",
+            "motion_role": "before_after_reveal",
+            "desired_behavior": "The before thumbnail should reveal first, the after thumbnail should reveal second with a larger proof object, and the delta label should explain the edit."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "ws_03_consolidate_labels",
+      "principle": "white_space",
+      "tutorial_rule": "Repeated small labels create noise; consolidate them into one legend or one staged callout.",
+      "design_move": "Group repeated labels, keep one legend, and reveal detail labels only when needed.",
+      "ppt_operations": [
+        "merge repeated labels",
+        "create one legend",
+        "delay detail labels"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "ws_03_a1",
+          "action_type": "group_elements",
+          "target_selector": {
+            "roles": [
+              "repeated_label",
+              "legend_marker"
+            ]
+          },
+          "parameters": {
+            "group_name": "consolidated_legend",
+            "preserve_relative_offsets": true
+          },
+          "fallback_strategy": "select labels by shared font size and repeated prefixes",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_type_hierarchy_readability_stack",
+              "decomp_2_8_makeover_split_text_into_visual_steps"
+            ],
+            "visual_target_ids": [
+              "target_transcript_headline_compression"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        },
+        {
+          "action_id": "ws_03_a2",
+          "action_type": "remove_element",
+          "target_selector": {
+            "roles": [
+              "duplicate_label"
+            ]
+          },
+          "parameters": {
+            "max_remove_count": 12,
+            "preserve_if_contains_required_text": false
+          },
+          "fallback_strategy": "hide duplicate labels until a later build",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_type_hierarchy_readability_stack",
+              "decomp_2_8_makeover_split_text_into_visual_steps"
+            ],
+            "visual_target_ids": [
+              "target_transcript_headline_compression"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        },
+        {
+          "action_id": "ws_03_a3",
+          "action_type": "set_geometry",
+          "target_selector": {
+            "role": "consolidated_legend"
+          },
+          "parameters": {
+            "x_pct": 70,
+            "y_pct": 14,
+            "width_pct": 22,
+            "height_pct": 18,
+            "anchor": "top_right"
+          },
+          "fallback_strategy": "place legend in the largest detected empty zone",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_type_hierarchy_readability_stack",
+              "decomp_2_8_makeover_split_text_into_visual_steps"
+            ],
+            "visual_target_ids": [
+              "target_transcript_headline_compression"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "visible_label_count_delta",
+          "operator": "<=",
+          "value": -3
+        },
+        {
+          "metric": "legend_overlap_count",
+          "operator": "==",
+          "value": 0
+        }
+      ],
+      "anti_patterns": [
+        "keep all micro-labels visible because each one is technically accurate"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_makeover_split_text_into_visual_steps"
+      ],
+      "visual_target_ids": [
+        "target_transcript_headline_compression"
+      ],
+      "motion_target_ids": [
+        "motion_target_proof_build"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_type_hierarchy_readability_stack",
+            "derived_rule": "Before generation, assign each text object to a type role with a minimum size and a maximum line length.",
+            "observed_design_move": "Headline, proof phrase, label, and note are separated by scale and placement instead of color alone."
+          },
+          {
+            "id": "decomp_2_8_makeover_split_text_into_visual_steps",
+            "derived_rule": "Convert any long block into two to four native step objects with one visible delta per step.",
+            "observed_design_move": "A dense paragraph is split into a before state, an action, and an after state with fewer labels."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_transcript_headline_compression",
+            "desired_behavior": "The full-skill arm compresses long spoken or written explanation into one native headline, one short support line, and optional speaker-note or trace detail.",
+            "slide_roles": [
+              "setup",
+              "proof",
+              "close"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_proof_build",
+            "motion_role": "proof_build",
+            "desired_behavior": "The proof should build from headline to object to route marker, with a small pause between claim and evidence."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "ws_04_align_to_fewer_axes",
+      "principle": "white_space",
+      "tutorial_rule": "Clean layouts use fewer axes and more consistent gaps.",
+      "design_move": "Align blocks to shared edges and normalize gutters.",
+      "ppt_operations": [
+        "left-align related blocks",
+        "snap baselines",
+        "distribute equal spacing"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "ws_04_a1",
+          "action_type": "align_elements",
+          "target_selector": {
+            "roles": [
+              "headline",
+              "body_text",
+              "callout_group"
+            ]
+          },
+          "parameters": {
+            "axis": "left",
+            "reference": "headline",
+            "snap_tolerance_pct": 2
+          },
+          "fallback_strategy": "align only text elements with the same parent group",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_type_hierarchy_readability_stack",
+              "decomp_2_8_design_first_code_second_pipeline"
+            ],
+            "visual_target_ids": [
+              "target_slide_mini_preview"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        },
+        {
+          "action_id": "ws_04_a2",
+          "action_type": "distribute_spacing",
+          "target_selector": {
+            "roles": [
+              "content_block"
+            ]
+          },
+          "parameters": {
+            "axis": "vertical",
+            "gap_pct": 3,
+            "min_margin_pct": 8,
+            "max_group_width_pct": 76
+          },
+          "fallback_strategy": "use current order and clamp to non-overlap gaps",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_type_hierarchy_readability_stack",
+              "decomp_2_8_design_first_code_second_pipeline"
+            ],
+            "visual_target_ids": [
+              "target_slide_mini_preview"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "distinct_left_edges_count",
+          "operator": "<=",
+          "value": 3
+        },
+        {
+          "metric": "minimum_interblock_gap_pct",
+          "operator": ">=",
+          "value": 2.5
+        }
+      ],
+      "anti_patterns": [
+        "manually nudge every object to a different optical position without a grid"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_design_first_code_second_pipeline"
+      ],
+      "visual_target_ids": [
+        "target_slide_mini_preview"
+      ],
+      "motion_target_ids": [
+        "motion_target_proof_build"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_type_hierarchy_readability_stack",
+            "derived_rule": "Before generation, assign each text object to a type role with a minimum size and a maximum line length.",
+            "observed_design_move": "Headline, proof phrase, label, and note are separated by scale and placement instead of color alone."
+          },
+          {
+            "id": "decomp_2_8_design_first_code_second_pipeline",
+            "derived_rule": "Each slide role must receive selected decomposition units, executable memory bindings, and gate checks before native PPT code runs.",
+            "observed_design_move": "The design decision is named before implementation, so code renders a committed layout instead of improvising."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_slide_mini_preview",
+            "desired_behavior": "The full-skill arm includes original slide mini-previews built from native objects, showing selected memory ids, density budget, and release gate only where those controls clarify product behavior.",
+            "slide_roles": [
+              "setup",
+              "proof"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_proof_build",
+            "motion_role": "proof_build",
+            "desired_behavior": "The proof should build from headline to object to route marker, with a small pause between claim and evidence."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "ws_05_reduce_background_noise",
+      "principle": "white_space",
+      "tutorial_rule": "Background texture and decorative fills should not consume the same contrast as content.",
+      "design_move": "Fade, blur, or remove low-value background decoration.",
+      "ppt_operations": [
+        "fade background texture",
+        "remove decorative fills",
+        "reduce contrast behind text"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "ws_05_a1",
+          "action_type": "set_style",
+          "target_selector": {
+            "roles": [
+              "background_texture",
+              "decorative_pattern"
+            ]
+          },
+          "parameters": {
+            "opacity": 0.18,
+            "contrast_delta": -0.35
+          },
+          "fallback_strategy": "remove texture if opacity is not supported",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_source_brand_sanitized_case_evidence"
+            ],
+            "visual_target_ids": [
+              "target_public_demo_climax"
+            ],
+            "motion_target_ids": [
+              "motion_target_climax_scale_emphasis"
+            ]
+          }
+        },
+        {
+          "action_id": "ws_05_a2",
+          "action_type": "set_style",
+          "target_selector": {
+            "role": "text_backplate"
+          },
+          "parameters": {
+            "fill": "transparent",
+            "stroke_width_px": 0
+          },
+          "fallback_strategy": "reduce fill opacity to 0.08 if transparent fill is unsupported",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_duarte_remove_nonessential_data",
+              "decomp_2_8_source_brand_sanitized_case_evidence"
+            ],
+            "visual_target_ids": [
+              "target_public_demo_climax"
+            ],
+            "motion_target_ids": [
+              "motion_target_climax_scale_emphasis"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "background_contrast_relative_to_body",
+          "operator": "<=",
+          "value": 0.45
+        }
+      ],
+      "anti_patterns": [
+        "add a translucent panel over the entire slide and call it white space"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_duarte_remove_nonessential_data",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "visual_target_ids": [
+        "target_public_demo_climax"
+      ],
+      "motion_target_ids": [
+        "motion_target_climax_scale_emphasis"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_duarte_remove_nonessential_data",
+            "derived_rule": "Each slide must declare the one decision-driving object before any proof detail is drawn.",
+            "observed_design_move": "The decisive claim is isolated first, then secondary evidence is delayed or routed away from the main canvas."
+          },
+          {
+            "id": "decomp_2_8_source_brand_sanitized_case_evidence",
+            "derived_rule": "Every proof object must use original naming, neutral shapes, and traceable source-boundary checks.",
+            "observed_design_move": "Commercial evidence supports the workflow claim while brand-specific surface details are removed."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_public_demo_climax",
+            "desired_behavior": "The full-skill arm gives the climax the largest supported outcome object and makes the close a decision handoff with a visible public-blocked release gate.",
+            "slide_roles": [
+              "climax",
+              "close"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_climax_scale_emphasis",
+            "motion_role": "scale_emphasis",
+            "desired_behavior": "The climax should scale one native outcome object above prior proof objects and let minor labels become subordinate."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "kr_01_one_idea_per_build",
+      "principle": "keynote_rhythm",
+      "tutorial_rule": "A Keynote-style explanation should reveal one idea per beat.",
+      "design_move": "Split dense content into ordered build steps.",
+      "ppt_operations": [
+        "create build sequence",
+        "show one idea per click",
+        "hide later ideas until their beat"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "kr_01_a1",
+          "action_type": "add_reveal_step",
+          "target_selector": {
+            "roles": [
+              "idea_block",
+              "step_group"
+            ]
+          },
+          "parameters": {
+            "build_index": 1,
+            "reveal_order": "semantic_order",
+            "trigger": "on_click",
+            "initial_visibility": false
+          },
+          "fallback_strategy": "duplicate the slide once per idea block",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps",
+              "decomp_2_8_design_first_code_second_pipeline"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget",
+              "target_transcript_headline_compression"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        },
+        {
+          "action_id": "kr_01_a2",
+          "action_type": "set_timing",
+          "target_selector": {
+            "roles": [
+              "idea_block",
+              "step_group"
+            ]
+          },
+          "parameters": {
+            "build_index": "auto_increment",
+            "delay_ms": 0,
+            "duration_ms": 260,
+            "after_previous": false
+          },
+          "fallback_strategy": "use slide transitions when build-level timing is unavailable",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps",
+              "decomp_2_8_design_first_code_second_pipeline"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget",
+              "target_transcript_headline_compression"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "max_new_idea_blocks_per_build",
+          "operator": "<=",
+          "value": 1
+        }
+      ],
+      "anti_patterns": [
+        "animate five unrelated bullets at the same time"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_makeover_split_text_into_visual_steps",
+        "decomp_2_8_design_first_code_second_pipeline"
+      ],
+      "visual_target_ids": [
+        "target_audio_rhythm_budget",
+        "target_transcript_headline_compression"
+      ],
+      "motion_target_ids": [
+        "motion_target_proof_build"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_makeover_split_text_into_visual_steps",
+            "derived_rule": "Convert any long block into two to four native step objects with one visible delta per step.",
+            "observed_design_move": "A dense paragraph is split into a before state, an action, and an after state with fewer labels."
+          },
+          {
+            "id": "decomp_2_8_design_first_code_second_pipeline",
+            "derived_rule": "Each slide role must receive selected decomposition units, executable memory bindings, and gate checks before native PPT code runs.",
+            "observed_design_move": "The design decision is named before implementation, so code renders a committed layout instead of improvising."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_audio_rhythm_budget",
+            "desired_behavior": "The full-skill arm applies a rhythm budget: orientation beats stay sparse, proof beats add detail only after the focal object is established, and the climax has the largest proof object.",
+            "slide_roles": [
+              "cover",
+              "setup",
+              "proof",
+              "climax"
+            ]
+          },
+          {
+            "id": "target_transcript_headline_compression",
+            "desired_behavior": "The full-skill arm compresses long spoken or written explanation into one native headline, one short support line, and optional speaker-note or trace detail.",
+            "slide_roles": [
+              "setup",
+              "proof",
+              "close"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_proof_build",
+            "motion_role": "proof_build",
+            "desired_behavior": "The proof should build from headline to object to route marker, with a small pause between claim and evidence."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "kr_02_setup_change_result",
+      "principle": "keynote_rhythm",
+      "tutorial_rule": "Complex transformations need setup, change, and result beats.",
+      "design_move": "Duplicate the slide into three states and change only the necessary elements per state.",
+      "ppt_operations": [
+        "duplicate slide for setup",
+        "duplicate slide for change",
+        "duplicate slide for result"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "kr_02_a1",
+          "action_type": "duplicate_slide",
+          "target_selector": {
+            "role": "current_slide"
+          },
+          "parameters": {
+            "source_slide": "current",
+            "new_slide_suffix": "_setup",
+            "carry_notes": true
+          },
+          "fallback_strategy": "create a new build index named setup",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        },
+        {
+          "action_id": "kr_02_a2",
+          "action_type": "duplicate_slide",
+          "target_selector": {
+            "role": "current_slide"
+          },
+          "parameters": {
+            "source_slide": "current",
+            "new_slide_suffix": "_change",
+            "carry_notes": true
+          },
+          "fallback_strategy": "create a new build index named change",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        },
+        {
+          "action_id": "kr_02_a3",
+          "action_type": "duplicate_slide",
+          "target_selector": {
+            "role": "current_slide"
+          },
+          "parameters": {
+            "source_slide": "current",
+            "new_slide_suffix": "_result",
+            "carry_notes": true
+          },
+          "fallback_strategy": "create a new build index named result",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "state_count_for_transformation",
+          "operator": ">=",
+          "value": 3
+        }
+      ],
+      "anti_patterns": [
+        "place setup, change, and result in three dense columns on one slide when the audience needs a sequence"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_makeover_split_text_into_visual_steps"
+      ],
+      "visual_target_ids": [
+        "target_report_to_visual_delta"
+      ],
+      "motion_target_ids": [
+        "motion_target_before_after_reveal"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_makeover_split_text_into_visual_steps",
+            "derived_rule": "Convert any long block into two to four native step objects with one visible delta per step.",
+            "observed_design_move": "A dense paragraph is split into a before state, an action, and an after state with fewer labels."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_report_to_visual_delta",
+            "desired_behavior": "The full-skill arm shows a native before/after visual delta: the before side is visibly flat, the after side enlarges one supported proof object, removes nonessential labels, and routes detail to notes or trace.",
+            "slide_roles": [
+              "contrast",
+              "proof"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_before_after_reveal",
+            "motion_role": "before_after_reveal",
+            "desired_behavior": "The before thumbnail should reveal first, the after thumbnail should reveal second with a larger proof object, and the delta label should explain the edit."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "kr_03_before_after_contrast",
+      "principle": "keynote_rhythm",
+      "tutorial_rule": "When teaching improvement, make the before/after contrast visible, not implied.",
+      "design_move": "Build a side-by-side or slide-pair comparison with matched scale and labels.",
+      "ppt_operations": [
+        "create before/after layout",
+        "match scale between states",
+        "label before and after clearly"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "kr_03_a1",
+          "action_type": "create_comparison_layout",
+          "target_selector": {
+            "roles": [
+              "before_state",
+              "after_state"
+            ]
+          },
+          "parameters": {
+            "mode": "side_by_side",
+            "left_label": "Before",
+            "right_label": "After",
+            "divider": "thin_center_rule",
+            "equalize_scale": true
+          },
+          "fallback_strategy": "duplicate slide and alternate before then after with matched geometry",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps",
+              "decomp_2_8_duarte_remove_nonessential_data"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        },
+        {
+          "action_id": "kr_03_a2",
+          "action_type": "set_geometry",
+          "target_selector": {
+            "role": "before_state"
+          },
+          "parameters": {
+            "x_pct": 6,
+            "y_pct": 18,
+            "width_pct": 40,
+            "height_pct": 62,
+            "anchor": "center_left"
+          },
+          "fallback_strategy": "fit before state into left safe area",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps",
+              "decomp_2_8_duarte_remove_nonessential_data"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        },
+        {
+          "action_id": "kr_03_a3",
+          "action_type": "set_geometry",
+          "target_selector": {
+            "role": "after_state"
+          },
+          "parameters": {
+            "x_pct": 54,
+            "y_pct": 18,
+            "width_pct": 40,
+            "height_pct": 62,
+            "anchor": "center_right"
+          },
+          "fallback_strategy": "fit after state into right safe area",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps",
+              "decomp_2_8_duarte_remove_nonessential_data"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "before_after_scale_delta_pct",
+          "operator": "<=",
+          "value": 5
+        },
+        {
+          "metric": "comparison_label_count",
+          "operator": "==",
+          "value": 2
+        }
+      ],
+      "anti_patterns": [
+        "describe improvement in a subtitle without showing the old and new states"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_makeover_split_text_into_visual_steps",
+        "decomp_2_8_duarte_remove_nonessential_data"
+      ],
+      "visual_target_ids": [
+        "target_report_to_visual_delta"
+      ],
+      "motion_target_ids": [
+        "motion_target_before_after_reveal"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_makeover_split_text_into_visual_steps",
+            "derived_rule": "Convert any long block into two to four native step objects with one visible delta per step.",
+            "observed_design_move": "A dense paragraph is split into a before state, an action, and an after state with fewer labels."
+          },
+          {
+            "id": "decomp_2_8_duarte_remove_nonessential_data",
+            "derived_rule": "Each slide must declare the one decision-driving object before any proof detail is drawn.",
+            "observed_design_move": "The decisive claim is isolated first, then secondary evidence is delayed or routed away from the main canvas."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_report_to_visual_delta",
+            "desired_behavior": "The full-skill arm shows a native before/after visual delta: the before side is visibly flat, the after side enlarges one supported proof object, removes nonessential labels, and routes detail to notes or trace.",
+            "slide_roles": [
+              "contrast",
+              "proof"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_before_after_reveal",
+            "motion_role": "before_after_reveal",
+            "desired_behavior": "The before thumbnail should reveal first, the after thumbnail should reveal second with a larger proof object, and the delta label should explain the edit."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "kr_04_hold_visual_before_explanation",
+      "principle": "keynote_rhythm",
+      "tutorial_rule": "Let the audience see the visual before the explanation arrives.",
+      "design_move": "Create an initial visual-only beat, then reveal explanation text.",
+      "ppt_operations": [
+        "hide explanation text on first beat",
+        "reveal text after visual hold",
+        "use a short pause before labels"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "kr_04_a1",
+          "action_type": "hide_element",
+          "target_selector": {
+            "roles": [
+              "explanation_text",
+              "bullet_list",
+              "caption"
+            ]
+          },
+          "parameters": {
+            "until_build_index": 2,
+            "opacity": 0
+          },
+          "fallback_strategy": "move explanation text to duplicate slide",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_climax_object_scale_and_pause",
+              "decomp_2_8_duarte_remove_nonessential_data"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget",
+              "target_public_demo_climax"
+            ],
+            "motion_target_ids": [
+              "motion_target_opening_attention_reset",
+              "motion_target_climax_scale_emphasis"
+            ]
+          }
+        },
+        {
+          "action_id": "kr_04_a2",
+          "action_type": "set_timing",
+          "target_selector": {
+            "role": "explanation_text"
+          },
+          "parameters": {
+            "build_index": 2,
+            "delay_ms": 500,
+            "duration_ms": 240,
+            "after_previous": true
+          },
+          "fallback_strategy": "use a 500 ms slide transition delay before duplicate slide",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_climax_object_scale_and_pause",
+              "decomp_2_8_duarte_remove_nonessential_data"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget",
+              "target_public_demo_climax"
+            ],
+            "motion_target_ids": [
+              "motion_target_opening_attention_reset",
+              "motion_target_climax_scale_emphasis"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "visual_only_hold_ms",
+          "operator": ">=",
+          "value": 500
+        }
+      ],
+      "anti_patterns": [
+        "open the slide with the explanation already covering the visual"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_climax_object_scale_and_pause",
+        "decomp_2_8_duarte_remove_nonessential_data"
+      ],
+      "visual_target_ids": [
+        "target_audio_rhythm_budget",
+        "target_public_demo_climax"
+      ],
+      "motion_target_ids": [
+        "motion_target_opening_attention_reset",
+        "motion_target_climax_scale_emphasis"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_climax_object_scale_and_pause",
+            "derived_rule": "The climax slide must reserve the largest canvas zone for one native hero object before labels and secondary proof appear.",
+            "observed_design_move": "The strongest proof object expands while explanation waits until the focal object is understood."
+          },
+          {
+            "id": "decomp_2_8_duarte_remove_nonessential_data",
+            "derived_rule": "Each slide must declare the one decision-driving object before any proof detail is drawn.",
+            "observed_design_move": "The decisive claim is isolated first, then secondary evidence is delayed or routed away from the main canvas."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_audio_rhythm_budget",
+            "desired_behavior": "The full-skill arm applies a rhythm budget: orientation beats stay sparse, proof beats add detail only after the focal object is established, and the climax has the largest proof object.",
+            "slide_roles": [
+              "cover",
+              "setup",
+              "proof",
+              "climax"
+            ]
+          },
+          {
+            "id": "target_public_demo_climax",
+            "desired_behavior": "The full-skill arm gives the climax the largest supported outcome object and makes the close a decision handoff with a visible public-blocked release gate.",
+            "slide_roles": [
+              "climax",
+              "close"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_opening_attention_reset",
+            "motion_role": "attention_reset",
+            "desired_behavior": "The opening should pause on a sparse native visual field, then reveal the editable headline before any proof marker appears."
+          },
+          {
+            "id": "motion_target_climax_scale_emphasis",
+            "motion_role": "scale_emphasis",
+            "desired_behavior": "The climax should scale one native outcome object above prior proof objects and let minor labels become subordinate."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "kr_05_state_change_by_duplication",
+      "principle": "keynote_rhythm",
+      "tutorial_rule": "Important state changes are clearer as duplicate-slide builds than as overloaded single-slide animations.",
+      "design_move": "Duplicate the slide and change one state variable per duplicate.",
+      "ppt_operations": [
+        "duplicate slide",
+        "change one variable",
+        "use consistent transition"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "kr_05_a1",
+          "action_type": "duplicate_slide",
+          "target_selector": {
+            "role": "current_slide"
+          },
+          "parameters": {
+            "source_slide": "current",
+            "new_slide_suffix": "_state_change",
+            "carry_notes": true
+          },
+          "fallback_strategy": "create a build step and hide all changed elements until that step",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_design_first_code_second_pipeline",
+              "decomp_2_8_makeover_split_text_into_visual_steps"
+            ],
+            "visual_target_ids": [
+              "target_slide_mini_preview",
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal",
+              "motion_target_release_gate_handoff"
+            ]
+          }
+        },
+        {
+          "action_id": "kr_05_a2",
+          "action_type": "set_transition",
+          "target_selector": {
+            "role": "state_change_slide"
+          },
+          "parameters": {
+            "transition": "morph_or_fade",
+            "duration_ms": 450,
+            "advance_on_click": true
+          },
+          "fallback_strategy": "use fade transition at 300 ms if morph is unavailable",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_design_first_code_second_pipeline",
+              "decomp_2_8_makeover_split_text_into_visual_steps"
+            ],
+            "visual_target_ids": [
+              "target_slide_mini_preview",
+              "target_report_to_visual_delta"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal",
+              "motion_target_release_gate_handoff"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "changed_semantic_variables_per_state",
+          "operator": "<=",
+          "value": 1
+        }
+      ],
+      "anti_patterns": [
+        "stack all states on one slide and rely on manual narration to separate them"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_design_first_code_second_pipeline",
+        "decomp_2_8_makeover_split_text_into_visual_steps"
+      ],
+      "visual_target_ids": [
+        "target_slide_mini_preview",
+        "target_report_to_visual_delta"
+      ],
+      "motion_target_ids": [
+        "motion_target_before_after_reveal",
+        "motion_target_release_gate_handoff"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_design_first_code_second_pipeline",
+            "derived_rule": "Each slide role must receive selected decomposition units, executable memory bindings, and gate checks before native PPT code runs.",
+            "observed_design_move": "The design decision is named before implementation, so code renders a committed layout instead of improvising."
+          },
+          {
+            "id": "decomp_2_8_makeover_split_text_into_visual_steps",
+            "derived_rule": "Convert any long block into two to four native step objects with one visible delta per step.",
+            "observed_design_move": "A dense paragraph is split into a before state, an action, and an after state with fewer labels."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_slide_mini_preview",
+            "desired_behavior": "The full-skill arm includes original slide mini-previews built from native objects, showing selected memory ids, density budget, and release gate only where those controls clarify product behavior.",
+            "slide_roles": [
+              "setup",
+              "proof"
+            ]
+          },
+          {
+            "id": "target_report_to_visual_delta",
+            "desired_behavior": "The full-skill arm shows a native before/after visual delta: the before side is visibly flat, the after side enlarges one supported proof object, removes nonessential labels, and routes detail to notes or trace.",
+            "slide_roles": [
+              "contrast",
+              "proof"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_before_after_reveal",
+            "motion_role": "before_after_reveal",
+            "desired_behavior": "The before thumbnail should reveal first, the after thumbnail should reveal second with a larger proof object, and the delta label should explain the edit."
+          },
+          {
+            "id": "motion_target_release_gate_handoff",
+            "motion_role": "release_handoff",
+            "desired_behavior": "The close should create a handoff from outcome state to public-blocked release gate and one next decision line."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "mp_01_object_before_label",
+      "principle": "motion_pacing",
+      "tutorial_rule": "Motion should reveal the object before it reveals the label.",
+      "design_move": "Animate the visual first, then fade in its label after a short delay.",
+      "ppt_operations": [
+        "move or fade object first",
+        "delay label",
+        "fade label after object settles"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "mp_01_a1",
+          "action_type": "add_animation",
+          "target_selector": {
+            "role": "primary_subject"
+          },
+          "parameters": {
+            "effect": "fade_in_or_move_in",
+            "duration_ms": 420,
+            "delay_ms": 0,
+            "easing": "ease_out",
+            "direction": "reading_flow"
+          },
+          "fallback_strategy": "use fade_in at 300 ms if motion paths are unsupported",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_climax_object_scale_and_pause",
+              "decomp_2_8_duarte_remove_nonessential_data"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget",
+              "target_transcript_headline_compression"
+            ],
+            "motion_target_ids": [
+              "motion_target_opening_attention_reset",
+              "motion_target_proof_build"
+            ]
+          }
+        },
+        {
+          "action_id": "mp_01_a2",
+          "action_type": "add_animation",
+          "target_selector": {
+            "role": "annotation_label"
+          },
+          "parameters": {
+            "effect": "fade_in",
+            "duration_ms": 220,
+            "delay_ms": 280,
+            "easing": "ease_out",
+            "direction": "none"
+          },
+          "fallback_strategy": "show label on next click if delay controls are unavailable",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_climax_object_scale_and_pause",
+              "decomp_2_8_duarte_remove_nonessential_data"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget",
+              "target_transcript_headline_compression"
+            ],
+            "motion_target_ids": [
+              "motion_target_opening_attention_reset",
+              "motion_target_proof_build"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "label_start_after_object_start_ms",
+          "operator": ">=",
+          "value": 250
+        }
+      ],
+      "anti_patterns": [
+        "start labels and object motion at the same timestamp when they explain different things"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_climax_object_scale_and_pause",
+        "decomp_2_8_duarte_remove_nonessential_data"
+      ],
+      "visual_target_ids": [
+        "target_audio_rhythm_budget",
+        "target_transcript_headline_compression"
+      ],
+      "motion_target_ids": [
+        "motion_target_opening_attention_reset",
+        "motion_target_proof_build"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_climax_object_scale_and_pause",
+            "derived_rule": "The climax slide must reserve the largest canvas zone for one native hero object before labels and secondary proof appear.",
+            "observed_design_move": "The strongest proof object expands while explanation waits until the focal object is understood."
+          },
+          {
+            "id": "decomp_2_8_duarte_remove_nonessential_data",
+            "derived_rule": "Each slide must declare the one decision-driving object before any proof detail is drawn.",
+            "observed_design_move": "The decisive claim is isolated first, then secondary evidence is delayed or routed away from the main canvas."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_audio_rhythm_budget",
+            "desired_behavior": "The full-skill arm applies a rhythm budget: orientation beats stay sparse, proof beats add detail only after the focal object is established, and the climax has the largest proof object.",
+            "slide_roles": [
+              "cover",
+              "setup",
+              "proof",
+              "climax"
+            ]
+          },
+          {
+            "id": "target_transcript_headline_compression",
+            "desired_behavior": "The full-skill arm compresses long spoken or written explanation into one native headline, one short support line, and optional speaker-note or trace detail.",
+            "slide_roles": [
+              "setup",
+              "proof",
+              "close"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_opening_attention_reset",
+            "motion_role": "attention_reset",
+            "desired_behavior": "The opening should pause on a sparse native visual field, then reveal the editable headline before any proof marker appears."
+          },
+          {
+            "id": "motion_target_proof_build",
+            "motion_role": "proof_build",
+            "desired_behavior": "The proof should build from headline to object to route marker, with a small pause between claim and evidence."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "mp_02_minor_changes_are_short",
+      "principle": "motion_pacing",
+      "tutorial_rule": "Minor supporting changes should be fast enough not to feel like the main event.",
+      "design_move": "Use short fades for secondary labels, icons, and emphasis marks.",
+      "ppt_operations": [
+        "short fade for secondary content",
+        "avoid long motion for minor items",
+        "keep emphasis quick"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "mp_02_a1",
+          "action_type": "add_animation",
+          "target_selector": {
+            "roles": [
+              "secondary_label",
+              "small_icon",
+              "emphasis_mark"
+            ]
+          },
+          "parameters": {
+            "effect": "fade_in",
+            "duration_ms": 160,
+            "delay_ms": 120,
+            "easing": "linear",
+            "direction": "none"
+          },
+          "fallback_strategy": "make secondary content appear on click with no motion",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_type_hierarchy_readability_stack"
+            ],
+            "visual_target_ids": [
+              "target_transcript_headline_compression"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "secondary_animation_duration_ms",
+          "operator": "<=",
+          "value": 220
+        }
+      ],
+      "anti_patterns": [
+        "give every small label the same long entrance as the primary subject"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_type_hierarchy_readability_stack"
+      ],
+      "visual_target_ids": [
+        "target_transcript_headline_compression"
+      ],
+      "motion_target_ids": [
+        "motion_target_proof_build"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_type_hierarchy_readability_stack",
+            "derived_rule": "Before generation, assign each text object to a type role with a minimum size and a maximum line length.",
+            "observed_design_move": "Headline, proof phrase, label, and note are separated by scale and placement instead of color alone."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_transcript_headline_compression",
+            "desired_behavior": "The full-skill arm compresses long spoken or written explanation into one native headline, one short support line, and optional speaker-note or trace detail.",
+            "slide_roles": [
+              "setup",
+              "proof",
+              "close"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_proof_build",
+            "motion_role": "proof_build",
+            "desired_behavior": "The proof should build from headline to object to route marker, with a small pause between claim and evidence."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "mp_03_stagger_dependencies",
+      "principle": "motion_pacing",
+      "tutorial_rule": "Dependent elements should enter in a staggered sequence, not simultaneously.",
+      "design_move": "Stagger callouts, arrows, and labels by small intervals after the anchor object.",
+      "ppt_operations": [
+        "stagger labels by 150 to 350 ms",
+        "reveal arrows before text",
+        "keep dependent items grouped in order"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "mp_03_a1",
+          "action_type": "add_reveal_step",
+          "target_selector": {
+            "roles": [
+              "arrow",
+              "callout_label",
+              "detail_marker"
+            ]
+          },
+          "parameters": {
+            "build_index": 2,
+            "reveal_order": "arrow_marker_label",
+            "trigger": "after_previous",
+            "initial_visibility": false
+          },
+          "fallback_strategy": "use separate duplicate slides for arrow, marker, and label",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps",
+              "decomp_2_8_design_first_code_second_pipeline"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        },
+        {
+          "action_id": "mp_03_a2",
+          "action_type": "set_timing",
+          "target_selector": {
+            "roles": [
+              "arrow",
+              "callout_label",
+              "detail_marker"
+            ]
+          },
+          "parameters": {
+            "build_index": 2,
+            "delay_ms": "stagger_200",
+            "duration_ms": 180,
+            "after_previous": true
+          },
+          "fallback_strategy": "apply fixed 200 ms delay between elements in current z-order",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_makeover_split_text_into_visual_steps",
+              "decomp_2_8_design_first_code_second_pipeline"
+            ],
+            "visual_target_ids": [
+              "target_audio_rhythm_budget"
+            ],
+            "motion_target_ids": [
+              "motion_target_proof_build"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "dependent_element_stagger_ms",
+          "operator": ">=",
+          "value": 150
+        },
+        {
+          "metric": "dependent_element_stagger_ms",
+          "operator": "<=",
+          "value": 350
+        }
+      ],
+      "anti_patterns": [
+        "make all arrows, dots, and text appear together"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_makeover_split_text_into_visual_steps",
+        "decomp_2_8_design_first_code_second_pipeline"
+      ],
+      "visual_target_ids": [
+        "target_audio_rhythm_budget"
+      ],
+      "motion_target_ids": [
+        "motion_target_proof_build"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_makeover_split_text_into_visual_steps",
+            "derived_rule": "Convert any long block into two to four native step objects with one visible delta per step.",
+            "observed_design_move": "A dense paragraph is split into a before state, an action, and an after state with fewer labels."
+          },
+          {
+            "id": "decomp_2_8_design_first_code_second_pipeline",
+            "derived_rule": "Each slide role must receive selected decomposition units, executable memory bindings, and gate checks before native PPT code runs.",
+            "observed_design_move": "The design decision is named before implementation, so code renders a committed layout instead of improvising."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_audio_rhythm_budget",
+            "desired_behavior": "The full-skill arm applies a rhythm budget: orientation beats stay sparse, proof beats add detail only after the focal object is established, and the climax has the largest proof object.",
+            "slide_roles": [
+              "cover",
+              "setup",
+              "proof",
+              "climax"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_proof_build",
+            "motion_role": "proof_build",
+            "desired_behavior": "The proof should build from headline to object to route marker, with a small pause between claim and evidence."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "mp_04_pause_after_major_reveal",
+      "principle": "motion_pacing",
+      "tutorial_rule": "Major reveals need a comprehension pause before the next information layer.",
+      "design_move": "Hold after revealing the main result before adding labels or secondary evidence.",
+      "ppt_operations": [
+        "pause after result reveal",
+        "delay secondary evidence",
+        "separate result and explanation beats"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "mp_04_a1",
+          "action_type": "set_timing",
+          "target_selector": {
+            "role": "major_reveal"
+          },
+          "parameters": {
+            "build_index": "major_reveal",
+            "delay_ms": 0,
+            "duration_ms": 420,
+            "after_previous": false
+          },
+          "fallback_strategy": "use a separate slide for the major reveal",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_climax_object_scale_and_pause"
+            ],
+            "visual_target_ids": [
+              "target_public_demo_climax",
+              "target_audio_rhythm_budget"
+            ],
+            "motion_target_ids": [
+              "motion_target_climax_scale_emphasis"
+            ]
+          }
+        },
+        {
+          "action_id": "mp_04_a2",
+          "action_type": "set_timing",
+          "target_selector": {
+            "roles": [
+              "secondary_evidence",
+              "explanation_text"
+            ]
+          },
+          "parameters": {
+            "build_index": "after_major_reveal",
+            "delay_ms": 700,
+            "duration_ms": 220,
+            "after_previous": true
+          },
+          "fallback_strategy": "advance on click only after major reveal slide",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_climax_object_scale_and_pause"
+            ],
+            "visual_target_ids": [
+              "target_public_demo_climax",
+              "target_audio_rhythm_budget"
+            ],
+            "motion_target_ids": [
+              "motion_target_climax_scale_emphasis"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "post_major_reveal_hold_ms",
+          "operator": ">=",
+          "value": 650
+        }
+      ],
+      "anti_patterns": [
+        "reveal the result and immediately cover it with explanatory text"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_climax_object_scale_and_pause"
+      ],
+      "visual_target_ids": [
+        "target_public_demo_climax",
+        "target_audio_rhythm_budget"
+      ],
+      "motion_target_ids": [
+        "motion_target_climax_scale_emphasis"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_climax_object_scale_and_pause",
+            "derived_rule": "The climax slide must reserve the largest canvas zone for one native hero object before labels and secondary proof appear.",
+            "observed_design_move": "The strongest proof object expands while explanation waits until the focal object is understood."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_public_demo_climax",
+            "desired_behavior": "The full-skill arm gives the climax the largest supported outcome object and makes the close a decision handoff with a visible public-blocked release gate.",
+            "slide_roles": [
+              "climax",
+              "close"
+            ]
+          },
+          {
+            "id": "target_audio_rhythm_budget",
+            "desired_behavior": "The full-skill arm applies a rhythm budget: orientation beats stay sparse, proof beats add detail only after the focal object is established, and the climax has the largest proof object.",
+            "slide_roles": [
+              "cover",
+              "setup",
+              "proof",
+              "climax"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_climax_scale_emphasis",
+            "motion_role": "scale_emphasis",
+            "desired_behavior": "The climax should scale one native outcome object above prior proof objects and let minor labels become subordinate."
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "mp_05_motion_follows_causal_or_reading_flow",
+      "principle": "motion_pacing",
+      "tutorial_rule": "Motion direction should match the story logic: cause to effect, before to after, or left-to-right reading.",
+      "design_move": "Set motion paths and reveal order to follow the conceptual flow.",
+      "ppt_operations": [
+        "move from cause to effect",
+        "reveal before state before after state",
+        "animate along reading direction"
+      ],
+      "renderer_actions": [
+        {
+          "action_id": "mp_05_a1",
+          "action_type": "add_animation",
+          "target_selector": {
+            "role": "flow_arrow"
+          },
+          "parameters": {
+            "effect": "wipe_or_draw",
+            "duration_ms": 360,
+            "delay_ms": 0,
+            "easing": "ease_in_out",
+            "direction": "cause_to_effect"
+          },
+          "fallback_strategy": "fade in the arrow from start marker to end marker order",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_design_first_code_second_pipeline",
+              "decomp_2_8_source_brand_sanitized_case_evidence"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta",
+              "target_slide_mini_preview"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal",
+              "motion_target_release_gate_handoff"
+            ]
+          }
+        },
+        {
+          "action_id": "mp_05_a2",
+          "action_type": "add_reveal_step",
+          "target_selector": {
+            "roles": [
+              "cause_block",
+              "effect_block"
+            ]
+          },
+          "parameters": {
+            "build_index": 1,
+            "reveal_order": "cause_then_effect",
+            "trigger": "on_click",
+            "initial_visibility": false
+          },
+          "fallback_strategy": "place cause on current slide and effect on duplicate slide",
+          "traceability": {
+            "source_rule_ids": [
+              "decomp_2_8_design_first_code_second_pipeline",
+              "decomp_2_8_source_brand_sanitized_case_evidence"
+            ],
+            "visual_target_ids": [
+              "target_report_to_visual_delta",
+              "target_slide_mini_preview"
+            ],
+            "motion_target_ids": [
+              "motion_target_before_after_reveal",
+              "motion_target_release_gate_handoff"
+            ]
+          }
+        }
+      ],
+      "acceptance_checks": [
+        {
+          "metric": "flow_order_matches_semantic_order",
+          "operator": "==",
+          "value": true
+        }
+      ],
+      "anti_patterns": [
+        "animate from right to left when the slide labels read before to after from left to right"
+      ],
+      "source_rule_ids": [
+        "decomp_2_8_design_first_code_second_pipeline",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "visual_target_ids": [
+        "target_report_to_visual_delta",
+        "target_slide_mini_preview"
+      ],
+      "motion_target_ids": [
+        "motion_target_before_after_reveal",
+        "motion_target_release_gate_handoff"
+      ],
+      "source_lineage": {
+        "tutorial_rules": [
+          {
+            "id": "decomp_2_8_design_first_code_second_pipeline",
+            "derived_rule": "Each slide role must receive selected decomposition units, executable memory bindings, and gate checks before native PPT code runs.",
+            "observed_design_move": "The design decision is named before implementation, so code renders a committed layout instead of improvising."
+          },
+          {
+            "id": "decomp_2_8_source_brand_sanitized_case_evidence",
+            "derived_rule": "Every proof object must use original naming, neutral shapes, and traceable source-boundary checks.",
+            "observed_design_move": "Commercial evidence supports the workflow claim while brand-specific surface details are removed."
+          }
+        ],
+        "visual_targets": [
+          {
+            "id": "target_report_to_visual_delta",
+            "desired_behavior": "The full-skill arm shows a native before/after visual delta: the before side is visibly flat, the after side enlarges one supported proof object, removes nonessential labels, and routes detail to notes or trace.",
+            "slide_roles": [
+              "contrast",
+              "proof"
+            ]
+          },
+          {
+            "id": "target_slide_mini_preview",
+            "desired_behavior": "The full-skill arm includes original slide mini-previews built from native objects, showing selected memory ids, density budget, and release gate only where those controls clarify product behavior.",
+            "slide_roles": [
+              "setup",
+              "proof"
+            ]
+          }
+        ],
+        "motion_targets": [
+          {
+            "id": "motion_target_before_after_reveal",
+            "motion_role": "before_after_reveal",
+            "desired_behavior": "The before thumbnail should reveal first, the after thumbnail should reveal second with a larger proof object, and the delta label should explain the edit."
+          },
+          {
+            "id": "motion_target_release_gate_handoff",
+            "motion_role": "release_handoff",
+            "desired_behavior": "The close should create a handoff from outcome state to public-blocked release gate and one next decision line."
+          }
+        ]
+      }
+    }
+  ],
+  "coverage_matrix": {
+    "visual_hierarchy": {
+      "rule_ids": [
+        "vh_01_primary_subject_first_read",
+        "vh_02_remove_competing_frames",
+        "vh_03_z_order_guides_attention",
+        "vh_04_crop_to_decision_detail",
+        "vh_05_labels_follow_visuals"
+      ],
+      "required_action_types_covered": [
+        "select_element",
+        "set_geometry",
+        "set_style",
+        "remove_element",
+        "reorder_element",
+        "crop_media",
+        "hide_element",
+        "add_reveal_step"
+      ]
+    },
+    "white_space": {
+      "rule_ids": [
+        "ws_01_create_outer_breathing_room",
+        "ws_02_delete_redundant_boxes",
+        "ws_03_consolidate_labels",
+        "ws_04_align_to_fewer_axes",
+        "ws_05_reduce_background_noise"
+      ],
+      "required_action_types_covered": [
+        "set_geometry",
+        "distribute_spacing",
+        "remove_element",
+        "align_elements",
+        "group_elements",
+        "set_style"
+      ]
+    },
+    "keynote_rhythm": {
+      "rule_ids": [
+        "kr_01_one_idea_per_build",
+        "kr_02_setup_change_result",
+        "kr_03_before_after_contrast",
+        "kr_04_hold_visual_before_explanation",
+        "kr_05_state_change_by_duplication"
+      ],
+      "required_action_types_covered": [
+        "add_reveal_step",
+        "set_timing",
+        "duplicate_slide",
+        "create_comparison_layout",
+        "set_geometry",
+        "hide_element",
+        "set_transition"
+      ]
+    },
+    "motion_pacing": {
+      "rule_ids": [
+        "mp_01_object_before_label",
+        "mp_02_minor_changes_are_short",
+        "mp_03_stagger_dependencies",
+        "mp_04_pause_after_major_reveal",
+        "mp_05_motion_follows_causal_or_reading_flow"
+      ],
+      "required_action_types_covered": [
+        "add_animation",
+        "add_reveal_step",
+        "set_timing"
+      ]
+    }
+  },
+  "open_reconciliation_tasks": [
+    "Replace role-based selectors with concrete slide element ids when the renderer emits a slide object manifest.",
+    "Bind action parameters to measured layout geometry once Part C slide-story contracts and Part D scene compiler structures exist.",
+    "Keep public release blocked until native PPT render checks prove these actions execute on generated slides."
+  ],
+  "stage_policy": "part_b_reconciled_tutorial_to_renderer_actions_only",
+  "artifact_scope": {
+    "goal": "Reconcile tutorial, visual learning, and motion learning inputs into renderer-action mappings for native PPT generation.",
+    "does_not_start": [
+      "part_c_slide_story",
+      "part_d_scene_compiler",
+      "public_release"
+    ],
+    "quality_gate": "Every tutorial rule mapping must resolve to executable renderer_actions and trace back to at least one tutorial unit, visual target, and motion target."
+  },
+  "input_id_registry": {
+    "source_rule_ids": [
+      "decomp_2_8_climax_object_scale_and_pause",
+      "decomp_2_8_design_first_code_second_pipeline",
+      "decomp_2_8_duarte_remove_nonessential_data",
+      "decomp_2_8_makeover_split_text_into_visual_steps",
+      "decomp_2_8_source_brand_sanitized_case_evidence",
+      "decomp_2_8_type_hierarchy_readability_stack"
+    ],
+    "visual_target_ids": [
+      "target_audio_rhythm_budget",
+      "target_public_demo_climax",
+      "target_report_to_visual_delta",
+      "target_slide_mini_preview",
+      "target_transcript_headline_compression"
+    ],
+    "motion_target_ids": [
+      "motion_target_before_after_reveal",
+      "motion_target_climax_scale_emphasis",
+      "motion_target_opening_attention_reset",
+      "motion_target_proof_build",
+      "motion_target_release_gate_handoff"
+    ]
+  },
+  "traceability_summary": {
+    "rule_count": 20,
+    "renderer_action_count": 43,
+    "source_rule_ids_covered": [
+      "decomp_2_8_climax_object_scale_and_pause",
+      "decomp_2_8_design_first_code_second_pipeline",
+      "decomp_2_8_duarte_remove_nonessential_data",
+      "decomp_2_8_makeover_split_text_into_visual_steps",
+      "decomp_2_8_source_brand_sanitized_case_evidence",
+      "decomp_2_8_type_hierarchy_readability_stack"
+    ],
+    "visual_target_ids_covered": [
+      "target_audio_rhythm_budget",
+      "target_public_demo_climax",
+      "target_report_to_visual_delta",
+      "target_slide_mini_preview",
+      "target_transcript_headline_compression"
+    ],
+    "motion_target_ids_covered": [
+      "motion_target_before_after_reveal",
+      "motion_target_climax_scale_emphasis",
+      "motion_target_opening_attention_reset",
+      "motion_target_proof_build",
+      "motion_target_release_gate_handoff"
+    ],
+    "coverage_counts_by_input_id": {
+      "decomp_2_8_climax_object_scale_and_pause": 6,
+      "decomp_2_8_design_first_code_second_pipeline": 6,
+      "decomp_2_8_duarte_remove_nonessential_data": 9,
+      "decomp_2_8_makeover_split_text_into_visual_steps": 7,
+      "decomp_2_8_source_brand_sanitized_case_evidence": 4,
+      "decomp_2_8_type_hierarchy_readability_stack": 4,
+      "motion_target_before_after_reveal": 7,
+      "motion_target_climax_scale_emphasis": 4,
+      "motion_target_opening_attention_reset": 4,
+      "motion_target_proof_build": 8,
+      "motion_target_release_gate_handoff": 2,
+      "target_audio_rhythm_budget": 7,
+      "target_public_demo_climax": 5,
+      "target_report_to_visual_delta": 8,
+      "target_slide_mini_preview": 5,
+      "target_transcript_headline_compression": 5
+    }
+  }
+}

@@ -324,6 +324,33 @@ EXPECTED_RUN2_73_SOURCE_TYPES = {
     "general_design_tutorial",
 }
 EXPECTED_RUN2_73_DECOMPOSITION_DEPTH_VALUES = {"absent", "partial", "usable"}
+EXPECTED_RUN2_73_TUTORIAL_MOVE_PRINCIPLES = {
+    "visual_hierarchy",
+    "white_space",
+    "keynote_rhythm",
+    "motion_pacing",
+}
+EXPECTED_RUN2_73_TUTORIAL_MOVE_RULE_FIELDS = {
+    "rule_id",
+    "principle",
+    "tutorial_rule",
+    "design_move",
+    "ppt_operations",
+    "renderer_actions",
+    "acceptance_checks",
+    "source_rule_ids",
+    "visual_target_ids",
+    "motion_target_ids",
+    "source_lineage",
+}
+EXPECTED_RUN2_73_RENDERER_ACTION_FIELDS = {
+    "action_id",
+    "action_type",
+    "target_selector",
+    "parameters",
+    "fallback_strategy",
+    "traceability",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -1488,6 +1515,73 @@ def test_run2_73_source_quality_audit_covers_every_source() -> None:
         record["generator_use_status"] == "blocked_from_generator_until_decomposed"
         for record in missing_signal_records
     )
+
+
+def test_run2_73_tutorial_to_design_moves_reconciles_renderer_actions() -> None:
+    tutorial = load_json(PACK / "run2_8_tutorial_decomposition.json")
+    visual_targets = load_json(PACK / "visual_learning_targets.json")
+    motion_targets = load_json(PACK / "motion_learning_targets.json")
+    moves = load_json(PACK / "run2_73_tutorial_to_design_moves.json")
+
+    source_rule_ids = {unit["id"] for unit in tutorial["units"]}
+    visual_target_ids = {target["id"] for target in visual_targets["targets"]}
+    motion_target_ids = {target["id"] for target in motion_targets["targets"]}
+    rule_mappings = moves["tutorial_rule_mappings"]
+    renderer_actions = [action for rule in rule_mappings for action in rule["renderer_actions"]]
+    action_types = set(moves["renderer_action_vocabulary"])
+
+    assert moves["status"] == "run2_73_tutorial_to_design_moves_public_blocked"
+    assert moves["stage_policy"] == "part_b_reconciled_tutorial_to_renderer_actions_only"
+    assert moves["artifact_scope"]["does_not_start"] == [
+        "part_c_slide_story",
+        "part_d_scene_compiler",
+        "public_release",
+    ]
+    assert len(rule_mappings) == 20
+    assert len(renderer_actions) == 43
+    assert {rule["principle"] for rule in rule_mappings} == EXPECTED_RUN2_73_TUTORIAL_MOVE_PRINCIPLES
+
+    for source_input in moves["source_inputs"]:
+        source_path = ROOT / source_input["path"]
+        assert source_input["available"] is True
+        assert source_path.exists(), source_input["path"]
+        assert source_input["record_count"] > 0
+        assert_contains(source_input["use_in_this_artifact"], ["ids"])
+
+    for rule in rule_mappings:
+        assert EXPECTED_RUN2_73_TUTORIAL_MOVE_RULE_FIELDS <= set(rule), rule["rule_id"]
+        assert rule["source_rule_ids"]
+        assert rule["visual_target_ids"]
+        assert rule["motion_target_ids"]
+        assert set(rule["source_rule_ids"]) <= source_rule_ids
+        assert set(rule["visual_target_ids"]) <= visual_target_ids
+        assert set(rule["motion_target_ids"]) <= motion_target_ids
+        assert rule["ppt_operations"]
+        assert rule["renderer_actions"]
+        assert rule["acceptance_checks"]
+
+        lineage = rule["source_lineage"]
+        assert {item["id"] for item in lineage["tutorial_rules"]} == set(rule["source_rule_ids"])
+        assert {item["id"] for item in lineage["visual_targets"]} == set(rule["visual_target_ids"])
+        assert {item["id"] for item in lineage["motion_targets"]} == set(rule["motion_target_ids"])
+
+        for action in rule["renderer_actions"]:
+            assert EXPECTED_RUN2_73_RENDERER_ACTION_FIELDS <= set(action), action["action_id"]
+            assert action["action_type"] in action_types
+            assert action["target_selector"]
+            assert action["parameters"]
+            assert action["fallback_strategy"]
+            assert action["traceability"]["source_rule_ids"] == rule["source_rule_ids"]
+            assert action["traceability"]["visual_target_ids"] == rule["visual_target_ids"]
+            assert action["traceability"]["motion_target_ids"] == rule["motion_target_ids"]
+
+    summary = moves["traceability_summary"]
+    assert summary["rule_count"] == 20
+    assert summary["renderer_action_count"] == 43
+    assert set(summary["source_rule_ids_covered"]) == source_rule_ids
+    assert set(summary["visual_target_ids_covered"]) == visual_target_ids
+    assert set(summary["motion_target_ids_covered"]) == motion_target_ids
+    assert all(count > 0 for count in summary["coverage_counts_by_input_id"].values())
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
