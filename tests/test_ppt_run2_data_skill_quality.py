@@ -383,6 +383,35 @@ EXPECTED_RUN2_74_CAUSAL_EDGE_FIELDS = {
     "user_value_delta",
     "proof_refs",
 }
+EXPECTED_RUN2_74_SLIDE_STORY_FIELDS = {
+    "slide_id",
+    "slide_index",
+    "role",
+    "story_function",
+    "audience_question",
+    "title",
+    "thesis",
+    "product_claim_ids",
+    "causal_edge_ids",
+    "source_message_contract_id",
+    "narrative_proof_id",
+    "proof_object",
+    "visual_object",
+    "on_canvas_copy",
+    "speaker_note_or_viewer_route",
+    "text_budget",
+    "demo_goal",
+    "content_risk",
+    "handoff_to_scene_compiler",
+}
+EXPECTED_RUN2_74_SLIDE_STORY_ROLES = [
+    "cover",
+    "setup",
+    "contrast",
+    "proof",
+    "climax",
+    "close",
+]
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -1717,6 +1746,93 @@ def test_run2_74_product_claim_graph_defines_c1_product_logic() -> None:
     assert graph["traceability_summary"]["claim_node_count"] == 7
     assert graph["traceability_summary"]["causal_edge_count"] == 6
     assert graph["next_required_action"] == "run2_74_c2_create_slide_story_from_product_claim_graph"
+
+
+def test_run2_74_slide_story_maps_claim_graph_to_six_slide_story() -> None:
+    claim_graph = load_json(PACK / "run2_74_product_claim_graph.json")
+    message_contracts = load_json(PACK / "run2_57_slide_message_contracts.json")
+    narrative_proof = load_json(PACK / "run2_61_narrative_proof_dataset.json")
+    story = load_json(PACK / "run2_74_slide_story.json")
+
+    claim_ids = {node["claim_id"] for node in claim_graph["product_claim_nodes"]}
+    edge_ids = {edge["edge_id"] for edge in claim_graph["causal_edges"]}
+    message_contract_by_role = {
+        record["role"]: record for record in message_contracts["slide_message_contracts"]
+    }
+    narrative_proof_by_role = {
+        record["role"]: record for record in narrative_proof["narrative_proof_records"]
+    }
+
+    assert story["artifact_id"] == "run2_74_slide_story"
+    assert story["part"] == "Part C2"
+    assert story["status"] == "run2_74_slide_story_public_blocked"
+    assert story["stage_policy"] == "part_c2_slide_story_only"
+    assert story["source_product_claim_graph"] == "run2_74_product_claim_graph.json"
+    assert story["artifact_scope"]["does_not_start"] == [
+        "part_c3_content_quality_audit",
+        "part_d_scene_compiler",
+        "renderer_rerun",
+        "public_release",
+    ]
+    forbidden_root_keys = {
+        "scene_compiler",
+        "renderer_actions",
+        "layout_geometry",
+        "pptx_output",
+        "html_viewer",
+    }
+    assert not forbidden_root_keys & set(story)
+
+    slides = story["slides"]
+    assert [slide["role"] for slide in slides] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [slide["slide_index"] for slide in slides] == [1, 2, 3, 4, 5, 6]
+
+    route_terms = {
+        term.lower()
+        for term in claim_graph["public_surface_routing"]["viewer_or_note_only_terms"]
+    }
+    for slide in slides:
+        assert EXPECTED_RUN2_74_SLIDE_STORY_FIELDS <= set(slide), slide["role"]
+        assert slide["slide_id"] == f"slide_story_2_74_{slide['role']}"
+        assert set(slide["product_claim_ids"]) <= claim_ids
+        assert set(slide["causal_edge_ids"]) <= edge_ids
+        assert slide["source_message_contract_id"] == message_contract_by_role[slide["role"]]["contract_id"]
+        assert slide["narrative_proof_id"] == narrative_proof_by_role[slide["role"]]["narrative_proof_id"]
+        assert slide["audience_question"] == message_contract_by_role[slide["role"]]["reader_question"]
+        assert slide["title"]
+        assert slide["thesis"]
+        assert slide["proof_object"]["primary"]
+        assert slide["proof_object"]["evidence"]
+        assert slide["visual_object"]["role"]
+        assert slide["visual_object"]["must_show"]
+        assert not {"x", "y", "w", "h", "width", "height", "left", "top"} & set(
+            slide["visual_object"]
+        )
+        assert slide["on_canvas_copy"]["headline"]
+        assert slide["on_canvas_copy"]["supporting_line"]
+        assert slide["on_canvas_copy"]["proof_labels"]
+        assert slide["speaker_note_or_viewer_route"]["speaker_note"]
+        assert slide["speaker_note_or_viewer_route"]["viewer_only"]
+        assert 35 <= slide["text_budget"]["max_public_words"] <= 90
+        assert slide["text_budget"]["max_proof_labels"] <= 4
+        assert slide["demo_goal"]
+        assert slide["content_risk"]["failure_mode"]
+        assert slide["content_risk"]["avoid"]
+        assert slide["handoff_to_scene_compiler"]["required_scene_question"]
+        assert "layout_geometry" not in slide
+        assert "renderer_actions" not in slide
+        on_canvas_text = " ".join(
+            [
+                slide["on_canvas_copy"]["headline"],
+                slide["on_canvas_copy"]["supporting_line"],
+                " ".join(slide["on_canvas_copy"]["proof_labels"]),
+            ]
+        ).lower()
+        assert not any(term in on_canvas_text for term in route_terms)
+
+    assert story["traceability_summary"]["slide_count"] == 6
+    assert story["traceability_summary"]["claim_ids_covered"] == sorted(claim_ids)
+    assert story["next_required_action"] == "run2_74_c3_audit_slide_story_content_quality"
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
