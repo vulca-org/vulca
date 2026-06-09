@@ -1500,6 +1500,16 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         for r in results:
             print(f"    [{r.info.z_index}] {r.info.name} -> {r.image_path}")
         print(f"    manifest.json -> {Path(out_dir) / 'manifest.json'}")
+        if getattr(args, "mode", None) == "palette":
+            for artifact_name in (
+                "palette_mask.png",
+                "palette_mask_quantized.png",
+                "decode_report.json",
+                "contact_sheet.png",
+            ):
+                artifact_path = Path(out_dir) / artifact_name
+                if artifact_path.exists():
+                    print(f"    {artifact_name} -> {artifact_path}")
         from vulca.layers.decompose_cases import (
             append_decompose_case,
             build_decompose_case,
