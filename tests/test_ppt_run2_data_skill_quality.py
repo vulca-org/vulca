@@ -412,6 +412,34 @@ EXPECTED_RUN2_74_SLIDE_STORY_ROLES = [
     "climax",
     "close",
 ]
+EXPECTED_RUN2_74_CONTENT_QA_DIMENSIONS = {
+    "empty_claim",
+    "duplicate_message",
+    "claim_without_proof",
+    "copy_visual_mismatch",
+    "public_surface_routing",
+    "text_budget_fit",
+}
+EXPECTED_RUN2_74_CONTENT_QA_FIELDS = {
+    "audit_id",
+    "slide_id",
+    "role",
+    "source_slide_story_id",
+    "checked_claim_ids",
+    "quality_checks",
+    "blocking_issues",
+    "watch_items",
+    "approved_content_units",
+    "scene_compiler_constraints",
+}
+EXPECTED_RUN2_74_APPROVED_CONTENT_UNIT_FIELDS = {
+    "main_claim",
+    "proof_object",
+    "business_logic",
+    "visual_role",
+    "on_canvas_copy",
+    "delete_or_note_route",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -1833,6 +1861,106 @@ def test_run2_74_slide_story_maps_claim_graph_to_six_slide_story() -> None:
     assert story["traceability_summary"]["slide_count"] == 6
     assert story["traceability_summary"]["claim_ids_covered"] == sorted(claim_ids)
     assert story["next_required_action"] == "run2_74_c3_audit_slide_story_content_quality"
+
+
+def test_run2_74_content_quality_audit_checks_slide_story_quality() -> None:
+    claim_graph = load_json(PACK / "run2_74_product_claim_graph.json")
+    story = load_json(PACK / "run2_74_slide_story.json")
+    audit = load_json(PACK / "run2_74_content_quality_audit.json")
+
+    claim_ids = {node["claim_id"] for node in claim_graph["product_claim_nodes"]}
+    route_terms = {
+        term.lower()
+        for term in claim_graph["public_surface_routing"]["viewer_or_note_only_terms"]
+    }
+    story_by_role = {slide["role"]: slide for slide in story["slides"]}
+
+    assert audit["artifact_id"] == "run2_74_content_quality_audit"
+    assert audit["part"] == "Part C3"
+    assert audit["status"] == "run2_74_content_quality_audit_public_blocked"
+    assert audit["stage_policy"] == "part_c3_content_quality_audit_only"
+    assert audit["source_product_claim_graph"] == "run2_74_product_claim_graph.json"
+    assert audit["source_slide_story"] == "run2_74_slide_story.json"
+    assert audit["artifact_scope"]["does_not_start"] == [
+        "part_d_scene_compiler",
+        "renderer_rerun",
+        "public_release",
+    ]
+    forbidden_root_keys = {
+        "scene_compiler",
+        "renderer_actions",
+        "layout_geometry",
+        "pptx_output",
+        "html_viewer",
+    }
+    assert not forbidden_root_keys & set(audit)
+
+    for source_input in audit["source_inputs"]:
+        source_path = ROOT / source_input["path"]
+        assert source_input["available"] is True
+        assert source_path.exists(), source_input["path"]
+
+    assert set(audit["quality_dimensions"]) == EXPECTED_RUN2_74_CONTENT_QA_DIMENSIONS
+
+    slide_audits = audit["slide_quality_audits"]
+    assert [record["role"] for record in slide_audits] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert len(slide_audits) == 6
+
+    forbidden_constraint_keys = {"x", "y", "w", "h", "width", "height", "left", "top"}
+    for record in slide_audits:
+        role = record["role"]
+        source_slide = story_by_role[role]
+        assert EXPECTED_RUN2_74_CONTENT_QA_FIELDS <= set(record), role
+        assert record["audit_id"] == f"content_qa_2_74_{role}"
+        assert record["source_slide_story_id"] == source_slide["slide_id"]
+        assert record["checked_claim_ids"] == source_slide["product_claim_ids"]
+        assert set(record["checked_claim_ids"]) <= claim_ids
+        assert record["blocking_issues"] == []
+        assert record["watch_items"]
+
+        checks = record["quality_checks"]
+        assert {check["dimension"] for check in checks} == EXPECTED_RUN2_74_CONTENT_QA_DIMENSIONS
+        for check in checks:
+            assert check["status"] in {"pass", "watch"}
+            assert check["evidence"]
+            assert check["route_decision"]
+
+        units = record["approved_content_units"]
+        assert EXPECTED_RUN2_74_APPROVED_CONTENT_UNIT_FIELDS <= set(units), role
+        assert units["main_claim"] == source_slide["thesis"]
+        assert units["proof_object"] == source_slide["proof_object"]["primary"]
+        assert units["visual_role"] == source_slide["visual_object"]["role"]
+        assert units["business_logic"]
+        assert units["on_canvas_copy"] == source_slide["on_canvas_copy"]
+        assert units["delete_or_note_route"]["speaker_note"] == source_slide[
+            "speaker_note_or_viewer_route"
+        ]["speaker_note"]
+        assert units["delete_or_note_route"]["viewer_only"] == source_slide[
+            "speaker_note_or_viewer_route"
+        ]["viewer_only"]
+        assert units["delete_or_note_route"]["must_delete_from_canvas"]
+
+        on_canvas_text = json.dumps(units["on_canvas_copy"], ensure_ascii=False).lower()
+        assert not any(term in on_canvas_text for term in route_terms)
+        assert word_count(units["on_canvas_copy"]["headline"]) + word_count(
+            units["on_canvas_copy"]["supporting_line"]
+        ) <= source_slide["text_budget"]["max_public_words"]
+
+        constraints = record["scene_compiler_constraints"]
+        assert constraints["content_only"] is True
+        assert constraints["must_keep_main_claim"] == units["main_claim"]
+        assert constraints["must_render_proof_object"] == units["proof_object"]
+        assert constraints["must_preserve_visual_role"] == units["visual_role"]
+        assert constraints["must_route_off_canvas"] == units["delete_or_note_route"]["viewer_only"]
+        assert constraints["must_not_add"]
+        assert not forbidden_constraint_keys & set(constraints)
+
+    summary = audit["traceability_summary"]
+    assert summary["slide_count"] == 6
+    assert summary["quality_dimensions"] == sorted(EXPECTED_RUN2_74_CONTENT_QA_DIMENSIONS)
+    assert summary["blocking_issue_count"] == 0
+    assert summary["approved_for_next_stage"] == "part_d_scene_compiler_inputs_only"
+    assert audit["next_required_action"] == "part_d_scene_compiler_from_c1_c2_c3_and_b2"
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
