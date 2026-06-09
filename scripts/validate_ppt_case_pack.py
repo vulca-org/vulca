@@ -93,6 +93,7 @@ RUN2_8_REQUIRED_FILES = [
 
 RUN2_73_REQUIRED_FILES = [
     "run2_73_visual_grammar_modules.json",
+    "run2_73_renderer_adapter_contracts.json",
 ]
 
 
@@ -317,6 +318,26 @@ RUN2_73_VISUAL_GRAMMAR_SUCCESS_FLAGS = {
     "all_requested_modules_defined",
     "no_module_depends_on_copied_source_media",
     "public_surface_trace_terms_hidden",
+}
+RUN2_73_RENDERER_ADAPTER_STAGE_POLICY = (
+    "part_e2_renderer_adapter_contracts_only_no_renderer_rerun_no_public_release"
+)
+RUN2_73_RENDERER_ADAPTER_STATUS = "run2_73_renderer_adapter_contracts_ready_public_blocked"
+RUN2_73_RENDERER_ADAPTER_NEXT_REQUIRED_ACTION = "renderer_execute_from_d2_d3_e_adapter_manifest"
+RUN2_73_RENDERER_ADAPTER_SOURCE_POINTERS = {
+    "source_scene_plan_expansion": "run2_73_scene_plan_expansion.json",
+    "source_renderer_input_validation": "run2_73_renderer_input_validation.json",
+    "source_visual_grammar_modules": "run2_73_visual_grammar_modules.json",
+}
+RUN2_73_RENDERER_ADAPTER_SOURCE_PATHS = {
+    "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_input_validation.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+}
+RUN2_73_RENDERER_ADAPTER_SOURCE_FILES = {
+    "run2_73_scene_plan_expansion.json",
+    "run2_73_renderer_input_validation.json",
+    "run2_73_visual_grammar_modules.json",
 }
 
 
@@ -2963,6 +2984,382 @@ def validate_run2_73_visual_grammar_trace_summary(value: Any, errors: list[str])
         )
 
 
+def collect_run2_73_role_records(
+    pack_dir: Path,
+    file_name: str,
+    record_key: str,
+    role_key: str,
+    id_key: str,
+    errors: list[str],
+) -> dict[str, dict[str, Any]]:
+    data = load_json(pack_dir / file_name, errors)
+    records = data.get(record_key, [])
+    if not require_non_empty_list(f"{file_name}.{record_key}", records, errors):
+        return {}
+    by_role: dict[str, dict[str, Any]] = {}
+    roles: list[str] = []
+    for index, record in enumerate(records):
+        label = f"{file_name}.{record_key}[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        role = record.get(role_key)
+        if validate_choice(f"{label}.{role_key}", role, set(RUN2_73_VISUAL_GRAMMAR_ROLES), errors):
+            roles.append(role)
+            if role in by_role:
+                errors.append(f"{label}.{role_key} duplicates page role: {role}")
+            by_role[role] = record
+        if id_key in record:
+            require_non_empty_string(f"{label}.{id_key}", record[id_key], errors)
+    if roles and roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{file_name}.{record_key} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+    return by_role
+
+
+def validate_run2_73_renderer_adapter_contracts(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "run2_73_renderer_adapter_contracts.json", errors)
+    require_keys(
+        "run2_73_renderer_adapter_contracts.json",
+        data,
+        [
+            "artifact_id",
+            "part",
+            "schema_version",
+            "status",
+            "stage_policy",
+            "source_scene_plan_expansion",
+            "source_renderer_input_validation",
+            "source_visual_grammar_modules",
+            "source_inputs",
+            "artifact_scope",
+            "execution_guard",
+            "adapter_scene_records",
+            "traceability_summary",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != "run2_73_renderer_adapter_contracts":
+        errors.append("run2_73_renderer_adapter_contracts.artifact_id must be run2_73_renderer_adapter_contracts")
+    if data.get("part") != "Part E2":
+        errors.append("run2_73_renderer_adapter_contracts.part must be Part E2")
+    if "schema_version" in data:
+        require_non_empty_string("run2_73_renderer_adapter_contracts.schema_version", data["schema_version"], errors)
+    if data.get("status") != RUN2_73_RENDERER_ADAPTER_STATUS:
+        errors.append(f"run2_73_renderer_adapter_contracts.status must be {RUN2_73_RENDERER_ADAPTER_STATUS}")
+    if data.get("stage_policy") != RUN2_73_RENDERER_ADAPTER_STAGE_POLICY:
+        errors.append(
+            "run2_73_renderer_adapter_contracts.stage_policy must be "
+            f"{RUN2_73_RENDERER_ADAPTER_STAGE_POLICY}"
+        )
+    for key, expected in RUN2_73_RENDERER_ADAPTER_SOURCE_POINTERS.items():
+        if data.get(key) != expected:
+            errors.append(f"run2_73_renderer_adapter_contracts.{key} must be {expected}")
+
+    validate_run2_73_renderer_adapter_source_inputs(data.get("source_inputs", []), errors)
+    validate_run2_73_renderer_adapter_scope(data.get("artifact_scope", {}), errors)
+    validate_run2_73_renderer_adapter_execution_guard(data.get("execution_guard", {}), errors)
+
+    scene_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_73_scene_plan_expansion.json",
+        "scene_structures",
+        "role",
+        "expansion_id",
+        errors,
+    )
+    validation_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_73_renderer_input_validation.json",
+        "scene_validation_results",
+        "role",
+        "validation_id",
+        errors,
+    )
+    grammar_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_73_visual_grammar_modules.json",
+        "page_type_to_visual_grammar",
+        "page_type",
+        "page_type",
+        errors,
+    )
+    grammar = load_json(pack_dir / "run2_73_visual_grammar_modules.json", errors)
+    blueprint_module_ids = {
+        blueprint.get("module_id")
+        for blueprint in grammar.get("module_geometry_blueprints", [])
+        if isinstance(blueprint, dict) and isinstance(blueprint.get("module_id"), str)
+    }
+
+    validate_run2_73_renderer_adapter_scene_records(
+        data.get("adapter_scene_records", []),
+        scene_by_role,
+        validation_by_role,
+        grammar_by_role,
+        blueprint_module_ids,
+        errors,
+    )
+    validate_run2_73_renderer_adapter_trace_summary(data.get("traceability_summary", {}), errors)
+    if data.get("next_required_action") != RUN2_73_RENDERER_ADAPTER_NEXT_REQUIRED_ACTION:
+        errors.append(
+            "run2_73_renderer_adapter_contracts.next_required_action must be "
+            f"{RUN2_73_RENDERER_ADAPTER_NEXT_REQUIRED_ACTION}"
+        )
+
+
+def validate_run2_73_renderer_adapter_source_inputs(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list("run2_73_renderer_adapter_contracts.source_inputs", value, errors):
+        return
+    source_paths: set[str] = set()
+    for index, source in enumerate(value):
+        label = f"run2_73_renderer_adapter_contracts.source_inputs[{index}]"
+        if not isinstance(source, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, source, ["path", "available", "use_in_this_artifact"], errors)
+        if "path" in source and require_non_empty_string(f"{label}.path", source["path"], errors):
+            source_paths.add(source["path"])
+        if "available" in source and type(source["available"]) is not bool:
+            errors.append(f"{label}.available must be a boolean")
+        if "use_in_this_artifact" in source:
+            require_non_empty_string(f"{label}.use_in_this_artifact", source["use_in_this_artifact"], errors)
+    for source_path in sorted(RUN2_73_RENDERER_ADAPTER_SOURCE_PATHS - source_paths):
+        errors.append(f"run2_73_renderer_adapter_contracts.source_inputs missing path: {source_path}")
+
+
+def validate_run2_73_renderer_adapter_scope(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict("run2_73_renderer_adapter_contracts.artifact_scope", value, errors):
+        return
+    if "starts" in value:
+        validate_string_list("run2_73_renderer_adapter_contracts.artifact_scope.starts", value["starts"], errors)
+    does_not_start = value.get("does_not_start", [])
+    if validate_string_list("run2_73_renderer_adapter_contracts.artifact_scope.does_not_start", does_not_start, errors):
+        actual_scope = set(does_not_start)
+        for item in sorted(RUN2_73_VISUAL_GRAMMAR_FORBIDDEN_SCOPE - actual_scope):
+            errors.append(
+                "run2_73_renderer_adapter_contracts.artifact_scope.does_not_start "
+                f"must include {item}"
+            )
+
+
+def validate_run2_73_renderer_adapter_execution_guard(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict("run2_73_renderer_adapter_contracts.execution_guard", value, errors):
+        return
+    if value.get("mode") != "adapter_contract_only":
+        errors.append("run2_73_renderer_adapter_contracts.execution_guard.mode must be adapter_contract_only")
+    if value.get("rendering_subprocesses_allowed") is not False:
+        errors.append(
+            "run2_73_renderer_adapter_contracts.execution_guard.rendering_subprocesses_allowed must be false"
+        )
+    if "allowed_side_effects" in value:
+        validate_string_list(
+            "run2_73_renderer_adapter_contracts.execution_guard.allowed_side_effects",
+            value["allowed_side_effects"],
+            errors,
+        )
+    if "forbidden_invocations" in value:
+        validate_exact_string_set(
+            "run2_73_renderer_adapter_contracts.execution_guard.forbidden_invocations",
+            value["forbidden_invocations"],
+            RUN2_73_VISUAL_GRAMMAR_FORBIDDEN_SCOPE,
+            errors,
+        )
+    else:
+        errors.append("run2_73_renderer_adapter_contracts.execution_guard missing key: forbidden_invocations")
+    for key in ["forbidden_runtime_imports", "forbidden_dynamic_import_calls"]:
+        if key in value:
+            validate_string_list(f"run2_73_renderer_adapter_contracts.execution_guard.{key}", value[key], errors)
+
+
+def validate_run2_73_renderer_adapter_scene_records(
+    value: Any,
+    scene_by_role: dict[str, dict[str, Any]],
+    validation_by_role: dict[str, dict[str, Any]],
+    grammar_by_role: dict[str, dict[str, Any]],
+    blueprint_module_ids: set[str],
+    errors: list[str],
+) -> None:
+    if not require_non_empty_list("run2_73_renderer_adapter_contracts.adapter_scene_records", value, errors):
+        return
+    roles: list[str] = []
+    for index, record in enumerate(value):
+        label = f"run2_73_renderer_adapter_contracts.adapter_scene_records[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(
+            label,
+            record,
+            [
+                "adapter_scene_id",
+                "role",
+                "slide_index",
+                "source_expansion_id",
+                "source_validation_id",
+                "source_visual_grammar_page_type",
+                "validation_status",
+                "adapter_blocking_issues",
+                "visual_grammar_binding",
+                "geometry_blueprint_binding",
+                "adapter_renderer_instructions",
+            ],
+            errors,
+        )
+        role = record.get("role")
+        role_is_known = validate_choice(f"{label}.role", role, set(RUN2_73_VISUAL_GRAMMAR_ROLES), errors)
+        if role_is_known:
+            roles.append(role)
+            if record.get("adapter_scene_id") != f"renderer_adapter_2_73_{role}":
+                errors.append(f"{label}.adapter_scene_id must be renderer_adapter_2_73_{role}")
+            expected_slide_index = RUN2_73_VISUAL_GRAMMAR_ROLES.index(role) + 1
+            if record.get("slide_index") != expected_slide_index:
+                errors.append(f"{label}.slide_index must be {expected_slide_index}")
+            validate_run2_73_renderer_adapter_source_bindings(
+                label,
+                record,
+                role,
+                scene_by_role,
+                validation_by_role,
+                grammar_by_role,
+                blueprint_module_ids,
+                errors,
+            )
+        elif "slide_index" in record:
+            require_integer(f"{label}.slide_index", record["slide_index"], errors)
+        if record.get("validation_status") != "pass":
+            errors.append(f"{label}.validation_status must be pass")
+        blocking_issues = record.get("adapter_blocking_issues")
+        if not isinstance(blocking_issues, list):
+            errors.append(f"{label}.adapter_blocking_issues must be a list")
+        elif blocking_issues:
+            errors.append(f"{label}.adapter_blocking_issues must be empty")
+        validate_run2_73_renderer_adapter_instructions(
+            f"{label}.adapter_renderer_instructions",
+            record.get("adapter_renderer_instructions", {}),
+            errors,
+        )
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(
+            "run2_73_renderer_adapter_contracts.adapter_scene_records roles must be "
+            f"{', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}"
+        )
+
+
+def validate_run2_73_renderer_adapter_source_bindings(
+    label: str,
+    record: dict[str, Any],
+    role: str,
+    scene_by_role: dict[str, dict[str, Any]],
+    validation_by_role: dict[str, dict[str, Any]],
+    grammar_by_role: dict[str, dict[str, Any]],
+    blueprint_module_ids: set[str],
+    errors: list[str],
+) -> None:
+    scene_record = scene_by_role.get(role, {})
+    validation_record = validation_by_role.get(role, {})
+    grammar_record = grammar_by_role.get(role, {})
+    if scene_record and record.get("source_expansion_id") != scene_record.get("expansion_id"):
+        errors.append(f"{label}.source_expansion_id must match D2 scene expansion id for {role}")
+    if validation_record and record.get("source_validation_id") != validation_record.get("validation_id"):
+        errors.append(f"{label}.source_validation_id must match D3 validation id for {role}")
+    if record.get("source_visual_grammar_page_type") != role:
+        errors.append(f"{label}.source_visual_grammar_page_type must be {role}")
+
+    visual_binding = record.get("visual_grammar_binding", {})
+    if require_non_empty_dict(f"{label}.visual_grammar_binding", visual_binding, errors):
+        require_keys(f"{label}.visual_grammar_binding", visual_binding, ["module_id", "main_structure"], errors)
+        module_id = visual_binding.get("module_id")
+        if "module_id" in visual_binding:
+            validate_choice(f"{label}.visual_grammar_binding.module_id", module_id, RUN2_73_VISUAL_GRAMMAR_MODULE_IDS, errors)
+        expected_module = grammar_record.get("primary_visual_grammar_module")
+        if isinstance(expected_module, str) and module_id != expected_module:
+            errors.append(f"{label}.visual_grammar_binding.module_id must match Part E module for {role}")
+        if "main_structure" in visual_binding:
+            require_non_empty_dict(f"{label}.visual_grammar_binding.main_structure", visual_binding["main_structure"], errors)
+        if "module_variant" in visual_binding and isinstance(grammar_record.get("module_variant"), str):
+            if visual_binding["module_variant"] != grammar_record["module_variant"]:
+                errors.append(f"{label}.visual_grammar_binding.module_variant must match Part E module variant for {role}")
+        if "draw_order" in visual_binding:
+            validate_string_list(f"{label}.visual_grammar_binding.draw_order", visual_binding["draw_order"], errors)
+
+    geometry_binding = record.get("geometry_blueprint_binding", {})
+    if require_non_empty_dict(f"{label}.geometry_blueprint_binding", geometry_binding, errors):
+        require_keys(f"{label}.geometry_blueprint_binding", geometry_binding, ["module_id", "coordinate_system"], errors)
+        geometry_module_id = geometry_binding.get("module_id")
+        if "module_id" in geometry_binding:
+            validate_choice(
+                f"{label}.geometry_blueprint_binding.module_id",
+                geometry_module_id,
+                RUN2_73_VISUAL_GRAMMAR_MODULE_IDS,
+                errors,
+            )
+            if geometry_module_id not in blueprint_module_ids:
+                errors.append(f"{label}.geometry_blueprint_binding.module_id references missing Part E blueprint")
+        if geometry_binding.get("coordinate_system") != "normalized_16_9_canvas_0_100":
+            errors.append(f"{label}.geometry_blueprint_binding.coordinate_system must be normalized_16_9_canvas_0_100")
+        if "native_ppt_shape_plan" in geometry_binding:
+            validate_run2_73_adapter_shape_plan(
+                f"{label}.geometry_blueprint_binding.native_ppt_shape_plan",
+                geometry_binding["native_ppt_shape_plan"],
+                errors,
+            )
+
+
+def validate_run2_73_adapter_shape_plan(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    for index, shape in enumerate(value):
+        shape_label = f"{label}[{index}]"
+        if not isinstance(shape, dict):
+            errors.append(f"{shape_label} must be an object")
+            continue
+        require_keys(shape_label, shape, ["shape_id", "primitive", "semantic_role"], errors)
+
+
+def validate_run2_73_renderer_adapter_instructions(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    required_false = [
+        "renderer_execution_allowed_in_this_artifact",
+        "public_release_allowed_in_this_artifact",
+    ]
+    for key in required_false:
+        if value.get(key) is not False:
+            errors.append(f"{label}.{key} must be false")
+    for key in [
+        "draw_primary_structure_before_components",
+        "apply_geometry_blueprint_before_component_layout",
+        "bind_semantic_components_before_geometry",
+        "preserve_off_canvas_contract",
+    ]:
+        if key in value and value[key] is not True:
+            errors.append(f"{label}.{key} must be true")
+
+
+def validate_run2_73_renderer_adapter_trace_summary(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict("run2_73_renderer_adapter_contracts.traceability_summary", value, errors):
+        return
+    expected_counts = {
+        "scene_count": 6,
+        "validated_scene_count": 6,
+        "visual_grammar_module_count": 5,
+        "geometry_blueprint_count": 5,
+        "adapter_blocking_issue_count": 0,
+    }
+    for key, expected in expected_counts.items():
+        if value.get(key) != expected:
+            errors.append(f"run2_73_renderer_adapter_contracts.traceability_summary.{key} must be {expected}")
+    if "sources_consumed" in value:
+        validate_exact_string_set(
+            "run2_73_renderer_adapter_contracts.traceability_summary.sources_consumed",
+            value["sources_consumed"],
+            RUN2_73_RENDERER_ADAPTER_SOURCE_FILES,
+            errors,
+        )
+    else:
+        errors.append("run2_73_renderer_adapter_contracts.traceability_summary missing key: sources_consumed")
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -3174,6 +3571,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
                 errors,
             )
             validate_run2_73_visual_grammar_modules(root, errors)
+            validate_run2_73_renderer_adapter_contracts(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)

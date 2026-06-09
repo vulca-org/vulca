@@ -518,7 +518,7 @@ def build_validation_artifact() -> dict[str, Any]:
                 else "blocked_due_to_validation_issues"
             ),
         },
-        "next_required_action": "part_e_renderer_rerun_from_validated_scene_plan",
+        "next_required_action": "part_e2_renderer_adapter_contracts",
     }
 
 

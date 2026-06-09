@@ -538,5 +538,5 @@
     "source_scene_plan_expansion": "run2_73_scene_plan_expansion.json",
     "renderer_handoff_approved": "validated_renderer_ready_json_only"
   },
-  "next_required_action": "part_e_renderer_rerun_from_validated_scene_plan"
+  "next_required_action": "part_e2_renderer_adapter_contracts"
 }

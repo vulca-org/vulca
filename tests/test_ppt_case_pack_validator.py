@@ -1457,6 +1457,18 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_73_visual_grammar_modules(), indent=2),
         encoding="utf-8",
     )
+    (pack / "run2_73_scene_plan_expansion.json").write_text(
+        json.dumps(valid_run2_73_scene_plan_expansion(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "run2_73_renderer_input_validation.json").write_text(
+        json.dumps(valid_run2_73_renderer_input_validation(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "run2_73_renderer_adapter_contracts.json").write_text(
+        json.dumps(valid_run2_73_renderer_adapter_contracts(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -1689,6 +1701,128 @@ def valid_run2_73_visual_grammar_modules() -> dict:
     }
 
 
+def valid_run2_73_scene_plan_expansion() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    return {
+        "artifact_id": "run2_73_scene_plan_expansion",
+        "stage_policy": "part_d2_scene_plan_expansion_only",
+        "scene_structures": [
+            {
+                "expansion_id": f"scene_expansion_2_73_{role}",
+                "role": role,
+                "slide_index": index,
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+    }
+
+
+def valid_run2_73_renderer_input_validation() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    return {
+        "artifact_id": "run2_73_renderer_input_validation",
+        "stage_policy": "part_d3_renderer_input_validation_only",
+        "scene_validation_results": [
+            {
+                "validation_id": f"renderer_input_validation_2_73_{role}",
+                "role": role,
+                "status": "pass",
+                "renderer_handoff": {
+                    "can_handoff_to_renderer": True,
+                    "must_not_render_in_d3": True,
+                },
+            }
+            for role in roles
+        ],
+    }
+
+
+def valid_run2_73_renderer_adapter_contracts() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    return {
+        "artifact_id": "run2_73_renderer_adapter_contracts",
+        "part": "Part E2",
+        "schema_version": "ppt_run2_73_renderer_adapter_contracts.v1",
+        "status": "run2_73_renderer_adapter_contracts_ready_public_blocked",
+        "stage_policy": "part_e2_renderer_adapter_contracts_only_no_renderer_rerun_no_public_release",
+        "source_scene_plan_expansion": "run2_73_scene_plan_expansion.json",
+        "source_renderer_input_validation": "run2_73_renderer_input_validation.json",
+        "source_visual_grammar_modules": "run2_73_visual_grammar_modules.json",
+        "source_inputs": [
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+                "available": True,
+                "use_in_this_artifact": "D2 scene expansion.",
+            },
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_input_validation.json",
+                "available": True,
+                "use_in_this_artifact": "D3 renderer input validation.",
+            },
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+                "available": True,
+                "use_in_this_artifact": "Part E visual grammar.",
+            },
+        ],
+        "artifact_scope": {
+            "starts": ["prepare_renderer_adapter_manifest_from_d2_d3_e_inputs"],
+            "does_not_start": ["renderer_rerun", "pptx_output", "html_viewer", "public_release"],
+        },
+        "execution_guard": {
+            "mode": "adapter_contract_only",
+            "rendering_subprocesses_allowed": False,
+            "forbidden_invocations": ["renderer_rerun", "pptx_output", "html_viewer", "public_release"],
+        },
+        "adapter_scene_records": [
+            {
+                "adapter_scene_id": f"renderer_adapter_2_73_{role}",
+                "role": role,
+                "slide_index": index,
+                "source_expansion_id": f"scene_expansion_2_73_{role}",
+                "source_validation_id": f"renderer_input_validation_2_73_{role}",
+                "source_visual_grammar_page_type": role,
+                "validation_status": "pass",
+                "adapter_blocking_issues": [],
+                "visual_grammar_binding": {
+                    "module_id": module_by_role[role],
+                    "main_structure": {"name": f"{role}_structure"},
+                },
+                "geometry_blueprint_binding": {
+                    "module_id": module_by_role[role],
+                    "coordinate_system": "normalized_16_9_canvas_0_100",
+                },
+                "adapter_renderer_instructions": {
+                    "renderer_execution_allowed_in_this_artifact": False,
+                    "public_release_allowed_in_this_artifact": False,
+                },
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "traceability_summary": {
+            "scene_count": 6,
+            "validated_scene_count": 6,
+            "visual_grammar_module_count": 5,
+            "geometry_blueprint_count": 5,
+            "adapter_blocking_issue_count": 0,
+            "sources_consumed": [
+                "run2_73_scene_plan_expansion.json",
+                "run2_73_renderer_input_validation.json",
+                "run2_73_visual_grammar_modules.json",
+            ],
+        },
+        "next_required_action": "renderer_execute_from_d2_d3_e_adapter_manifest",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -1715,6 +1849,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: run2_8_workflow_gate_matrix.json" in result.errors
     assert "missing required file: results/trace_manifest_contract.json" in result.errors
     assert "missing required file: run2_73_visual_grammar_modules.json" in result.errors
+    assert "missing required file: run2_73_renderer_adapter_contracts.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -1813,6 +1948,84 @@ def test_run2_profile_rejects_visual_grammar_selection_rule_mismatch(tmp_path: P
         "run2_73_visual_grammar_modules.module_selection_rules[0].applies_to_page_types[0] "
         "must select product_reveal for cover"
     ) in result.errors
+
+
+def test_run2_profile_rejects_renderer_adapter_execution_scope(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    adapter_path = pack / "run2_73_renderer_adapter_contracts.json"
+    adapter = json.loads(adapter_path.read_text(encoding="utf-8"))
+    adapter["stage_policy"] = "part_e2_renderer_adapter_and_renderer_rerun"
+    adapter["artifact_scope"]["does_not_start"].remove("renderer_rerun")
+    adapter["execution_guard"]["rendering_subprocesses_allowed"] = True
+    adapter["adapter_scene_records"][0]["adapter_renderer_instructions"][
+        "renderer_execution_allowed_in_this_artifact"
+    ] = True
+    adapter_path.write_text(json.dumps(adapter, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_73_renderer_adapter_contracts.stage_policy must be part_e2_renderer_adapter_contracts_only_no_renderer_rerun_no_public_release"
+        in result.errors
+    )
+    assert (
+        "run2_73_renderer_adapter_contracts.artifact_scope.does_not_start must include renderer_rerun"
+        in result.errors
+    )
+    assert (
+        "run2_73_renderer_adapter_contracts.execution_guard.rendering_subprocesses_allowed must be false"
+        in result.errors
+    )
+    assert (
+        "run2_73_renderer_adapter_contracts.adapter_scene_records[0].adapter_renderer_instructions.renderer_execution_allowed_in_this_artifact must be false"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_renderer_adapter_source_trace_mismatch(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    adapter_path = pack / "run2_73_renderer_adapter_contracts.json"
+    adapter = json.loads(adapter_path.read_text(encoding="utf-8"))
+    adapter["source_inputs"] = [
+        source
+        for source in adapter["source_inputs"]
+        if not source["path"].endswith("run2_73_scene_plan_expansion.json")
+    ]
+    adapter["adapter_scene_records"][0]["source_expansion_id"] = "scene_expansion_2_73_wrong"
+    adapter["adapter_scene_records"][0]["visual_grammar_binding"]["module_id"] = "hero_field"
+    adapter["traceability_summary"]["sources_consumed"].remove("run2_73_scene_plan_expansion.json")
+    adapter_path.write_text(json.dumps(adapter, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_73_renderer_adapter_contracts.source_inputs missing path: docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json"
+        in result.errors
+    )
+    assert (
+        "run2_73_renderer_adapter_contracts.adapter_scene_records[0].source_expansion_id must match D2 scene expansion id for cover"
+        in result.errors
+    )
+    assert (
+        "run2_73_renderer_adapter_contracts.adapter_scene_records[0].visual_grammar_binding.module_id must match Part E module for cover"
+        in result.errors
+    )
+    assert (
+        "run2_73_renderer_adapter_contracts.traceability_summary.sources_consumed missing value: run2_73_scene_plan_expansion.json"
+        in result.errors
+    )
 
 
 def test_run2_profile_rejects_run2_7_unknown_visual_repair_policy_id(tmp_path: Path) -> None:

@@ -586,6 +586,10 @@ EXPECTED_RUN2_E_FORBIDDEN_SCOPE = {
     "html_viewer",
     "public_release",
 }
+EXPECTED_RUN2_E2_STAGE_POLICY = (
+    "part_e2_renderer_adapter_contracts_only_no_renderer_rerun_no_public_release"
+)
+EXPECTED_RUN2_E2_NEXT_REQUIRED_ACTION = "renderer_execute_from_d2_d3_e_adapter_manifest"
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -2561,7 +2565,7 @@ def test_run2_73_renderer_input_validation_blocks_bad_scene_inputs() -> None:
     assert summary["expanded_renderer_binding_count"] == 30
     assert summary["blocking_issue_count"] == 0
     assert summary["renderer_handoff_approved"] == "validated_renderer_ready_json_only"
-    assert validation["next_required_action"] == "part_e_renderer_rerun_from_validated_scene_plan"
+    assert validation["next_required_action"] == "part_e2_renderer_adapter_contracts"
 
     bad = json.loads(json.dumps(expansion))
     cover = bad["scene_structures"][0]
@@ -2692,6 +2696,123 @@ def test_run2_73_visual_grammar_modules_define_part_e_non_card_layer() -> None:
     }
     assert modules["traceability_summary"]["page_type_count"] == 6
     assert modules["traceability_summary"]["visual_grammar_module_count"] == 5
+
+
+def test_run2_73_renderer_adapter_contracts_bind_d2_d3_and_part_e() -> None:
+    from scripts.build_ppt_run2_73_renderer_adapter_contracts import (
+        FORBIDDEN_DYNAMIC_IMPORT_CALLS as ADAPTER_FORBIDDEN_DYNAMIC_IMPORT_CALLS,
+        FORBIDDEN_RUNTIME_IMPORTS as ADAPTER_FORBIDDEN_RUNTIME_IMPORTS,
+    )
+
+    expansion = load_json(PACK / "run2_73_scene_plan_expansion.json")
+    validation = load_json(PACK / "run2_73_renderer_input_validation.json")
+    grammar = load_json(PACK / "run2_73_visual_grammar_modules.json")
+    adapter = load_json(PACK / "run2_73_renderer_adapter_contracts.json")
+
+    assert adapter["artifact_id"] == "run2_73_renderer_adapter_contracts"
+    assert adapter["part"] == "Part E2"
+    assert adapter["status"] == "run2_73_renderer_adapter_contracts_ready_public_blocked"
+    assert adapter["stage_policy"] == EXPECTED_RUN2_E2_STAGE_POLICY
+    assert adapter["source_scene_plan_expansion"] == "run2_73_scene_plan_expansion.json"
+    assert adapter["source_renderer_input_validation"] == "run2_73_renderer_input_validation.json"
+    assert adapter["source_visual_grammar_modules"] == "run2_73_visual_grammar_modules.json"
+    assert EXPECTED_RUN2_E_FORBIDDEN_SCOPE <= set(adapter["artifact_scope"]["does_not_start"])
+
+    guard = adapter["execution_guard"]
+    assert guard["mode"] == "adapter_contract_only"
+    assert guard["rendering_subprocesses_allowed"] is False
+    assert guard["allowed_side_effects"] == [
+        "read_run2_73_scene_plan_expansion_json",
+        "read_run2_73_renderer_input_validation_json",
+        "read_run2_73_visual_grammar_modules_json",
+        "write_run2_73_renderer_adapter_contracts_json",
+    ]
+    assert set(guard["forbidden_invocations"]) == EXPECTED_RUN2_E_FORBIDDEN_SCOPE
+    assert set(guard["forbidden_runtime_imports"]) == ADAPTER_FORBIDDEN_RUNTIME_IMPORTS
+    assert set(guard["forbidden_dynamic_import_calls"]) == ADAPTER_FORBIDDEN_DYNAMIC_IMPORT_CALLS
+
+    script_path = ROOT / "scripts" / "build_ppt_run2_73_renderer_adapter_contracts.py"
+    script_tree = ast.parse(script_path.read_text())
+    script_imports = set()
+    script_calls = set()
+    for node in ast.walk(script_tree):
+        if isinstance(node, ast.Import):
+            script_imports |= {alias.name.split(".")[0] for alias in node.names}
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            script_imports.add(node.module.split(".")[0])
+        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            script_calls.add(node.func.id)
+    assert not ADAPTER_FORBIDDEN_RUNTIME_IMPORTS & script_imports
+    assert not ADAPTER_FORBIDDEN_DYNAMIC_IMPORT_CALLS & script_calls
+
+    source_paths = {source["path"] for source in adapter["source_inputs"]}
+    assert {
+        "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_input_validation.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    } <= source_paths
+
+    d2_by_role = {record["role"]: record for record in expansion["scene_structures"]}
+    d3_by_role = {record["role"]: record for record in validation["scene_validation_results"]}
+    e_by_role = {record["page_type"]: record for record in grammar["page_type_to_visual_grammar"]}
+    blueprint_by_module = {record["module_id"]: record for record in grammar["module_geometry_blueprints"]}
+
+    records = adapter["adapter_scene_records"]
+    assert [record["role"] for record in records] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [record["slide_index"] for record in records] == [1, 2, 3, 4, 5, 6]
+
+    for record in records:
+        role = record["role"]
+        d2 = d2_by_role[role]
+        d3 = d3_by_role[role]
+        e = e_by_role[role]
+        blueprint = blueprint_by_module[e["primary_visual_grammar_module"]]
+
+        assert record["adapter_scene_id"] == f"renderer_adapter_2_73_{role}"
+        assert record["source_expansion_id"] == d2["expansion_id"]
+        assert record["source_validation_id"] == d3["validation_id"]
+        assert record["validation_status"] == "pass"
+        assert record["source_visual_grammar_page_type"] == role
+        assert record["visual_grammar_binding"]["module_id"] == e["primary_visual_grammar_module"]
+        assert record["visual_grammar_binding"]["module_variant"] == e["module_variant"]
+        assert record["visual_grammar_binding"]["main_structure"] == e["main_structure"]
+        assert record["visual_grammar_binding"]["draw_order"] == e["draw_order"]
+        assert record["geometry_blueprint_binding"]["module_id"] == blueprint["module_id"]
+        assert record["geometry_blueprint_binding"]["coordinate_system"] == "normalized_16_9_canvas_0_100"
+        assert record["geometry_blueprint_binding"]["native_ppt_shape_plan"] == blueprint["native_ppt_shape_plan"]
+
+        manifest = record["renderer_adapter_manifest"]
+        assert manifest["semantic_component_ids"] == [
+            component["component_id"] for component in d2["semantic_components"].values()
+        ]
+        assert manifest["visual_container_ids"] == [
+            container["container_id"] for container in d2["visual_containers"]
+        ]
+        assert manifest["expanded_renderer_binding_ids"] == [
+            binding["binding_id"] for binding in d2["expanded_renderer_action_bindings"]
+        ]
+        assert manifest["d3_renderer_handoff"] == d3["renderer_handoff"]
+
+        instructions = record["adapter_renderer_instructions"]
+        assert instructions["draw_primary_structure_before_components"] is True
+        assert instructions["apply_geometry_blueprint_before_component_layout"] is True
+        assert instructions["bind_semantic_components_before_geometry"] is True
+        assert instructions["preserve_off_canvas_contract"] is True
+        assert instructions["renderer_execution_allowed_in_this_artifact"] is False
+        assert instructions["public_release_allowed_in_this_artifact"] is False
+
+    summary = adapter["traceability_summary"]
+    assert summary["scene_count"] == 6
+    assert summary["validated_scene_count"] == 6
+    assert summary["visual_grammar_module_count"] == 5
+    assert summary["geometry_blueprint_count"] == 5
+    assert summary["adapter_blocking_issue_count"] == 0
+    assert summary["sources_consumed"] == [
+        "run2_73_scene_plan_expansion.json",
+        "run2_73_renderer_input_validation.json",
+        "run2_73_visual_grammar_modules.json",
+    ]
+    assert adapter["next_required_action"] == EXPECTED_RUN2_E2_NEXT_REQUIRED_ACTION
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
