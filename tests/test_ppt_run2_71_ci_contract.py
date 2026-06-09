@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from pathlib import Path
 
@@ -16,9 +18,10 @@ def assert_contains(text: str, terms: list[str]) -> None:
 
 
 def test_run2_71_static_component_semantics_contract_is_ci_visible() -> None:
-    generator = ROOT / "scripts" / "generate_ppt_run2_71_component_semantics_arms.mjs"
-    assert generator.exists()
-    script = generator.read_text(encoding="utf-8")
+    script = (ROOT / "scripts" / "generate_ppt_run2_71_component_semantics_arms.mjs").read_text(
+        encoding="utf-8"
+    )
+    viewer = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
 
     result = load_json(PACK / "results" / "run2_71_component_semantics_rerun_result.json")
     assert result["run_id"] == "2.71"
@@ -53,16 +56,10 @@ def test_run2_71_static_component_semantics_contract_is_ci_visible() -> None:
         ],
     )
 
-    viewer = (
-        ROOT
-        / "outputs"
-        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
-        / "presentations"
-        / "ppt-run-viewer.html"
-    ).read_text(encoding="utf-8")
     assert_contains(
         viewer,
         [
+            'LATEST_RUN_PAYLOAD_HINT = \'"latestRunId": "2.71"\'',
             "Run 2.71",
             "ppt-run2-71-full-vulca",
             "ppt-run2-71-bad-without-component-semantics",
