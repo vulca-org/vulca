@@ -1,0 +1,251 @@
+{
+  "artifact_id": "run2_76_visual_quality_evaluation",
+  "part": "Part J",
+  "schema_version": "ppt_run2_76_visual_quality_evaluation.v1",
+  "run_id": "2.76",
+  "status": "run2_76_visual_quality_evaluation_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "creates_new_ppt_deck": false,
+  "starts_renderer_rerun": false,
+  "public_ready": false,
+  "quality_claim_boundary": "part_j_evaluation_only_no_public_release_no_renderer_rerun",
+  "source_runs": {
+    "comparison_baseline": "2.73",
+    "evaluated_run": "2.75"
+  },
+  "input_chain": {
+    "run2_73_result": "docs/product/ppt-run2-data-skill-quality/results/run2_73_validated_scene_renderer_rerun_result.json",
+    "run2_75_result": "docs/product/ppt-run2-data-skill-quality/results/run2_75_renderer_repair_rerun_result.json",
+    "run2_74_h_evaluation": "docs/product/ppt-run2-data-skill-quality/results/run2_74_visual_quality_evaluation.json",
+    "run2_73_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-73-full-vulca/preview/contact-sheet.png",
+    "run2_75_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-75-full-vulca/preview/contact-sheet.png",
+    "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html"
+  },
+  "viewer_comparison_closure": {
+    "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+    "viewer_latest_run_id": "2.75",
+    "viewer_can_compare_2_73_and_2_75": true,
+    "run2_73_full_preview_count": 6,
+    "run2_75_full_preview_count": 6,
+    "browser_check_required_for_handoff": true,
+    "browser_check_note": "Part J records the expected viewer closure. Browser verification must confirm latest 2.75 and visible 2.73/2.75 comparison after this artifact is written."
+  },
+  "gemini_agent_review_summary": {
+    "tool": "mcp__gemini_agent.gemini_artifact_review",
+    "model": "gemini-3.5-flash",
+    "review_count": 2,
+    "used_for_verdict": true,
+    "capture_method": "live_gemini_agent_artifact_review",
+    "reviewed_artifacts": [
+      {
+        "run_id": "2.73",
+        "file": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-73-full-vulca/preview/contact-sheet.png",
+        "key_findings": [
+          "excellent_structural_variety",
+          "spatial_text_binding_present",
+          "product_feel_highly_technical_and_schematic"
+        ],
+        "risks": [
+          "high_engineering_blueprint_risk",
+          "tiny_label_legibility_risk"
+        ]
+      },
+      {
+        "run_id": "2.75",
+        "file": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-75-full-vulca/preview/contact-sheet.png",
+        "key_findings": [
+          "product_surface_detail_up",
+          "page_differentiation_regression_for_01_02_04_05",
+          "spatial_text_anchors_consistent"
+        ],
+        "risks": [
+          "high_engineering_blueprint_risk",
+          "tiny_label_legibility_risk"
+        ]
+      }
+    ],
+    "run2_73_findings": [
+      "excellent_structural_variety",
+      "high_engineering_blueprint_risk",
+      "tiny_label_legibility_risk"
+    ],
+    "run2_75_findings": [
+      "product_surface_detail_up",
+      "page_differentiation_regression_for_01_02_04_05",
+      "high_engineering_blueprint_risk",
+      "tiny_label_legibility_risk"
+    ],
+    "shared_risks": [
+      "engineering blueprint risk remains",
+      "tiny secondary labels reduce public presentation readability"
+    ]
+  },
+  "evaluation_questions": {
+    "is_2_75_better_than_2_73": {
+      "answer": "mixed_product_surface_up_page_differentiation_down_public_blocked",
+      "basis": "2.75 increases product surface detail, but Gemini and local review both find page differentiation regression and unchanged public-readiness blockers."
+    },
+    "does_2_75_have_stronger_product_feel": {
+      "answer": "yes_but_still_wireframe",
+      "basis": "The repair adds more product-like deck surfaces and connectors, but most pages still read as schematic UI wireframes rather than finished presentation scenes."
+    },
+    "are_page_differences_stronger_or_weaker": {
+      "answer": "weaker_for_core_product_surface_pages",
+      "basis": "Slides 01, 02, 04, and 05 converge around similar wireframe product surfaces, while contrast and close remain more distinct."
+    },
+    "is_text_binding_better": {
+      "answer": "slightly_stronger_but_small_labels_remain",
+      "basis": "Text anchors are more consistently attached to edges, rails, seams, and nodes, but small labels still reduce contact-sheet and public-video readability."
+    },
+    "does_2_75_reach_public_video_presentation_direction": {
+      "answer": "no_internal_blueprint_risk_remains",
+      "basis": "The deck is internally viewable, but the wireframe blueprint aesthetic and debug-like marks still make it feel like an engineering review."
+    }
+  },
+  "visual_quality_assessment": {
+    "data_workflow_entry_gate": "pass_internal_only",
+    "viewer_comparison_gate": "pass_internal_only",
+    "design_quality_gate": "blocked",
+    "public_video_readiness": "blocked",
+    "global_delta_vs_2_73": "product_surface_up_page_differentiation_down_public_readiness_still_blocked",
+    "top_blocker": "wireframe_blueprint_aesthetic_and_repeated_product_surfaces_still_read_as_internal_engineering_diagrams",
+    "next_layer_to_fix": "visual_grammar_and_renderer"
+  },
+  "role_assessments": [
+    {
+      "role": "cover",
+      "slide_index": 1,
+      "visual_grammar_module": "product_reveal",
+      "product_feel_delta": "improved_but_wireframe",
+      "page_differentiation_delta": "weaker",
+      "text_binding_delta": "slightly_stronger_but_small",
+      "engineering_report_risk": "high",
+      "public_video_direction": "no",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "2.75 adds more visible product surface detail, but the opening still reads as a thin wireframe deck surface with debug-like red markers.",
+      "repair_instruction": "Replace the repeated wireframe deck surface with a more inspectable finished product hero and fewer debug-colored markers.",
+      "trace_support": {
+        "source_text_binding_id": "text_binding_2_73_cover",
+        "visual_density_profile": "cover_product_surface_depth_dense_edge_labels",
+        "product_surface_detail_count": 9,
+        "connector_or_edge_binding_count": 5
+      }
+    },
+    {
+      "role": "setup",
+      "slide_index": 2,
+      "visual_grammar_module": "hero_field",
+      "product_feel_delta": "partial",
+      "page_differentiation_delta": "weaker",
+      "text_binding_delta": "partial",
+      "engineering_report_risk": "high",
+      "public_video_direction": "no",
+      "root_cause_layer": "visual_grammar",
+      "repair_required": true,
+      "visual_observation": "The hero field keeps text attached to the route, but its product destination now feels too close to the repeated product reveal surface.",
+      "repair_instruction": "Make the hero field visually distinct from product reveal pages; the route should drive a larger and more legible destination state.",
+      "trace_support": {
+        "source_text_binding_id": "text_binding_2_73_setup",
+        "visual_density_profile": "setup_field_route_with_visible_product_destination",
+        "product_surface_detail_count": 8,
+        "connector_or_edge_binding_count": 5
+      }
+    },
+    {
+      "role": "contrast",
+      "slide_index": 3,
+      "visual_grammar_module": "before_after_theater",
+      "product_feel_delta": "partial",
+      "page_differentiation_delta": "same",
+      "text_binding_delta": "partial",
+      "engineering_report_risk": "medium",
+      "public_video_direction": "partial",
+      "root_cause_layer": "visual_grammar",
+      "repair_required": true,
+      "visual_observation": "The comparison seam remains one of the more distinct pages, but the before/after states still look like a diagram study more than a public product transformation.",
+      "repair_instruction": "Keep the seam but reduce debug-lens feeling; make before and after product states visibly different at thumbnail scale.",
+      "trace_support": {
+        "source_text_binding_id": "text_binding_2_73_contrast",
+        "visual_density_profile": "contrast_rebalanced_before_after_product_states",
+        "product_surface_detail_count": 8,
+        "connector_or_edge_binding_count": 4
+      }
+    },
+    {
+      "role": "proof",
+      "slide_index": 4,
+      "visual_grammar_module": "evidence_workspace",
+      "product_feel_delta": "improved_but_wireframe",
+      "page_differentiation_delta": "weaker",
+      "text_binding_delta": "slightly_stronger_but_small",
+      "engineering_report_risk": "high",
+      "public_video_direction": "no",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "The proof workspace is more populated than 2.73, but the repeated thin surfaces and tiny labels still read as internal QA documentation.",
+      "repair_instruction": "Turn the workspace into source, output, and review objects with readable labels, not repeated thin UI cards.",
+      "trace_support": {
+        "source_text_binding_id": "text_binding_2_73_proof",
+        "visual_density_profile": "proof_populated_evidence_workspace",
+        "product_surface_detail_count": 11,
+        "connector_or_edge_binding_count": 5
+      }
+    },
+    {
+      "role": "climax",
+      "slide_index": 5,
+      "visual_grammar_module": "product_reveal",
+      "product_feel_delta": "improved_but_wireframe",
+      "page_differentiation_delta": "weaker",
+      "text_binding_delta": "partial",
+      "engineering_report_risk": "high",
+      "public_video_direction": "no",
+      "root_cause_layer": "visual_grammar",
+      "repair_required": true,
+      "visual_observation": "The climax has a denser product surface than 2.73, but it is too similar to the cover and does not yet deliver a finished reveal moment.",
+      "repair_instruction": "Differentiate climax from cover with scale, richer product content, and a decisive completion moment.",
+      "trace_support": {
+        "source_text_binding_id": "text_binding_2_73_climax",
+        "visual_density_profile": "climax_finished_product_reveal_surface",
+        "product_surface_detail_count": 10,
+        "connector_or_edge_binding_count": 4
+      }
+    },
+    {
+      "role": "close",
+      "slide_index": 6,
+      "visual_grammar_module": "decision_map",
+      "product_feel_delta": "partial",
+      "page_differentiation_delta": "same",
+      "text_binding_delta": "slightly_stronger_but_small",
+      "engineering_report_risk": "medium",
+      "public_video_direction": "partial",
+      "root_cause_layer": "text_binding",
+      "repair_required": true,
+      "visual_observation": "The decision map remains structurally distinct, but its labels and endpoints need more public-facing hierarchy.",
+      "repair_instruction": "Keep decision nodes but enlarge labels and make the release decision visually dominant.",
+      "trace_support": {
+        "source_text_binding_id": "text_binding_2_73_close",
+        "visual_density_profile": "close_large_decision_nodes_connector_endpoints",
+        "product_surface_detail_count": 7,
+        "connector_or_edge_binding_count": 5
+      }
+    }
+  ],
+  "root_cause_summary": {
+    "primary_layer": "visual_grammar_and_renderer",
+    "secondary_layers": [
+      "text_binding"
+    ],
+    "not_primary_layer": "data_absence",
+    "rationale": "A-F data is present and consumed; the remaining visible failure is how the visual grammar and renderer realize product surfaces, rhythm, and public hierarchy."
+  },
+  "no_new_renderer_proof": {
+    "new_pptx_created": false,
+    "new_html_created": false,
+    "starts_renderer_rerun": false,
+    "status": "pass"
+  },
+  "next_required_action": "part_k_visual_grammar_and_renderer_repair_from_j_evaluation"
+}

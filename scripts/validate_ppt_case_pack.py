@@ -98,6 +98,7 @@ RUN2_73_REQUIRED_FILES = [
     "results/run2_73_validated_scene_renderer_rerun_result.json",
     "results/run2_74_visual_quality_evaluation.json",
     "results/run2_75_renderer_repair_rerun_result.json",
+    "results/run2_76_visual_quality_evaluation.json",
 ]
 
 
@@ -481,6 +482,18 @@ RUN2_75_RENDERER_REPAIR_REQUIRED_CHECKS = {
     "pages_with_stronger_connector_or_edge_binding": 6,
     "distinct_visual_density_profiles": 6,
 }
+RUN2_76_VISUAL_QUALITY_EVALUATION_STATUS = "run2_76_visual_quality_evaluation_public_blocked"
+RUN2_76_VISUAL_QUALITY_QUESTION_IDS = {
+    "is_2_75_better_than_2_73",
+    "does_2_75_have_stronger_product_feel",
+    "are_page_differences_stronger_or_weaker",
+    "is_text_binding_better",
+    "does_2_75_reach_public_video_presentation_direction",
+}
+RUN2_76_PRODUCT_FEEL_DELTA_VALUES = {"improved_but_wireframe", "partial", "not_improved"}
+RUN2_76_PAGE_DIFFERENTIATION_VALUES = {"improved", "same", "weaker"}
+RUN2_76_TEXT_BINDING_DELTA_VALUES = {"slightly_stronger_but_small", "partial", "weak"}
+RUN2_76_PUBLIC_VIDEO_DIRECTION_VALUES = {"no", "partial", "yes"}
 
 
 @dataclass(frozen=True)
@@ -4865,6 +4878,288 @@ def validate_run2_75_renderer_repair_checks(label: str, value: Any, errors: list
         errors.append(f"{label}.public_quality_verdict_started must be false")
 
 
+def validate_run2_76_visual_quality_evaluation(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "results" / "run2_76_visual_quality_evaluation.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_76_visual_quality_evaluation"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "creates_new_ppt_deck",
+            "starts_renderer_rerun",
+            "public_ready",
+            "quality_claim_boundary",
+            "source_runs",
+            "input_chain",
+            "viewer_comparison_closure",
+            "gemini_agent_review_summary",
+            "evaluation_questions",
+            "visual_quality_assessment",
+            "role_assessments",
+            "root_cause_summary",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part J":
+        errors.append(f"{label}.part must be Part J")
+    if data.get("run_id") != "2.76":
+        errors.append(f"{label}.run_id must be 2.76")
+    if data.get("status") != RUN2_76_VISUAL_QUALITY_EVALUATION_STATUS:
+        errors.append(f"{label}.status must be {RUN2_76_VISUAL_QUALITY_EVALUATION_STATUS}")
+    if data.get("creates_new_ppt_deck") is not False:
+        errors.append(f"{label}.creates_new_ppt_deck must be false")
+    if data.get("starts_renderer_rerun") is not False:
+        errors.append(f"{label}.starts_renderer_rerun must be false")
+    if data.get("public_ready") is not False:
+        errors.append(f"{label}.public_ready must be false")
+    if data.get("quality_claim_boundary") != "part_j_evaluation_only_no_public_release_no_renderer_rerun":
+        errors.append(f"{label}.quality_claim_boundary must be part_j_evaluation_only_no_public_release_no_renderer_rerun")
+    validate_run2_76_visual_quality_source_runs(f"{label}.source_runs", data.get("source_runs", {}), errors)
+    validate_run2_76_visual_quality_input_chain(f"{label}.input_chain", data.get("input_chain", {}), errors)
+    validate_run2_76_visual_quality_viewer_closure(
+        f"{label}.viewer_comparison_closure",
+        data.get("viewer_comparison_closure", {}),
+        errors,
+    )
+    validate_run2_76_gemini_summary(
+        f"{label}.gemini_agent_review_summary",
+        data.get("gemini_agent_review_summary", {}),
+        errors,
+    )
+    validate_run2_76_visual_quality_questions(
+        f"{label}.evaluation_questions",
+        data.get("evaluation_questions", {}),
+        errors,
+    )
+    validate_run2_76_visual_quality_assessment(
+        f"{label}.visual_quality_assessment",
+        data.get("visual_quality_assessment", {}),
+        errors,
+    )
+    validate_run2_76_visual_quality_role_assessments(
+        f"{label}.role_assessments",
+        data.get("role_assessments", []),
+        errors,
+    )
+    validate_run2_76_visual_quality_root_cause_summary(
+        f"{label}.root_cause_summary",
+        data.get("root_cause_summary", {}),
+        errors,
+    )
+    if data.get("next_required_action") != "part_k_visual_grammar_and_renderer_repair_from_j_evaluation":
+        errors.append(f"{label}.next_required_action must be part_k_visual_grammar_and_renderer_repair_from_j_evaluation")
+
+
+def validate_run2_76_visual_quality_source_runs(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["comparison_baseline", "evaluated_run"], errors)
+    if value.get("comparison_baseline") != "2.73":
+        errors.append(f"{label}.comparison_baseline must be 2.73")
+    if value.get("evaluated_run") != "2.75":
+        errors.append(f"{label}.evaluated_run must be 2.75")
+
+
+def validate_run2_76_visual_quality_input_chain(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    required = [
+        "run2_73_result",
+        "run2_75_result",
+        "run2_74_h_evaluation",
+        "run2_73_full_contact_sheet",
+        "run2_75_full_contact_sheet",
+        "ppt_run_viewer",
+    ]
+    require_keys(label, value, required, errors)
+    for key in required:
+        if key in value:
+            require_non_empty_string(f"{label}.{key}", value[key], errors)
+
+
+def validate_run2_76_visual_quality_viewer_closure(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        [
+            "viewer_latest_run_id",
+            "viewer_can_compare_2_73_and_2_75",
+            "run2_73_full_preview_count",
+            "run2_75_full_preview_count",
+            "browser_check_required_for_handoff",
+        ],
+        errors,
+    )
+    if value.get("viewer_latest_run_id") != "2.75":
+        errors.append(f"{label}.viewer_latest_run_id must be 2.75")
+    if value.get("viewer_can_compare_2_73_and_2_75") is not True:
+        errors.append(f"{label}.viewer_can_compare_2_73_and_2_75 must be true")
+    for key in ["run2_73_full_preview_count", "run2_75_full_preview_count"]:
+        if key in value and require_integer(f"{label}.{key}", value[key], errors) and value[key] != 6:
+            errors.append(f"{label}.{key} must be 6")
+    if value.get("browser_check_required_for_handoff") is not True:
+        errors.append(f"{label}.browser_check_required_for_handoff must be true")
+
+
+def validate_run2_76_gemini_summary(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["tool", "model", "review_count", "used_for_verdict", "run2_75_findings", "shared_risks"], errors)
+    if value.get("tool") != "mcp__gemini_agent.gemini_artifact_review":
+        errors.append(f"{label}.tool must be mcp__gemini_agent.gemini_artifact_review")
+    if value.get("model") != "gemini-3.5-flash":
+        errors.append(f"{label}.model must be gemini-3.5-flash")
+    if "review_count" in value and require_integer(f"{label}.review_count", value["review_count"], errors) and value["review_count"] != 2:
+        errors.append(f"{label}.review_count must be 2")
+    if value.get("used_for_verdict") is not True:
+        errors.append(f"{label}.used_for_verdict must be true")
+    if "run2_75_findings" in value:
+        validate_string_list(f"{label}.run2_75_findings", value["run2_75_findings"], errors)
+    if "shared_risks" in value:
+        validate_string_list(f"{label}.shared_risks", value["shared_risks"], errors)
+
+
+def validate_run2_76_visual_quality_questions(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    for question_id in sorted(RUN2_76_VISUAL_QUALITY_QUESTION_IDS):
+        if question_id not in value:
+            errors.append(f"{label} missing key: {question_id}")
+            continue
+        question = value[question_id]
+        question_label = f"{label}.{question_id}"
+        if not require_non_empty_dict(question_label, question, errors):
+            continue
+        require_keys(question_label, question, ["answer"], errors)
+        if "answer" in question:
+            require_non_empty_string(f"{question_label}.answer", question["answer"], errors)
+    expected_answers = {
+        "is_2_75_better_than_2_73": "mixed_product_surface_up_page_differentiation_down_public_blocked",
+        "does_2_75_have_stronger_product_feel": "yes_but_still_wireframe",
+        "are_page_differences_stronger_or_weaker": "weaker_for_core_product_surface_pages",
+        "is_text_binding_better": "slightly_stronger_but_small_labels_remain",
+        "does_2_75_reach_public_video_presentation_direction": "no_internal_blueprint_risk_remains",
+    }
+    for question_id, expected in expected_answers.items():
+        question = value.get(question_id)
+        if isinstance(question, dict) and question.get("answer") != expected:
+            errors.append(f"{label}.{question_id}.answer must be {expected}")
+
+
+def validate_run2_76_visual_quality_assessment(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    expected_values = {
+        "data_workflow_entry_gate": "pass_internal_only",
+        "viewer_comparison_gate": "pass_internal_only",
+        "design_quality_gate": "blocked",
+        "public_video_readiness": "blocked",
+        "global_delta_vs_2_73": "product_surface_up_page_differentiation_down_public_readiness_still_blocked",
+        "top_blocker": "wireframe_blueprint_aesthetic_and_repeated_product_surfaces_still_read_as_internal_engineering_diagrams",
+        "next_layer_to_fix": "visual_grammar_and_renderer",
+    }
+    require_keys(label, value, list(expected_values), errors)
+    for key, expected in expected_values.items():
+        if value.get(key) != expected:
+            errors.append(f"{label}.{key} must be {expected}")
+
+
+def validate_run2_76_visual_quality_role_assessments(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    repair_count = 0
+    for index, record in enumerate(value):
+        record_label = f"{label}[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{record_label} must be an object")
+            continue
+        require_keys(
+            record_label,
+            record,
+            [
+                "role",
+                "slide_index",
+                "visual_grammar_module",
+                "product_feel_delta",
+                "page_differentiation_delta",
+                "text_binding_delta",
+                "engineering_report_risk",
+                "public_video_direction",
+                "root_cause_layer",
+                "repair_required",
+                "repair_instruction",
+            ],
+            errors,
+        )
+        role = record.get("role")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in record and require_integer(f"{record_label}.slide_index", record["slide_index"], errors):
+            if record["slide_index"] != index + 1:
+                errors.append(f"{record_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if record.get("visual_grammar_module") != expected_module:
+                errors.append(f"{record_label}.visual_grammar_module must be {expected_module} for {role}")
+        if "product_feel_delta" in record:
+            validate_choice(f"{record_label}.product_feel_delta", record["product_feel_delta"], RUN2_76_PRODUCT_FEEL_DELTA_VALUES, errors)
+        if "page_differentiation_delta" in record:
+            validate_choice(
+                f"{record_label}.page_differentiation_delta",
+                record["page_differentiation_delta"],
+                RUN2_76_PAGE_DIFFERENTIATION_VALUES,
+                errors,
+            )
+        if "text_binding_delta" in record:
+            validate_choice(f"{record_label}.text_binding_delta", record["text_binding_delta"], RUN2_76_TEXT_BINDING_DELTA_VALUES, errors)
+        if "engineering_report_risk" in record:
+            validate_choice(f"{record_label}.engineering_report_risk", record["engineering_report_risk"], RUN2_74_REPORT_RISK_VALUES, errors)
+        if "public_video_direction" in record:
+            validate_choice(f"{record_label}.public_video_direction", record["public_video_direction"], RUN2_76_PUBLIC_VIDEO_DIRECTION_VALUES, errors)
+        if "root_cause_layer" in record:
+            validate_choice(
+                f"{record_label}.root_cause_layer",
+                record["root_cause_layer"],
+                RUN2_74_VISUAL_QUALITY_ROOT_CAUSE_LAYERS,
+                errors,
+            )
+        if record.get("repair_required") is True:
+            repair_count += 1
+        elif "repair_required" in record:
+            errors.append(f"{record_label}.repair_required must be true or false")
+        if "repair_instruction" in record:
+            require_non_empty_string(f"{record_label}.repair_instruction", record["repair_instruction"], errors)
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+    if repair_count < 5:
+        errors.append(f"{label} must mark at least 5 pages repair_required")
+
+
+def validate_run2_76_visual_quality_root_cause_summary(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["primary_layer", "not_primary_layer"], errors)
+    if value.get("primary_layer") != "visual_grammar_and_renderer":
+        errors.append(f"{label}.primary_layer must be visual_grammar_and_renderer")
+    if value.get("not_primary_layer") != "data_absence":
+        errors.append(f"{label}.not_primary_layer must be data_absence")
+    secondary = value.get("secondary_layers")
+    if secondary is not None:
+        validate_string_list(f"{label}.secondary_layers", secondary, errors)
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -5081,6 +5376,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_73_validated_scene_renderer_result(root, errors)
             validate_run2_74_visual_quality_evaluation(root, errors)
             validate_run2_75_renderer_repair_rerun_result(root, errors)
+            validate_run2_76_visual_quality_evaluation(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)

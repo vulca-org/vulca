@@ -1493,6 +1493,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_75_renderer_repair_rerun_result(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_76_visual_quality_evaluation.json").write_text(
+        json.dumps(valid_run2_76_visual_quality_evaluation(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -2328,6 +2332,99 @@ def valid_run2_75_renderer_repair_rerun_result() -> dict:
     }
 
 
+def valid_run2_76_visual_quality_evaluation() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    return {
+        "artifact_id": "run2_76_visual_quality_evaluation",
+        "part": "Part J",
+        "schema_version": "ppt_run2_76_visual_quality_evaluation.v1",
+        "run_id": "2.76",
+        "status": "run2_76_visual_quality_evaluation_public_blocked",
+        "creates_new_ppt_deck": False,
+        "starts_renderer_rerun": False,
+        "public_ready": False,
+        "quality_claim_boundary": "part_j_evaluation_only_no_public_release_no_renderer_rerun",
+        "source_runs": {
+            "comparison_baseline": "2.73",
+            "evaluated_run": "2.75",
+        },
+        "input_chain": {
+            "run2_73_result": "docs/product/ppt-run2-data-skill-quality/results/run2_73_validated_scene_renderer_rerun_result.json",
+            "run2_75_result": "docs/product/ppt-run2-data-skill-quality/results/run2_75_renderer_repair_rerun_result.json",
+            "run2_74_h_evaluation": "docs/product/ppt-run2-data-skill-quality/results/run2_74_visual_quality_evaluation.json",
+            "run2_73_full_contact_sheet": "outputs/thread/presentations/ppt-run2-73-full-vulca/preview/contact-sheet.png",
+            "run2_75_full_contact_sheet": "outputs/thread/presentations/ppt-run2-75-full-vulca/preview/contact-sheet.png",
+            "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+        },
+        "viewer_comparison_closure": {
+            "viewer_latest_run_id": "2.75",
+            "viewer_can_compare_2_73_and_2_75": True,
+            "run2_73_full_preview_count": 6,
+            "run2_75_full_preview_count": 6,
+            "browser_check_required_for_handoff": True,
+        },
+        "gemini_agent_review_summary": {
+            "tool": "mcp__gemini_agent.gemini_artifact_review",
+            "model": "gemini-3.5-flash",
+            "review_count": 2,
+            "used_for_verdict": True,
+            "run2_75_findings": [
+                "product_surface_detail_up",
+                "page_differentiation_regression_for_01_02_04_05",
+            ],
+            "shared_risks": ["engineering blueprint risk remains"],
+        },
+        "evaluation_questions": {
+            "is_2_75_better_than_2_73": {
+                "answer": "mixed_product_surface_up_page_differentiation_down_public_blocked"
+            },
+            "does_2_75_have_stronger_product_feel": {"answer": "yes_but_still_wireframe"},
+            "are_page_differences_stronger_or_weaker": {"answer": "weaker_for_core_product_surface_pages"},
+            "is_text_binding_better": {"answer": "slightly_stronger_but_small_labels_remain"},
+            "does_2_75_reach_public_video_presentation_direction": {"answer": "no_internal_blueprint_risk_remains"},
+        },
+        "visual_quality_assessment": {
+            "data_workflow_entry_gate": "pass_internal_only",
+            "viewer_comparison_gate": "pass_internal_only",
+            "design_quality_gate": "blocked",
+            "public_video_readiness": "blocked",
+            "global_delta_vs_2_73": "product_surface_up_page_differentiation_down_public_readiness_still_blocked",
+            "top_blocker": "wireframe_blueprint_aesthetic_and_repeated_product_surfaces_still_read_as_internal_engineering_diagrams",
+            "next_layer_to_fix": "visual_grammar_and_renderer",
+        },
+        "role_assessments": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "product_feel_delta": "improved_but_wireframe",
+                "page_differentiation_delta": "weaker" if role in {"cover", "setup", "proof", "climax"} else "same",
+                "text_binding_delta": "slightly_stronger_but_small",
+                "engineering_report_risk": "high",
+                "public_video_direction": "no",
+                "root_cause_layer": "visual_grammar",
+                "repair_required": True,
+                "repair_instruction": "Break repeated wireframe surfaces and add public-facing product context.",
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "root_cause_summary": {
+            "primary_layer": "visual_grammar_and_renderer",
+            "not_primary_layer": "data_absence",
+            "secondary_layers": ["text_binding"],
+        },
+        "next_required_action": "part_k_visual_grammar_and_renderer_repair_from_j_evaluation",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -2359,6 +2456,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: results/run2_73_validated_scene_renderer_rerun_result.json" in result.errors
     assert "missing required file: results/run2_74_visual_quality_evaluation.json" in result.errors
     assert "missing required file: results/run2_75_renderer_repair_rerun_result.json" in result.errors
+    assert "missing required file: results/run2_76_visual_quality_evaluation.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -2743,6 +2841,63 @@ def test_run2_profile_rejects_renderer_repair_missing_h_or_public_release(tmp_pa
     )
     assert (
         "run2_75_renderer_repair_rerun_result.renderer_repair_checks.public_quality_verdict_started must be false"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_part_j_public_release_or_missing_gemini(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    audit_path = pack / "results" / "run2_76_visual_quality_evaluation.json"
+    audit = json.loads(audit_path.read_text(encoding="utf-8"))
+    audit["public_ready"] = True
+    audit["starts_renderer_rerun"] = True
+    audit["source_runs"]["evaluated_run"] = "2.73"
+    audit["viewer_comparison_closure"]["viewer_latest_run_id"] = "2.73"
+    audit["gemini_agent_review_summary"]["review_count"] = 1
+    audit["gemini_agent_review_summary"]["model"] = "gemini-legacy"
+    audit["evaluation_questions"].pop("is_2_75_better_than_2_73")
+    audit["visual_quality_assessment"]["design_quality_gate"] = "pass"
+    audit["role_assessments"][0]["visual_grammar_module"] = "hero_field"
+    audit["role_assessments"][0]["root_cause_layer"] = "source_data"
+    audit_path.write_text(json.dumps(audit, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_76_visual_quality_evaluation.public_ready must be false" in result.errors
+    assert "run2_76_visual_quality_evaluation.starts_renderer_rerun must be false" in result.errors
+    assert "run2_76_visual_quality_evaluation.source_runs.evaluated_run must be 2.75" in result.errors
+    assert (
+        "run2_76_visual_quality_evaluation.viewer_comparison_closure.viewer_latest_run_id must be 2.75"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_quality_evaluation.gemini_agent_review_summary.model must be gemini-3.5-flash"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_quality_evaluation.gemini_agent_review_summary.review_count must be 2"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_quality_evaluation.evaluation_questions missing key: is_2_75_better_than_2_73"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_quality_evaluation.visual_quality_assessment.design_quality_gate must be blocked"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_quality_evaluation.role_assessments[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_quality_evaluation.role_assessments[0].root_cause_layer must be one of content, renderer, text_binding, visual_grammar"
         in result.errors
     )
 
