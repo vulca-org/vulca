@@ -55,7 +55,7 @@ def test_run2_70_static_high_fidelity_mock_content_contract_is_ci_visible() -> N
     assert_contains(
         viewer,
         [
-            'LATEST_RUN_PAYLOAD_HINT = \'"latestRunId": "2.71"\'',
+            'LATEST_RUN_PAYLOAD_HINT = \'"latestRunId": "2.72"\'',
             "Run 2.70",
             "ppt-run2-70-prompt-only",
             "ppt-run2-70-run1-5-skill",

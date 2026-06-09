@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.71"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.72"'
 
 
 @dataclass(frozen=True)
@@ -738,6 +738,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.72",
+        "Run 2.72",
+        "run2-72-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-72-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-72-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_72_full_shape_bound_text",
+                "Run 2.72 full",
+                "ppt-run2-72-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_72_without_shape_bound_text",
+                "Bad missing Run 2.72 shape-bound text",
+                "ppt-run2-72-bad-without-shape-bound-text",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -926,6 +947,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run269_result = read_json(pack / "results" / "run2_69_public_content_fill_rerun_result.json")
     run270_result = read_json(pack / "results" / "run2_70_high_fidelity_mock_content_rerun_result.json")
     run271_result = read_json(pack / "results" / "run2_71_component_semantics_rerun_result.json")
+    run272_result = read_json(pack / "results" / "run2_72_shape_bound_text_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1439,6 +1461,20 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run271FullTracePath": "ppt-run2-71-full-vulca/trace_manifest.json",
         "run271BadTracePath": "ppt-run2-71-bad-without-component-semantics/trace_manifest.json",
         "run271FourArmSheetPath": "run2-71-four-arm-contact-sheet.png",
+        "run272ResultStatus": run272_result.get("status", ""),
+        "run272Result": run272_result,
+        "run272ResultPath": "run2_72_shape_bound_text_rerun_result.json",
+        "run272TargetLayer": (run272_result.get("quality_delta") or {}).get(
+            "target_layer", "run2_72_shape_bound_text_geometry"
+        ),
+        "run272SourceDataStatus": (run272_result.get("quality_delta") or {}).get(
+            "source_data_status",
+            "run2_72_shape_bound_text_consumed_before_native_ppt_drawing",
+        ),
+        "run272GeneratorPath": "scripts/generate_ppt_run2_72_shape_bound_text_arms.mjs",
+        "run272FullTracePath": "ppt-run2-72-full-vulca/trace_manifest.json",
+        "run272BadTracePath": "ppt-run2-72-bad-without-shape-bound-text/trace_manifest.json",
+        "run272FourArmSheetPath": "run2-72-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2793,6 +2829,12 @@ def build_html(data: dict[str, Any]) -> str:
       const run271Quality = run271Result.quality_delta || {{}};
       const run271Control = run271Result.control_boundary || {{}};
       const run271ComponentScope = run271Result.component_semantics_scope || {{}};
+      const run272Result = refs.run272Result || {{}};
+      const run272Rerun = run272Result.rerun || {{}};
+      const run272Inputs = run272Result.input_chain || {{}};
+      const run272Quality = run272Result.quality_delta || {{}};
+      const run272Control = run272Result.control_boundary || {{}};
+      const run272ShapeScope = run272Result.shape_bound_text_scope || {{}};
       const run266ArtDirectionByRole = Object.fromEntries((run266ArtDirection.slide_art_direction_contracts || []).map((record) => [record.role, record]));
       const run266GrammarCards = (run266DesignGrammar.role_design_grammar_records || []).map((record) => {{
         const art = run266ArtDirectionByRole[record.role] || {{}};
@@ -3142,6 +3184,57 @@ def build_html(data: dict[str, Any]) -> str:
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.72 shape-bound text rerun</h3><p>Run 2.72 consumes the Run 2.71 component semantics deck and trace, then fixes the remaining mismatch bug: component-level labels must record a component bbox, a text bbox, and a pass that proves the text box is inside the matching shape bounds.</p></div><span class="pill" title="${{escapeHtml(refs.run272ResultStatus || "missing")}}">${{escapeHtml(refs.run272ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.72 Shape-Bound Text</h4>
+              ${{detailBlock("Result", refs.run272ResultPath || "run2_72_shape_bound_text_rerun_result.json")}}
+              ${{detailBlock("Generator", refs.run272GeneratorPath || "scripts/generate_ppt_run2_72_shape_bound_text_arms.mjs")}}
+              ${{detailBlock("Best internal arm", run272Rerun.best_internal_arm)}}
+              ${{detailBlock("Public ready", run272Result.public_ready)}}
+              ${{detailBlock("Release boundary", run272Result.release_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Generated outputs</h4>
+              ${{detailBlock("Four-arm sheet", refs.run272FourArmSheetPath || "run2-72-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full trace", refs.run272FullTracePath || "ppt-run2-72-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad trace", refs.run272BadTracePath || "ppt-run2-72-bad-without-shape-bound-text/trace_manifest.json")}}
+              ${{detailBlock("Full skill series", run272Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Shape-bound text scope</h4>
+              ${{detailBlock("Target roles", run272ShapeScope.target_roles)}}
+              ${{detailBlock("Required archetypes", run272ShapeScope.required_component_archetypes)}}
+              ${{detailBlock("Inherited mock surfaces", run272ShapeScope.inherited_mock_surfaces)}}
+              ${{detailBlock("Visual policy", run272ShapeScope.visual_policy)}}
+              ${{detailBlock("Source run", run272ShapeScope.source_run_id)}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality delta</h4>
+              ${{detailBlock("Target layer", refs.run272TargetLayer || run272Quality.target_layer)}}
+              ${{detailBlock("Source data status", refs.run272SourceDataStatus || run272Quality.source_data_status)}}
+              ${{detailBlock("Targeted slides with shape-bound text", run272Quality.full_targeted_slides_with_shape_bound_text)}}
+              ${{detailBlock("Binding geometry records", run272Quality.full_targeted_slides_with_binding_geometry_records)}}
+              ${{detailBlock("Text inside component bounds", run272Quality.full_targeted_slides_with_text_inside_component_bounds)}}
+              ${{detailBlock("Zero unbound component labels", run272Quality.full_targeted_slides_with_zero_unbound_component_labels)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Prompt-only boundary", run272Control.prompt_only)}}
+              ${{detailBlock("Run 1.5 boundary", run272Control.run1_5_skill)}}
+              ${{detailBlock("Bad control", run272Control.bad_run2_72_without_shape_bound_text)}}
+              ${{detailBlock("Bad missing shape-bound text", run272Quality.bad_control_targeted_slides_without_shape_bound_text)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("2.71 result", run272Inputs.run2_71_result)}}
+              ${{detailBlock("2.71 full trace", run272Inputs.run2_71_full_trace)}}
+              ${{detailBlock("2.66 design grammar", run272Inputs.run2_66_design_grammar)}}
+              ${{detailBlock("2.66 art direction", run272Inputs.run2_66_art_direction)}}
+            </article>
+          </div>
+        </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.71 component semantics rerun</h3><p>Run 2.71 consumes the Run 2.70 high-fidelity mock deck and trace, then targets the remaining boxiness bug: target slides must expose component manifests, text-to-component bindings, non-rectangular primitives, and weakness repair status before native drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run271ResultStatus || "missing")}}">${{escapeHtml(refs.run271ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">

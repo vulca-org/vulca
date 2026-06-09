@@ -59,12 +59,12 @@ def test_run2_71_static_component_semantics_contract_is_ci_visible() -> None:
     assert_contains(
         viewer,
         [
-            'LATEST_RUN_PAYLOAD_HINT = \'"latestRunId": "2.71"\'',
+            'LATEST_RUN_PAYLOAD_HINT = \'"latestRunId": "2.72"\'',
             "Run 2.71",
             "ppt-run2-71-full-vulca",
             "ppt-run2-71-bad-without-component-semantics",
             "run2-71-four-arm-contact-sheet.png",
             "run2_71_component_semantics_rerun_result.json",
-            '"latestRunId": "2.71"',
+            '"latestRunId": "2.72"',
         ],
     )
