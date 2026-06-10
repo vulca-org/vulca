@@ -1505,6 +1505,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_77_visual_grammar_renderer_repair_rerun_result(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_78_visual_quality_evaluation.json").write_text(
+        json.dumps(valid_run2_78_visual_quality_evaluation(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -2669,6 +2673,140 @@ def valid_run2_77_visual_grammar_renderer_repair_rerun_result() -> dict:
     }
 
 
+def valid_run2_78_visual_quality_evaluation() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    question_ids = [
+        "is_2_77_better_than_2_75",
+        "did_2_77_restore_page_differentiation",
+        "did_2_77_reduce_wireframe_aesthetic",
+        "did_2_77_reduce_small_label_problem",
+        "does_2_77_improve_product_presentation_feel",
+        "does_2_77_reach_public_video_presentation_direction",
+    ]
+    return {
+        "artifact_id": "run2_78_visual_quality_evaluation",
+        "part": "Part L",
+        "schema_version": "ppt_run2_78_visual_quality_evaluation.v1",
+        "run_id": "2.78",
+        "status": "run2_78_visual_quality_evaluation_public_blocked",
+        "creates_new_ppt_deck": False,
+        "starts_renderer_rerun": False,
+        "updates_html_viewer": False,
+        "public_release_started": False,
+        "public_ready": False,
+        "quality_claim_boundary": "part_l_evaluation_only_no_public_release_no_renderer_rerun",
+        "source_runs": {
+            "comparison_baseline": "2.75",
+            "evaluated_run": "2.77",
+            "prior_reference_run": "2.73",
+        },
+        "input_chain": {
+            "run2_77_result": "docs/product/ppt-run2-data-skill-quality/results/run2_77_visual_grammar_renderer_repair_rerun_result.json",
+            "run2_76_j_evaluation": "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json",
+            "run2_76_k1_repair_plan": "docs/product/ppt-run2-data-skill-quality/run2_76_visual_grammar_renderer_repair_plan.json",
+            "run2_75_full_contact_sheet": "outputs/thread/presentations/ppt-run2-75-full-vulca/preview/contact-sheet.png",
+            "run2_77_full_contact_sheet": "outputs/thread/presentations/ppt-run2-77-full-vulca/preview/contact-sheet.png",
+            "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+        },
+        "viewer_comparison_closure": {
+            "viewer_latest_run_id": "2.77",
+            "viewer_can_compare_2_75_and_2_77": True,
+            "run2_75_full_preview_count": 6,
+            "run2_77_full_preview_count": 6,
+            "browser_check_required_for_handoff": True,
+        },
+        "gemini_agent_review_summary": {
+            "tool": "mcp__gemini_agent.gemini_artifact_review",
+            "model": "gemini-3.5-flash",
+            "review_count": 1,
+            "used_for_verdict": True,
+            "run2_77_findings": ["moderate page differentiation", "technical abstract feel"],
+            "run2_77_risks": ["wireframe aesthetic remains", "small labels remain"],
+        },
+        "evaluation_questions": {
+            question_id: {"answer": "placeholder", "basis": "source-backed internal visual review"}
+            for question_id in question_ids
+        }
+        | {
+            "is_2_77_better_than_2_75": {
+                "answer": "partial_page_differentiation_up_public_blocked",
+                "basis": "2.77 improves role-specific scenes but remains public blocked.",
+            },
+            "did_2_77_restore_page_differentiation": {
+                "answer": "moderately_improved_but_01_04_05_share_wireframe_family",
+                "basis": "Target scenes differ, but several product pages still share a wireframe family.",
+            },
+            "did_2_77_reduce_wireframe_aesthetic": {
+                "answer": "no_wireframe_still_dominant",
+                "basis": "Thin outlines and red annotation marks remain dominant.",
+            },
+            "did_2_77_reduce_small_label_problem": {
+                "answer": "partial_label_count_down_but_labels_still_tiny",
+                "basis": "Label count is reduced, but labels are still too small for public video.",
+            },
+            "does_2_77_improve_product_presentation_feel": {
+                "answer": "partial_more_scene_specific_but_abstract_product_surface",
+                "basis": "Presentation scenes are clearer, but product surfaces are abstract.",
+            },
+            "does_2_77_reach_public_video_presentation_direction": {
+                "answer": "no_public_blocked",
+                "basis": "It remains an internal proof, not a public-ready presentation.",
+            },
+        },
+        "visual_quality_assessment": {
+            "data_workflow_entry_gate": "pass_internal_only",
+            "viewer_comparison_gate": "pass_internal_only",
+            "design_quality_gate": "blocked",
+            "public_video_readiness": "blocked",
+            "global_delta_vs_2_75": "page_differentiation_up_label_count_down_wireframe_still_blocks_public_readiness",
+            "top_blocker": "thin_wireframe_product_surfaces_and_annotation_marks_still_read_as_internal_diagram",
+            "next_layer_to_fix": "renderer_art_direction_and_scene_realization",
+        },
+        "role_assessments": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "delta_vs_2_75": "partial",
+                "page_differentiation": "partial",
+                "wireframe_reduction": "weak",
+                "label_hierarchy": "partial",
+                "public_video_direction": "no",
+                "root_cause_layer": "renderer",
+                "repair_required": True,
+                "visual_observation": "Still reads as a technical wireframe scene.",
+                "next_repair_instruction": "Replace thin diagram surfaces with stronger public presentation art direction.",
+                "trace_support": {
+                    "target_scene_direction": f"{role} target scene",
+                    "label_count": 4,
+                },
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "root_cause_summary": {
+            "primary_layer": "renderer_art_direction_and_scene_realization",
+            "secondary_layers": ["text_binding", "visual_grammar"],
+            "not_primary_layer": "data_absence",
+            "rationale": "K2 consumed the data and K1 plan; visible blockers are rendering/art direction.",
+        },
+        "no_new_renderer_proof": {
+            "new_pptx_created": False,
+            "new_html_created": False,
+            "starts_renderer_rerun": False,
+            "status": "pass",
+        },
+        "next_required_action": "part_m_renderer_art_direction_repair_from_l_evaluation",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -2703,6 +2841,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: results/run2_76_visual_quality_evaluation.json" in result.errors
     assert "missing required file: run2_76_visual_grammar_renderer_repair_plan.json" in result.errors
     assert "missing required file: results/run2_77_visual_grammar_renderer_repair_rerun_result.json" in result.errors
+    assert "missing required file: results/run2_78_visual_quality_evaluation.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -3281,6 +3420,70 @@ def test_run2_profile_rejects_k2_rerun_missing_k1_or_forbidden_fallbacks(tmp_pat
     )
     assert (
         "run2_77_visual_grammar_renderer_repair_rerun_result.visual_grammar_renderer_repair_checks.public_quality_verdict_started must be false"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_l_visual_evaluation_public_ready_or_missing_findings(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    result_path = pack / "results" / "run2_78_visual_quality_evaluation.json"
+    result_json = json.loads(result_path.read_text(encoding="utf-8"))
+    result_json["public_ready"] = True
+    result_json["public_release_started"] = True
+    result_json["starts_renderer_rerun"] = True
+    result_json["updates_html_viewer"] = True
+    result_json["viewer_comparison_closure"]["viewer_latest_run_id"] = "2.75"
+    result_json["viewer_comparison_closure"]["run2_77_full_preview_count"] = 5
+    result_json["gemini_agent_review_summary"]["review_count"] = 0
+    result_json["evaluation_questions"]["did_2_77_reduce_wireframe_aesthetic"]["answer"] = "fixed"
+    result_json["visual_quality_assessment"]["design_quality_gate"] = "pass"
+    result_json["role_assessments"][0]["visual_grammar_module"] = "hero_field"
+    result_json["role_assessments"][0]["repair_required"] = False
+    result_json["role_assessments"][0]["trace_support"]["label_count"] = 8
+    result_json["root_cause_summary"]["primary_layer"] = "data_absence"
+    result_json["no_new_renderer_proof"]["new_pptx_created"] = True
+    result_json["next_required_action"] = "public_release"
+    result_path.write_text(json.dumps(result_json, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_78_visual_quality_evaluation.public_ready must be false" in result.errors
+    assert "run2_78_visual_quality_evaluation.public_release_started must be false" in result.errors
+    assert "run2_78_visual_quality_evaluation.starts_renderer_rerun must be false" in result.errors
+    assert "run2_78_visual_quality_evaluation.updates_html_viewer must be false" in result.errors
+    assert (
+        "run2_78_visual_quality_evaluation.viewer_comparison_closure.viewer_latest_run_id must be 2.77"
+        in result.errors
+    )
+    assert (
+        "run2_78_visual_quality_evaluation.viewer_comparison_closure.run2_77_full_preview_count must be 6"
+        in result.errors
+    )
+    assert "run2_78_visual_quality_evaluation.gemini_agent_review_summary.review_count must be 1" in result.errors
+    assert (
+        "run2_78_visual_quality_evaluation.evaluation_questions.did_2_77_reduce_wireframe_aesthetic.answer must be no_wireframe_still_dominant"
+        in result.errors
+    )
+    assert "run2_78_visual_quality_evaluation.visual_quality_assessment.design_quality_gate must be blocked" in result.errors
+    assert (
+        "run2_78_visual_quality_evaluation.role_assessments[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert "run2_78_visual_quality_evaluation.role_assessments[0].repair_required must be true" in result.errors
+    assert "run2_78_visual_quality_evaluation.role_assessments[0].trace_support.label_count must be at most 5" in result.errors
+    assert (
+        "run2_78_visual_quality_evaluation.root_cause_summary.primary_layer must be renderer_art_direction_and_scene_realization"
+        in result.errors
+    )
+    assert "run2_78_visual_quality_evaluation.no_new_renderer_proof.new_pptx_created must be false" in result.errors
+    assert (
+        "run2_78_visual_quality_evaluation.next_required_action must be part_m_renderer_art_direction_repair_from_l_evaluation"
         in result.errors
     )
 

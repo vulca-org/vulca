@@ -729,6 +729,24 @@ EXPECTED_RUN2_K2_REPAIR_FLAGS = {
     "forbidden_fallbacks_removed",
     "public_polish_not_claimed",
 }
+EXPECTED_RUN2_L_RESULT = (
+    PACK / "results" / "run2_78_visual_quality_evaluation.json"
+)
+EXPECTED_RUN2_L_SCRIPT = ROOT / "scripts" / "audit_ppt_run2_78_visual_quality_evaluation.py"
+EXPECTED_RUN2_L_QUESTIONS = {
+    "is_2_77_better_than_2_75",
+    "did_2_77_restore_page_differentiation",
+    "did_2_77_reduce_wireframe_aesthetic",
+    "did_2_77_reduce_small_label_problem",
+    "does_2_77_improve_product_presentation_feel",
+    "does_2_77_reach_public_video_presentation_direction",
+}
+EXPECTED_RUN2_L_ROOT_CAUSE_LAYERS = {
+    "renderer",
+    "visual_grammar",
+    "text_binding",
+    "content",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -3750,6 +3768,162 @@ def test_run2_77_visual_grammar_renderer_repair_rerun_consumes_k1_and_updates_vi
     assert run["fullArm"]["id"] == "run2_77_full_visual_grammar_renderer_repair"
     assert len(run["fullArm"]["slides"]) == 6
     assert result["next_required_action"] == "part_l_visual_quality_evaluation_for_run2_77"
+
+
+def test_run2_78_visual_quality_evaluation_compares_2_77_against_2_75_with_gemini(
+    tmp_path: Path,
+) -> None:
+    assert EXPECTED_RUN2_L_SCRIPT.exists(), "missing Part L visual quality evaluation script"
+    script = EXPECTED_RUN2_L_SCRIPT.read_text(encoding="utf-8")
+    assert_contains(
+        script,
+        [
+            "run2_77_visual_grammar_renderer_repair_rerun_result.json",
+            "run2_76_visual_quality_evaluation.json",
+            "run2_76_visual_grammar_renderer_repair_plan.json",
+            "gemini-3.5-flash",
+            "ppt-run2-75-full-vulca/preview/contact-sheet.png",
+            "ppt-run2-77-full-vulca/preview/contact-sheet.png",
+        ],
+    )
+    result_json = tmp_path / "run2_78_visual_quality_evaluation.json"
+    result_md = tmp_path / "run2_78_visual_quality_evaluation.md"
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(EXPECTED_RUN2_L_SCRIPT),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    audit = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+    assert "run2_78_visual_quality_evaluation_public_blocked" in completed.stdout
+    assert audit["artifact_id"] == "run2_78_visual_quality_evaluation"
+    assert audit["part"] == "Part L"
+    assert audit["run_id"] == "2.78"
+    assert audit["status"] == "run2_78_visual_quality_evaluation_public_blocked"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["starts_renderer_rerun"] is False
+    assert audit["updates_html_viewer"] is False
+    assert audit["public_ready"] is False
+    assert audit["public_release_started"] is False
+    assert audit["quality_claim_boundary"] == "part_l_evaluation_only_no_public_release_no_renderer_rerun"
+    assert audit["source_runs"] == {
+        "comparison_baseline": "2.75",
+        "evaluated_run": "2.77",
+        "prior_reference_run": "2.73",
+    }
+
+    input_chain = audit["input_chain"]
+    assert input_chain["run2_77_result"].endswith("run2_77_visual_grammar_renderer_repair_rerun_result.json")
+    assert input_chain["run2_76_j_evaluation"].endswith("run2_76_visual_quality_evaluation.json")
+    assert input_chain["run2_76_k1_repair_plan"].endswith("run2_76_visual_grammar_renderer_repair_plan.json")
+    assert input_chain["run2_75_full_contact_sheet"].endswith("ppt-run2-75-full-vulca/preview/contact-sheet.png")
+    assert input_chain["run2_77_full_contact_sheet"].endswith("ppt-run2-77-full-vulca/preview/contact-sheet.png")
+
+    closure = audit["viewer_comparison_closure"]
+    assert closure["viewer_latest_run_id"] == "2.77"
+    assert closure["viewer_can_compare_2_75_and_2_77"] is True
+    assert closure["run2_75_full_preview_count"] == 6
+    assert closure["run2_77_full_preview_count"] == 6
+    assert closure["browser_check_required_for_handoff"] is True
+
+    gemini = audit["gemini_agent_review_summary"]
+    assert gemini["tool"] == "mcp__gemini_agent.gemini_artifact_review"
+    assert gemini["model"] == "gemini-3.5-flash"
+    assert gemini["review_count"] == 1
+    assert gemini["used_for_verdict"] is True
+    assert "moderate" in " ".join(gemini["run2_77_findings"])
+    assert "wireframe" in " ".join(gemini["run2_77_risks"])
+
+    questions = audit["evaluation_questions"]
+    assert set(questions) == EXPECTED_RUN2_L_QUESTIONS
+    assert questions["is_2_77_better_than_2_75"]["answer"] == (
+        "partial_page_differentiation_up_public_blocked"
+    )
+    assert questions["did_2_77_restore_page_differentiation"]["answer"] == (
+        "moderately_improved_but_01_04_05_share_wireframe_family"
+    )
+    assert questions["did_2_77_reduce_wireframe_aesthetic"]["answer"] == (
+        "no_wireframe_still_dominant"
+    )
+    assert questions["did_2_77_reduce_small_label_problem"]["answer"] == (
+        "partial_label_count_down_but_labels_still_tiny"
+    )
+    assert questions["does_2_77_reach_public_video_presentation_direction"]["answer"] == (
+        "no_public_blocked"
+    )
+
+    assessment = audit["visual_quality_assessment"]
+    assert assessment["design_quality_gate"] == "blocked"
+    assert assessment["public_video_readiness"] == "blocked"
+    assert assessment["global_delta_vs_2_75"] == (
+        "page_differentiation_up_label_count_down_wireframe_still_blocks_public_readiness"
+    )
+    assert assessment["top_blocker"] == (
+        "thin_wireframe_product_surfaces_and_annotation_marks_still_read_as_internal_diagram"
+    )
+    assert assessment["next_layer_to_fix"] == "renderer_art_direction_and_scene_realization"
+
+    assert len(audit["role_assessments"]) == 6
+    assert [record["role"] for record in audit["role_assessments"]] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    repairs = [record for record in audit["role_assessments"] if record["repair_required"]]
+    assert len(repairs) == 6
+    for record in audit["role_assessments"]:
+        assert record["visual_grammar_module"] == EXPECTED_RUN2_E_PAGE_MODULE_MAP[record["role"]]
+        assert record["root_cause_layer"] in EXPECTED_RUN2_L_ROOT_CAUSE_LAYERS
+        assert record["delta_vs_2_75"] in {"improved", "partial", "unchanged", "regressed"}
+        assert record["page_differentiation"] in {"improved", "partial", "unchanged", "regressed"}
+        assert record["wireframe_reduction"] in {"strong", "partial", "weak", "none"}
+        assert record["label_hierarchy"] in {"improved", "partial", "weak"}
+        assert record["public_video_direction"] in {"no", "partial", "yes"}
+        assert record["next_repair_instruction"]
+        assert record["trace_support"]["target_scene_direction"]
+        assert record["trace_support"]["label_count"] <= 5
+
+    assert audit["root_cause_summary"]["primary_layer"] == "renderer_art_direction_and_scene_realization"
+    assert audit["root_cause_summary"]["not_primary_layer"] == "data_absence"
+    assert audit["no_new_renderer_proof"]["new_pptx_created"] is False
+    assert audit["no_new_renderer_proof"]["new_html_created"] is False
+    assert audit["next_required_action"] == "part_m_renderer_art_direction_repair_from_l_evaluation"
+    assert_contains(
+        report,
+        [
+            "Run 2.78 Visual Quality Evaluation",
+            "2.77 vs 2.75",
+            "page differentiation up",
+            "wireframe still blocks",
+            "public blocked",
+            "Gemini",
+        ],
+    )
+
+
+def test_run2_78_records_visual_quality_evaluation_result() -> None:
+    audit = load_json(EXPECTED_RUN2_L_RESULT)
+    report = (
+        PACK / "results" / "run2_78_visual_quality_evaluation.md"
+    ).read_text(encoding="utf-8")
+
+    assert audit["status"] == "run2_78_visual_quality_evaluation_public_blocked"
+    assert audit["public_ready"] is False
+    assert audit["public_release_started"] is False
+    assert audit["visual_quality_assessment"]["design_quality_gate"] == "blocked"
+    assert audit["visual_quality_assessment"]["global_delta_vs_2_75"] == (
+        "page_differentiation_up_label_count_down_wireframe_still_blocks_public_readiness"
+    )
+    assert audit["viewer_comparison_closure"]["viewer_latest_run_id"] == "2.77"
+    assert len(audit["role_assessments"]) == 6
+    assert "wireframe still blocks" in report
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
