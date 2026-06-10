@@ -1,0 +1,257 @@
+{
+  "artifact_id": "run2_80_visual_quality_evaluation",
+  "part": "Part N",
+  "schema_version": "ppt_run2_80_visual_quality_evaluation.v1",
+  "run_id": "2.80",
+  "status": "run2_80_visual_quality_evaluation_public_blocked",
+  "stage_policy": "evaluation_only_after_m_no_renderer_rerun",
+  "creates_new_ppt_deck": false,
+  "starts_renderer_rerun": false,
+  "updates_html_viewer": false,
+  "public_release_started": false,
+  "public_ready": false,
+  "quality_claim_boundary": "part_n_evaluation_only_no_public_release_no_renderer_rerun",
+  "source_runs": {
+    "comparison_baseline": "2.77",
+    "evaluated_run": "2.79",
+    "prior_reference_run": "2.75"
+  },
+  "input_chain": {
+    "run2_79_result": "docs/product/ppt-run2-data-skill-quality/results/run2_79_renderer_art_direction_repair_rerun_result.json",
+    "run2_78_l_evaluation": "docs/product/ppt-run2-data-skill-quality/results/run2_78_visual_quality_evaluation.json",
+    "run2_77_result": "docs/product/ppt-run2-data-skill-quality/results/run2_77_visual_grammar_renderer_repair_rerun_result.json",
+    "run2_77_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-77-full-vulca/preview/contact-sheet.png",
+    "run2_79_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-79-full-vulca/preview/contact-sheet.png",
+    "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html"
+  },
+  "viewer_comparison_closure": {
+    "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+    "viewer_latest_run_id": "2.79",
+    "viewer_can_compare_2_77_and_2_79": true,
+    "run2_77_full_preview_count": 6,
+    "run2_79_full_preview_count": 6,
+    "browser_check_required_for_handoff": true,
+    "browser_check_note": "Part N records expected viewer closure. Browser verification must confirm latest 2.79 and visible 2.77/2.79 comparison after this artifact is written."
+  },
+  "gemini_agent_review_summary": {
+    "tool": "mcp__gemini_agent.gemini_artifact_review",
+    "model": "gemini-3.5-flash",
+    "review_count": 1,
+    "used_for_verdict": true,
+    "capture_method": "live_gemini_agent_artifact_review",
+    "comparison_artifacts": [
+      "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-77-full-vulca/preview/contact-sheet.png",
+      "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-79-full-vulca/preview/contact-sheet.png"
+    ],
+    "reviewed_artifacts": [
+      {
+        "run_id": "2.79",
+        "file": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-79-full-vulca/preview/contact-sheet.png",
+        "key_findings": [
+          "ultra_minimalist_layout",
+          "sparse_text_wireframe",
+          "debug_annotations_removed",
+          "concrete_product_surface_not_visible"
+        ],
+        "risks": [
+          "product_surface_absent",
+          "small_labels_remain",
+          "public_audience_may_read_it_as_structural_wireframe"
+        ]
+      }
+    ],
+    "run2_79_findings": [
+      "ultra minimalist layout",
+      "debug annotations are reduced",
+      "sparse text wireframe remains dominant",
+      "concrete product surface is not visibly realized"
+    ],
+    "run2_79_risks": [
+      "product surface absent",
+      "small labels remain scattered",
+      "lack of actual UI mockups weakens public presentation read"
+    ],
+    "limitations": [
+      "Review is based on the static 2.79 full-arm contact sheet; no motion, OCR, or audience testing was performed."
+    ]
+  },
+  "evaluation_questions": {
+    "is_2_79_better_than_2_77": {
+      "answer": "mixed_annotation_down_but_product_surface_absent_public_blocked",
+      "basis": "2.79 removes the most obvious debug annotations and uses more audience-readable labels, but the contact sheet still lacks visible product surfaces and remains public blocked."
+    },
+    "did_2_79_reduce_wireframe_and_annotation": {
+      "answer": "partial_debug_annotations_removed_but_typographic_wireframe_remains",
+      "basis": "Red/debug markers are gone, but the dominant read is now sparse typographic wireframe rather than a finished presentation scene."
+    },
+    "did_2_79_fix_small_label_problem": {
+      "answer": "no_labels_still_tiny_and_spatially_scattered",
+      "basis": "Label wording improved, but the labels remain small, isolated, and hard to read at presentation-preview scale."
+    },
+    "did_2_79_create_concrete_product_surface": {
+      "answer": "no_product_surface_not_visibly_realized",
+      "basis": "The rendered contact sheet does not visibly show the large product objects declared in metadata."
+    },
+    "does_2_79_reach_public_video_presentation_direction": {
+      "answer": "no_public_blocked",
+      "basis": "2.79 is an internal renderer-art-direction proof, not a public-video presentation pass."
+    },
+    "which_layer_needs_next_repair": {
+      "answer": "renderer_product_surface_realization",
+      "basis": "The remaining problem is visual realization of product surfaces and public hierarchy, not source data."
+    }
+  },
+  "visual_quality_assessment": {
+    "data_workflow_entry_gate": "pass_internal_only",
+    "viewer_comparison_gate": "pass_internal_only",
+    "design_quality_gate": "blocked",
+    "public_video_readiness": "blocked",
+    "global_delta_vs_2_77": "debug_annotations_down_but_product_surface_absent_and_small_labels_remain",
+    "top_blocker": "product_surface_not_visibly_realized_and_slides_read_as_sparse_text_wireframes",
+    "next_layer_to_fix": "renderer_product_surface_realization"
+  },
+  "role_assessments": [
+    {
+      "role": "cover",
+      "slide_index": 1,
+      "visual_grammar_module": "product_reveal",
+      "delta_vs_2_77": "partial",
+      "wireframe_reduction": "partial",
+      "label_hierarchy": "weak",
+      "product_surface_realization": "absent",
+      "public_video_direction": "no",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "The red/debug annotation feel is gone, but the hero crop does not render as a visible product object; it reads as headline plus scattered labels.",
+      "next_repair_instruction": "Render the opening hero as a concrete product surface or cropped editable PPT object, then attach only one readable public-facing label.",
+      "trace_support": {
+        "art_direction_scene": "finished product hero crop with editorial depth",
+        "label_count": 3,
+        "debug_annotation_count": 0,
+        "wireframe_dependency": "reduced",
+        "dominant_product_object_scale": "hero"
+      }
+    },
+    {
+      "role": "setup",
+      "slide_index": 2,
+      "visual_grammar_module": "hero_field",
+      "delta_vs_2_77": "partial",
+      "wireframe_reduction": "partial",
+      "label_hierarchy": "weak",
+      "product_surface_realization": "absent",
+      "public_video_direction": "no",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "The route labels are more audience-readable than M metadata, but the transformation field has almost no visible destination product surface.",
+      "next_repair_instruction": "Keep the source-to-memory route, but make the destination a visible, large product surface rather than empty spatial anchors.",
+      "trace_support": {
+        "art_direction_scene": "source transformation field with solid product destination",
+        "label_count": 3,
+        "debug_annotation_count": 0,
+        "wireframe_dependency": "reduced",
+        "dominant_product_object_scale": "large"
+      }
+    },
+    {
+      "role": "contrast",
+      "slide_index": 3,
+      "visual_grammar_module": "before_after_theater",
+      "delta_vs_2_77": "partial",
+      "wireframe_reduction": "partial",
+      "label_hierarchy": "weak",
+      "product_surface_realization": "weak",
+      "public_video_direction": "partial",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "The before/after page keeps an asymmetric title/copy layout, but the after-state product is not visible enough to prove a richer result.",
+      "next_repair_instruction": "Make the after side a visible product reveal with larger surface detail, so the contrast is optical rather than label-only.",
+      "trace_support": {
+        "art_direction_scene": "asymmetric transformation theater with rich after surface",
+        "label_count": 3,
+        "debug_annotation_count": 0,
+        "wireframe_dependency": "reduced",
+        "dominant_product_object_scale": "large"
+      }
+    },
+    {
+      "role": "proof",
+      "slide_index": 4,
+      "visual_grammar_module": "evidence_workspace",
+      "delta_vs_2_77": "partial",
+      "wireframe_reduction": "partial",
+      "label_hierarchy": "weak",
+      "product_surface_realization": "absent",
+      "public_video_direction": "no",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "The proof page no longer looks like a debug rail, but it also lacks the enlarged evidence object required for an inspection scene.",
+      "next_repair_instruction": "Place a large evidence/proof object on the canvas and bind two readable labels directly to that object.",
+      "trace_support": {
+        "art_direction_scene": "inspection bench with one enlarged evidence object",
+        "label_count": 3,
+        "debug_annotation_count": 0,
+        "wireframe_dependency": "reduced",
+        "dominant_product_object_scale": "large"
+      }
+    },
+    {
+      "role": "climax",
+      "slide_index": 5,
+      "visual_grammar_module": "product_reveal",
+      "delta_vs_2_77": "partial",
+      "wireframe_reduction": "partial",
+      "label_hierarchy": "weak",
+      "product_surface_realization": "absent",
+      "public_video_direction": "no",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "The completion reveal is typographically clear, but the supposed full-frame editable result is not visible at presentation scale.",
+      "next_repair_instruction": "Make the climax a full-frame editable PPT result with visible slide thumbnails, surface controls, and fewer floating labels.",
+      "trace_support": {
+        "art_direction_scene": "completion reveal with full-frame editable result",
+        "label_count": 3,
+        "debug_annotation_count": 0,
+        "wireframe_dependency": "minimal",
+        "dominant_product_object_scale": "full_frame"
+      }
+    },
+    {
+      "role": "close",
+      "slide_index": 6,
+      "visual_grammar_module": "decision_map",
+      "delta_vs_2_77": "partial",
+      "wireframe_reduction": "partial",
+      "label_hierarchy": "weak",
+      "product_surface_realization": "weak",
+      "public_video_direction": "partial",
+      "root_cause_layer": "text_binding",
+      "repair_required": true,
+      "visual_observation": "The release-gate copy is understandable, but the decision map is still mostly tiny labels in open space.",
+      "next_repair_instruction": "Turn the close into a dominant release-gate decision object with large branch labels and a clear blocked public outcome.",
+      "trace_support": {
+        "art_direction_scene": "release gate scene with dominant blocked-public decision",
+        "label_count": 3,
+        "debug_annotation_count": 0,
+        "wireframe_dependency": "reduced",
+        "dominant_product_object_scale": "large"
+      }
+    }
+  ],
+  "root_cause_summary": {
+    "primary_layer": "renderer_product_surface_realization",
+    "secondary_layers": [
+      "text_binding",
+      "visual_grammar"
+    ],
+    "not_primary_layer": "data_absence",
+    "rationale": "2.79 consumed Part L, 2.77, and K1 and removed debug annotations. The blocker moved from debug annotation language to missing visible product-surface realization."
+  },
+  "no_new_renderer_proof": {
+    "new_pptx_created": false,
+    "new_html_created": false,
+    "starts_renderer_rerun": false,
+    "status": "pass"
+  },
+  "next_required_action": "part_o_renderer_product_surface_repair_from_n_evaluation"
+}

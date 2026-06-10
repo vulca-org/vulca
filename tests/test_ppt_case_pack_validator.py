@@ -1513,6 +1513,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_79_renderer_art_direction_repair_rerun_result(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_80_visual_quality_evaluation.json").write_text(
+        json.dumps(valid_run2_80_visual_quality_evaluation(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -2906,6 +2910,142 @@ def valid_run2_79_renderer_art_direction_repair_rerun_result() -> dict:
     }
 
 
+def valid_run2_80_visual_quality_evaluation() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    question_ids = [
+        "is_2_79_better_than_2_77",
+        "did_2_79_reduce_wireframe_and_annotation",
+        "did_2_79_fix_small_label_problem",
+        "did_2_79_create_concrete_product_surface",
+        "does_2_79_reach_public_video_presentation_direction",
+        "which_layer_needs_next_repair",
+    ]
+    return {
+        "artifact_id": "run2_80_visual_quality_evaluation",
+        "part": "Part N",
+        "schema_version": "ppt_run2_80_visual_quality_evaluation.v1",
+        "run_id": "2.80",
+        "status": "run2_80_visual_quality_evaluation_public_blocked",
+        "creates_new_ppt_deck": False,
+        "starts_renderer_rerun": False,
+        "updates_html_viewer": False,
+        "public_release_started": False,
+        "public_ready": False,
+        "quality_claim_boundary": "part_n_evaluation_only_no_public_release_no_renderer_rerun",
+        "source_runs": {
+            "comparison_baseline": "2.77",
+            "evaluated_run": "2.79",
+            "prior_reference_run": "2.75",
+        },
+        "input_chain": {
+            "run2_79_result": "docs/product/ppt-run2-data-skill-quality/results/run2_79_renderer_art_direction_repair_rerun_result.json",
+            "run2_78_l_evaluation": "docs/product/ppt-run2-data-skill-quality/results/run2_78_visual_quality_evaluation.json",
+            "run2_77_result": "docs/product/ppt-run2-data-skill-quality/results/run2_77_visual_grammar_renderer_repair_rerun_result.json",
+            "run2_77_full_contact_sheet": "outputs/thread/presentations/ppt-run2-77-full-vulca/preview/contact-sheet.png",
+            "run2_79_full_contact_sheet": "outputs/thread/presentations/ppt-run2-79-full-vulca/preview/contact-sheet.png",
+            "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+        },
+        "viewer_comparison_closure": {
+            "viewer_latest_run_id": "2.79",
+            "viewer_can_compare_2_77_and_2_79": True,
+            "run2_77_full_preview_count": 6,
+            "run2_79_full_preview_count": 6,
+            "browser_check_required_for_handoff": True,
+        },
+        "gemini_agent_review_summary": {
+            "tool": "mcp__gemini_agent.gemini_artifact_review",
+            "model": "gemini-3.5-flash",
+            "review_count": 1,
+            "used_for_verdict": True,
+            "run2_79_findings": ["ultra minimalist layout", "sparse text wireframe"],
+            "run2_79_risks": ["product surface absent", "small labels remain"],
+        },
+        "evaluation_questions": {
+            question_id: {"answer": "placeholder", "basis": "source-backed internal visual review"}
+            for question_id in question_ids
+        }
+        | {
+            "is_2_79_better_than_2_77": {
+                "answer": "mixed_annotation_down_but_product_surface_absent_public_blocked",
+                "basis": "2.79 removes debug annotations but still lacks visible product surfaces.",
+            },
+            "did_2_79_reduce_wireframe_and_annotation": {
+                "answer": "partial_debug_annotations_removed_but_typographic_wireframe_remains",
+                "basis": "Debug marks are gone, but the pages remain sparse typographic wireframes.",
+            },
+            "did_2_79_fix_small_label_problem": {
+                "answer": "no_labels_still_tiny_and_spatially_scattered",
+                "basis": "Labels are more meaningful but still tiny at public-video scale.",
+            },
+            "did_2_79_create_concrete_product_surface": {
+                "answer": "no_product_surface_not_visibly_realized",
+                "basis": "The contact sheet does not show a concrete product interface or presentation object.",
+            },
+            "does_2_79_reach_public_video_presentation_direction": {
+                "answer": "no_public_blocked",
+                "basis": "It remains an internal visual proof.",
+            },
+            "which_layer_needs_next_repair": {
+                "answer": "renderer_product_surface_realization",
+                "basis": "The next issue is visible rendering of product surfaces, not source data.",
+            },
+        },
+        "visual_quality_assessment": {
+            "data_workflow_entry_gate": "pass_internal_only",
+            "viewer_comparison_gate": "pass_internal_only",
+            "design_quality_gate": "blocked",
+            "public_video_readiness": "blocked",
+            "global_delta_vs_2_77": "debug_annotations_down_but_product_surface_absent_and_small_labels_remain",
+            "top_blocker": "product_surface_not_visibly_realized_and_slides_read_as_sparse_text_wireframes",
+            "next_layer_to_fix": "renderer_product_surface_realization",
+        },
+        "role_assessments": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "delta_vs_2_77": "partial",
+                "wireframe_reduction": "partial",
+                "label_hierarchy": "weak",
+                "product_surface_realization": "weak",
+                "public_video_direction": "no",
+                "root_cause_layer": "renderer",
+                "repair_required": True,
+                "visual_observation": "Debug marks are reduced, but the slide still reads as a sparse wireframe.",
+                "next_repair_instruction": "Render a visible product surface with public-facing hierarchy.",
+                "trace_support": {
+                    "art_direction_scene": f"{role} art direction scene",
+                    "label_count": 2,
+                    "debug_annotation_count": 0,
+                    "wireframe_dependency": "reduced",
+                },
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "root_cause_summary": {
+            "primary_layer": "renderer_product_surface_realization",
+            "secondary_layers": ["text_binding"],
+            "not_primary_layer": "data_absence",
+            "rationale": "2.79 consumed M inputs; visible blockers are product-surface rendering and public hierarchy.",
+        },
+        "no_new_renderer_proof": {
+            "new_pptx_created": False,
+            "new_html_created": False,
+            "starts_renderer_rerun": False,
+            "status": "pass",
+        },
+        "next_required_action": "part_o_renderer_product_surface_repair_from_n_evaluation",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -2942,6 +3082,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: results/run2_77_visual_grammar_renderer_repair_rerun_result.json" in result.errors
     assert "missing required file: results/run2_78_visual_quality_evaluation.json" in result.errors
     assert "missing required file: results/run2_79_renderer_art_direction_repair_rerun_result.json" in result.errors
+    assert "missing required file: results/run2_80_visual_quality_evaluation.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -3674,6 +3815,85 @@ def test_run2_profile_rejects_m_renderer_art_direction_rerun_missing_repair_gate
     )
     assert (
         "run2_79_renderer_art_direction_repair_rerun_result.next_required_action must be part_n_visual_quality_evaluation_for_run2_79"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_n_visual_evaluation_public_ready_or_missing_blockers(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    result_path = pack / "results" / "run2_80_visual_quality_evaluation.json"
+    result_json = json.loads(result_path.read_text(encoding="utf-8"))
+    result_json["public_ready"] = True
+    result_json["public_release_started"] = True
+    result_json["starts_renderer_rerun"] = True
+    result_json["updates_html_viewer"] = True
+    result_json["viewer_comparison_closure"]["viewer_latest_run_id"] = "2.77"
+    result_json["viewer_comparison_closure"]["run2_79_full_preview_count"] = 5
+    result_json["gemini_agent_review_summary"]["review_count"] = 0
+    result_json["evaluation_questions"]["did_2_79_create_concrete_product_surface"]["answer"] = "yes_fixed"
+    result_json["visual_quality_assessment"]["design_quality_gate"] = "pass"
+    result_json["visual_quality_assessment"]["public_video_readiness"] = "ready"
+    result_json["role_assessments"][0]["visual_grammar_module"] = "hero_field"
+    result_json["role_assessments"][0]["repair_required"] = False
+    result_json["role_assessments"][0]["trace_support"]["label_count"] = 5
+    result_json["role_assessments"][0]["trace_support"]["debug_annotation_count"] = 2
+    result_json["role_assessments"][0]["product_surface_realization"] = "invalid"
+    result_json["root_cause_summary"]["primary_layer"] = "data_absence"
+    result_json["no_new_renderer_proof"]["new_html_created"] = True
+    result_json["next_required_action"] = "public_release"
+    result_path.write_text(json.dumps(result_json, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_80_visual_quality_evaluation.public_ready must be false" in result.errors
+    assert "run2_80_visual_quality_evaluation.public_release_started must be false" in result.errors
+    assert "run2_80_visual_quality_evaluation.starts_renderer_rerun must be false" in result.errors
+    assert "run2_80_visual_quality_evaluation.updates_html_viewer must be false" in result.errors
+    assert (
+        "run2_80_visual_quality_evaluation.viewer_comparison_closure.viewer_latest_run_id must be 2.79"
+        in result.errors
+    )
+    assert (
+        "run2_80_visual_quality_evaluation.viewer_comparison_closure.run2_79_full_preview_count must be 6"
+        in result.errors
+    )
+    assert "run2_80_visual_quality_evaluation.gemini_agent_review_summary.review_count must be 1" in result.errors
+    assert (
+        "run2_80_visual_quality_evaluation.evaluation_questions.did_2_79_create_concrete_product_surface.answer must be no_product_surface_not_visibly_realized"
+        in result.errors
+    )
+    assert "run2_80_visual_quality_evaluation.visual_quality_assessment.design_quality_gate must be blocked" in result.errors
+    assert (
+        "run2_80_visual_quality_evaluation.visual_quality_assessment.public_video_readiness must be blocked"
+        in result.errors
+    )
+    assert (
+        "run2_80_visual_quality_evaluation.role_assessments[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert "run2_80_visual_quality_evaluation.role_assessments[0].repair_required must be true" in result.errors
+    assert (
+        "run2_80_visual_quality_evaluation.role_assessments[0].product_surface_realization must be one of absent, partial, strong, weak"
+        in result.errors
+    )
+    assert "run2_80_visual_quality_evaluation.role_assessments[0].trace_support.label_count must be at most 3" in result.errors
+    assert (
+        "run2_80_visual_quality_evaluation.role_assessments[0].trace_support.debug_annotation_count must be 0"
+        in result.errors
+    )
+    assert (
+        "run2_80_visual_quality_evaluation.root_cause_summary.primary_layer must be renderer_product_surface_realization"
+        in result.errors
+    )
+    assert "run2_80_visual_quality_evaluation.no_new_renderer_proof.new_html_created must be false" in result.errors
+    assert (
+        "run2_80_visual_quality_evaluation.next_required_action must be part_o_renderer_product_surface_repair_from_n_evaluation"
         in result.errors
     )
 
