@@ -1509,6 +1509,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_78_visual_quality_evaluation(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_79_renderer_art_direction_repair_rerun_result.json").write_text(
+        json.dumps(valid_run2_79_renderer_art_direction_repair_rerun_result(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -2807,6 +2811,101 @@ def valid_run2_78_visual_quality_evaluation() -> dict:
     }
 
 
+def valid_run2_79_renderer_art_direction_repair_rerun_result() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    consumed_sources = [
+        "docs/product/ppt-run2-data-skill-quality/results/run2_78_visual_quality_evaluation.json",
+        "docs/product/ppt-run2-data-skill-quality/results/run2_77_visual_grammar_renderer_repair_rerun_result.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_76_visual_grammar_renderer_repair_plan.json",
+    ]
+    directives = [
+        "l_repair_instruction_consumed",
+        "wireframe_surface_replaced",
+        "debug_annotation_removed",
+        "dominant_product_object",
+        "foreground_background_depth",
+        "public_scene_hierarchy",
+        "public_polish_not_claimed",
+    ]
+    scene_by_role = {
+        "cover": "finished product hero crop with editorial depth",
+        "setup": "source transformation field with solid product destination",
+        "contrast": "asymmetric transformation theater with rich after surface",
+        "proof": "inspection bench with one enlarged evidence object",
+        "climax": "completion reveal with full-frame editable result",
+        "close": "release gate scene with dominant blocked-public decision",
+    }
+    return {
+        "artifact_id": "run2_79_renderer_art_direction_repair_rerun_result",
+        "part": "Part M",
+        "schema_version": "ppt_run2_79_renderer_art_direction_repair_rerun_result.v1",
+        "run_id": "2.79",
+        "status": "run2_79_renderer_art_direction_repair_rerun_generated_public_blocked",
+        "public_ready": False,
+        "public_release_started": False,
+        "quality_claim_boundary": "renderer_art_direction_repair_generated_viewer_check_only_no_part_n_quality_verdict",
+        "consumed_sources": consumed_sources,
+        "source_l_evaluation": {
+            "status": "run2_78_visual_quality_evaluation_public_blocked",
+            "top_blocker": "thin_wireframe_product_surfaces_and_annotation_marks_still_read_as_internal_diagram",
+            "next_required_action": "part_m_renderer_art_direction_repair_from_l_evaluation",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_78_visual_quality_evaluation.json",
+        },
+        "renderer_art_direction_repair_manifest": {
+            "generator": "scripts/generate_ppt_run2_79_renderer_art_direction_repair_arms.mjs",
+            "consumed_sources": consumed_sources,
+            "best_internal_arm": "run2_79_full_renderer_art_direction_repair",
+            "outputs": {
+                "html_viewer": "outputs/thread/presentations/ppt-run2-79-full-vulca/output/run2-79-renderer-art-direction-repair.html",
+                "pptx": "outputs/thread/presentations/ppt-run2-79-full-vulca/output/ppt-run2-79-full-vulca.pptx",
+                "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+            },
+            "viewer_update": {
+                "latest_run_id": "2.79",
+                "viewer_can_reference_new_run": True,
+            },
+        },
+        "rendered_pages": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "art_direction_scene": scene_by_role[role],
+                "source_run2_77_page": {"target_scene_direction": f"{role} target scene"},
+                "source_l_repair_instruction": "Repair renderer art direction.",
+                "renderer_repair_directives_applied": directives,
+                "debug_annotation_count": 0,
+                "wireframe_dependency": "reduced",
+                "dominant_product_object_scale": "large",
+                "min_visible_label_font_size": 12,
+                "label_count": 2,
+                "source_trace_terms_visible_on_canvas": [],
+                "public_polish_claimed": False,
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "renderer_art_direction_repair_checks": {
+            "pages_with_l_repair_instruction_consumed": 6,
+            "pages_with_debug_annotations_removed": 6,
+            "pages_with_dominant_product_object": 6,
+            "pages_with_public_scene_hierarchy": 6,
+            "pages_with_reduced_wireframe_dependency": 6,
+            "pages_with_min_visible_label_size": 6,
+            "source_trace_terms_visible_on_canvas_count": 0,
+            "public_quality_verdict_started": False,
+        },
+        "next_required_action": "part_n_visual_quality_evaluation_for_run2_79",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -2842,6 +2941,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: run2_76_visual_grammar_renderer_repair_plan.json" in result.errors
     assert "missing required file: results/run2_77_visual_grammar_renderer_repair_rerun_result.json" in result.errors
     assert "missing required file: results/run2_78_visual_quality_evaluation.json" in result.errors
+    assert "missing required file: results/run2_79_renderer_art_direction_repair_rerun_result.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -3484,6 +3584,96 @@ def test_run2_profile_rejects_l_visual_evaluation_public_ready_or_missing_findin
     assert "run2_78_visual_quality_evaluation.no_new_renderer_proof.new_pptx_created must be false" in result.errors
     assert (
         "run2_78_visual_quality_evaluation.next_required_action must be part_m_renderer_art_direction_repair_from_l_evaluation"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_m_renderer_art_direction_rerun_missing_repair_gates(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    result_path = pack / "results" / "run2_79_renderer_art_direction_repair_rerun_result.json"
+    result_json = json.loads(result_path.read_text(encoding="utf-8"))
+    result_json["public_ready"] = True
+    result_json["public_release_started"] = True
+    result_json["consumed_sources"] = result_json["consumed_sources"][:-1]
+    result_json["source_l_evaluation"]["status"] = "missing"
+    result_json["renderer_art_direction_repair_manifest"]["viewer_update"]["latest_run_id"] = "2.77"
+    result_json["rendered_pages"][0]["visual_grammar_module"] = "hero_field"
+    result_json["rendered_pages"][0]["renderer_repair_directives_applied"] = ["l_repair_instruction_consumed"]
+    result_json["rendered_pages"][0]["debug_annotation_count"] = 2
+    result_json["rendered_pages"][0]["wireframe_dependency"] = "dominant"
+    result_json["rendered_pages"][0]["dominant_product_object_scale"] = "small"
+    result_json["rendered_pages"][0]["min_visible_label_font_size"] = 9
+    result_json["rendered_pages"][0]["label_count"] = 5
+    result_json["rendered_pages"][0]["public_polish_claimed"] = True
+    result_json["renderer_art_direction_repair_checks"]["pages_with_debug_annotations_removed"] = 5
+    result_json["renderer_art_direction_repair_checks"]["public_quality_verdict_started"] = True
+    result_json["next_required_action"] = "public_release"
+    result_path.write_text(json.dumps(result_json, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_79_renderer_art_direction_repair_rerun_result.public_ready must be false" in result.errors
+    assert "run2_79_renderer_art_direction_repair_rerun_result.public_release_started must be false" in result.errors
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/run2_76_visual_grammar_renderer_repair_plan.json"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.source_l_evaluation.status must be run2_78_visual_quality_evaluation_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.renderer_art_direction_repair_manifest.viewer_update.latest_run_id must be 2.79"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.rendered_pages[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.rendered_pages[0].renderer_repair_directives_applied missing value: wireframe_surface_replaced"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.rendered_pages[0].debug_annotation_count must be 0"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.rendered_pages[0].wireframe_dependency must be reduced or minimal"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.rendered_pages[0].dominant_product_object_scale must be large, hero, or full_frame"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.rendered_pages[0].min_visible_label_font_size must be at least 12"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.rendered_pages[0].label_count must be at most 3"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.rendered_pages[0].public_polish_claimed must be false"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.renderer_art_direction_repair_checks.pages_with_debug_annotations_removed must be 6"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.renderer_art_direction_repair_checks.public_quality_verdict_started must be false"
+        in result.errors
+    )
+    assert (
+        "run2_79_renderer_art_direction_repair_rerun_result.next_required_action must be part_n_visual_quality_evaluation_for_run2_79"
         in result.errors
     )
 

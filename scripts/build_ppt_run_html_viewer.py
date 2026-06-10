@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.77"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.79"'
 
 
 @dataclass(frozen=True)
@@ -822,6 +822,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.79",
+        "Run 2.79",
+        "run2-79-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-79-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-79-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_79_full_renderer_art_direction_repair",
+                "Run 2.79 full",
+                "ppt-run2-79-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_79_without_l_art_direction_repair",
+                "Bad missing Run 2.79 L art-direction repair",
+                "ppt-run2-79-bad-without-l-art-direction-repair",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -1015,6 +1036,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run274_visual_quality = read_json(pack / "results" / "run2_74_visual_quality_evaluation.json")
     run275_result = read_json(pack / "results" / "run2_75_renderer_repair_rerun_result.json")
     run277_result = read_json(pack / "results" / "run2_77_visual_grammar_renderer_repair_rerun_result.json")
+    run279_result = read_json(pack / "results" / "run2_79_renderer_art_direction_repair_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1572,6 +1594,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run277FullTracePath": "ppt-run2-77-full-vulca/trace_manifest.json",
         "run277BadTracePath": "ppt-run2-77-bad-without-k1-repair-plan/trace_manifest.json",
         "run277FourArmSheetPath": "run2-77-four-arm-contact-sheet.png",
+        "run279ResultStatus": run279_result.get("status", ""),
+        "run279Result": run279_result,
+        "run279ResultPath": "run2_79_renderer_art_direction_repair_rerun_result.json",
+        "run279TargetLayer": "renderer_art_direction_repair_from_run2_78_l_evaluation",
+        "run279SourceDataStatus": "run2_79_consumes_l_2_77_and_k1_before_native_ppt_drawing",
+        "run279GeneratorPath": "scripts/generate_ppt_run2_79_renderer_art_direction_repair_arms.mjs",
+        "run279FullTracePath": "ppt-run2-79-full-vulca/trace_manifest.json",
+        "run279BadTracePath": "ppt-run2-79-bad-without-l-art-direction-repair/trace_manifest.json",
+        "run279FourArmSheetPath": "run2-79-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
