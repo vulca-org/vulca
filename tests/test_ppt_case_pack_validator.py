@@ -1545,6 +1545,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_87_best_layout_recovery_visual_primitive_plan(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_88_best_layout_visual_primitive_rerun_result.json").write_text(
+        json.dumps(valid_run2_88_best_layout_visual_primitive_rerun_result(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -4064,6 +4068,114 @@ def valid_run2_87_best_layout_recovery_visual_primitive_plan() -> dict:
     }
 
 
+def valid_run2_88_best_layout_visual_primitive_rerun_result() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    primitive_by_role = {
+        "cover": "primitive_2_87_product_theater_surface",
+        "setup": "primitive_2_87_editorial_text_field",
+        "contrast": "primitive_2_87_before_after_surface",
+        "proof": "primitive_2_87_modular_matrix_workspace",
+        "climax": "primitive_2_87_overlay_sticker_stack",
+        "close": "primitive_2_87_decision_map_board",
+    }
+    function_by_role = {
+        "cover": "drawRun287ProductTheaterSurface",
+        "setup": "drawRun287EditorialTextField",
+        "contrast": "drawRun287BeforeAfterSurface",
+        "proof": "drawRun287ModularMatrixWorkspace",
+        "climax": "drawRun287OverlayStickerStack",
+        "close": "drawRun287DecisionMapBoard",
+    }
+    directives = [
+        "part_r_best_layout_plan_consumed",
+        "historical_best_layout_recovered",
+        "run2_87_visual_primitive_rendered",
+        "composition_engine_repair_applied",
+        "text_heavy_readability_preserved",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed",
+    ]
+    gates = ["not_rectangle_only", "text_integrated_with_shape", "collision_avoidance", "motif_fidelity_visible"]
+    return {
+        "artifact_id": "run2_88_best_layout_visual_primitive_rerun_result",
+        "part": "Part S",
+        "schema_version": "ppt_run2_88_best_layout_visual_primitive_rerun_result.v1",
+        "run_id": "2.88",
+        "status": "run2_88_best_layout_visual_primitive_rerun_generated_public_blocked",
+        "public_ready": False,
+        "public_release_started": False,
+        "quality_claim_boundary": "best_layout_visual_primitive_renderer_generated_viewer_check_only_no_quality_verdict",
+        "consumed_sources": [
+            "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json",
+            "docs/product/ppt-run2-data-skill-quality/results/run2_85_design_motif_renderer_rerun_result.json",
+        ],
+        "source_part_r_plan": {
+            "status": "run2_87_best_layout_recovery_visual_primitive_plan_ready_public_blocked",
+            "next_required_action": "part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json",
+        },
+        "source_run2_85_renderer_result": {
+            "status": "run2_85_design_motif_renderer_rerun_generated_public_blocked",
+            "next_required_action": "part_q_visual_quality_evaluation_for_run2_85",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_85_design_motif_renderer_rerun_result.json",
+        },
+        "renderer_best_layout_visual_primitive_manifest": {
+            "generator": "scripts/generate_ppt_run2_88_best_layout_visual_primitive_arms.mjs",
+            "consumed_sources": [
+                "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json",
+                "docs/product/ppt-run2-data-skill-quality/results/run2_85_design_motif_renderer_rerun_result.json",
+            ],
+            "arms": ["prompt_only", "run1_5_skill", "run2_88_full_best_layout_visual_primitives", "bad_without_best_layout_visual_primitives"],
+            "best_internal_arm": "run2_88_full_best_layout_visual_primitives",
+            "outputs": {
+                "html_viewer": "outputs/thread/presentations/ppt-run2-88-full-vulca/output/run2-88-best-layout-visual-primitives.html",
+                "pptx": "outputs/thread/presentations/ppt-run2-88-full-vulca/output/ppt-run2-88-full-vulca.pptx",
+                "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+                "four_arm_contact_sheet": "outputs/thread/presentations/run2-88-four-arm-contact-sheet.png",
+            },
+            "viewer_update": {"latest_run_id": "2.88", "viewer_can_reference_new_run": True},
+        },
+        "rendered_pages": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "renderer_primitive_id": primitive_by_role[role],
+                "renderer_function_name": function_by_role[role],
+                "renderer_repair_directives_applied": directives,
+                "anti_regression_gates": gates,
+                "historical_layout_recovered": True,
+                "not_rectangle_only": True,
+                "text_integrated_with_shape": True,
+                "collision_avoidance_passed": True,
+                "traceability_on_canvas": False,
+                "floating_label_count": 0,
+                "label_count": 2,
+                "min_visible_label_font_size": 12,
+                "public_polish_claimed": False,
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "renderer_best_layout_visual_primitive_checks": {
+            "pages_with_part_r_consumed": 6,
+            "pages_with_historical_layout_recovered": 6,
+            "pages_with_visual_primitive_rendered": 6,
+            "pages_with_collision_avoidance": 6,
+            "pages_with_traceability_routed_off_canvas": 6,
+            "public_quality_verdict_started": False,
+        },
+        "next_required_action": "part_t_visual_quality_evaluation_for_run2_88",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -4111,6 +4223,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: results/run2_85_design_motif_renderer_rerun_result.json" in result.errors
     assert "missing required file: results/run2_86_visual_quality_evaluation.json" in result.errors
     assert "missing required file: run2_87_best_layout_recovery_visual_primitive_plan.json" in result.errors
+    assert "missing required file: results/run2_88_best_layout_visual_primitive_rerun_result.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -5693,6 +5806,135 @@ def test_run2_profile_rejects_r_best_layout_plan_bad_boundary_or_missing_primiti
     )
     assert (
         "run2_87_best_layout_recovery_visual_primitive_plan.next_required_action must be part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_s_best_layout_renderer_bad_scope_or_missing_part_r(
+    tmp_path: Path,
+) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    result_path = pack / "results" / "run2_88_best_layout_visual_primitive_rerun_result.json"
+    result_json = json.loads(result_path.read_text(encoding="utf-8"))
+    result_json["public_ready"] = True
+    result_json["public_release_started"] = True
+    result_json["consumed_sources"] = result_json["consumed_sources"][:-1]
+    result_json["source_part_r_plan"]["status"] = "missing"
+    result_json["source_run2_85_renderer_result"]["status"] = "missing"
+    manifest = result_json["renderer_best_layout_visual_primitive_manifest"]
+    manifest["viewer_update"]["latest_run_id"] = "2.85"
+    manifest["arms"] = ["prompt_only", "run1_5_skill"]
+    manifest["best_internal_arm"] = "run2_85_full_design_motif_style_router"
+    first = result_json["rendered_pages"][0]
+    first["visual_grammar_module"] = "hero_field"
+    first["renderer_primitive_id"] = "missing"
+    first["renderer_function_name"] = "drawOldPrimitive"
+    first["renderer_repair_directives_applied"] = ["part_r_best_layout_plan_consumed"]
+    first["anti_regression_gates"] = ["not_rectangle_only"]
+    first["historical_layout_recovered"] = False
+    first["not_rectangle_only"] = False
+    first["text_integrated_with_shape"] = False
+    first["collision_avoidance_passed"] = False
+    first["traceability_on_canvas"] = True
+    first["floating_label_count"] = 2
+    first["label_count"] = 5
+    first["min_visible_label_font_size"] = 9
+    first["public_polish_claimed"] = True
+    checks = result_json["renderer_best_layout_visual_primitive_checks"]
+    checks["pages_with_part_r_consumed"] = 5
+    checks["pages_with_historical_layout_recovered"] = 5
+    checks["pages_with_visual_primitive_rendered"] = 5
+    checks["pages_with_collision_avoidance"] = 5
+    checks["pages_with_traceability_routed_off_canvas"] = 5
+    checks["public_quality_verdict_started"] = True
+    result_json["next_required_action"] = "public_release"
+    result_path.write_text(json.dumps(result_json, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_88_best_layout_visual_primitive_rerun_result.public_ready must be false" in result.errors
+    assert "run2_88_best_layout_visual_primitive_rerun_result.public_release_started must be false" in result.errors
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/results/run2_85_design_motif_renderer_rerun_result.json"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.source_part_r_plan.status must be run2_87_best_layout_recovery_visual_primitive_plan_ready_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.source_run2_85_renderer_result.status must be run2_85_design_motif_renderer_rerun_generated_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.renderer_best_layout_visual_primitive_manifest.viewer_update.latest_run_id must be 2.88"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.renderer_best_layout_visual_primitive_manifest.arms missing value: run2_88_full_best_layout_visual_primitives"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.renderer_best_layout_visual_primitive_manifest.best_internal_arm must be run2_88_full_best_layout_visual_primitives"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].renderer_primitive_id references unknown Run 2.87 primitive: missing"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].renderer_function_name must start with drawRun287"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].renderer_repair_directives_applied missing value: run2_87_visual_primitive_rendered"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].anti_regression_gates missing value: collision_avoidance"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].historical_layout_recovered must be true"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].collision_avoidance_passed must be true"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].traceability_on_canvas must be false"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].floating_label_count must be 0"
+        in result.errors
+    )
+    assert "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].label_count must be at most 3" in result.errors
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.rendered_pages[0].min_visible_label_font_size must be at least 12"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.renderer_best_layout_visual_primitive_checks.pages_with_part_r_consumed must be 6"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.renderer_best_layout_visual_primitive_checks.public_quality_verdict_started must be false"
+        in result.errors
+    )
+    assert (
+        "run2_88_best_layout_visual_primitive_rerun_result.next_required_action must be part_t_visual_quality_evaluation_for_run2_88"
         in result.errors
     )
 

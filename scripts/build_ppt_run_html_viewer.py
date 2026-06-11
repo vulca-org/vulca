@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.85"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.88"'
 
 
 @dataclass(frozen=True)
@@ -885,6 +885,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.88",
+        "Run 2.88",
+        "run2-88-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-88-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-88-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_88_full_best_layout_visual_primitives",
+                "Run 2.88 full",
+                "ppt-run2-88-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_without_best_layout_visual_primitives",
+                "Bad missing Run 2.88 primitives",
+                "ppt-run2-88-bad-without-best-layout-visual-primitives",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -1085,6 +1106,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         pack / "results" / "run2_82_renderer_product_surface_text_composition_rerun_result.json"
     )
     run285_result = read_json(pack / "results" / "run2_85_design_motif_renderer_rerun_result.json")
+    run287_plan = read_json(pack / "run2_87_best_layout_recovery_visual_primitive_plan.json")
+    run288_result = read_json(pack / "results" / "run2_88_best_layout_visual_primitive_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1675,6 +1698,20 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run285FullTracePath": "ppt-run2-85-full-vulca/trace_manifest.json",
         "run285BadTracePath": "ppt-run2-85-bad-without-design-motif-layer/trace_manifest.json",
         "run285FourArmSheetPath": "run2-85-four-arm-contact-sheet.png",
+        "run287PlanStatus": run287_plan.get("status", ""),
+        "run287Plan": run287_plan,
+        "run287PlanPath": "run2_87_best_layout_recovery_visual_primitive_plan.json",
+        "run287TargetLayer": "best_layout_recovery_and_visual_primitive_contract_from_run2_86_q",
+        "run287GeneratorPath": "scripts/build_ppt_run2_87_best_layout_recovery_visual_primitive_plan.py",
+        "run288ResultStatus": run288_result.get("status", ""),
+        "run288Result": run288_result,
+        "run288ResultPath": "run2_88_best_layout_visual_primitive_rerun_result.json",
+        "run288TargetLayer": "renderer_best_layout_visual_primitives_from_run2_87_part_r",
+        "run288SourceDataStatus": "run2_88_consumes_part_r_best_layout_visual_primitive_plan_before_native_ppt_drawing",
+        "run288GeneratorPath": "scripts/generate_ppt_run2_88_best_layout_visual_primitive_arms.mjs",
+        "run288FullTracePath": "ppt-run2-88-full-vulca/trace_manifest.json",
+        "run288BadTracePath": "ppt-run2-88-bad-without-best-layout-visual-primitives/trace_manifest.json",
+        "run288FourArmSheetPath": "run2-88-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
