@@ -1,0 +1,723 @@
+{
+  "artifact_id": "run2_81_text_composition_typography_plan",
+  "part": "Part O1",
+  "schema_version": "ppt_run2_81_text_composition_typography_plan.v1",
+  "run_id": "2.81",
+  "status": "run2_81_text_composition_typography_plan_ready_public_blocked",
+  "stage_policy": "part_o1_text_composition_typography_plan_only_no_renderer_rerun_no_public_release",
+  "creates_new_ppt_deck": false,
+  "starts_renderer_rerun": false,
+  "updates_html_viewer": false,
+  "public_release_started": false,
+  "public_ready": false,
+  "consumed_sources": [
+    "docs/product/ppt-run2-data-skill-quality/run2_43_editorial_composition_typography_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_49_readability_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_61_text_socket_fusion_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_64_text_fit_renderer_gates.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_tutorial_to_design_moves.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json"
+  ],
+  "source_inputs": [
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_43_editorial_composition_typography_memory.json",
+      "available": true,
+      "usage": "editorial hierarchy, type scale, reading rhythm"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_49_readability_memory.json",
+      "available": true,
+      "usage": "readability limits, label noise reduction, density gates"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+      "available": true,
+      "usage": "shape-bound text sockets and object proximity"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_61_text_socket_fusion_contracts.json",
+      "available": true,
+      "usage": "socket fusion across headline, proof, support, callout, viewer note"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_64_text_fit_renderer_gates.json",
+      "available": true,
+      "usage": "fit, overflow, and minimum legibility gates"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_tutorial_to_design_moves.json",
+      "available": true,
+      "usage": "tutorial-derived rules: labels follow visuals, consolidate labels, fewer axes"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+      "available": true,
+      "usage": "role-level headline, proof, support, callout, and viewer note sockets"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json",
+      "available": true,
+      "usage": "Part N diagnosis and per-role repair instruction"
+    }
+  ],
+  "source_n_evaluation": {
+    "status": "run2_80_visual_quality_evaluation_public_blocked",
+    "top_blocker": "product_surface_not_visibly_realized_and_slides_read_as_sparse_text_wireframes",
+    "next_required_action": "part_o_renderer_product_surface_repair_from_n_evaluation",
+    "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json"
+  },
+  "global_text_composition_contract": {
+    "required_canvas_text_blocks": [
+      "headline_block",
+      "subhead_block",
+      "proof_sentence",
+      "object_caption"
+    ],
+    "global_forbidden_patterns": [
+      "floating labels",
+      "tiny labels without object anchors",
+      "duplicate run tags",
+      "traceability on slide canvas",
+      "headline plus chips only"
+    ],
+    "traceability_default_route": "viewer_metadata_and_speaker_notes",
+    "slide_canvas_traceability_allowed": false,
+    "minimum_main_text_region_count": 1,
+    "reading_order": [
+      "headline_block",
+      "subhead_block",
+      "proof_sentence",
+      "product_surface",
+      "object_caption"
+    ],
+    "composition_goal": "Create one public-facing reading region per slide, then bind captions and labels to visible product surfaces instead of floating debug text."
+  },
+  "page_text_composition_records": [
+    {
+      "text_composition_id": "text_composition_2_81_cover",
+      "role": "cover",
+      "slide_index": 1,
+      "visual_grammar_module": "product_reveal",
+      "source_text_binding_id": "text_binding_2_73_cover",
+      "source_n_role_assessment": {
+        "repair_required": true,
+        "next_repair_instruction": "Render the opening hero as a concrete product surface or cropped editable PPT object, then attach only one readable public-facing label."
+      },
+      "headline_block": {
+        "text_role": "headline_block",
+        "copy_intent": "Name the product promise as a direct public-facing claim.",
+        "bound_visual_object_type": "product surface",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 34,
+          "line_height": 1.05,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "subhead_block": {
+        "text_role": "subhead_block",
+        "copy_intent": "Explain the source-to-slide transformation in one readable sentence.",
+        "bound_visual_object_type": "product surface",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 24,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 18,
+          "line_height": 1.22,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "proof_sentence": {
+        "text_role": "proof_sentence",
+        "copy_intent": "State that the output is editable and grounded in retrieved design memory.",
+        "bound_visual_object_type": "evidence object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 24,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 14,
+          "line_height": 1.25,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "object_caption": {
+        "text_role": "object_caption",
+        "copy_intent": "Caption the hero product surface with the viewer-facing output state.",
+        "bound_visual_object_type": "product surface",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 12,
+          "line_height": 1.12,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "label_policy": {
+        "max_visible_labels": 2,
+        "min_font_size": 12,
+        "must_attach_to_visible_object": true,
+        "floating_labels_allowed": false,
+        "overflow_route": "viewer_metadata_and_speaker_notes"
+      },
+      "viewer_note_route": {
+        "target": "viewer_metadata_and_speaker_notes",
+        "traceability_on_canvas": false,
+        "speaker_note_allowed": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "tiny labels without object anchors",
+        "duplicate run tags",
+        "traceability on slide canvas",
+        "headline plus chips only"
+      ],
+      "renderer_constraints": {
+        "must_create_main_reading_region": true,
+        "must_bind_caption_to_product_surface": true,
+        "must_not_render_traceability_terms": true
+      }
+    },
+    {
+      "text_composition_id": "text_composition_2_81_setup",
+      "role": "setup",
+      "slide_index": 2,
+      "visual_grammar_module": "hero_field",
+      "source_text_binding_id": "text_binding_2_73_setup",
+      "source_n_role_assessment": {
+        "repair_required": true,
+        "next_repair_instruction": "Keep the source-to-memory route, but make the destination a visible, large product surface rather than empty spatial anchors."
+      },
+      "headline_block": {
+        "text_role": "headline_block",
+        "copy_intent": "Introduce the input-to-memory pipeline as the reason the deck is not prompt-only.",
+        "bound_visual_object_type": "product surface",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 32,
+          "line_height": 1.06,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "subhead_block": {
+        "text_role": "subhead_block",
+        "copy_intent": "Show that tutorials, cases, and brief evidence become memory before rendering.",
+        "bound_visual_object_type": "product surface",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 24,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 17,
+          "line_height": 1.22,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "proof_sentence": {
+        "text_role": "proof_sentence",
+        "copy_intent": "State that source decomposition changes renderer choices before code generation.",
+        "bound_visual_object_type": "evidence object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 26,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 14,
+          "line_height": 1.25,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "object_caption": {
+        "text_role": "object_caption",
+        "copy_intent": "Caption the destination product surface, not the internal trace.",
+        "bound_visual_object_type": "product surface",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 12,
+          "line_height": 1.12,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "label_policy": {
+        "max_visible_labels": 3,
+        "min_font_size": 12,
+        "must_attach_to_visible_object": true,
+        "floating_labels_allowed": false,
+        "overflow_route": "viewer_metadata_and_speaker_notes"
+      },
+      "viewer_note_route": {
+        "target": "viewer_metadata_and_speaker_notes",
+        "traceability_on_canvas": false,
+        "speaker_note_allowed": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "tiny labels without object anchors",
+        "duplicate run tags",
+        "traceability on slide canvas",
+        "headline plus chips only"
+      ],
+      "renderer_constraints": {
+        "must_create_main_reading_region": true,
+        "must_bind_caption_to_product_surface": true,
+        "must_not_render_traceability_terms": true
+      }
+    },
+    {
+      "text_composition_id": "text_composition_2_81_contrast",
+      "role": "contrast",
+      "slide_index": 3,
+      "visual_grammar_module": "before_after_theater",
+      "source_text_binding_id": "text_binding_2_73_contrast",
+      "source_n_role_assessment": {
+        "repair_required": true,
+        "next_repair_instruction": "Make the after side a visible product reveal with larger surface detail, so the contrast is optical rather than label-only."
+      },
+      "headline_block": {
+        "text_role": "headline_block",
+        "copy_intent": "Frame the before-after difference as a visible product delta.",
+        "bound_visual_object_type": "comparison object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 32,
+          "line_height": 1.06,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "subhead_block": {
+        "text_role": "subhead_block",
+        "copy_intent": "Explain that the full system changes structure, evidence, and text placement.",
+        "bound_visual_object_type": "comparison object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 24,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 17,
+          "line_height": 1.22,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "proof_sentence": {
+        "text_role": "proof_sentence",
+        "copy_intent": "Name the negative arm as missing text composition, without exposing trace IDs.",
+        "bound_visual_object_type": "evidence object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 26,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 14,
+          "line_height": 1.25,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "object_caption": {
+        "text_role": "object_caption",
+        "copy_intent": "Caption the after-side product surface as the improved state.",
+        "bound_visual_object_type": "comparison object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 12,
+          "line_height": 1.12,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "label_policy": {
+        "max_visible_labels": 3,
+        "min_font_size": 12,
+        "must_attach_to_visible_object": true,
+        "floating_labels_allowed": false,
+        "overflow_route": "viewer_metadata_and_speaker_notes"
+      },
+      "viewer_note_route": {
+        "target": "viewer_metadata_and_speaker_notes",
+        "traceability_on_canvas": false,
+        "speaker_note_allowed": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "tiny labels without object anchors",
+        "duplicate run tags",
+        "traceability on slide canvas",
+        "headline plus chips only"
+      ],
+      "renderer_constraints": {
+        "must_create_main_reading_region": true,
+        "must_bind_caption_to_product_surface": true,
+        "must_not_render_traceability_terms": true
+      }
+    },
+    {
+      "text_composition_id": "text_composition_2_81_proof",
+      "role": "proof",
+      "slide_index": 4,
+      "visual_grammar_module": "evidence_workspace",
+      "source_text_binding_id": "text_binding_2_73_proof",
+      "source_n_role_assessment": {
+        "repair_required": true,
+        "next_repair_instruction": "Place a large evidence/proof object on the canvas and bind two readable labels directly to that object."
+      },
+      "headline_block": {
+        "text_role": "headline_block",
+        "copy_intent": "Make the proof slide read as an inspection surface, not a report table.",
+        "bound_visual_object_type": "evidence object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 32,
+          "line_height": 1.06,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "subhead_block": {
+        "text_role": "subhead_block",
+        "copy_intent": "Explain how the product checks sources, memory, layout, and overflow before output.",
+        "bound_visual_object_type": "evidence object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 24,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 17,
+          "line_height": 1.22,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "proof_sentence": {
+        "text_role": "proof_sentence",
+        "copy_intent": "State the pass/fail boundary: generated and inspectable, not public-ready yet.",
+        "bound_visual_object_type": "evidence object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 26,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 14,
+          "line_height": 1.25,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "object_caption": {
+        "text_role": "object_caption",
+        "copy_intent": "Caption the evidence object with its user-facing meaning.",
+        "bound_visual_object_type": "evidence object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 12,
+          "line_height": 1.12,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "label_policy": {
+        "max_visible_labels": 2,
+        "min_font_size": 12,
+        "must_attach_to_visible_object": true,
+        "floating_labels_allowed": false,
+        "overflow_route": "viewer_metadata_and_speaker_notes"
+      },
+      "viewer_note_route": {
+        "target": "viewer_metadata_and_speaker_notes",
+        "traceability_on_canvas": false,
+        "speaker_note_allowed": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "tiny labels without object anchors",
+        "duplicate run tags",
+        "traceability on slide canvas",
+        "headline plus chips only"
+      ],
+      "renderer_constraints": {
+        "must_create_main_reading_region": true,
+        "must_bind_caption_to_product_surface": true,
+        "must_not_render_traceability_terms": true
+      }
+    },
+    {
+      "text_composition_id": "text_composition_2_81_climax",
+      "role": "climax",
+      "slide_index": 5,
+      "visual_grammar_module": "product_reveal",
+      "source_text_binding_id": "text_binding_2_73_climax",
+      "source_n_role_assessment": {
+        "repair_required": true,
+        "next_repair_instruction": "Make the climax a full-frame editable PPT result with visible slide thumbnails, surface controls, and fewer floating labels."
+      },
+      "headline_block": {
+        "text_role": "headline_block",
+        "copy_intent": "Make the climax sentence describe the complete generated product surface.",
+        "bound_visual_object_type": "product surface",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 34,
+          "line_height": 1.05,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "subhead_block": {
+        "text_role": "subhead_block",
+        "copy_intent": "Explain that native PPT structure, proof, and overflow decisions are visible.",
+        "bound_visual_object_type": "product surface",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 24,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 18,
+          "line_height": 1.22,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "proof_sentence": {
+        "text_role": "proof_sentence",
+        "copy_intent": "State that the result is editable, generated, and still blocked for public polish.",
+        "bound_visual_object_type": "evidence object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 26,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 14,
+          "line_height": 1.25,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "object_caption": {
+        "text_role": "object_caption",
+        "copy_intent": "Caption the full-frame output as editable presentation surface.",
+        "bound_visual_object_type": "product surface",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 12,
+          "line_height": 1.12,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "label_policy": {
+        "max_visible_labels": 2,
+        "min_font_size": 12,
+        "must_attach_to_visible_object": true,
+        "floating_labels_allowed": false,
+        "overflow_route": "viewer_metadata_and_speaker_notes"
+      },
+      "viewer_note_route": {
+        "target": "viewer_metadata_and_speaker_notes",
+        "traceability_on_canvas": false,
+        "speaker_note_allowed": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "tiny labels without object anchors",
+        "duplicate run tags",
+        "traceability on slide canvas",
+        "headline plus chips only"
+      ],
+      "renderer_constraints": {
+        "must_create_main_reading_region": true,
+        "must_bind_caption_to_product_surface": true,
+        "must_not_render_traceability_terms": true
+      }
+    },
+    {
+      "text_composition_id": "text_composition_2_81_close",
+      "role": "close",
+      "slide_index": 6,
+      "visual_grammar_module": "decision_map",
+      "source_text_binding_id": "text_binding_2_73_close",
+      "source_n_role_assessment": {
+        "repair_required": true,
+        "next_repair_instruction": "Turn the close into a dominant release-gate decision object with large branch labels and a clear blocked public outcome."
+      },
+      "headline_block": {
+        "text_role": "headline_block",
+        "copy_intent": "End with the decision state and the next evaluation gate.",
+        "bound_visual_object_type": "decision object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 32,
+          "line_height": 1.06,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "subhead_block": {
+        "text_role": "subhead_block",
+        "copy_intent": "Explain that generation can proceed, while public release remains blocked until evaluation.",
+        "bound_visual_object_type": "decision object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 24,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 17,
+          "line_height": 1.22,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "proof_sentence": {
+        "text_role": "proof_sentence",
+        "copy_intent": "State that the next Part P must evaluate visual quality independently.",
+        "bound_visual_object_type": "evidence object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 26,
+          "max_lines": 3
+        },
+        "typography": {
+          "min_font_size": 14,
+          "line_height": 1.25,
+          "weight": "regular",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "object_caption": {
+        "text_role": "object_caption",
+        "copy_intent": "Caption the gate object with its blocked-public outcome.",
+        "bound_visual_object_type": "decision object",
+        "object_anchor_required": true,
+        "capacity": {
+          "max_words": 10,
+          "max_lines": 2
+        },
+        "typography": {
+          "min_font_size": 12,
+          "line_height": 1.12,
+          "weight": "bold",
+          "alignment": "left"
+        },
+        "canvas_route": "slide_canvas"
+      },
+      "label_policy": {
+        "max_visible_labels": 3,
+        "min_font_size": 12,
+        "must_attach_to_visible_object": true,
+        "floating_labels_allowed": false,
+        "overflow_route": "viewer_metadata_and_speaker_notes"
+      },
+      "viewer_note_route": {
+        "target": "viewer_metadata_and_speaker_notes",
+        "traceability_on_canvas": false,
+        "speaker_note_allowed": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "tiny labels without object anchors",
+        "duplicate run tags",
+        "traceability on slide canvas",
+        "headline plus chips only"
+      ],
+      "renderer_constraints": {
+        "must_create_main_reading_region": true,
+        "must_bind_caption_to_product_surface": true,
+        "must_not_render_traceability_terms": true
+      }
+    }
+  ],
+  "traceability_summary": {
+    "page_text_composition_record_count": 6,
+    "source_input_count": 8,
+    "renderer_rerun_started": false
+  },
+  "next_required_action": "part_o2_renderer_rerun_from_text_composition_and_product_surface_repair"
+}

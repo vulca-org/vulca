@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.79"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.82"'
 
 
 @dataclass(frozen=True)
@@ -843,6 +843,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.82",
+        "Run 2.82",
+        "run2-82-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-82-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-82-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_82_full_product_surface_text_composition",
+                "Run 2.82 full",
+                "ppt-run2-82-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_82_without_text_composition",
+                "Bad missing Run 2.82 text composition",
+                "ppt-run2-82-bad-without-text-composition",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -1037,6 +1058,11 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run275_result = read_json(pack / "results" / "run2_75_renderer_repair_rerun_result.json")
     run277_result = read_json(pack / "results" / "run2_77_visual_grammar_renderer_repair_rerun_result.json")
     run279_result = read_json(pack / "results" / "run2_79_renderer_art_direction_repair_rerun_result.json")
+    run280_visual_quality = read_json(pack / "results" / "run2_80_visual_quality_evaluation.json")
+    run281_text_composition = read_json(pack / "run2_81_text_composition_typography_plan.json")
+    run282_result = read_json(
+        pack / "results" / "run2_82_renderer_product_surface_text_composition_rerun_result.json"
+    )
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1603,6 +1629,21 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run279FullTracePath": "ppt-run2-79-full-vulca/trace_manifest.json",
         "run279BadTracePath": "ppt-run2-79-bad-without-l-art-direction-repair/trace_manifest.json",
         "run279FourArmSheetPath": "run2-79-four-arm-contact-sheet.png",
+        "run280VisualQualityStatus": run280_visual_quality.get("status", ""),
+        "run280VisualQuality": run280_visual_quality,
+        "run280VisualQualityPath": "run2_80_visual_quality_evaluation.json",
+        "run281TextCompositionStatus": run281_text_composition.get("status", ""),
+        "run281TextCompositionPlan": run281_text_composition,
+        "run281TextCompositionPath": "run2_81_text_composition_typography_plan.json",
+        "run282ResultStatus": run282_result.get("status", ""),
+        "run282Result": run282_result,
+        "run282ResultPath": "run2_82_renderer_product_surface_text_composition_rerun_result.json",
+        "run282TargetLayer": "renderer_product_surface_text_composition_from_run2_80_n_and_o1",
+        "run282SourceDataStatus": "run2_82_consumes_n_2_79_and_o1_before_native_ppt_drawing",
+        "run282GeneratorPath": "scripts/generate_ppt_run2_82_product_surface_text_composition_arms.mjs",
+        "run282FullTracePath": "ppt-run2-82-full-vulca/trace_manifest.json",
+        "run282BadTracePath": "ppt-run2-82-bad-without-text-composition/trace_manifest.json",
+        "run282FourArmSheetPath": "run2-82-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",

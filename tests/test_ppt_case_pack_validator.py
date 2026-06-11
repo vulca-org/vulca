@@ -1517,6 +1517,14 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_80_visual_quality_evaluation(), indent=2),
         encoding="utf-8",
     )
+    (pack / "run2_81_text_composition_typography_plan.json").write_text(
+        json.dumps(valid_run2_81_text_composition_typography_plan(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "results" / "run2_82_renderer_product_surface_text_composition_rerun_result.json").write_text(
+        json.dumps(valid_run2_82_renderer_product_surface_text_composition_rerun_result(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -3046,6 +3054,242 @@ def valid_run2_80_visual_quality_evaluation() -> dict:
     }
 
 
+def valid_run2_81_text_composition_typography_plan() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    consumed_sources = [
+        "docs/product/ppt-run2-data-skill-quality/run2_43_editorial_composition_typography_memory.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_49_readability_memory.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_61_text_socket_fusion_contracts.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_64_text_fit_renderer_gates.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_tutorial_to_design_moves.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+        "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json",
+    ]
+    forbidden = [
+        "floating labels",
+        "tiny labels without object anchors",
+        "duplicate run tags",
+        "traceability on slide canvas",
+        "headline plus chips only",
+    ]
+
+    def block(role: str, name: str, max_words: int, font_size: int) -> dict:
+        return {
+            "text_role": name,
+            "copy_intent": f"{role} {name} tells one public-facing idea tied to the product surface.",
+            "bound_visual_object_type": "product surface" if name != "proof_sentence" else "evidence object",
+            "object_anchor_required": True,
+            "capacity": {"max_words": max_words, "max_lines": 2 if name == "headline_block" else 3},
+            "typography": {
+                "min_font_size": font_size,
+                "line_height": 1.08 if name == "headline_block" else 1.24,
+                "weight": "bold" if name in {"headline_block", "object_caption"} else "regular",
+                "alignment": "left",
+            },
+            "canvas_route": "slide_canvas",
+        }
+
+    return {
+        "artifact_id": "run2_81_text_composition_typography_plan",
+        "part": "Part O1",
+        "schema_version": "ppt_run2_81_text_composition_typography_plan.v1",
+        "run_id": "2.81",
+        "status": "run2_81_text_composition_typography_plan_ready_public_blocked",
+        "stage_policy": "part_o1_text_composition_typography_plan_only_no_renderer_rerun_no_public_release",
+        "creates_new_ppt_deck": False,
+        "starts_renderer_rerun": False,
+        "updates_html_viewer": False,
+        "public_release_started": False,
+        "public_ready": False,
+        "consumed_sources": consumed_sources,
+        "source_inputs": [
+            {"path": source, "available": True, "usage": "text_composition_rule_source"}
+            for source in consumed_sources
+        ],
+        "source_n_evaluation": {
+            "status": "run2_80_visual_quality_evaluation_public_blocked",
+            "top_blocker": "product_surface_not_visibly_realized_and_slides_read_as_sparse_text_wireframes",
+            "next_required_action": "part_o_renderer_product_surface_repair_from_n_evaluation",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json",
+        },
+        "global_text_composition_contract": {
+            "required_canvas_text_blocks": [
+                "headline_block",
+                "subhead_block",
+                "proof_sentence",
+                "object_caption",
+            ],
+            "global_forbidden_patterns": forbidden,
+            "traceability_default_route": "viewer_metadata_and_speaker_notes",
+            "slide_canvas_traceability_allowed": False,
+            "minimum_main_text_region_count": 1,
+        },
+        "page_text_composition_records": [
+            {
+                "text_composition_id": f"text_composition_2_81_{role}",
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "source_text_binding_id": f"text_binding_2_73_{role}",
+                "source_n_role_assessment": {
+                    "repair_required": True,
+                    "next_repair_instruction": "Render a visible product surface with public-facing hierarchy.",
+                },
+                "headline_block": block(role, "headline_block", 10, 30),
+                "subhead_block": block(role, "subhead_block", 22, 16),
+                "proof_sentence": block(role, "proof_sentence", 24, 14),
+                "object_caption": block(role, "object_caption", 10, 12),
+                "label_policy": {
+                    "max_visible_labels": 3,
+                    "min_font_size": 12,
+                    "must_attach_to_visible_object": True,
+                    "floating_labels_allowed": False,
+                    "overflow_route": "viewer_metadata_and_speaker_notes",
+                },
+                "viewer_note_route": {
+                    "target": "viewer_metadata_and_speaker_notes",
+                    "traceability_on_canvas": False,
+                    "speaker_note_allowed": True,
+                },
+                "forbidden_patterns": forbidden,
+                "renderer_constraints": {
+                    "must_create_main_reading_region": True,
+                    "must_bind_caption_to_product_surface": True,
+                    "must_not_render_traceability_terms": True,
+                },
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "traceability_summary": {
+            "page_text_composition_record_count": 6,
+            "source_input_count": len(consumed_sources),
+            "renderer_rerun_started": False,
+        },
+        "next_required_action": "part_o2_renderer_rerun_from_text_composition_and_product_surface_repair",
+    }
+
+
+def valid_run2_82_renderer_product_surface_text_composition_rerun_result() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    consumed_sources = [
+        "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json",
+        "docs/product/ppt-run2-data-skill-quality/results/run2_79_renderer_art_direction_repair_rerun_result.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json",
+    ]
+    directives = [
+        "n_repair_instruction_consumed",
+        "o1_text_composition_consumed",
+        "concrete_product_surface_rendered",
+        "text_hierarchy_applied",
+        "floating_labels_removed",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed",
+    ]
+    surface_by_role = {
+        "cover": "editable_ppt_product_mock",
+        "setup": "source_to_memory_product_flow",
+        "contrast": "before_after_product_theater",
+        "proof": "evidence_product_workspace",
+        "climax": "editable_ppt_product_mock",
+        "close": "release_decision_product_map",
+    }
+    return {
+        "artifact_id": "run2_82_renderer_product_surface_text_composition_rerun_result",
+        "part": "Part O2",
+        "schema_version": "ppt_run2_82_renderer_product_surface_text_composition_rerun_result.v1",
+        "run_id": "2.82",
+        "status": "run2_82_renderer_product_surface_text_composition_rerun_generated_public_blocked",
+        "public_ready": False,
+        "public_release_started": False,
+        "quality_claim_boundary": "renderer_product_surface_text_composition_generated_viewer_check_only_no_part_p_quality_verdict",
+        "consumed_sources": consumed_sources,
+        "source_n_evaluation": {
+            "status": "run2_80_visual_quality_evaluation_public_blocked",
+            "top_blocker": "product_surface_not_visibly_realized_and_slides_read_as_sparse_text_wireframes",
+            "next_required_action": "part_o_renderer_product_surface_repair_from_n_evaluation",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json",
+        },
+        "source_o1_text_composition_plan": {
+            "status": "run2_81_text_composition_typography_plan_ready_public_blocked",
+            "next_required_action": "part_o2_renderer_rerun_from_text_composition_and_product_surface_repair",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json",
+        },
+        "renderer_product_surface_text_composition_manifest": {
+            "generator": "scripts/generate_ppt_run2_82_product_surface_text_composition_arms.mjs",
+            "consumed_sources": consumed_sources,
+            "arms": [
+                "prompt_only",
+                "run1_5_skill",
+                "run2_82_full_product_surface_text_composition",
+                "bad_run2_82_without_text_composition",
+            ],
+            "best_internal_arm": "run2_82_full_product_surface_text_composition",
+            "outputs": {
+                "html_viewer": "outputs/thread/presentations/ppt-run2-82-full-vulca/output/run2-82-product-surface-text-composition.html",
+                "pptx": "outputs/thread/presentations/ppt-run2-82-full-vulca/output/ppt-run2-82-full-vulca.pptx",
+                "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+            },
+            "viewer_update": {
+                "latest_run_id": "2.82",
+                "viewer_can_reference_new_run": True,
+            },
+        },
+        "rendered_pages": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "source_o1_text_composition_id": f"text_composition_2_81_{role}",
+                "source_n_repair_instruction": "Render a visible product surface with public-facing hierarchy.",
+                "source_run2_79_page": {"art_direction_scene": f"{role} art direction scene"},
+                "renderer_repair_directives_applied": directives,
+                "concrete_product_surface_visible": True,
+                "product_surface_type": surface_by_role[role],
+                "text_hierarchy": "headline_subhead_proof_caption",
+                "text_composition_blocks_applied": [
+                    "headline_block",
+                    "subhead_block",
+                    "proof_sentence",
+                    "object_caption",
+                ],
+                "floating_label_count": 0,
+                "label_count": 2,
+                "min_visible_label_font_size": 12,
+                "canvas_word_count": 28,
+                "source_trace_terms_visible_on_canvas": [],
+                "public_polish_claimed": False,
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "renderer_product_surface_text_composition_checks": {
+            "pages_with_o1_text_composition_consumed": 6,
+            "pages_with_concrete_product_surface": 6,
+            "pages_with_text_hierarchy_applied": 6,
+            "pages_with_floating_labels_removed": 6,
+            "pages_with_traceability_routed_off_canvas": 6,
+            "public_quality_verdict_started": False,
+        },
+        "next_required_action": "part_p_visual_quality_evaluation_for_run2_82",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -3083,6 +3327,11 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: results/run2_78_visual_quality_evaluation.json" in result.errors
     assert "missing required file: results/run2_79_renderer_art_direction_repair_rerun_result.json" in result.errors
     assert "missing required file: results/run2_80_visual_quality_evaluation.json" in result.errors
+    assert "missing required file: run2_81_text_composition_typography_plan.json" in result.errors
+    assert (
+        "missing required file: results/run2_82_renderer_product_surface_text_composition_rerun_result.json"
+        in result.errors
+    )
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -3894,6 +4143,225 @@ def test_run2_profile_rejects_n_visual_evaluation_public_ready_or_missing_blocke
     assert "run2_80_visual_quality_evaluation.no_new_renderer_proof.new_html_created must be false" in result.errors
     assert (
         "run2_80_visual_quality_evaluation.next_required_action must be part_o_renderer_product_surface_repair_from_n_evaluation"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_o1_text_composition_bad_scope_or_unbound_text(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    plan_path = pack / "run2_81_text_composition_typography_plan.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan["public_ready"] = True
+    plan["starts_renderer_rerun"] = True
+    plan["updates_html_viewer"] = True
+    plan["consumed_sources"] = plan["consumed_sources"][:-1]
+    plan["source_n_evaluation"]["status"] = "missing"
+    plan["global_text_composition_contract"]["slide_canvas_traceability_allowed"] = True
+    first = plan["page_text_composition_records"][0]
+    first["visual_grammar_module"] = "hero_field"
+    first["headline_block"]["object_anchor_required"] = False
+    first["headline_block"]["capacity"]["max_words"] = 0
+    first["headline_block"]["typography"]["min_font_size"] = 9
+    first["subhead_block"].pop("canvas_route")
+    first["label_policy"]["max_visible_labels"] = 5
+    first["label_policy"]["floating_labels_allowed"] = True
+    first["label_policy"]["overflow_route"] = "slide_canvas"
+    first["viewer_note_route"]["traceability_on_canvas"] = True
+    first["forbidden_patterns"] = ["generic bad pattern"]
+    plan["traceability_summary"]["renderer_rerun_started"] = True
+    plan["next_required_action"] = "part_o2_renderer_rerun"
+    plan_path.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_81_text_composition_typography_plan.public_ready must be false" in result.errors
+    assert "run2_81_text_composition_typography_plan.starts_renderer_rerun must be false" in result.errors
+    assert "run2_81_text_composition_typography_plan.updates_html_viewer must be false" in result.errors
+    assert (
+        "run2_81_text_composition_typography_plan.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.source_n_evaluation.status must be run2_80_visual_quality_evaluation_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.global_text_composition_contract.slide_canvas_traceability_allowed must be false"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.page_text_composition_records[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.page_text_composition_records[0].headline_block.object_anchor_required must be true"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.page_text_composition_records[0].headline_block.capacity.max_words must be greater than 0"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.page_text_composition_records[0].headline_block.typography.min_font_size must be at least 12"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.page_text_composition_records[0].subhead_block missing key: canvas_route"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.page_text_composition_records[0].label_policy.max_visible_labels must be at most 3"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.page_text_composition_records[0].label_policy.floating_labels_allowed must be false"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.page_text_composition_records[0].label_policy.overflow_route must be viewer_metadata_and_speaker_notes"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.page_text_composition_records[0].viewer_note_route.traceability_on_canvas must be false"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.page_text_composition_records[0].forbidden_patterns missing value: floating labels"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.traceability_summary.renderer_rerun_started must be false"
+        in result.errors
+    )
+    assert (
+        "run2_81_text_composition_typography_plan.next_required_action must be part_o2_renderer_rerun_from_text_composition_and_product_surface_repair"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_o2_rerun_missing_text_composition_or_public_gates(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    result_path = pack / "results" / "run2_82_renderer_product_surface_text_composition_rerun_result.json"
+    result_json = json.loads(result_path.read_text(encoding="utf-8"))
+    result_json["public_ready"] = True
+    result_json["public_release_started"] = True
+    result_json["consumed_sources"] = result_json["consumed_sources"][:-1]
+    result_json["source_n_evaluation"]["status"] = "missing"
+    result_json["source_o1_text_composition_plan"]["status"] = "missing"
+    result_json["renderer_product_surface_text_composition_manifest"]["viewer_update"]["latest_run_id"] = "2.79"
+    first = result_json["rendered_pages"][0]
+    first["visual_grammar_module"] = "hero_field"
+    first["renderer_repair_directives_applied"] = ["n_repair_instruction_consumed"]
+    first["concrete_product_surface_visible"] = False
+    first["product_surface_type"] = "abstract_wireframe"
+    first["text_hierarchy"] = "headline_chips"
+    first["text_composition_blocks_applied"] = ["headline_block"]
+    first["floating_label_count"] = 2
+    first["label_count"] = 5
+    first["min_visible_label_font_size"] = 9
+    first["canvas_word_count"] = 12
+    first["source_trace_terms_visible_on_canvas"] = ["traceability"]
+    first["public_polish_claimed"] = True
+    checks = result_json["renderer_product_surface_text_composition_checks"]
+    checks["pages_with_o1_text_composition_consumed"] = 5
+    checks["pages_with_concrete_product_surface"] = 5
+    checks["pages_with_text_hierarchy_applied"] = 5
+    checks["pages_with_floating_labels_removed"] = 5
+    checks["pages_with_traceability_routed_off_canvas"] = 5
+    checks["public_quality_verdict_started"] = True
+    result_json["next_required_action"] = "public_release"
+    result_path.write_text(json.dumps(result_json, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_82_renderer_product_surface_text_composition_rerun_result.public_ready must be false" in result.errors
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.public_release_started must be false"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.source_n_evaluation.status must be run2_80_visual_quality_evaluation_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.source_o1_text_composition_plan.status must be run2_81_text_composition_typography_plan_ready_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.renderer_product_surface_text_composition_manifest.viewer_update.latest_run_id must be 2.82"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].renderer_repair_directives_applied missing value: o1_text_composition_consumed"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].concrete_product_surface_visible must be true"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].product_surface_type must be one of before_after_product_theater, editable_ppt_product_mock, evidence_product_workspace, release_decision_product_map, source_to_memory_product_flow"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].text_hierarchy must be headline_subhead_proof_caption"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].text_composition_blocks_applied missing value: object_caption"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].floating_label_count must be 0"
+        in result.errors
+    )
+    assert "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].label_count must be at most 3" in result.errors
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].min_visible_label_font_size must be at least 12"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].canvas_word_count must be at least 24"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].source_trace_terms_visible_on_canvas must be empty"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.rendered_pages[0].public_polish_claimed must be false"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.renderer_product_surface_text_composition_checks.pages_with_o1_text_composition_consumed must be 6"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.renderer_product_surface_text_composition_checks.public_quality_verdict_started must be false"
+        in result.errors
+    )
+    assert (
+        "run2_82_renderer_product_surface_text_composition_rerun_result.next_required_action must be part_p_visual_quality_evaluation_for_run2_82"
         in result.errors
     )
 

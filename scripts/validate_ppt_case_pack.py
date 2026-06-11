@@ -104,6 +104,8 @@ RUN2_73_REQUIRED_FILES = [
     "results/run2_78_visual_quality_evaluation.json",
     "results/run2_79_renderer_art_direction_repair_rerun_result.json",
     "results/run2_80_visual_quality_evaluation.json",
+    "run2_81_text_composition_typography_plan.json",
+    "results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
 ]
 
 
@@ -625,6 +627,67 @@ RUN2_80_VISUAL_QUALITY_EXPECTED_ANSWERS = {
 }
 RUN2_80_DELTA_VALUES = {"improved", "partial", "unchanged", "regressed"}
 RUN2_80_PRODUCT_SURFACE_REALIZATION_VALUES = {"strong", "partial", "weak", "absent"}
+RUN2_81_TEXT_COMPOSITION_TYPOGRAPHY_PLAN_STATUS = "run2_81_text_composition_typography_plan_ready_public_blocked"
+RUN2_81_TEXT_COMPOSITION_CONSUMED_SOURCE_PATHS = {
+    "docs/product/ppt-run2-data-skill-quality/run2_43_editorial_composition_typography_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_49_readability_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_61_text_socket_fusion_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_64_text_fit_renderer_gates.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_tutorial_to_design_moves.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json",
+}
+RUN2_81_REQUIRED_TEXT_BLOCKS = {
+    "headline_block",
+    "subhead_block",
+    "proof_sentence",
+    "object_caption",
+}
+RUN2_81_FORBIDDEN_PATTERNS = {
+    "floating labels",
+    "tiny labels without object anchors",
+    "duplicate run tags",
+    "traceability on slide canvas",
+    "headline plus chips only",
+}
+RUN2_81_BOUND_VISUAL_OBJECT_TYPES = {
+    "product surface",
+    "evidence object",
+    "comparison object",
+    "decision object",
+}
+RUN2_82_RENDERER_PRODUCT_SURFACE_TEXT_COMPOSITION_STATUS = (
+    "run2_82_renderer_product_surface_text_composition_rerun_generated_public_blocked"
+)
+RUN2_82_RENDERER_PRODUCT_SURFACE_TEXT_COMPOSITION_CONSUMED_SOURCE_PATHS = {
+    "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_79_renderer_art_direction_repair_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json",
+}
+RUN2_82_RENDERER_PRODUCT_SURFACE_TEXT_COMPOSITION_DIRECTIVES = {
+    "n_repair_instruction_consumed",
+    "o1_text_composition_consumed",
+    "concrete_product_surface_rendered",
+    "text_hierarchy_applied",
+    "floating_labels_removed",
+    "traceability_routed_off_canvas",
+    "public_polish_not_claimed",
+}
+RUN2_82_PRODUCT_SURFACE_TYPES = {
+    "editable_ppt_product_mock",
+    "source_to_memory_product_flow",
+    "before_after_product_theater",
+    "evidence_product_workspace",
+    "release_decision_product_map",
+}
+RUN2_82_TEXT_COMPOSITION_REQUIRED_CHECKS = {
+    "pages_with_o1_text_composition_consumed": 6,
+    "pages_with_concrete_product_surface": 6,
+    "pages_with_text_hierarchy_applied": 6,
+    "pages_with_floating_labels_removed": 6,
+    "pages_with_traceability_routed_off_canvas": 6,
+}
 
 
 @dataclass(frozen=True)
@@ -6590,6 +6653,555 @@ def validate_run2_80_no_new_renderer_proof(label: str, value: Any, errors: list[
         errors.append(f"{label}.status must be pass")
 
 
+def validate_run2_81_text_composition_typography_plan(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "run2_81_text_composition_typography_plan.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_81_text_composition_typography_plan"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "stage_policy",
+            "creates_new_ppt_deck",
+            "starts_renderer_rerun",
+            "updates_html_viewer",
+            "public_release_started",
+            "public_ready",
+            "consumed_sources",
+            "source_inputs",
+            "source_n_evaluation",
+            "global_text_composition_contract",
+            "page_text_composition_records",
+            "traceability_summary",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part O1":
+        errors.append(f"{label}.part must be Part O1")
+    if data.get("run_id") != "2.81":
+        errors.append(f"{label}.run_id must be 2.81")
+    if data.get("status") != RUN2_81_TEXT_COMPOSITION_TYPOGRAPHY_PLAN_STATUS:
+        errors.append(f"{label}.status must be {RUN2_81_TEXT_COMPOSITION_TYPOGRAPHY_PLAN_STATUS}")
+    if data.get("stage_policy") != "part_o1_text_composition_typography_plan_only_no_renderer_rerun_no_public_release":
+        errors.append(
+            f"{label}.stage_policy must be part_o1_text_composition_typography_plan_only_no_renderer_rerun_no_public_release"
+        )
+    for key in ["creates_new_ppt_deck", "starts_renderer_rerun", "updates_html_viewer", "public_release_started", "public_ready"]:
+        if data.get(key) is not False:
+            errors.append(f"{label}.{key} must be false")
+    validate_exact_string_set(
+        f"{label}.consumed_sources",
+        data.get("consumed_sources", []),
+        RUN2_81_TEXT_COMPOSITION_CONSUMED_SOURCE_PATHS,
+        errors,
+    )
+    validate_run2_81_source_inputs(f"{label}.source_inputs", data.get("source_inputs", []), errors)
+    validate_run2_81_source_n_evaluation(f"{label}.source_n_evaluation", data.get("source_n_evaluation", {}), errors)
+    validate_run2_81_global_text_contract(
+        f"{label}.global_text_composition_contract",
+        data.get("global_text_composition_contract", {}),
+        errors,
+    )
+    validate_run2_81_page_text_composition_records(
+        f"{label}.page_text_composition_records",
+        data.get("page_text_composition_records", []),
+        errors,
+    )
+    validate_run2_81_traceability_summary(
+        f"{label}.traceability_summary",
+        data.get("traceability_summary", {}),
+        errors,
+    )
+    if data.get("next_required_action") != "part_o2_renderer_rerun_from_text_composition_and_product_surface_repair":
+        errors.append(
+            f"{label}.next_required_action must be part_o2_renderer_rerun_from_text_composition_and_product_surface_repair"
+        )
+
+
+def validate_run2_81_source_inputs(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    paths: list[str] = []
+    for index, source in enumerate(value):
+        source_label = f"{label}[{index}]"
+        if not isinstance(source, dict):
+            errors.append(f"{source_label} must be an object")
+            continue
+        require_keys(source_label, source, ["path", "available"], errors)
+        path = source.get("path")
+        if require_non_empty_string(f"{source_label}.path", path, errors):
+            paths.append(path)
+        if source.get("available") is not True:
+            errors.append(f"{source_label}.available must be true")
+    for path in sorted(RUN2_81_TEXT_COMPOSITION_CONSUMED_SOURCE_PATHS - set(paths)):
+        errors.append(f"{label} missing path: {path}")
+
+
+def validate_run2_81_source_n_evaluation(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["status", "top_blocker", "next_required_action", "source_result"], errors)
+    if value.get("status") != RUN2_80_VISUAL_QUALITY_EVALUATION_STATUS:
+        errors.append(f"{label}.status must be {RUN2_80_VISUAL_QUALITY_EVALUATION_STATUS}")
+    if value.get("top_blocker") != "product_surface_not_visibly_realized_and_slides_read_as_sparse_text_wireframes":
+        errors.append(f"{label}.top_blocker must match Run 2.80 visual quality top blocker")
+    if value.get("next_required_action") != "part_o_renderer_product_surface_repair_from_n_evaluation":
+        errors.append(f"{label}.next_required_action must be part_o_renderer_product_surface_repair_from_n_evaluation")
+    if value.get("source_result") != "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json":
+        errors.append(f"{label}.source_result must reference run2_80_visual_quality_evaluation.json")
+
+
+def validate_run2_81_global_text_contract(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        [
+            "required_canvas_text_blocks",
+            "global_forbidden_patterns",
+            "traceability_default_route",
+            "slide_canvas_traceability_allowed",
+            "minimum_main_text_region_count",
+        ],
+        errors,
+    )
+    validate_exact_string_set(
+        f"{label}.required_canvas_text_blocks",
+        value.get("required_canvas_text_blocks", []),
+        RUN2_81_REQUIRED_TEXT_BLOCKS,
+        errors,
+    )
+    validate_exact_string_set(
+        f"{label}.global_forbidden_patterns",
+        value.get("global_forbidden_patterns", []),
+        RUN2_81_FORBIDDEN_PATTERNS,
+        errors,
+    )
+    if value.get("traceability_default_route") != "viewer_metadata_and_speaker_notes":
+        errors.append(f"{label}.traceability_default_route must be viewer_metadata_and_speaker_notes")
+    if value.get("slide_canvas_traceability_allowed") is not False:
+        errors.append(f"{label}.slide_canvas_traceability_allowed must be false")
+    if "minimum_main_text_region_count" in value and require_integer(
+        f"{label}.minimum_main_text_region_count",
+        value["minimum_main_text_region_count"],
+        errors,
+    ):
+        if value["minimum_main_text_region_count"] < 1:
+            errors.append(f"{label}.minimum_main_text_region_count must be at least 1")
+
+
+def validate_run2_81_page_text_composition_records(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    for index, record in enumerate(value):
+        record_label = f"{label}[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{record_label} must be an object")
+            continue
+        require_keys(
+            record_label,
+            record,
+            [
+                "text_composition_id",
+                "role",
+                "slide_index",
+                "visual_grammar_module",
+                "source_text_binding_id",
+                "source_n_role_assessment",
+                "headline_block",
+                "subhead_block",
+                "proof_sentence",
+                "object_caption",
+                "label_policy",
+                "viewer_note_route",
+                "forbidden_patterns",
+                "renderer_constraints",
+            ],
+            errors,
+        )
+        role = record.get("role")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in record and require_integer(f"{record_label}.slide_index", record["slide_index"], errors):
+            if record["slide_index"] != index + 1:
+                errors.append(f"{record_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if record.get("visual_grammar_module") != expected_module:
+                errors.append(f"{record_label}.visual_grammar_module must be {expected_module} for {role}")
+            if record.get("text_composition_id") != f"text_composition_2_81_{role}":
+                errors.append(f"{record_label}.text_composition_id must be text_composition_2_81_{role}")
+            if record.get("source_text_binding_id") != f"text_binding_2_73_{role}":
+                errors.append(f"{record_label}.source_text_binding_id must be text_binding_2_73_{role}")
+        source_n = record.get("source_n_role_assessment", {})
+        if require_non_empty_dict(f"{record_label}.source_n_role_assessment", source_n, errors):
+            if source_n.get("repair_required") is not True:
+                errors.append(f"{record_label}.source_n_role_assessment.repair_required must be true")
+            if "next_repair_instruction" in source_n:
+                require_non_empty_string(
+                    f"{record_label}.source_n_role_assessment.next_repair_instruction",
+                    source_n["next_repair_instruction"],
+                    errors,
+                )
+            else:
+                errors.append(f"{record_label}.source_n_role_assessment missing key: next_repair_instruction")
+        for block_name in sorted(RUN2_81_REQUIRED_TEXT_BLOCKS):
+            validate_run2_81_text_block(f"{record_label}.{block_name}", record.get(block_name, {}), errors)
+        validate_run2_81_label_policy(f"{record_label}.label_policy", record.get("label_policy", {}), errors)
+        validate_run2_81_viewer_note_route(f"{record_label}.viewer_note_route", record.get("viewer_note_route", {}), errors)
+        validate_exact_string_set(
+            f"{record_label}.forbidden_patterns",
+            record.get("forbidden_patterns", []),
+            RUN2_81_FORBIDDEN_PATTERNS,
+            errors,
+        )
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+
+
+def validate_run2_81_text_block(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        [
+            "text_role",
+            "copy_intent",
+            "bound_visual_object_type",
+            "object_anchor_required",
+            "capacity",
+            "typography",
+            "canvas_route",
+        ],
+        errors,
+    )
+    if "copy_intent" in value:
+        require_non_empty_string(f"{label}.copy_intent", value["copy_intent"], errors)
+    if "bound_visual_object_type" in value:
+        validate_choice(
+            f"{label}.bound_visual_object_type",
+            value["bound_visual_object_type"],
+            RUN2_81_BOUND_VISUAL_OBJECT_TYPES,
+            errors,
+        )
+    if value.get("object_anchor_required") is not True:
+        errors.append(f"{label}.object_anchor_required must be true")
+    capacity = value.get("capacity", {})
+    if require_non_empty_dict(f"{label}.capacity", capacity, errors):
+        for key in ["max_words", "max_lines"]:
+            if key not in capacity:
+                errors.append(f"{label}.capacity missing key: {key}")
+            elif require_integer(f"{label}.capacity.{key}", capacity[key], errors) and capacity[key] <= 0:
+                errors.append(f"{label}.capacity.{key} must be greater than 0")
+    typography = value.get("typography", {})
+    if require_non_empty_dict(f"{label}.typography", typography, errors):
+        if "min_font_size" not in typography:
+            errors.append(f"{label}.typography missing key: min_font_size")
+        elif require_integer(f"{label}.typography.min_font_size", typography["min_font_size"], errors) and typography["min_font_size"] < 12:
+            errors.append(f"{label}.typography.min_font_size must be at least 12")
+    if value.get("canvas_route") != "slide_canvas":
+        errors.append(f"{label}.canvas_route must be slide_canvas")
+
+
+def validate_run2_81_label_policy(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        ["max_visible_labels", "min_font_size", "must_attach_to_visible_object", "floating_labels_allowed", "overflow_route"],
+        errors,
+    )
+    if "max_visible_labels" in value and require_integer(f"{label}.max_visible_labels", value["max_visible_labels"], errors):
+        if value["max_visible_labels"] > 3:
+            errors.append(f"{label}.max_visible_labels must be at most 3")
+    if "min_font_size" in value and require_integer(f"{label}.min_font_size", value["min_font_size"], errors):
+        if value["min_font_size"] < 12:
+            errors.append(f"{label}.min_font_size must be at least 12")
+    if value.get("must_attach_to_visible_object") is not True:
+        errors.append(f"{label}.must_attach_to_visible_object must be true")
+    if value.get("floating_labels_allowed") is not False:
+        errors.append(f"{label}.floating_labels_allowed must be false")
+    if value.get("overflow_route") != "viewer_metadata_and_speaker_notes":
+        errors.append(f"{label}.overflow_route must be viewer_metadata_and_speaker_notes")
+
+
+def validate_run2_81_viewer_note_route(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["target", "traceability_on_canvas", "speaker_note_allowed"], errors)
+    if value.get("target") != "viewer_metadata_and_speaker_notes":
+        errors.append(f"{label}.target must be viewer_metadata_and_speaker_notes")
+    if value.get("traceability_on_canvas") is not False:
+        errors.append(f"{label}.traceability_on_canvas must be false")
+    if value.get("speaker_note_allowed") is not True:
+        errors.append(f"{label}.speaker_note_allowed must be true")
+
+
+def validate_run2_81_traceability_summary(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["page_text_composition_record_count", "source_input_count", "renderer_rerun_started"], errors)
+    expected_ints = {
+        "page_text_composition_record_count": 6,
+        "source_input_count": len(RUN2_81_TEXT_COMPOSITION_CONSUMED_SOURCE_PATHS),
+    }
+    for key, expected in expected_ints.items():
+        if key in value and require_integer(f"{label}.{key}", value[key], errors) and value[key] != expected:
+            errors.append(f"{label}.{key} must be {expected}")
+    if value.get("renderer_rerun_started") is not False:
+        errors.append(f"{label}.renderer_rerun_started must be false")
+
+
+def validate_run2_82_renderer_product_surface_text_composition_rerun_result(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "results" / "run2_82_renderer_product_surface_text_composition_rerun_result.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_82_renderer_product_surface_text_composition_rerun_result"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "public_ready",
+            "public_release_started",
+            "quality_claim_boundary",
+            "consumed_sources",
+            "source_n_evaluation",
+            "source_o1_text_composition_plan",
+            "renderer_product_surface_text_composition_manifest",
+            "rendered_pages",
+            "renderer_product_surface_text_composition_checks",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part O2":
+        errors.append(f"{label}.part must be Part O2")
+    if data.get("run_id") != "2.82":
+        errors.append(f"{label}.run_id must be 2.82")
+    if data.get("status") != RUN2_82_RENDERER_PRODUCT_SURFACE_TEXT_COMPOSITION_STATUS:
+        errors.append(f"{label}.status must be {RUN2_82_RENDERER_PRODUCT_SURFACE_TEXT_COMPOSITION_STATUS}")
+    if data.get("public_ready") is not False:
+        errors.append(f"{label}.public_ready must be false")
+    if data.get("public_release_started") is not False:
+        errors.append(f"{label}.public_release_started must be false")
+    if data.get("quality_claim_boundary") != "renderer_product_surface_text_composition_generated_viewer_check_only_no_part_p_quality_verdict":
+        errors.append(
+            f"{label}.quality_claim_boundary must be renderer_product_surface_text_composition_generated_viewer_check_only_no_part_p_quality_verdict"
+        )
+    validate_exact_string_set(
+        f"{label}.consumed_sources",
+        data.get("consumed_sources", []),
+        RUN2_82_RENDERER_PRODUCT_SURFACE_TEXT_COMPOSITION_CONSUMED_SOURCE_PATHS,
+        errors,
+    )
+    validate_run2_82_source_n_evaluation(f"{label}.source_n_evaluation", data.get("source_n_evaluation", {}), errors)
+    validate_run2_82_source_o1_plan(
+        f"{label}.source_o1_text_composition_plan",
+        data.get("source_o1_text_composition_plan", {}),
+        errors,
+    )
+    validate_run2_82_manifest(
+        f"{label}.renderer_product_surface_text_composition_manifest",
+        data.get("renderer_product_surface_text_composition_manifest", {}),
+        errors,
+    )
+    validate_run2_82_rendered_pages(f"{label}.rendered_pages", data.get("rendered_pages", []), errors)
+    validate_run2_82_checks(
+        f"{label}.renderer_product_surface_text_composition_checks",
+        data.get("renderer_product_surface_text_composition_checks", {}),
+        errors,
+    )
+    if data.get("next_required_action") != "part_p_visual_quality_evaluation_for_run2_82":
+        errors.append(f"{label}.next_required_action must be part_p_visual_quality_evaluation_for_run2_82")
+
+
+def validate_run2_82_source_n_evaluation(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["status", "top_blocker", "next_required_action", "source_result"], errors)
+    if value.get("status") != RUN2_80_VISUAL_QUALITY_EVALUATION_STATUS:
+        errors.append(f"{label}.status must be {RUN2_80_VISUAL_QUALITY_EVALUATION_STATUS}")
+    if value.get("top_blocker") != "product_surface_not_visibly_realized_and_slides_read_as_sparse_text_wireframes":
+        errors.append(f"{label}.top_blocker must match Run 2.80 visual quality top blocker")
+    if value.get("next_required_action") != "part_o_renderer_product_surface_repair_from_n_evaluation":
+        errors.append(f"{label}.next_required_action must be part_o_renderer_product_surface_repair_from_n_evaluation")
+    if value.get("source_result") != "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json":
+        errors.append(f"{label}.source_result must reference run2_80_visual_quality_evaluation.json")
+
+
+def validate_run2_82_source_o1_plan(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["status", "next_required_action", "source_result"], errors)
+    if value.get("status") != RUN2_81_TEXT_COMPOSITION_TYPOGRAPHY_PLAN_STATUS:
+        errors.append(f"{label}.status must be {RUN2_81_TEXT_COMPOSITION_TYPOGRAPHY_PLAN_STATUS}")
+    if value.get("next_required_action") != "part_o2_renderer_rerun_from_text_composition_and_product_surface_repair":
+        errors.append(f"{label}.next_required_action must be part_o2_renderer_rerun_from_text_composition_and_product_surface_repair")
+    if value.get("source_result") != "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json":
+        errors.append(f"{label}.source_result must reference run2_81_text_composition_typography_plan.json")
+
+
+def validate_run2_82_manifest(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["generator", "consumed_sources", "arms", "best_internal_arm", "outputs", "viewer_update"], errors)
+    if value.get("generator") != "scripts/generate_ppt_run2_82_product_surface_text_composition_arms.mjs":
+        errors.append(f"{label}.generator must be scripts/generate_ppt_run2_82_product_surface_text_composition_arms.mjs")
+    validate_exact_string_set(
+        f"{label}.consumed_sources",
+        value.get("consumed_sources", []),
+        RUN2_82_RENDERER_PRODUCT_SURFACE_TEXT_COMPOSITION_CONSUMED_SOURCE_PATHS,
+        errors,
+    )
+    validate_exact_string_set(
+        f"{label}.arms",
+        value.get("arms", []),
+        {"prompt_only", "run1_5_skill", "run2_82_full_product_surface_text_composition", "bad_run2_82_without_text_composition"},
+        errors,
+    )
+    if value.get("best_internal_arm") != "run2_82_full_product_surface_text_composition":
+        errors.append(f"{label}.best_internal_arm must be run2_82_full_product_surface_text_composition")
+    outputs = value.get("outputs", {})
+    if require_non_empty_dict(f"{label}.outputs", outputs, errors):
+        for key in ["html_viewer", "pptx", "ppt_run_viewer"]:
+            if key not in outputs:
+                errors.append(f"{label}.outputs missing key: {key}")
+            else:
+                require_non_empty_string(f"{label}.outputs.{key}", outputs[key], errors)
+    viewer_update = value.get("viewer_update", {})
+    if require_non_empty_dict(f"{label}.viewer_update", viewer_update, errors):
+        if viewer_update.get("latest_run_id") != "2.82":
+            errors.append(f"{label}.viewer_update.latest_run_id must be 2.82")
+        if viewer_update.get("viewer_can_reference_new_run") is not True:
+            errors.append(f"{label}.viewer_update.viewer_can_reference_new_run must be true")
+
+
+def validate_run2_82_rendered_pages(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    for index, page in enumerate(value):
+        page_label = f"{label}[{index}]"
+        if not isinstance(page, dict):
+            errors.append(f"{page_label} must be an object")
+            continue
+        require_keys(
+            page_label,
+            page,
+            [
+                "role",
+                "slide_index",
+                "visual_grammar_module",
+                "source_o1_text_composition_id",
+                "source_n_repair_instruction",
+                "source_run2_79_page",
+                "renderer_repair_directives_applied",
+                "concrete_product_surface_visible",
+                "product_surface_type",
+                "text_hierarchy",
+                "text_composition_blocks_applied",
+                "floating_label_count",
+                "label_count",
+                "min_visible_label_font_size",
+                "canvas_word_count",
+                "source_trace_terms_visible_on_canvas",
+                "public_polish_claimed",
+            ],
+            errors,
+        )
+        role = page.get("role")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in page and require_integer(f"{page_label}.slide_index", page["slide_index"], errors):
+            if page["slide_index"] != index + 1:
+                errors.append(f"{page_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if page.get("visual_grammar_module") != expected_module:
+                errors.append(f"{page_label}.visual_grammar_module must be {expected_module} for {role}")
+            if page.get("source_o1_text_composition_id") != f"text_composition_2_81_{role}":
+                errors.append(f"{page_label}.source_o1_text_composition_id must be text_composition_2_81_{role}")
+        if "source_n_repair_instruction" in page:
+            require_non_empty_string(f"{page_label}.source_n_repair_instruction", page["source_n_repair_instruction"], errors)
+        source_279 = page.get("source_run2_79_page", {})
+        if require_non_empty_dict(f"{page_label}.source_run2_79_page", source_279, errors):
+            if "art_direction_scene" in source_279:
+                require_non_empty_string(f"{page_label}.source_run2_79_page.art_direction_scene", source_279["art_direction_scene"], errors)
+            else:
+                errors.append(f"{page_label}.source_run2_79_page missing key: art_direction_scene")
+        validate_exact_string_set(
+            f"{page_label}.renderer_repair_directives_applied",
+            page.get("renderer_repair_directives_applied", []),
+            RUN2_82_RENDERER_PRODUCT_SURFACE_TEXT_COMPOSITION_DIRECTIVES,
+            errors,
+        )
+        if page.get("concrete_product_surface_visible") is not True:
+            errors.append(f"{page_label}.concrete_product_surface_visible must be true")
+        if "product_surface_type" in page:
+            validate_choice(f"{page_label}.product_surface_type", page["product_surface_type"], RUN2_82_PRODUCT_SURFACE_TYPES, errors)
+        if page.get("text_hierarchy") != "headline_subhead_proof_caption":
+            errors.append(f"{page_label}.text_hierarchy must be headline_subhead_proof_caption")
+        validate_exact_string_set(
+            f"{page_label}.text_composition_blocks_applied",
+            page.get("text_composition_blocks_applied", []),
+            RUN2_81_REQUIRED_TEXT_BLOCKS,
+            errors,
+        )
+        if "floating_label_count" in page and require_integer(f"{page_label}.floating_label_count", page["floating_label_count"], errors):
+            if page["floating_label_count"] != 0:
+                errors.append(f"{page_label}.floating_label_count must be 0")
+        if "label_count" in page and require_integer(f"{page_label}.label_count", page["label_count"], errors):
+            if page["label_count"] > 3:
+                errors.append(f"{page_label}.label_count must be at most 3")
+        if "min_visible_label_font_size" in page and require_integer(f"{page_label}.min_visible_label_font_size", page["min_visible_label_font_size"], errors):
+            if page["min_visible_label_font_size"] < 12:
+                errors.append(f"{page_label}.min_visible_label_font_size must be at least 12")
+        if "canvas_word_count" in page and require_integer(f"{page_label}.canvas_word_count", page["canvas_word_count"], errors):
+            if page["canvas_word_count"] < 24:
+                errors.append(f"{page_label}.canvas_word_count must be at least 24")
+        if "source_trace_terms_visible_on_canvas" in page:
+            visible = page["source_trace_terms_visible_on_canvas"]
+            if not isinstance(visible, list):
+                errors.append(f"{page_label}.source_trace_terms_visible_on_canvas must be a list")
+            elif visible:
+                errors.append(f"{page_label}.source_trace_terms_visible_on_canvas must be empty")
+        if page.get("public_polish_claimed") is not False:
+            errors.append(f"{page_label}.public_polish_claimed must be false")
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+
+
+def validate_run2_82_checks(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    for key, expected in RUN2_82_TEXT_COMPOSITION_REQUIRED_CHECKS.items():
+        if key not in value:
+            errors.append(f"{label} missing key: {key}")
+            continue
+        if require_integer(f"{label}.{key}", value[key], errors) and value[key] != expected:
+            errors.append(f"{label}.{key} must be {expected}")
+    if value.get("public_quality_verdict_started") is not False:
+        errors.append(f"{label}.public_quality_verdict_started must be false")
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -6812,6 +7424,8 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_78_visual_quality_evaluation(root, errors)
             validate_run2_79_renderer_art_direction_repair_rerun_result(root, errors)
             validate_run2_80_visual_quality_evaluation(root, errors)
+            validate_run2_81_text_composition_typography_plan(root, errors)
+            validate_run2_82_renderer_product_surface_text_composition_rerun_result(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)
