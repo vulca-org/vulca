@@ -110,6 +110,7 @@ RUN2_73_REQUIRED_FILES = [
     "run2_84_design_motif_taxonomy_style_router_plan.json",
     "results/run2_85_design_motif_renderer_rerun_result.json",
     "results/run2_86_visual_quality_evaluation.json",
+    "run2_87_best_layout_recovery_visual_primitive_plan.json",
 ]
 
 
@@ -867,6 +868,35 @@ RUN2_86_DELTA_VALUES = {"improved", "partial", "unchanged", "regressed"}
 RUN2_86_MOTIF_REALIZATION_VALUES = {"strong", "partial", "weak"}
 RUN2_86_LAYOUT_DISTINCTIVENESS_VALUES = {"strong", "partial", "weak"}
 RUN2_86_TEXT_COMPOSITION_VALUES = {"strong", "partial", "rigid"}
+RUN2_87_BEST_LAYOUT_PLAN_STATUS = "run2_87_best_layout_recovery_visual_primitive_plan_ready_public_blocked"
+RUN2_87_RECOVERY_RUNS = {"2.9", "2.10", "2.16", "2.67", "2.68"}
+RUN2_87_SOURCE_PRIMITIVE_IDS = {
+    "primitive_2_9_editorial_spread_composition",
+    "primitive_2_9_product_surface_depth",
+    "primitive_2_9_motion_storyboard_sequence",
+    "primitive_2_9_climax_stage_composition",
+    "primitive_2_9_typographic_field_composition",
+}
+RUN2_87_VISUAL_PRIMITIVE_IDS = {
+    "primitive_2_87_product_theater_surface",
+    "primitive_2_87_editorial_text_field",
+    "primitive_2_87_before_after_surface",
+    "primitive_2_87_modular_matrix_workspace",
+    "primitive_2_87_overlay_sticker_stack",
+    "primitive_2_87_decision_map_board",
+}
+RUN2_87_REQUIRED_PRIMITIVE_GATES = {
+    "not_rectangle_only",
+    "text_integrated_with_shape",
+    "collision_avoidance",
+    "motif_fidelity_visible",
+}
+RUN2_87_NEXT_RENDERER_ARMS = {
+    "prompt_only",
+    "run1_5_skill",
+    "run2_88_full_best_layout_visual_primitives",
+    "bad_without_best_layout_visual_primitives",
+}
 
 
 @dataclass(frozen=True)
@@ -8535,6 +8565,306 @@ def validate_run2_86_root_cause_summary(label: str, value: Any, errors: list[str
         validate_string_list(f"{label}.secondary_layers", secondary, errors)
 
 
+def validate_run2_87_best_layout_recovery_visual_primitive_plan(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "run2_87_best_layout_recovery_visual_primitive_plan.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_87_best_layout_recovery_visual_primitive_plan"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "creates_new_ppt_deck",
+            "starts_renderer_rerun",
+            "updates_html_viewer",
+            "public_release_started",
+            "public_ready",
+            "quality_claim_boundary",
+            "consumed_sources",
+            "source_q_evaluation",
+            "historical_recovery_scope",
+            "page_layout_recovery_records",
+            "visual_primitive_contracts",
+            "composition_engine_repair_plan",
+            "next_renderer_contract",
+            "no_new_renderer_proof",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part R":
+        errors.append(f"{label}.part must be Part R")
+    if data.get("run_id") != "2.87":
+        errors.append(f"{label}.run_id must be 2.87")
+    if data.get("status") != RUN2_87_BEST_LAYOUT_PLAN_STATUS:
+        errors.append(f"{label}.status must be {RUN2_87_BEST_LAYOUT_PLAN_STATUS}")
+    for key in [
+        "creates_new_ppt_deck",
+        "starts_renderer_rerun",
+        "updates_html_viewer",
+        "public_release_started",
+        "public_ready",
+    ]:
+        if data.get(key) is not False:
+            errors.append(f"{label}.{key} must be false")
+    if data.get("quality_claim_boundary") != "part_r_plan_only_no_renderer_rerun_no_public_release":
+        errors.append(f"{label}.quality_claim_boundary must be part_r_plan_only_no_renderer_rerun_no_public_release")
+    validate_run2_87_consumed_sources(f"{label}.consumed_sources", data.get("consumed_sources", []), errors)
+    validate_run2_87_source_q(f"{label}.source_q_evaluation", data.get("source_q_evaluation", {}), errors)
+    validate_run2_87_historical_recovery_scope(
+        f"{label}.historical_recovery_scope",
+        data.get("historical_recovery_scope", {}),
+        errors,
+    )
+    primitive_ids = validate_run2_87_visual_primitive_contracts(
+        f"{label}.visual_primitive_contracts",
+        data.get("visual_primitive_contracts", []),
+        errors,
+    )
+    validate_run2_87_page_layout_recovery_records(
+        f"{label}.page_layout_recovery_records",
+        data.get("page_layout_recovery_records", []),
+        primitive_ids,
+        errors,
+    )
+    validate_run2_87_composition_engine_repair_plan(
+        f"{label}.composition_engine_repair_plan",
+        data.get("composition_engine_repair_plan", {}),
+        errors,
+    )
+    validate_run2_87_next_renderer_contract(f"{label}.next_renderer_contract", data.get("next_renderer_contract", {}), errors)
+    validate_run2_80_no_new_renderer_proof(f"{label}.no_new_renderer_proof", data.get("no_new_renderer_proof", {}), errors)
+    if data.get("next_required_action") != "part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan":
+        errors.append(f"{label}.next_required_action must be part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan")
+
+
+def validate_run2_87_consumed_sources(label: str, value: Any, errors: list[str]) -> None:
+    expected = {
+        "docs/product/ppt-run2-data-skill-quality/results/run2_86_visual_quality_evaluation.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_9_visual_primitive_repair.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_9_executable_visual_modules.json",
+        "docs/product/ppt-run2-data-skill-quality/results/run2_10_visual_system_rerun_result.json",
+        "docs/product/ppt-run2-data-skill-quality/results/run2_16_selector_rerun_result.json",
+        "docs/product/ppt-run2-data-skill-quality/results/run2_67_reference_first_rerun_result.json",
+        "docs/product/ppt-run2-data-skill-quality/results/run2_68_targeted_debug_rerun_result.json",
+    }
+    if not validate_string_list(label, value, errors):
+        return
+    actual = set(value)
+    for item in sorted(expected - actual):
+        errors.append(f"{label} missing value: {item}")
+
+
+def validate_run2_87_source_q(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    expected = {
+        "status": RUN2_86_VISUAL_QUALITY_EVALUATION_STATUS,
+        "next_required_action": "part_r_best_layout_recovery_and_visual_primitive_plan_from_q_evaluation",
+        "top_blocker": "renderer_visual_primitives_are_too_simple_to_realize_design_motifs",
+        "primary_layer": "renderer_visual_primitive_and_composition_engine",
+    }
+    require_keys(label, value, list(expected), errors)
+    for key, expected_value in expected.items():
+        if value.get(key) != expected_value:
+            errors.append(f"{label}.{key} must be {expected_value}")
+
+
+def validate_run2_87_historical_recovery_scope(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["candidate_runs", "source_primitive_ids", "recovery_principle"], errors)
+    if "candidate_runs" in value:
+        if validate_string_list(f"{label}.candidate_runs", value["candidate_runs"], errors):
+            actual = set(value["candidate_runs"])
+            for run_id in sorted(RUN2_87_RECOVERY_RUNS - actual):
+                errors.append(f"{label}.candidate_runs missing value: {run_id}")
+    if "source_primitive_ids" in value:
+        if validate_string_list(f"{label}.source_primitive_ids", value["source_primitive_ids"], errors):
+            actual = set(value["source_primitive_ids"])
+            for primitive_id in sorted(RUN2_87_SOURCE_PRIMITIVE_IDS - actual):
+                errors.append(f"{label}.source_primitive_ids missing value: {primitive_id}")
+    if "recovery_principle" in value:
+        require_non_empty_string(f"{label}.recovery_principle", value["recovery_principle"], errors)
+
+
+def validate_run2_87_page_layout_recovery_records(
+    label: str,
+    value: Any,
+    primitive_ids: set[str],
+    errors: list[str],
+) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    for index, record in enumerate(value):
+        record_label = f"{label}[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{record_label} must be an object")
+            continue
+        require_keys(
+            record_label,
+            record,
+            [
+                "role",
+                "slide_index",
+                "visual_grammar_module",
+                "motif_family",
+                "source_q_root_cause_layer",
+                "source_q_repair_instruction",
+                "historical_layout_sources",
+                "recovered_layout_pattern",
+                "renderer_primitive_id",
+                "composition_engine_obligation",
+                "forbidden_patterns",
+            ],
+            errors,
+        )
+        role = record.get("role")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in record and require_integer(f"{record_label}.slide_index", record["slide_index"], errors):
+            if record["slide_index"] != index + 1:
+                errors.append(f"{record_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if record.get("visual_grammar_module") != expected_module:
+                errors.append(f"{record_label}.visual_grammar_module must be {expected_module} for {role}")
+        if "source_q_root_cause_layer" in record:
+            validate_choice(f"{record_label}.source_q_root_cause_layer", record["source_q_root_cause_layer"], RUN2_86_ROOT_CAUSE_LAYERS, errors)
+        if "source_q_repair_instruction" in record:
+            require_non_empty_string(f"{record_label}.source_q_repair_instruction", record["source_q_repair_instruction"], errors)
+        if "historical_layout_sources" in record:
+            if validate_string_list(f"{record_label}.historical_layout_sources", record["historical_layout_sources"], errors):
+                if not (set(record["historical_layout_sources"]) & RUN2_87_RECOVERY_RUNS):
+                    errors.append(f"{record_label}.historical_layout_sources must include a recovery run before 2.85")
+                elif set(record["historical_layout_sources"]) <= {"2.85"}:
+                    errors.append(f"{record_label}.historical_layout_sources must include a recovery run before 2.85")
+        if "recovered_layout_pattern" in record:
+            require_non_empty_string(f"{record_label}.recovered_layout_pattern", record["recovered_layout_pattern"], errors)
+        primitive_id = record.get("renderer_primitive_id")
+        if isinstance(primitive_id, str):
+            if primitive_id not in primitive_ids:
+                errors.append(f"{record_label}.renderer_primitive_id references unknown primitive: {primitive_id}")
+        elif "renderer_primitive_id" in record:
+            require_non_empty_string(f"{record_label}.renderer_primitive_id", primitive_id, errors)
+        obligation = record.get("composition_engine_obligation", {})
+        if require_non_empty_dict(f"{record_label}.composition_engine_obligation", obligation, errors):
+            for key in ["recover_best_historical_layout", "preserve_text_heavy_readability", "avoid_generic_box_layout"]:
+                if obligation.get(key) is not True:
+                    errors.append(f"{record_label}.composition_engine_obligation.{key} must be true")
+        if "forbidden_patterns" in record:
+            if validate_string_list(f"{record_label}.forbidden_patterns", record["forbidden_patterns"], errors):
+                for item in ["floating labels", "traceability labels on slide canvas", "generic rectangles only"]:
+                    if item not in record["forbidden_patterns"]:
+                        errors.append(f"{record_label}.forbidden_patterns missing value: {item}")
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+
+
+def validate_run2_87_visual_primitive_contracts(label: str, value: Any, errors: list[str]) -> set[str]:
+    primitive_ids: set[str] = set()
+    if not require_non_empty_list(label, value, errors):
+        return primitive_ids
+    for index, record in enumerate(value):
+        record_label = f"{label}[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{record_label} must be an object")
+            continue
+        require_keys(
+            record_label,
+            record,
+            [
+                "primitive_id",
+                "motif_family",
+                "renderer_function_name",
+                "native_ppt_elements",
+                "composition_rules",
+                "anti_regression_gates",
+                "forbidden_shortcuts",
+            ],
+            errors,
+        )
+        primitive_id = record.get("primitive_id")
+        if isinstance(primitive_id, str) and primitive_id.strip():
+            primitive_ids.add(primitive_id)
+        if "renderer_function_name" in record:
+            if require_non_empty_string(f"{record_label}.renderer_function_name", record["renderer_function_name"], errors):
+                if not record["renderer_function_name"].startswith("drawRun287"):
+                    errors.append(f"{record_label}.renderer_function_name must start with drawRun287")
+        for key in ["native_ppt_elements", "composition_rules"]:
+            if key in record:
+                validate_string_list(f"{record_label}.{key}", record[key], errors)
+        if "anti_regression_gates" in record:
+            if validate_string_list(f"{record_label}.anti_regression_gates", record["anti_regression_gates"], errors):
+                actual = set(record["anti_regression_gates"])
+                for gate in sorted(RUN2_87_REQUIRED_PRIMITIVE_GATES - actual):
+                    errors.append(f"{record_label}.anti_regression_gates missing value: {gate}")
+        if "forbidden_shortcuts" in record:
+            if validate_string_list(f"{record_label}.forbidden_shortcuts", record["forbidden_shortcuts"], errors):
+                for item in ["generic rectangles only", "floating trace labels"]:
+                    if item not in record["forbidden_shortcuts"]:
+                        errors.append(f"{record_label}.forbidden_shortcuts missing value: {item}")
+    for primitive_id in sorted(RUN2_87_VISUAL_PRIMITIVE_IDS - primitive_ids):
+        errors.append(f"{label} missing primitive_id: {primitive_id}")
+    for primitive_id in sorted(primitive_ids - RUN2_87_VISUAL_PRIMITIVE_IDS):
+        errors.append(f"{label} has unexpected primitive_id: {primitive_id}")
+    return primitive_ids
+
+
+def validate_run2_87_composition_engine_repair_plan(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["layout_selection_order", "collision_policy", "traceability_policy", "text_density_policy"], errors)
+    order = value.get("layout_selection_order")
+    if validate_string_list(f"{label}.layout_selection_order", order, errors):
+        if not order or order[0] != "historical_best_layout_recovery":
+            errors.append(f"{label}.layout_selection_order[0] must be historical_best_layout_recovery")
+        if "run2_67_reference_first_archetype" not in order:
+            errors.append(f"{label}.layout_selection_order missing value: run2_67_reference_first_archetype")
+    collision = value.get("collision_policy", {})
+    if require_non_empty_dict(f"{label}.collision_policy", collision, errors):
+        if collision.get("reject_visible_text_overlap") is not True:
+            errors.append(f"{label}.collision_policy.reject_visible_text_overlap must be true")
+    traceability = value.get("traceability_policy", {})
+    if require_non_empty_dict(f"{label}.traceability_policy", traceability, errors):
+        if traceability.get("slide_canvas_traceability_allowed") is not False:
+            errors.append(f"{label}.traceability_policy.slide_canvas_traceability_allowed must be false")
+    text_density = value.get("text_density_policy", {})
+    if require_non_empty_dict(f"{label}.text_density_policy", text_density, errors):
+        if text_density.get("text_heavy_layout_allowed") is not True:
+            errors.append(f"{label}.text_density_policy.text_heavy_layout_allowed must be true")
+
+
+def validate_run2_87_next_renderer_contract(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        ["next_run_id", "next_renderer_script", "must_consume_part_r", "public_quality_verdict_deferred", "arms"],
+        errors,
+    )
+    if value.get("next_run_id") != "2.88":
+        errors.append(f"{label}.next_run_id must be 2.88")
+    expected_script = "scripts/generate_ppt_run2_88_best_layout_visual_primitive_arms.mjs"
+    if value.get("next_renderer_script") != expected_script:
+        errors.append(f"{label}.next_renderer_script must be {expected_script}")
+    if value.get("must_consume_part_r") is not True:
+        errors.append(f"{label}.must_consume_part_r must be true")
+    if value.get("public_quality_verdict_deferred") is not True:
+        errors.append(f"{label}.public_quality_verdict_deferred must be true")
+    if "arms" in value:
+        validate_exact_string_set(f"{label}.arms", value["arms"], RUN2_87_NEXT_RENDERER_ARMS, errors)
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -8763,6 +9093,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_84_design_motif_taxonomy_style_router_plan(root, errors)
             validate_run2_85_design_motif_renderer_rerun_result(root, errors)
             validate_run2_86_visual_quality_evaluation(root, errors)
+            validate_run2_87_best_layout_recovery_visual_primitive_plan(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)

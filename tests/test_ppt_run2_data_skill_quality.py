@@ -971,6 +971,17 @@ EXPECTED_RUN2_Q_ROOT_CAUSE_LAYERS = {
     "design_motif_binding",
     "text_composition",
 }
+EXPECTED_RUN2_R_PLAN = PACK / "run2_87_best_layout_recovery_visual_primitive_plan.json"
+EXPECTED_RUN2_R_SCRIPT = ROOT / "scripts" / "build_ppt_run2_87_best_layout_recovery_visual_primitive_plan.py"
+EXPECTED_RUN2_R_RECOVERY_RUNS = {"2.9", "2.10", "2.16", "2.67", "2.68"}
+EXPECTED_RUN2_R_PRIMITIVE_IDS = {
+    "primitive_2_87_product_theater_surface",
+    "primitive_2_87_editorial_text_field",
+    "primitive_2_87_before_after_surface",
+    "primitive_2_87_modular_matrix_workspace",
+    "primitive_2_87_overlay_sticker_stack",
+    "primitive_2_87_decision_map_board",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -5100,6 +5111,143 @@ def test_run2_86_records_visual_quality_evaluation_result() -> None:
     assert audit["viewer_comparison_closure"]["viewer_latest_run_id"] == "2.85"
     assert len(audit["role_assessments"]) == 6
     assert "public-quality visual result remains incremental" in report
+
+
+def test_run2_87_best_layout_recovery_visual_primitive_plan_builds_renderer_contract(
+    tmp_path: Path,
+) -> None:
+    assert EXPECTED_RUN2_R_SCRIPT.exists(), "missing Part R best-layout recovery plan builder"
+    script = EXPECTED_RUN2_R_SCRIPT.read_text(encoding="utf-8")
+    assert_contains(
+        script,
+        [
+            "run2_86_visual_quality_evaluation.json",
+            "run2_84_design_motif_taxonomy_style_router_plan.json",
+            "run2_9_visual_primitive_repair.json",
+            "run2_9_executable_visual_modules.json",
+            "run2_10_visual_system_rerun_result.json",
+            "run2_16_selector_rerun_result.json",
+            "run2_67_reference_first_rerun_result.json",
+            "run2_68_targeted_debug_rerun_result.json",
+        ],
+    )
+    result_json = tmp_path / "run2_87_best_layout_recovery_visual_primitive_plan.json"
+    result_md = tmp_path / "run2_87_best_layout_recovery_visual_primitive_plan.md"
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(EXPECTED_RUN2_R_SCRIPT),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    plan = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+    assert "run2_87_best_layout_recovery_visual_primitive_plan_ready_public_blocked" in completed.stdout
+    assert plan["artifact_id"] == "run2_87_best_layout_recovery_visual_primitive_plan"
+    assert plan["part"] == "Part R"
+    assert plan["run_id"] == "2.87"
+    assert plan["status"] == "run2_87_best_layout_recovery_visual_primitive_plan_ready_public_blocked"
+    assert plan["creates_new_ppt_deck"] is False
+    assert plan["starts_renderer_rerun"] is False
+    assert plan["updates_html_viewer"] is False
+    assert plan["public_release_started"] is False
+    assert plan["public_ready"] is False
+    assert plan["quality_claim_boundary"] == "part_r_plan_only_no_renderer_rerun_no_public_release"
+
+    assert plan["source_q_evaluation"]["status"] == "run2_86_visual_quality_evaluation_public_blocked"
+    assert plan["source_q_evaluation"]["next_required_action"] == (
+        "part_r_best_layout_recovery_and_visual_primitive_plan_from_q_evaluation"
+    )
+    assert EXPECTED_RUN2_R_RECOVERY_RUNS <= set(plan["historical_recovery_scope"]["candidate_runs"])
+    assert EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS <= set(
+        plan["historical_recovery_scope"]["source_primitive_ids"]
+    )
+
+    recovery_records = plan["page_layout_recovery_records"]
+    assert [record["role"] for record in recovery_records] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert len(recovery_records) == 6
+    for record in recovery_records:
+        assert record["slide_index"] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES.index(record["role"]) + 1
+        assert record["source_q_root_cause_layer"] in EXPECTED_RUN2_Q_ROOT_CAUSE_LAYERS
+        assert record["source_q_repair_instruction"]
+        assert set(record["historical_layout_sources"]) & EXPECTED_RUN2_R_RECOVERY_RUNS
+        assert record["recovered_layout_pattern"]
+        assert record["renderer_primitive_id"] in EXPECTED_RUN2_R_PRIMITIVE_IDS
+        assert record["visual_grammar_module"] == EXPECTED_RUN2_E_PAGE_MODULE_MAP[record["role"]]
+        assert record["composition_engine_obligation"]["recover_best_historical_layout"] is True
+        assert record["composition_engine_obligation"]["preserve_text_heavy_readability"] is True
+        assert record["composition_engine_obligation"]["avoid_generic_box_layout"] is True
+        assert "floating labels" in record["forbidden_patterns"]
+        assert "traceability labels on slide canvas" in record["forbidden_patterns"]
+
+    primitive_contracts = plan["visual_primitive_contracts"]
+    assert {contract["primitive_id"] for contract in primitive_contracts} == EXPECTED_RUN2_R_PRIMITIVE_IDS
+    for contract in primitive_contracts:
+        assert contract["renderer_function_name"].startswith("drawRun287")
+        assert len(contract["native_ppt_elements"]) >= 4
+        assert contract["composition_rules"]
+        assert {
+            "not_rectangle_only",
+            "text_integrated_with_shape",
+            "collision_avoidance",
+            "motif_fidelity_visible",
+        } <= set(contract["anti_regression_gates"])
+        assert "generic rectangles only" in contract["forbidden_shortcuts"]
+        assert "floating trace labels" in contract["forbidden_shortcuts"]
+
+    engine = plan["composition_engine_repair_plan"]
+    assert engine["layout_selection_order"][0] == "historical_best_layout_recovery"
+    assert "run2_67_reference_first_archetype" in engine["layout_selection_order"]
+    assert engine["collision_policy"]["reject_visible_text_overlap"] is True
+    assert engine["traceability_policy"]["slide_canvas_traceability_allowed"] is False
+    assert engine["text_density_policy"]["text_heavy_layout_allowed"] is True
+
+    next_contract = plan["next_renderer_contract"]
+    assert next_contract["next_run_id"] == "2.88"
+    assert next_contract["next_renderer_script"] == "scripts/generate_ppt_run2_88_best_layout_visual_primitive_arms.mjs"
+    assert next_contract["must_consume_part_r"] is True
+    assert next_contract["public_quality_verdict_deferred"] is True
+    assert next_contract["arms"] == [
+        "prompt_only",
+        "run1_5_skill",
+        "run2_88_full_best_layout_visual_primitives",
+        "bad_without_best_layout_visual_primitives",
+    ]
+    assert plan["no_new_renderer_proof"]["new_pptx_created"] is False
+    assert plan["no_new_renderer_proof"]["new_html_created"] is False
+    assert plan["next_required_action"] == "part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan"
+    assert_contains(
+        report,
+        [
+            "Run 2.87 Best Layout Recovery",
+            "historical best layout recovery",
+            "visual primitive",
+            "public blocked",
+            "Run 2.88",
+        ],
+    )
+
+
+def test_run2_87_records_best_layout_recovery_visual_primitive_plan() -> None:
+    plan = load_json(EXPECTED_RUN2_R_PLAN)
+
+    assert plan["status"] == "run2_87_best_layout_recovery_visual_primitive_plan_ready_public_blocked"
+    assert plan["public_ready"] is False
+    assert plan["public_release_started"] is False
+    assert plan["starts_renderer_rerun"] is False
+    assert len(plan["page_layout_recovery_records"]) == 6
+    assert {contract["primitive_id"] for contract in plan["visual_primitive_contracts"]} == EXPECTED_RUN2_R_PRIMITIVE_IDS
+    assert plan["composition_engine_repair_plan"]["traceability_policy"]["slide_canvas_traceability_allowed"] is False
+    assert plan["next_required_action"] == "part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan"
 
 
 def test_run2_7_has_serializable_design_memory() -> None:

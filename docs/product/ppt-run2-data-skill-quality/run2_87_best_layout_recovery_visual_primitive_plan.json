@@ -1,0 +1,456 @@
+{
+  "artifact_id": "run2_87_best_layout_recovery_visual_primitive_plan",
+  "part": "Part R",
+  "schema_version": "ppt_run2_87_best_layout_recovery_visual_primitive_plan.v1",
+  "run_id": "2.87",
+  "status": "run2_87_best_layout_recovery_visual_primitive_plan_ready_public_blocked",
+  "stage_policy": "part_r_plan_only_best_layout_recovery_visual_primitive_contract_no_renderer_rerun",
+  "creates_new_ppt_deck": false,
+  "starts_renderer_rerun": false,
+  "updates_html_viewer": false,
+  "public_release_started": false,
+  "public_ready": false,
+  "quality_claim_boundary": "part_r_plan_only_no_renderer_rerun_no_public_release",
+  "consumed_sources": [
+    "docs/product/ppt-run2-data-skill-quality/results/run2_86_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_9_visual_primitive_repair.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_9_executable_visual_modules.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_10_visual_system_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_16_selector_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_67_reference_first_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_68_targeted_debug_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_85_design_motif_renderer_rerun_result.json"
+  ],
+  "source_q_evaluation": {
+    "status": "run2_86_visual_quality_evaluation_public_blocked",
+    "next_required_action": "part_r_best_layout_recovery_and_visual_primitive_plan_from_q_evaluation",
+    "top_blocker": "renderer_visual_primitives_are_too_simple_to_realize_design_motifs",
+    "primary_layer": "renderer_visual_primitive_and_composition_engine"
+  },
+  "historical_recovery_scope": {
+    "candidate_runs": [
+      "2.9",
+      "2.10",
+      "2.16",
+      "2.67",
+      "2.68"
+    ],
+    "source_primitive_ids": [
+      "primitive_2_9_editorial_spread_composition",
+      "primitive_2_9_product_surface_depth",
+      "primitive_2_9_motion_storyboard_sequence",
+      "primitive_2_9_climax_stage_composition",
+      "primitive_2_9_typographic_field_composition"
+    ],
+    "source_module_ids": [
+      "module_2_9_editorial_spread",
+      "module_2_9_layered_product_surface",
+      "module_2_9_motion_storyboard",
+      "module_2_9_climax_stage",
+      "module_2_9_typographic_field"
+    ],
+    "recovery_principle": "recover best historical layout before drawing new motif primitive",
+    "historical_evidence": {
+      "run2_10": "Run 2.10 full uses structural asymmetry, visible whitespace, product theater, non-rectangular proof paths, kinetic sequence objects, and a cinematic climax; it is not merely recolored Run 2.9 rectangles.",
+      "run2_16": "passed with caveats: Gemini judged Run 2.16 full as visibly more editorial and polished than controls, and judged bad_selector_memory as weaker/crowded; it flagged contact-sheet labeling ambiguity and full-series readability limits",
+      "run2_67": "reference-first archetypes, scene business objects, and depth layers",
+      "run2_68": "targeted debug repairs for setup, proof, and close collision/layout issues"
+    }
+  },
+  "page_layout_recovery_records": [
+    {
+      "role": "cover",
+      "slide_index": 1,
+      "visual_grammar_module": "product_reveal",
+      "motif_family": "product_theater",
+      "source_q_root_cause_layer": "renderer_visual_primitives",
+      "source_q_repair_instruction": "Recover the strongest historical hero layout, then replace the generic product shell with a richer native PPT product-theater primitive.",
+      "historical_layout_sources": [
+        "2.10",
+        "2.16",
+        "2.67"
+      ],
+      "recovered_layout_pattern": "editorial product-theater hero from Run 2.10/2.67 with one dominant product surface",
+      "renderer_primitive_id": "primitive_2_87_product_theater_surface",
+      "composition_engine_obligation": {
+        "recover_best_historical_layout": true,
+        "preserve_text_heavy_readability": true,
+        "avoid_generic_box_layout": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "traceability labels on slide canvas",
+        "generic rectangles only",
+        "equal card grid"
+      ]
+    },
+    {
+      "role": "setup",
+      "slide_index": 2,
+      "visual_grammar_module": "hero_field",
+      "motif_family": "editorial_text_field",
+      "source_q_root_cause_layer": "text_composition",
+      "source_q_repair_instruction": "Turn the setup into a true editorial spread: stronger paragraph grouping, side captions, and one anchored product destination object.",
+      "historical_layout_sources": [
+        "2.10",
+        "2.16",
+        "2.67",
+        "2.68"
+      ],
+      "recovered_layout_pattern": "text-heavy editorial field plus anchored operating-loop stage from Run 2.16/2.68",
+      "renderer_primitive_id": "primitive_2_87_editorial_text_field",
+      "composition_engine_obligation": {
+        "recover_best_historical_layout": true,
+        "preserve_text_heavy_readability": true,
+        "avoid_generic_box_layout": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "traceability labels on slide canvas",
+        "generic rectangles only",
+        "equal card grid"
+      ]
+    },
+    {
+      "role": "contrast",
+      "slide_index": 3,
+      "visual_grammar_module": "before_after_theater",
+      "motif_family": "before_after_theater",
+      "source_q_root_cause_layer": "design_motif_binding",
+      "source_q_repair_instruction": "Preserve the before/after theater, enlarge the after surface, and add finer native UI/detail primitives instead of more labels.",
+      "historical_layout_sources": [
+        "2.10",
+        "2.16",
+        "2.67"
+      ],
+      "recovered_layout_pattern": "before/after theater from Run 2.16/2.67 with enlarged after-state product surface",
+      "renderer_primitive_id": "primitive_2_87_before_after_surface",
+      "composition_engine_obligation": {
+        "recover_best_historical_layout": true,
+        "preserve_text_heavy_readability": true,
+        "avoid_generic_box_layout": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "traceability labels on slide canvas",
+        "generic rectangles only",
+        "equal card grid"
+      ]
+    },
+    {
+      "role": "proof",
+      "slide_index": 4,
+      "visual_grammar_module": "evidence_workspace",
+      "motif_family": "modular_matrix",
+      "source_q_root_cause_layer": "renderer_visual_primitives",
+      "source_q_repair_instruction": "Introduce a real matrix primitive with varied cell hierarchy, connected proof object, and readable evidence captions.",
+      "historical_layout_sources": [
+        "2.9",
+        "2.10",
+        "2.16",
+        "2.68"
+      ],
+      "recovered_layout_pattern": "inspectable modular evidence workspace from Run 2.10/2.68 with unequal matrix hierarchy",
+      "renderer_primitive_id": "primitive_2_87_modular_matrix_workspace",
+      "composition_engine_obligation": {
+        "recover_best_historical_layout": true,
+        "preserve_text_heavy_readability": true,
+        "avoid_generic_box_layout": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "traceability labels on slide canvas",
+        "generic rectangles only",
+        "equal card grid"
+      ]
+    },
+    {
+      "role": "climax",
+      "slide_index": 5,
+      "visual_grammar_module": "product_reveal",
+      "motif_family": "overlay_sticker_stack",
+      "source_q_root_cause_layer": "composition_engine",
+      "source_q_repair_instruction": "Recover the best historical climax layout and build sticker-stack primitives with overlap, scale, tilt, and a single dominant generated deck surface.",
+      "historical_layout_sources": [
+        "2.9",
+        "2.10",
+        "2.16",
+        "2.67"
+      ],
+      "recovered_layout_pattern": "cinematic climax stage plus overlay sticker stack from Run 2.9/2.10/2.67",
+      "renderer_primitive_id": "primitive_2_87_overlay_sticker_stack",
+      "composition_engine_obligation": {
+        "recover_best_historical_layout": true,
+        "preserve_text_heavy_readability": true,
+        "avoid_generic_box_layout": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "traceability labels on slide canvas",
+        "generic rectangles only",
+        "equal card grid"
+      ]
+    },
+    {
+      "role": "close",
+      "slide_index": 6,
+      "visual_grammar_module": "decision_map",
+      "motif_family": "decision_map",
+      "source_q_root_cause_layer": "composition_engine",
+      "source_q_repair_instruction": "Make the release decision map the visual object: larger branch geometry, one blocked-public outcome, and less generic node styling.",
+      "historical_layout_sources": [
+        "2.9",
+        "2.16",
+        "2.67",
+        "2.68"
+      ],
+      "recovered_layout_pattern": "release decision board from Run 2.16/2.68 with fewer nodes and a larger verdict branch",
+      "renderer_primitive_id": "primitive_2_87_decision_map_board",
+      "composition_engine_obligation": {
+        "recover_best_historical_layout": true,
+        "preserve_text_heavy_readability": true,
+        "avoid_generic_box_layout": true
+      },
+      "forbidden_patterns": [
+        "floating labels",
+        "traceability labels on slide canvas",
+        "generic rectangles only",
+        "equal card grid"
+      ]
+    }
+  ],
+  "visual_primitive_contracts": [
+    {
+      "primitive_id": "primitive_2_87_product_theater_surface",
+      "motif_family": "product_theater",
+      "primitive_family": "layered_product_surface",
+      "renderer_function_name": "drawRun287ProductTheaterSurface",
+      "native_ppt_elements": [
+        "editable product shell group",
+        "stacked foreground/midground/background planes",
+        "native screen chrome and content slots",
+        "connected proof rail",
+        "anchored object caption"
+      ],
+      "composition_rules": [
+        "hero surface takes at least half the canvas",
+        "foreground product plane must overlap a quieter context plane",
+        "caption attaches to the product edge, never floats"
+      ],
+      "anti_regression_gates": [
+        "not_rectangle_only",
+        "text_integrated_with_shape",
+        "collision_avoidance",
+        "motif_fidelity_visible"
+      ],
+      "forbidden_shortcuts": [
+        "generic rectangles only",
+        "floating trace labels",
+        "equal card grid"
+      ]
+    },
+    {
+      "primitive_id": "primitive_2_87_editorial_text_field",
+      "motif_family": "editorial_text_field",
+      "primitive_family": "text_heavy_editorial_spread",
+      "renderer_function_name": "drawRun287EditorialTextField",
+      "native_ppt_elements": [
+        "editable headline block",
+        "readable subhead paragraph",
+        "side caption rail",
+        "anchored product destination object",
+        "quiet margin markers"
+      ],
+      "composition_rules": [
+        "main reading block is composed before labels",
+        "paragraphs use one reading axis and one secondary rail",
+        "object caption shares an axis with its anchor object"
+      ],
+      "anti_regression_gates": [
+        "not_rectangle_only",
+        "text_integrated_with_shape",
+        "collision_avoidance",
+        "motif_fidelity_visible"
+      ],
+      "forbidden_shortcuts": [
+        "generic rectangles only",
+        "floating trace labels",
+        "equal card grid"
+      ]
+    },
+    {
+      "primitive_id": "primitive_2_87_before_after_surface",
+      "motif_family": "before_after_theater",
+      "primitive_family": "contrast_stage_with_surface_delta",
+      "renderer_function_name": "drawRun287BeforeAfterSurface",
+      "native_ppt_elements": [
+        "before-state muted object",
+        "after-state dominant product surface",
+        "native transition bridge",
+        "delta caption",
+        "state labels bound to objects"
+      ],
+      "composition_rules": [
+        "after state must be visually larger and richer than before state",
+        "transition bridge must connect objects rather than sit as a loose arrow",
+        "text labels attach to states"
+      ],
+      "anti_regression_gates": [
+        "not_rectangle_only",
+        "text_integrated_with_shape",
+        "collision_avoidance",
+        "motif_fidelity_visible"
+      ],
+      "forbidden_shortcuts": [
+        "generic rectangles only",
+        "floating trace labels",
+        "equal card grid"
+      ]
+    },
+    {
+      "primitive_id": "primitive_2_87_modular_matrix_workspace",
+      "motif_family": "modular_matrix",
+      "primitive_family": "unequal_evidence_matrix",
+      "renderer_function_name": "drawRun287ModularMatrixWorkspace",
+      "native_ppt_elements": [
+        "dominant evidence cell",
+        "secondary proof cells",
+        "matrix header rail",
+        "native grouping lines",
+        "embedded cell captions"
+      ],
+      "composition_rules": [
+        "matrix cells are unequal and grouped by business logic",
+        "one cell must carry the proof object",
+        "cell copy is embedded in modules, not scattered around them"
+      ],
+      "anti_regression_gates": [
+        "not_rectangle_only",
+        "text_integrated_with_shape",
+        "collision_avoidance",
+        "motif_fidelity_visible"
+      ],
+      "forbidden_shortcuts": [
+        "generic rectangles only",
+        "floating trace labels",
+        "equal card grid"
+      ]
+    },
+    {
+      "primitive_id": "primitive_2_87_overlay_sticker_stack",
+      "motif_family": "overlay_sticker_stack",
+      "primitive_family": "layered_sticker_payoff",
+      "renderer_function_name": "drawRun287OverlayStickerStack",
+      "native_ppt_elements": [
+        "dominant generated-deck surface",
+        "tilted sticker badges",
+        "overlapping proof strips",
+        "scale marker",
+        "short payoff phrase"
+      ],
+      "composition_rules": [
+        "stickers overlap the product surface with visible depth",
+        "the payoff object stays dominant",
+        "badge text is short and audience-facing"
+      ],
+      "anti_regression_gates": [
+        "not_rectangle_only",
+        "text_integrated_with_shape",
+        "collision_avoidance",
+        "motif_fidelity_visible"
+      ],
+      "forbidden_shortcuts": [
+        "generic rectangles only",
+        "floating trace labels",
+        "equal card grid"
+      ]
+    },
+    {
+      "primitive_id": "primitive_2_87_decision_map_board",
+      "motif_family": "decision_map",
+      "primitive_family": "release_decision_board",
+      "renderer_function_name": "drawRun287DecisionMapBoard",
+      "native_ppt_elements": [
+        "large decision branch geometry",
+        "blocked-public outcome object",
+        "native route connectors",
+        "verdict caption",
+        "supporting evidence chips"
+      ],
+      "composition_rules": [
+        "decision map is the object, not a collection of small nodes",
+        "one blocked-public outcome is visually explicit",
+        "route labels stay attached to branches"
+      ],
+      "anti_regression_gates": [
+        "not_rectangle_only",
+        "text_integrated_with_shape",
+        "collision_avoidance",
+        "motif_fidelity_visible"
+      ],
+      "forbidden_shortcuts": [
+        "generic rectangles only",
+        "floating trace labels",
+        "equal card grid"
+      ]
+    }
+  ],
+  "composition_engine_repair_plan": {
+    "layout_selection_order": [
+      "historical_best_layout_recovery",
+      "run2_67_reference_first_archetype",
+      "run2_10_visual_system_module",
+      "run2_84_design_motif_router"
+    ],
+    "collision_policy": {
+      "reject_visible_text_overlap": true,
+      "minimum_object_label_clearance_px": 12,
+      "fallback_route": "move low-priority labels to speaker_note_or_viewer_metadata"
+    },
+    "traceability_policy": {
+      "slide_canvas_traceability_allowed": false,
+      "traceability_routes": [
+        "viewer_metadata",
+        "speaker_note",
+        "trace_manifest"
+      ]
+    },
+    "text_density_policy": {
+      "text_heavy_layout_allowed": true,
+      "main_reading_block_required": true,
+      "labels_must_attach_to_objects": true
+    }
+  },
+  "next_renderer_contract": {
+    "next_run_id": "2.88",
+    "next_renderer_script": "scripts/generate_ppt_run2_88_best_layout_visual_primitive_arms.mjs",
+    "must_consume_part_r": true,
+    "public_quality_verdict_deferred": true,
+    "required_inputs": [
+      "docs/product/ppt-run2-data-skill-quality/results/run2_86_visual_quality_evaluation.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_9_visual_primitive_repair.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_9_executable_visual_modules.json",
+      "docs/product/ppt-run2-data-skill-quality/results/run2_10_visual_system_rerun_result.json",
+      "docs/product/ppt-run2-data-skill-quality/results/run2_16_selector_rerun_result.json",
+      "docs/product/ppt-run2-data-skill-quality/results/run2_67_reference_first_rerun_result.json",
+      "docs/product/ppt-run2-data-skill-quality/results/run2_68_targeted_debug_rerun_result.json",
+      "docs/product/ppt-run2-data-skill-quality/results/run2_85_design_motif_renderer_rerun_result.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json"
+    ],
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_88_full_best_layout_visual_primitives",
+      "bad_without_best_layout_visual_primitives"
+    ]
+  },
+  "no_new_renderer_proof": {
+    "new_pptx_created": false,
+    "new_html_created": false,
+    "starts_renderer_rerun": false,
+    "status": "pass"
+  },
+  "next_required_action": "part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan"
+}
