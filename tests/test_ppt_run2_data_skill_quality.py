@@ -952,6 +952,25 @@ EXPECTED_RUN2_P2_REPAIR_FLAGS = {
     "traceability_routed_off_canvas",
     "public_polish_not_claimed",
 }
+EXPECTED_RUN2_Q_RESULT = (
+    PACK / "results" / "run2_86_visual_quality_evaluation.json"
+)
+EXPECTED_RUN2_Q_SCRIPT = ROOT / "scripts" / "audit_ppt_run2_86_visual_quality_evaluation.py"
+EXPECTED_RUN2_Q_QUESTIONS = {
+    "is_2_85_better_than_2_82",
+    "did_2_85_restore_design_motif_visual_language",
+    "did_2_85_keep_text_heavy_layout_readability",
+    "did_2_85_preserve_modular_matrix_and_sticker_effects",
+    "does_2_85_explain_why_late_2_series_lost_aesthetic",
+    "does_2_85_reach_public_video_presentation_direction",
+    "which_layer_needs_next_repair",
+}
+EXPECTED_RUN2_Q_ROOT_CAUSE_LAYERS = {
+    "renderer_visual_primitives",
+    "composition_engine",
+    "design_motif_binding",
+    "text_composition",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -4917,6 +4936,170 @@ def test_run2_85_design_motif_renderer_rerun_consumes_p1_and_updates_viewer() ->
     assert run["fullArm"]["id"] == "run2_85_full_design_motif_style_router"
     assert len(run["fullArm"]["slides"]) == 6
     assert result["next_required_action"] == "part_q_visual_quality_evaluation_for_run2_85"
+
+
+def test_run2_86_visual_quality_evaluation_identifies_visual_primitive_bottleneck(
+    tmp_path: Path,
+) -> None:
+    assert EXPECTED_RUN2_Q_SCRIPT.exists(), "missing Part Q visual quality evaluation script"
+    script = EXPECTED_RUN2_Q_SCRIPT.read_text(encoding="utf-8")
+    assert_contains(
+        script,
+        [
+            "run2_85_design_motif_renderer_rerun_result.json",
+            "run2_84_design_motif_taxonomy_style_router_plan.json",
+            "run2_82_renderer_product_surface_text_composition_rerun_result.json",
+            "ppt-run2-82-full-vulca/preview/contact-sheet.png",
+            "ppt-run2-85-full-vulca/preview/contact-sheet.png",
+            "gemini-3.5-flash",
+        ],
+    )
+    result_json = tmp_path / "run2_86_visual_quality_evaluation.json"
+    result_md = tmp_path / "run2_86_visual_quality_evaluation.md"
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(EXPECTED_RUN2_Q_SCRIPT),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    audit = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+    assert "run2_86_visual_quality_evaluation_public_blocked" in completed.stdout
+    assert audit["artifact_id"] == "run2_86_visual_quality_evaluation"
+    assert audit["part"] == "Part Q"
+    assert audit["run_id"] == "2.86"
+    assert audit["status"] == "run2_86_visual_quality_evaluation_public_blocked"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["starts_renderer_rerun"] is False
+    assert audit["updates_html_viewer"] is False
+    assert audit["public_ready"] is False
+    assert audit["public_release_started"] is False
+    assert audit["quality_claim_boundary"] == "part_q_evaluation_only_no_public_release_no_renderer_rerun"
+    assert audit["source_runs"] == {
+        "comparison_baseline": "2.82",
+        "evaluated_run": "2.85",
+        "design_contract_run": "2.84",
+        "prior_reference_run": "2.79",
+    }
+
+    input_chain = audit["input_chain"]
+    assert input_chain["run2_85_result"].endswith("run2_85_design_motif_renderer_rerun_result.json")
+    assert input_chain["run2_84_p1_design_motif_plan"].endswith("run2_84_design_motif_taxonomy_style_router_plan.json")
+    assert input_chain["run2_82_result"].endswith("run2_82_renderer_product_surface_text_composition_rerun_result.json")
+    assert input_chain["run2_82_full_contact_sheet"].endswith("ppt-run2-82-full-vulca/preview/contact-sheet.png")
+    assert input_chain["run2_85_full_contact_sheet"].endswith("ppt-run2-85-full-vulca/preview/contact-sheet.png")
+
+    closure = audit["viewer_comparison_closure"]
+    assert closure["viewer_latest_run_id"] == "2.85"
+    assert closure["viewer_can_compare_2_82_and_2_85"] is True
+    assert closure["run2_82_full_preview_count"] == 6
+    assert closure["run2_85_full_preview_count"] == 6
+    assert closure["browser_check_required_for_handoff"] is True
+
+    gemini = audit["gemini_agent_review_summary"]
+    assert gemini["tool"] == "mcp__gemini_agent.gemini_artifact_review"
+    assert gemini["model"] == "gemini-3.5-flash"
+    assert gemini["review_count"] == 1
+    assert gemini["used_for_verdict"] is True
+    assert "colored borders improve scannability" in " ".join(gemini["run2_85_findings"])
+    assert "modular matrix structure is clearer" in " ".join(gemini["run2_85_findings"])
+    assert "primitive" in " ".join(gemini["run2_85_risks"])
+
+    questions = audit["evaluation_questions"]
+    assert set(questions) == EXPECTED_RUN2_Q_QUESTIONS
+    assert questions["is_2_85_better_than_2_82"]["answer"] == (
+        "partial_motif_trace_up_visual_delta_small_public_blocked"
+    )
+    assert questions["did_2_85_restore_design_motif_visual_language"]["answer"] == (
+        "partial_motif_metadata_visible_but_renderer_primitives_still_simple"
+    )
+    assert questions["did_2_85_keep_text_heavy_layout_readability"]["answer"] == (
+        "partial_text_hierarchy_present_but_composition_still_rigid"
+    )
+    assert questions["did_2_85_preserve_modular_matrix_and_sticker_effects"]["answer"] == (
+        "partial_effects_declared_and_some_visible_but_not_high_fidelity"
+    )
+    assert questions["does_2_85_explain_why_late_2_series_lost_aesthetic"]["answer"] == (
+        "yes_engineering_gates_and_contracts_overweighted_renderer_conservatism"
+    )
+    assert questions["does_2_85_reach_public_video_presentation_direction"]["answer"] == "no_public_blocked"
+    assert questions["which_layer_needs_next_repair"]["answer"] == (
+        "renderer_visual_primitive_and_composition_engine"
+    )
+
+    assessment = audit["visual_quality_assessment"]
+    assert assessment["design_quality_gate"] == "blocked"
+    assert assessment["public_video_readiness"] == "blocked"
+    assert assessment["global_delta_vs_2_82"] == "motif_contract_consumed_but_visual_result_remains_incremental"
+    assert assessment["top_blocker"] == "renderer_visual_primitives_are_too_simple_to_realize_design_motifs"
+    assert assessment["next_layer_to_fix"] == "renderer_visual_primitive_and_composition_engine"
+
+    assert len(audit["role_assessments"]) == 6
+    assert [record["role"] for record in audit["role_assessments"]] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    repairs = [record for record in audit["role_assessments"] if record["repair_required"]]
+    assert len(repairs) == 6
+    for record in audit["role_assessments"]:
+        assert record["visual_grammar_module"] == EXPECTED_RUN2_E_PAGE_MODULE_MAP[record["role"]]
+        assert record["root_cause_layer"] in EXPECTED_RUN2_Q_ROOT_CAUSE_LAYERS
+        assert record["delta_vs_2_82"] in {"improved", "partial", "unchanged", "regressed"}
+        assert record["motif_realization"] in {"strong", "partial", "weak"}
+        assert record["layout_distinctiveness"] in {"strong", "partial", "weak"}
+        assert record["text_composition"] in {"strong", "partial", "rigid"}
+        assert record["public_video_direction"] in {"no", "partial", "yes"}
+        assert record["trace_support"]["motif_family"]
+        assert record["trace_support"]["label_count"] <= 3
+        assert record["trace_support"]["not_rectangle_only"] is True
+
+    summary = audit["root_cause_summary"]
+    assert summary["primary_layer"] == "renderer_visual_primitive_and_composition_engine"
+    assert summary["not_primary_layer"] == "data_absence"
+    assert summary["late_2_series_failure_mode"] == (
+        "engineering_traceability_and_contract_layers_became_stronger_than_visual_execution_primitives"
+    )
+    assert audit["no_new_renderer_proof"]["new_pptx_created"] is False
+    assert audit["no_new_renderer_proof"]["new_html_created"] is False
+    assert audit["next_required_action"] == (
+        "part_r_best_layout_recovery_and_visual_primitive_plan_from_q_evaluation"
+    )
+    assert_contains(
+        report,
+        [
+            "Run 2.86 Visual Quality Evaluation",
+            "2.85 vs 2.82",
+            "public-quality visual result remains incremental",
+            "renderer visual primitive",
+            "public blocked",
+            "Gemini",
+        ],
+    )
+
+
+def test_run2_86_records_visual_quality_evaluation_result() -> None:
+    audit = load_json(EXPECTED_RUN2_Q_RESULT)
+    report = (
+        PACK / "results" / "run2_86_visual_quality_evaluation.md"
+    ).read_text(encoding="utf-8")
+
+    assert audit["status"] == "run2_86_visual_quality_evaluation_public_blocked"
+    assert audit["public_ready"] is False
+    assert audit["public_release_started"] is False
+    assert audit["visual_quality_assessment"]["design_quality_gate"] == "blocked"
+    assert audit["visual_quality_assessment"]["global_delta_vs_2_82"] == (
+        "motif_contract_consumed_but_visual_result_remains_incremental"
+    )
+    assert audit["viewer_comparison_closure"]["viewer_latest_run_id"] == "2.85"
+    assert len(audit["role_assessments"]) == 6
+    assert "public-quality visual result remains incremental" in report
 
 
 def test_run2_7_has_serializable_design_memory() -> None:

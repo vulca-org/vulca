@@ -1537,6 +1537,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_85_design_motif_renderer_rerun_result(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_86_visual_quality_evaluation.json").write_text(
+        json.dumps(valid_run2_86_visual_quality_evaluation(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -3772,6 +3776,142 @@ def valid_run2_85_design_motif_renderer_rerun_result() -> dict:
     }
 
 
+def valid_run2_86_visual_quality_evaluation() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    motif_by_role = {
+        "cover": "product_theater",
+        "setup": "editorial_text_field",
+        "contrast": "before_after_theater",
+        "proof": "modular_matrix",
+        "climax": "overlay_sticker_stack",
+        "close": "decision_map",
+    }
+    questions = {
+        "is_2_85_better_than_2_82": "partial_motif_trace_up_visual_delta_small_public_blocked",
+        "did_2_85_restore_design_motif_visual_language": "partial_motif_metadata_visible_but_renderer_primitives_still_simple",
+        "did_2_85_keep_text_heavy_layout_readability": "partial_text_hierarchy_present_but_composition_still_rigid",
+        "did_2_85_preserve_modular_matrix_and_sticker_effects": "partial_effects_declared_and_some_visible_but_not_high_fidelity",
+        "does_2_85_explain_why_late_2_series_lost_aesthetic": "yes_engineering_gates_and_contracts_overweighted_renderer_conservatism",
+        "does_2_85_reach_public_video_presentation_direction": "no_public_blocked",
+        "which_layer_needs_next_repair": "renderer_visual_primitive_and_composition_engine",
+    }
+    return {
+        "artifact_id": "run2_86_visual_quality_evaluation",
+        "part": "Part Q",
+        "schema_version": "ppt_run2_86_visual_quality_evaluation.v1",
+        "run_id": "2.86",
+        "status": "run2_86_visual_quality_evaluation_public_blocked",
+        "stage_policy": "evaluation_only_after_p2_no_renderer_rerun",
+        "creates_new_ppt_deck": False,
+        "starts_renderer_rerun": False,
+        "updates_html_viewer": False,
+        "public_release_started": False,
+        "public_ready": False,
+        "quality_claim_boundary": "part_q_evaluation_only_no_public_release_no_renderer_rerun",
+        "source_runs": {
+            "comparison_baseline": "2.82",
+            "evaluated_run": "2.85",
+            "design_contract_run": "2.84",
+            "prior_reference_run": "2.79",
+        },
+        "input_chain": {
+            "run2_85_result": "docs/product/ppt-run2-data-skill-quality/results/run2_85_design_motif_renderer_rerun_result.json",
+            "run2_84_p1_design_motif_plan": "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json",
+            "run2_82_result": "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
+            "run2_82_full_contact_sheet": "outputs/thread/presentations/ppt-run2-82-full-vulca/preview/contact-sheet.png",
+            "run2_85_full_contact_sheet": "outputs/thread/presentations/ppt-run2-85-full-vulca/preview/contact-sheet.png",
+            "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+        },
+        "viewer_comparison_closure": {
+            "viewer_latest_run_id": "2.85",
+            "viewer_can_compare_2_82_and_2_85": True,
+            "run2_82_full_preview_count": 6,
+            "run2_85_full_preview_count": 6,
+            "browser_check_required_for_handoff": True,
+        },
+        "gemini_agent_review_summary": {
+            "tool": "mcp__gemini_agent.gemini_artifact_review",
+            "model": "gemini-3.5-flash",
+            "review_count": 1,
+            "used_for_verdict": True,
+            "run2_85_findings": [
+                "slide 05 colored borders improve scannability",
+                "slide 04 modular matrix structure is clearer",
+                "text-heavy layout still rigid",
+            ],
+            "run2_85_risks": [
+                "renderer primitive ceiling",
+                "composition engine still conservative",
+                "layout collision avoidance still weak",
+            ],
+        },
+        "evaluation_questions": {
+            question_id: {"answer": answer, "basis": "fixture basis"}
+            for question_id, answer in questions.items()
+        },
+        "visual_quality_assessment": {
+            "data_workflow_entry_gate": "pass_internal_only",
+            "viewer_comparison_gate": "pass_internal_only",
+            "design_quality_gate": "blocked",
+            "public_video_readiness": "blocked",
+            "global_delta_vs_2_82": "motif_contract_consumed_but_visual_result_remains_incremental",
+            "top_blocker": "renderer_visual_primitives_are_too_simple_to_realize_design_motifs",
+            "next_layer_to_fix": "renderer_visual_primitive_and_composition_engine",
+        },
+        "role_assessments": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "delta_vs_2_82": "partial",
+                "motif_realization": "partial",
+                "layout_distinctiveness": "partial",
+                "text_composition": "rigid",
+                "public_video_direction": "no",
+                "root_cause_layer": "renderer_visual_primitives",
+                "repair_required": True,
+                "visual_observation": "motif is traceable but still rendered with simple primitives",
+                "next_repair_instruction": "recover best historical layout and add richer native visual primitive",
+                "trace_support": {
+                    "motif_family": motif_by_role[role],
+                    "style_family": "public_product_keynote",
+                    "scenario": "product_pitch",
+                    "source_p1_primary_motif_id": f"motif_2_84_{motif_by_role[role]}",
+                    "label_count": 2,
+                    "not_rectangle_only": True,
+                    "text_integrated_with_shape": True,
+                    "preserved_visual_effects_rendered": ["modular_matrix", "overlay_sticker_stack"],
+                },
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "root_cause_summary": {
+            "primary_layer": "renderer_visual_primitive_and_composition_engine",
+            "secondary_layers": ["design_motif_binding", "text_composition"],
+            "not_primary_layer": "data_absence",
+            "late_2_series_failure_mode": (
+                "engineering_traceability_and_contract_layers_became_stronger_than_visual_execution_primitives"
+            ),
+            "rationale": "P1/P2 consumed the motif layer, but contact-sheet delta remains incremental.",
+        },
+        "no_new_renderer_proof": {
+            "new_pptx_created": False,
+            "new_html_created": False,
+            "starts_renderer_rerun": False,
+            "status": "pass",
+        },
+        "next_required_action": "part_r_best_layout_recovery_and_visual_primitive_plan_from_q_evaluation",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -3817,6 +3957,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: results/run2_83_workflow_taxonomy_bias_audit.json" in result.errors
     assert "missing required file: run2_84_design_motif_taxonomy_style_router_plan.json" in result.errors
     assert "missing required file: results/run2_85_design_motif_renderer_rerun_result.json" in result.errors
+    assert "missing required file: results/run2_86_visual_quality_evaluation.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -5187,6 +5328,94 @@ def test_run2_profile_rejects_p2_design_motif_renderer_bad_scope_or_missing_moti
     )
     assert (
         "run2_85_design_motif_renderer_rerun_result.next_required_action must be part_q_visual_quality_evaluation_for_run2_85"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_q_visual_quality_evaluation_bad_boundary_or_wrong_root_cause(
+    tmp_path: Path,
+) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    result_path = pack / "results" / "run2_86_visual_quality_evaluation.json"
+    audit = json.loads(result_path.read_text(encoding="utf-8"))
+    audit["public_ready"] = True
+    audit["public_release_started"] = True
+    audit["starts_renderer_rerun"] = True
+    audit["updates_html_viewer"] = True
+    audit["viewer_comparison_closure"]["viewer_latest_run_id"] = "2.82"
+    audit["viewer_comparison_closure"]["run2_85_full_preview_count"] = 5
+    audit["gemini_agent_review_summary"]["review_count"] = 0
+    audit["evaluation_questions"]["which_layer_needs_next_repair"]["answer"] = "more_data_contracts"
+    audit["visual_quality_assessment"]["design_quality_gate"] = "pass"
+    audit["visual_quality_assessment"]["top_blocker"] = "data_absence"
+    audit["visual_quality_assessment"]["next_layer_to_fix"] = "more_workflow_contracts"
+    first = audit["role_assessments"][0]
+    first["visual_grammar_module"] = "hero_field"
+    first["repair_required"] = False
+    first["motif_realization"] = "absent"
+    first["trace_support"]["label_count"] = 5
+    first["trace_support"]["not_rectangle_only"] = False
+    audit["root_cause_summary"]["primary_layer"] = "data_absence"
+    audit["root_cause_summary"]["not_primary_layer"] = "renderer_visual_primitive_and_composition_engine"
+    audit["root_cause_summary"]["late_2_series_failure_mode"] = "unknown"
+    audit["no_new_renderer_proof"]["new_html_created"] = True
+    audit["next_required_action"] = "public_release"
+    result_path.write_text(json.dumps(audit, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_86_visual_quality_evaluation.public_ready must be false" in result.errors
+    assert "run2_86_visual_quality_evaluation.public_release_started must be false" in result.errors
+    assert "run2_86_visual_quality_evaluation.starts_renderer_rerun must be false" in result.errors
+    assert "run2_86_visual_quality_evaluation.updates_html_viewer must be false" in result.errors
+    assert (
+        "run2_86_visual_quality_evaluation.viewer_comparison_closure.viewer_latest_run_id must be 2.85"
+        in result.errors
+    )
+    assert (
+        "run2_86_visual_quality_evaluation.viewer_comparison_closure.run2_85_full_preview_count must be 6"
+        in result.errors
+    )
+    assert "run2_86_visual_quality_evaluation.gemini_agent_review_summary.review_count must be 1" in result.errors
+    assert (
+        "run2_86_visual_quality_evaluation.evaluation_questions.which_layer_needs_next_repair.answer must be renderer_visual_primitive_and_composition_engine"
+        in result.errors
+    )
+    assert "run2_86_visual_quality_evaluation.visual_quality_assessment.design_quality_gate must be blocked" in result.errors
+    assert (
+        "run2_86_visual_quality_evaluation.visual_quality_assessment.top_blocker must be renderer_visual_primitives_are_too_simple_to_realize_design_motifs"
+        in result.errors
+    )
+    assert (
+        "run2_86_visual_quality_evaluation.role_assessments[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert "run2_86_visual_quality_evaluation.role_assessments[0].repair_required must be true" in result.errors
+    assert (
+        "run2_86_visual_quality_evaluation.role_assessments[0].motif_realization must be one of partial, strong, weak"
+        in result.errors
+    )
+    assert (
+        "run2_86_visual_quality_evaluation.role_assessments[0].trace_support.label_count must be at most 3"
+        in result.errors
+    )
+    assert (
+        "run2_86_visual_quality_evaluation.role_assessments[0].trace_support.not_rectangle_only must be true"
+        in result.errors
+    )
+    assert (
+        "run2_86_visual_quality_evaluation.root_cause_summary.primary_layer must be renderer_visual_primitive_and_composition_engine"
+        in result.errors
+    )
+    assert "run2_86_visual_quality_evaluation.no_new_renderer_proof.new_html_created must be false" in result.errors
+    assert (
+        "run2_86_visual_quality_evaluation.next_required_action must be part_r_best_layout_recovery_and_visual_primitive_plan_from_q_evaluation"
         in result.errors
     )
 
