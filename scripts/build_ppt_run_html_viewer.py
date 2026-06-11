@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.82"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.85"'
 
 
 @dataclass(frozen=True)
@@ -864,6 +864,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.85",
+        "Run 2.85",
+        "run2-85-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-85-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-85-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_85_full_design_motif_style_router",
+                "Run 2.85 full",
+                "ppt-run2-85-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_85_without_design_motif_layer",
+                "Bad missing Run 2.85 design motif layer",
+                "ppt-run2-85-bad-without-design-motif-layer",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -1063,6 +1084,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run282_result = read_json(
         pack / "results" / "run2_82_renderer_product_surface_text_composition_rerun_result.json"
     )
+    run285_result = read_json(pack / "results" / "run2_85_design_motif_renderer_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1644,6 +1666,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run282FullTracePath": "ppt-run2-82-full-vulca/trace_manifest.json",
         "run282BadTracePath": "ppt-run2-82-bad-without-text-composition/trace_manifest.json",
         "run282FourArmSheetPath": "run2-82-four-arm-contact-sheet.png",
+        "run285ResultStatus": run285_result.get("status", ""),
+        "run285Result": run285_result,
+        "run285ResultPath": "run2_85_design_motif_renderer_rerun_result.json",
+        "run285TargetLayer": "renderer_design_motif_style_router_from_run2_84_p1",
+        "run285SourceDataStatus": "run2_85_consumes_p1_design_motif_layer_and_run2_82_renderer_result_before_native_ppt_drawing",
+        "run285GeneratorPath": "scripts/generate_ppt_run2_85_design_motif_renderer_arms.mjs",
+        "run285FullTracePath": "ppt-run2-85-full-vulca/trace_manifest.json",
+        "run285BadTracePath": "ppt-run2-85-bad-without-design-motif-layer/trace_manifest.json",
+        "run285FourArmSheetPath": "run2-85-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",

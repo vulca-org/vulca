@@ -1533,6 +1533,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_84_design_motif_taxonomy_style_router_plan(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_85_design_motif_renderer_rerun_result.json").write_text(
+        json.dumps(valid_run2_85_design_motif_renderer_rerun_result(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -3620,6 +3624,154 @@ def valid_run2_84_design_motif_taxonomy_style_router_plan() -> dict:
     }
 
 
+def valid_run2_85_design_motif_renderer_rerun_result() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    motif_by_role = {
+        "cover": ("motif_2_84_product_theater", "product_theater", "balanced"),
+        "setup": ("motif_2_84_editorial_text_field", "editorial_text_field", "dense"),
+        "contrast": ("motif_2_84_before_after_theater", "before_after_theater", "balanced"),
+        "proof": ("motif_2_84_modular_matrix", "modular_matrix", "dense"),
+        "climax": ("motif_2_84_overlay_sticker_stack", "overlay_sticker_stack", "climax"),
+        "close": ("motif_2_84_decision_map", "decision_map", "sparse"),
+    }
+    style_by_role = {
+        "cover": "public_product_keynote",
+        "setup": "technical_editorial",
+        "contrast": "dense_teaching_walkthrough",
+        "proof": "financial_decision_brief",
+        "climax": "high_contrast_demo",
+        "close": "public_product_keynote",
+    }
+    scenario_by_role = {
+        "cover": "product_pitch",
+        "setup": "teaching_tutorial",
+        "contrast": "financial_product",
+        "proof": "technical_proof",
+        "climax": "public_video_demo",
+        "close": "product_pitch",
+    }
+    surface_by_role = {
+        "cover": "editable_ppt_product_mock",
+        "setup": "source_to_memory_product_flow",
+        "contrast": "before_after_product_theater",
+        "proof": "evidence_product_workspace",
+        "climax": "editable_ppt_product_mock",
+        "close": "release_decision_product_map",
+    }
+    consumed_sources = [
+        "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json",
+        "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
+    ]
+    directives = [
+        "p1_design_motif_layer_consumed",
+        "style_router_applied",
+        "motif_family_rendered",
+        "preserved_visual_effects_rendered",
+        "text_integrated_with_motif",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed",
+    ]
+    preserved = [
+        "modular_matrix",
+        "rectangle_layering",
+        "overlay_sticker_stack",
+        "product_theater",
+        "editorial_text_density",
+    ]
+    fidelity = [
+        "motif_family_visible",
+        "not_rectangle_only",
+        "text_integrated_with_shape",
+    ]
+    return {
+        "artifact_id": "run2_85_design_motif_renderer_rerun_result",
+        "part": "Part P2",
+        "schema_version": "ppt_run2_85_design_motif_renderer_rerun_result.v1",
+        "run_id": "2.85",
+        "status": "run2_85_design_motif_renderer_rerun_generated_public_blocked",
+        "public_ready": False,
+        "public_release_started": False,
+        "quality_claim_boundary": "design_motif_renderer_generated_viewer_check_only_no_part_q_quality_verdict",
+        "consumed_sources": consumed_sources,
+        "source_p1_design_motif_plan": {
+            "status": "run2_84_design_motif_taxonomy_style_router_plan_ready_public_blocked",
+            "next_required_action": "part_p2_renderer_rerun_from_design_motif_layer_and_style_router",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json",
+        },
+        "source_o2_renderer_result": {
+            "status": "run2_82_renderer_product_surface_text_composition_rerun_generated_public_blocked",
+            "next_required_action": "part_p_visual_quality_evaluation_for_run2_82",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
+        },
+        "renderer_design_motif_manifest": {
+            "generator": "scripts/generate_ppt_run2_85_design_motif_renderer_arms.mjs",
+            "consumed_sources": consumed_sources,
+            "arms": [
+                "prompt_only",
+                "run1_5_skill",
+                "run2_85_full_design_motif_style_router",
+                "bad_run2_85_without_design_motif_layer",
+            ],
+            "best_internal_arm": "run2_85_full_design_motif_style_router",
+            "outputs": {
+                "html_viewer": "outputs/thread/presentations/ppt-run2-85-full-vulca/output/run2-85-design-motif-renderer.html",
+                "pptx": "outputs/thread/presentations/ppt-run2-85-full-vulca/output/ppt-run2-85-full-vulca.pptx",
+                "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+                "four_arm_contact_sheet": "outputs/thread/presentations/run2-85-four-arm-contact-sheet.png",
+            },
+            "viewer_update": {
+                "latest_run_id": "2.85",
+                "viewer_can_reference_new_run": True,
+            },
+        },
+        "rendered_pages": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "source_p1_primary_motif_id": motif_by_role[role][0],
+                "source_p1_fallback_motif_id": "motif_2_84_editorial_text_field",
+                "source_o2_product_surface_type": surface_by_role[role],
+                "motif_family": motif_by_role[role][1],
+                "style_family": style_by_role[role],
+                "scenario": scenario_by_role[role],
+                "visual_density": motif_by_role[role][2],
+                "renderer_repair_directives_applied": directives,
+                "preserved_visual_effects_rendered": preserved,
+                "motif_fidelity_checks": fidelity,
+                "motif_family_visible": True,
+                "not_rectangle_only": True,
+                "text_integrated_with_shape": True,
+                "concrete_product_surface_visible": True,
+                "text_hierarchy": "motif_aware_headline_subhead_proof_caption",
+                "floating_label_count": 0,
+                "label_count": 2,
+                "min_visible_label_font_size": 12,
+                "source_trace_terms_visible_on_canvas": [],
+                "public_polish_claimed": False,
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "renderer_design_motif_checks": {
+            "pages_with_p1_motif_consumed": 6,
+            "pages_with_motif_family_visible": 6,
+            "pages_with_not_rectangle_only": 6,
+            "pages_with_text_integrated_with_shape": 6,
+            "pages_with_traceability_routed_off_canvas": 6,
+            "public_quality_verdict_started": False,
+        },
+        "next_required_action": "part_q_visual_quality_evaluation_for_run2_85",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -3664,6 +3816,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     )
     assert "missing required file: results/run2_83_workflow_taxonomy_bias_audit.json" in result.errors
     assert "missing required file: run2_84_design_motif_taxonomy_style_router_plan.json" in result.errors
+    assert "missing required file: results/run2_85_design_motif_renderer_rerun_result.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -4901,6 +5054,139 @@ def test_run2_profile_rejects_p1_design_motif_plan_bad_scope_or_weak_motif_contr
     )
     assert (
         "run2_84_design_motif_taxonomy_style_router_plan.next_required_action must be part_p2_renderer_rerun_from_design_motif_layer_and_style_router"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_p2_design_motif_renderer_bad_scope_or_missing_motif_layer(
+    tmp_path: Path,
+) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    result_path = pack / "results" / "run2_85_design_motif_renderer_rerun_result.json"
+    result_json = json.loads(result_path.read_text(encoding="utf-8"))
+    result_json["public_ready"] = True
+    result_json["public_release_started"] = True
+    result_json["consumed_sources"] = result_json["consumed_sources"][:-1]
+    result_json["source_p1_design_motif_plan"]["status"] = "missing"
+    result_json["source_o2_renderer_result"]["status"] = "missing"
+    manifest = result_json["renderer_design_motif_manifest"]
+    manifest["viewer_update"]["latest_run_id"] = "2.82"
+    manifest["arms"] = ["prompt_only", "run1_5_skill"]
+    manifest["best_internal_arm"] = "run2_82_full_product_surface_text_composition"
+    first = result_json["rendered_pages"][0]
+    first["visual_grammar_module"] = "hero_field"
+    first["source_p1_primary_motif_id"] = "missing_motif"
+    first["motif_family"] = "generic_blocks"
+    first["style_family"] = "generic_report"
+    first["scenario"] = "generic_demo"
+    first["visual_density"] = "unknown"
+    first["renderer_repair_directives_applied"] = ["p1_design_motif_layer_consumed"]
+    first["preserved_visual_effects_rendered"] = ["plain_rectangles"]
+    first["motif_fidelity_checks"] = ["motif_family_visible"]
+    first["motif_family_visible"] = False
+    first["not_rectangle_only"] = False
+    first["text_integrated_with_shape"] = False
+    first["concrete_product_surface_visible"] = False
+    first["text_hierarchy"] = "headline_chips"
+    first["floating_label_count"] = 2
+    first["label_count"] = 5
+    first["min_visible_label_font_size"] = 9
+    first["source_trace_terms_visible_on_canvas"] = ["motif_2_84_product_theater"]
+    first["public_polish_claimed"] = True
+    checks = result_json["renderer_design_motif_checks"]
+    checks["pages_with_p1_motif_consumed"] = 5
+    checks["pages_with_motif_family_visible"] = 5
+    checks["pages_with_not_rectangle_only"] = 5
+    checks["pages_with_text_integrated_with_shape"] = 5
+    checks["pages_with_traceability_routed_off_canvas"] = 5
+    checks["public_quality_verdict_started"] = True
+    result_json["next_required_action"] = "public_release"
+    result_path.write_text(json.dumps(result_json, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_85_design_motif_renderer_rerun_result.public_ready must be false" in result.errors
+    assert "run2_85_design_motif_renderer_rerun_result.public_release_started must be false" in result.errors
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.source_p1_design_motif_plan.status must be run2_84_design_motif_taxonomy_style_router_plan_ready_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.source_o2_renderer_result.status must be run2_82_renderer_product_surface_text_composition_rerun_generated_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.renderer_design_motif_manifest.viewer_update.latest_run_id must be 2.85"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.renderer_design_motif_manifest.arms missing value: run2_85_full_design_motif_style_router"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.renderer_design_motif_manifest.best_internal_arm must be run2_85_full_design_motif_style_router"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.rendered_pages[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.rendered_pages[0].motif_family must be one of before_after_theater, decision_map, editorial_text_field, evidence_workspace, modular_matrix, overlay_sticker_stack, product_theater"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.rendered_pages[0].style_family must be one of dense_teaching_walkthrough, financial_decision_brief, high_contrast_demo, public_product_keynote, technical_editorial"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.rendered_pages[0].renderer_repair_directives_applied missing value: motif_family_rendered"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.rendered_pages[0].preserved_visual_effects_rendered missing value: overlay_sticker_stack"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.rendered_pages[0].motif_fidelity_checks missing value: not_rectangle_only"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.rendered_pages[0].motif_family_visible must be true"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.rendered_pages[0].not_rectangle_only must be true"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.rendered_pages[0].text_integrated_with_shape must be true"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.rendered_pages[0].source_trace_terms_visible_on_canvas must be empty"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.renderer_design_motif_checks.pages_with_p1_motif_consumed must be 6"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.renderer_design_motif_checks.public_quality_verdict_started must be false"
+        in result.errors
+    )
+    assert (
+        "run2_85_design_motif_renderer_rerun_result.next_required_action must be part_q_visual_quality_evaluation_for_run2_85"
         in result.errors
     )
 

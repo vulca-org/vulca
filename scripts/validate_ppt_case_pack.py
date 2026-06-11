@@ -108,6 +108,7 @@ RUN2_73_REQUIRED_FILES = [
     "results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
     "results/run2_83_workflow_taxonomy_bias_audit.json",
     "run2_84_design_motif_taxonomy_style_router_plan.json",
+    "results/run2_85_design_motif_renderer_rerun_result.json",
 ]
 
 
@@ -808,6 +809,33 @@ RUN2_84_REQUIRED_MOTIF_FIDELITY_CHECKS = {
 RUN2_84_FORBIDDEN_RENDERER_SHORTCUTS = {
     "generic rectangles only",
     "traceability labels on canvas",
+}
+RUN2_85_DESIGN_MOTIF_RENDERER_RERUN_STATUS = "run2_85_design_motif_renderer_rerun_generated_public_blocked"
+RUN2_85_DESIGN_MOTIF_RENDERER_CONSUMED_SOURCE_PATHS = {
+    "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
+}
+RUN2_85_DESIGN_MOTIF_RENDERER_ARMS = {
+    "prompt_only",
+    "run1_5_skill",
+    "run2_85_full_design_motif_style_router",
+    "bad_run2_85_without_design_motif_layer",
+}
+RUN2_85_DESIGN_MOTIF_RENDERER_DIRECTIVES = {
+    "p1_design_motif_layer_consumed",
+    "style_router_applied",
+    "motif_family_rendered",
+    "preserved_visual_effects_rendered",
+    "text_integrated_with_motif",
+    "traceability_routed_off_canvas",
+    "public_polish_not_claimed",
+}
+RUN2_85_DESIGN_MOTIF_REQUIRED_CHECKS = {
+    "pages_with_p1_motif_consumed": 6,
+    "pages_with_motif_family_visible": 6,
+    "pages_with_not_rectangle_only": 6,
+    "pages_with_text_integrated_with_shape": 6,
+    "pages_with_traceability_routed_off_canvas": 6,
 }
 
 
@@ -7956,6 +7984,246 @@ def validate_run2_84_renderer_contract_preview(label: str, value: Any, errors: l
         errors.append(f"{label}.does_not_execute_renderer must be true")
 
 
+def validate_run2_85_design_motif_renderer_rerun_result(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "results" / "run2_85_design_motif_renderer_rerun_result.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_85_design_motif_renderer_rerun_result"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "public_ready",
+            "public_release_started",
+            "quality_claim_boundary",
+            "consumed_sources",
+            "source_p1_design_motif_plan",
+            "source_o2_renderer_result",
+            "renderer_design_motif_manifest",
+            "rendered_pages",
+            "renderer_design_motif_checks",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part P2":
+        errors.append(f"{label}.part must be Part P2")
+    if data.get("run_id") != "2.85":
+        errors.append(f"{label}.run_id must be 2.85")
+    if data.get("status") != RUN2_85_DESIGN_MOTIF_RENDERER_RERUN_STATUS:
+        errors.append(f"{label}.status must be {RUN2_85_DESIGN_MOTIF_RENDERER_RERUN_STATUS}")
+    if data.get("public_ready") is not False:
+        errors.append(f"{label}.public_ready must be false")
+    if data.get("public_release_started") is not False:
+        errors.append(f"{label}.public_release_started must be false")
+    if data.get("quality_claim_boundary") != "design_motif_renderer_generated_viewer_check_only_no_part_q_quality_verdict":
+        errors.append(
+            f"{label}.quality_claim_boundary must be design_motif_renderer_generated_viewer_check_only_no_part_q_quality_verdict"
+        )
+    validate_exact_string_set(
+        f"{label}.consumed_sources",
+        data.get("consumed_sources", []),
+        RUN2_85_DESIGN_MOTIF_RENDERER_CONSUMED_SOURCE_PATHS,
+        errors,
+    )
+    validate_run2_85_source_p1_plan(f"{label}.source_p1_design_motif_plan", data.get("source_p1_design_motif_plan", {}), errors)
+    validate_run2_85_source_o2_result(f"{label}.source_o2_renderer_result", data.get("source_o2_renderer_result", {}), errors)
+    validate_run2_85_manifest(
+        f"{label}.renderer_design_motif_manifest",
+        data.get("renderer_design_motif_manifest", {}),
+        errors,
+    )
+    validate_run2_85_rendered_pages(f"{label}.rendered_pages", data.get("rendered_pages", []), errors)
+    validate_run2_85_checks(f"{label}.renderer_design_motif_checks", data.get("renderer_design_motif_checks", {}), errors)
+    if data.get("next_required_action") != "part_q_visual_quality_evaluation_for_run2_85":
+        errors.append(f"{label}.next_required_action must be part_q_visual_quality_evaluation_for_run2_85")
+
+
+def validate_run2_85_source_p1_plan(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["status", "next_required_action", "source_result"], errors)
+    if value.get("status") != RUN2_84_DESIGN_MOTIF_TAXONOMY_STYLE_ROUTER_STATUS:
+        errors.append(f"{label}.status must be {RUN2_84_DESIGN_MOTIF_TAXONOMY_STYLE_ROUTER_STATUS}")
+    if value.get("next_required_action") != "part_p2_renderer_rerun_from_design_motif_layer_and_style_router":
+        errors.append(f"{label}.next_required_action must be part_p2_renderer_rerun_from_design_motif_layer_and_style_router")
+    if value.get("source_result") != "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json":
+        errors.append(f"{label}.source_result must reference run2_84_design_motif_taxonomy_style_router_plan.json")
+
+
+def validate_run2_85_source_o2_result(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["status", "next_required_action", "source_result"], errors)
+    if value.get("status") != RUN2_82_RENDERER_PRODUCT_SURFACE_TEXT_COMPOSITION_STATUS:
+        errors.append(f"{label}.status must be {RUN2_82_RENDERER_PRODUCT_SURFACE_TEXT_COMPOSITION_STATUS}")
+    if value.get("next_required_action") != "part_p_visual_quality_evaluation_for_run2_82":
+        errors.append(f"{label}.next_required_action must be part_p_visual_quality_evaluation_for_run2_82")
+    if value.get("source_result") != "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json":
+        errors.append(f"{label}.source_result must reference run2_82_renderer_product_surface_text_composition_rerun_result.json")
+
+
+def validate_run2_85_manifest(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["generator", "consumed_sources", "arms", "best_internal_arm", "outputs", "viewer_update"], errors)
+    if value.get("generator") != "scripts/generate_ppt_run2_85_design_motif_renderer_arms.mjs":
+        errors.append(f"{label}.generator must be scripts/generate_ppt_run2_85_design_motif_renderer_arms.mjs")
+    validate_exact_string_set(
+        f"{label}.consumed_sources",
+        value.get("consumed_sources", []),
+        RUN2_85_DESIGN_MOTIF_RENDERER_CONSUMED_SOURCE_PATHS,
+        errors,
+    )
+    validate_exact_string_set(f"{label}.arms", value.get("arms", []), RUN2_85_DESIGN_MOTIF_RENDERER_ARMS, errors)
+    if value.get("best_internal_arm") != "run2_85_full_design_motif_style_router":
+        errors.append(f"{label}.best_internal_arm must be run2_85_full_design_motif_style_router")
+    outputs = value.get("outputs", {})
+    if require_non_empty_dict(f"{label}.outputs", outputs, errors):
+        for key in ["html_viewer", "pptx", "ppt_run_viewer", "four_arm_contact_sheet"]:
+            if key not in outputs:
+                errors.append(f"{label}.outputs missing key: {key}")
+            else:
+                require_non_empty_string(f"{label}.outputs.{key}", outputs[key], errors)
+    viewer_update = value.get("viewer_update", {})
+    if require_non_empty_dict(f"{label}.viewer_update", viewer_update, errors):
+        if viewer_update.get("latest_run_id") != "2.85":
+            errors.append(f"{label}.viewer_update.latest_run_id must be 2.85")
+        if viewer_update.get("viewer_can_reference_new_run") is not True:
+            errors.append(f"{label}.viewer_update.viewer_can_reference_new_run must be true")
+
+
+def validate_run2_85_rendered_pages(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    for index, page in enumerate(value):
+        page_label = f"{label}[{index}]"
+        if not isinstance(page, dict):
+            errors.append(f"{page_label} must be an object")
+            continue
+        require_keys(
+            page_label,
+            page,
+            [
+                "role",
+                "slide_index",
+                "visual_grammar_module",
+                "source_p1_primary_motif_id",
+                "source_p1_fallback_motif_id",
+                "source_o2_product_surface_type",
+                "motif_family",
+                "style_family",
+                "scenario",
+                "visual_density",
+                "renderer_repair_directives_applied",
+                "preserved_visual_effects_rendered",
+                "motif_fidelity_checks",
+                "motif_family_visible",
+                "not_rectangle_only",
+                "text_integrated_with_shape",
+                "concrete_product_surface_visible",
+                "text_hierarchy",
+                "floating_label_count",
+                "label_count",
+                "min_visible_label_font_size",
+                "source_trace_terms_visible_on_canvas",
+                "public_polish_claimed",
+            ],
+            errors,
+        )
+        role = page.get("role")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in page and require_integer(f"{page_label}.slide_index", page["slide_index"], errors):
+            if page["slide_index"] != index + 1:
+                errors.append(f"{page_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if page.get("visual_grammar_module") != expected_module:
+                errors.append(f"{page_label}.visual_grammar_module must be {expected_module} for {role}")
+        for key in ["source_p1_primary_motif_id", "source_p1_fallback_motif_id"]:
+            motif_id = page.get(key)
+            if require_non_empty_string(f"{page_label}.{key}", motif_id, errors) and not motif_id.startswith("motif_2_84_"):
+                errors.append(f"{page_label}.{key} must reference a motif_2_84_ id")
+        if "source_o2_product_surface_type" in page:
+            validate_choice(f"{page_label}.source_o2_product_surface_type", page["source_o2_product_surface_type"], RUN2_82_PRODUCT_SURFACE_TYPES, errors)
+        if "motif_family" in page:
+            validate_choice(f"{page_label}.motif_family", page["motif_family"], RUN2_84_DESIGN_MOTIF_FAMILIES, errors)
+        if "style_family" in page:
+            validate_choice(f"{page_label}.style_family", page["style_family"], RUN2_84_STYLE_FAMILIES, errors)
+        if "scenario" in page:
+            validate_choice(f"{page_label}.scenario", page["scenario"], RUN2_84_SCENARIOS, errors)
+        if "visual_density" in page:
+            validate_choice(f"{page_label}.visual_density", page["visual_density"], RUN2_84_VISUAL_DENSITIES, errors)
+        validate_exact_string_set(
+            f"{page_label}.renderer_repair_directives_applied",
+            page.get("renderer_repair_directives_applied", []),
+            RUN2_85_DESIGN_MOTIF_RENDERER_DIRECTIVES,
+            errors,
+        )
+        validate_exact_string_set(
+            f"{page_label}.preserved_visual_effects_rendered",
+            page.get("preserved_visual_effects_rendered", []),
+            RUN2_84_PRESERVED_VISUAL_EFFECTS,
+            errors,
+        )
+        validate_exact_string_set(
+            f"{page_label}.motif_fidelity_checks",
+            page.get("motif_fidelity_checks", []),
+            RUN2_84_REQUIRED_MOTIF_FIDELITY_CHECKS,
+            errors,
+        )
+        for key in [
+            "motif_family_visible",
+            "not_rectangle_only",
+            "text_integrated_with_shape",
+            "concrete_product_surface_visible",
+        ]:
+            if page.get(key) is not True:
+                errors.append(f"{page_label}.{key} must be true")
+        if page.get("text_hierarchy") != "motif_aware_headline_subhead_proof_caption":
+            errors.append(f"{page_label}.text_hierarchy must be motif_aware_headline_subhead_proof_caption")
+        if "floating_label_count" in page and require_integer(f"{page_label}.floating_label_count", page["floating_label_count"], errors):
+            if page["floating_label_count"] != 0:
+                errors.append(f"{page_label}.floating_label_count must be 0")
+        if "label_count" in page and require_integer(f"{page_label}.label_count", page["label_count"], errors):
+            if page["label_count"] > 3:
+                errors.append(f"{page_label}.label_count must be at most 3")
+        if "min_visible_label_font_size" in page and require_integer(f"{page_label}.min_visible_label_font_size", page["min_visible_label_font_size"], errors):
+            if page["min_visible_label_font_size"] < 12:
+                errors.append(f"{page_label}.min_visible_label_font_size must be at least 12")
+        if "source_trace_terms_visible_on_canvas" in page:
+            visible = page["source_trace_terms_visible_on_canvas"]
+            if not isinstance(visible, list):
+                errors.append(f"{page_label}.source_trace_terms_visible_on_canvas must be a list")
+            elif visible:
+                errors.append(f"{page_label}.source_trace_terms_visible_on_canvas must be empty")
+        if page.get("public_polish_claimed") is not False:
+            errors.append(f"{page_label}.public_polish_claimed must be false")
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+
+
+def validate_run2_85_checks(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    for key, expected in RUN2_85_DESIGN_MOTIF_REQUIRED_CHECKS.items():
+        if key not in value:
+            errors.append(f"{label} missing key: {key}")
+            continue
+        if require_integer(f"{label}.{key}", value[key], errors) and value[key] != expected:
+            errors.append(f"{label}.{key} must be {expected}")
+    if value.get("public_quality_verdict_started") is not False:
+        errors.append(f"{label}.public_quality_verdict_started must be false")
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -8182,6 +8450,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_82_renderer_product_surface_text_composition_rerun_result(root, errors)
             validate_run2_83_workflow_taxonomy_bias_audit(root, errors)
             validate_run2_84_design_motif_taxonomy_style_router_plan(root, errors)
+            validate_run2_85_design_motif_renderer_rerun_result(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)
