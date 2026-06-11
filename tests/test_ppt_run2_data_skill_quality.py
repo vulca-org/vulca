@@ -819,6 +819,64 @@ EXPECTED_RUN2_O2_REPAIR_FLAGS = {
     "traceability_routed_off_canvas",
     "public_polish_not_claimed",
 }
+EXPECTED_RUN2_P0_RESULT = (
+    PACK / "results" / "run2_83_workflow_taxonomy_bias_audit.json"
+)
+EXPECTED_RUN2_P0_SCRIPT = ROOT / "scripts" / "audit_ppt_run2_83_workflow_taxonomy_bias.py"
+EXPECTED_RUN2_P0_REQUIRED_INPUTS = [
+    "docs/product/ppt-run2-data-skill-quality/skill_workflow.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_8_workflow_gate_matrix.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_42_content_visual_asset_quality_audit.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_43_editorial_composition_typography_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_49_readability_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_61_text_socket_fusion_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_64_text_fit_renderer_gates.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_source_quality_audit.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_tutorial_to_design_moves.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_74_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_78_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
+]
+EXPECTED_RUN2_P0_LAYER_IDS = {
+    "source_quality_inventory",
+    "workflow_gate_matrix",
+    "tutorial_design_moves",
+    "visual_grammar_modules",
+    "renderer_adapter_contracts",
+    "text_binding_strategy",
+    "text_composition_plan",
+    "renderer_rerun_results",
+    "visual_quality_evaluation_loop",
+    "validator_and_tests",
+}
+EXPECTED_RUN2_P0_MISSING_TAXONOMY = {
+    "motif_id",
+    "motif_family",
+    "layout_recipe",
+    "spatial_relation",
+    "typography_treatment",
+    "visual_density",
+    "style_family",
+    "scenario_fit",
+    "renderer_recipe",
+    "motif_fidelity_checks",
+}
+EXPECTED_RUN2_P0_PRESERVED_GATES = {
+    "traceability",
+    "source_availability",
+    "validator_required_files",
+    "public_release_block",
+    "negative_controls",
+    "viewer_metadata_routes",
+    "reproducible_scripts",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -4456,6 +4514,109 @@ def test_run2_82_product_surface_text_composition_rerun_consumes_o1_and_updates_
     assert run["fullArm"]["id"] == "run2_82_full_product_surface_text_composition"
     assert len(run["fullArm"]["slides"]) == 6
     assert result["next_required_action"] == "part_p_visual_quality_evaluation_for_run2_82"
+
+
+def test_run2_83_workflow_taxonomy_bias_audit_preserves_rigor_and_identifies_design_gap() -> None:
+    assert EXPECTED_RUN2_P0_SCRIPT.exists(), "missing Part P0 workflow/taxonomy bias audit script"
+    script = EXPECTED_RUN2_P0_SCRIPT.read_text(encoding="utf-8")
+    assert_contains(
+        script,
+        [
+            *EXPECTED_RUN2_P0_REQUIRED_INPUTS,
+            "run2_83_workflow_taxonomy_bias_audit.json",
+            "run2_83_workflow_taxonomy_bias_audit.md",
+            "design_motif_layer",
+        ],
+    )
+
+    audit = load_json(EXPECTED_RUN2_P0_RESULT)
+    assert audit["artifact_id"] == "run2_83_workflow_taxonomy_bias_audit"
+    assert audit["part"] == "Part P0"
+    assert audit["run_id"] == "2.83"
+    assert audit["status"] == "run2_83_workflow_taxonomy_bias_audit_ready_public_blocked"
+    assert audit["stage_policy"] == (
+        "part_p0_audit_only_no_renderer_rerun_no_viewer_update_no_public_release"
+    )
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["starts_renderer_rerun"] is False
+    assert audit["updates_html_viewer"] is False
+    assert audit["public_release_started"] is False
+    assert audit["public_ready"] is False
+    assert audit["quality_claim_boundary"] == (
+        "workflow_taxonomy_bias_audit_only_no_visual_quality_pass_no_public_release"
+    )
+    assert audit["consumed_sources"] == EXPECTED_RUN2_P0_REQUIRED_INPUTS
+
+    source_paths = {source["path"] for source in audit["source_inputs"]}
+    assert set(EXPECTED_RUN2_P0_REQUIRED_INPUTS) <= source_paths
+    assert all(source["available"] is True for source in audit["source_inputs"])
+
+    preservation = audit["engineering_rigor_preservation"]
+    assert set(preservation["preserve_existing_gates"]) >= EXPECTED_RUN2_P0_PRESERVED_GATES
+    assert preservation["do_not_weaken_traceability"] is True
+    assert preservation["public_release_gate_remains_blocked"] is True
+    assert preservation["design_layer_adds_to_engineering_layer"] is True
+
+    summary = audit["taxonomy_bias_summary"]
+    assert summary["primary_bias"] == "engineering_constraint_labels_over_design_motif_labels"
+    assert summary["root_cause"] == "design_motif_taxonomy_missing_between_tutorial_memory_and_renderer_adapter"
+    assert "design_motif_layer" in summary["required_correction"]
+
+    layers = audit["layer_bias_records"]
+    assert {layer["layer_id"] for layer in layers} == EXPECTED_RUN2_P0_LAYER_IDS
+    for layer in layers:
+        assert layer["engineering_strength"]
+        assert layer["design_signal_loss"]
+        assert layer["impact_on_ppt"]
+        assert layer["must_preserve"]
+        assert layer["needs_new_design_layer"] is True
+        assert layer["bias_direction"] in {
+            "engineering_gate_dominant",
+            "design_signal_collapsed",
+            "renderer_execution_dominant",
+            "evaluation_detects_but_does_not_teach_motif",
+        }
+        assert layer["evidence"]
+
+    pattern = audit["run2_series_pattern"]
+    assert [stage["stage_range"] for stage in pattern] == [
+        "2.7-2.18",
+        "2.24-2.42",
+        "2.43-2.64",
+        "2.73-2.82",
+    ]
+    assert all(stage["effect_on_ppt"] for stage in pattern)
+
+    missing = audit["missing_design_taxonomy"]
+    assert {item["field"] for item in missing} == EXPECTED_RUN2_P0_MISSING_TAXONOMY
+    assert all(item["why_needed"] for item in missing)
+    assert all(item["renderer_contract_implication"] for item in missing)
+
+    next_layer = audit["required_next_layer"]
+    assert next_layer["layer_id"] == "design_motif_layer"
+    assert set(next_layer["must_add_fields"]) >= EXPECTED_RUN2_P0_MISSING_TAXONOMY
+    assert next_layer["must_preserve_engineering_gates"] is True
+    assert next_layer["must_not_replace_validator"] is True
+
+    assert audit["no_new_renderer_proof"] == {
+        "new_ppt_created": False,
+        "new_html_created": False,
+        "viewer_updated": False,
+    }
+    assert audit["next_required_action"] == "part_p1_design_motif_taxonomy_and_style_router_plan"
+
+    report = (
+        PACK / "results" / "run2_83_workflow_taxonomy_bias_audit.md"
+    ).read_text(encoding="utf-8")
+    assert_contains(
+        report,
+        [
+            "engineering constraint labels",
+            "design motif layer",
+            "public blocked",
+            "not a renderer rerun",
+        ],
+    )
 
 
 def test_run2_7_has_serializable_design_memory() -> None:

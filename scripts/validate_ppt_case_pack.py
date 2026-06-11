@@ -106,6 +106,7 @@ RUN2_73_REQUIRED_FILES = [
     "results/run2_80_visual_quality_evaluation.json",
     "run2_81_text_composition_typography_plan.json",
     "results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
+    "results/run2_83_workflow_taxonomy_bias_audit.json",
 ]
 
 
@@ -688,6 +689,68 @@ RUN2_82_TEXT_COMPOSITION_REQUIRED_CHECKS = {
     "pages_with_floating_labels_removed": 6,
     "pages_with_traceability_routed_off_canvas": 6,
 }
+RUN2_83_WORKFLOW_TAXONOMY_BIAS_AUDIT_STATUS = "run2_83_workflow_taxonomy_bias_audit_ready_public_blocked"
+RUN2_83_WORKFLOW_TAXONOMY_BIAS_CONSUMED_SOURCE_PATHS = {
+    "docs/product/ppt-run2-data-skill-quality/skill_workflow.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_8_workflow_gate_matrix.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_42_content_visual_asset_quality_audit.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_43_editorial_composition_typography_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_49_readability_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_61_text_socket_fusion_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_64_text_fit_renderer_gates.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_source_quality_audit.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_tutorial_to_design_moves.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_74_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_78_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_80_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
+}
+RUN2_83_ENGINEERING_GATES_TO_PRESERVE = {
+    "traceability",
+    "source_availability",
+    "validator_required_files",
+    "public_release_block",
+    "negative_controls",
+    "viewer_metadata_routes",
+    "reproducible_scripts",
+}
+RUN2_83_LAYER_BIAS_IDS = {
+    "source_quality_inventory",
+    "workflow_gate_matrix",
+    "tutorial_design_moves",
+    "visual_grammar_modules",
+    "renderer_adapter_contracts",
+    "text_binding_strategy",
+    "text_composition_plan",
+    "renderer_rerun_results",
+    "visual_quality_evaluation_loop",
+    "validator_and_tests",
+}
+RUN2_83_LAYER_BIAS_DIRECTIONS = {
+    "engineering_gate_dominant",
+    "design_signal_collapsed",
+    "renderer_execution_dominant",
+    "evaluation_detects_but_does_not_teach_motif",
+}
+RUN2_83_MISSING_DESIGN_TAXONOMY_FIELDS = {
+    "motif_id",
+    "motif_family",
+    "layout_recipe",
+    "spatial_relation",
+    "typography_treatment",
+    "visual_density",
+    "style_family",
+    "scenario_fit",
+    "renderer_recipe",
+    "motif_fidelity_checks",
+}
+RUN2_83_SERIES_STAGE_RANGES = ["2.7-2.18", "2.24-2.42", "2.43-2.64", "2.73-2.82"]
 
 
 @dataclass(frozen=True)
@@ -7202,6 +7265,276 @@ def validate_run2_82_checks(label: str, value: Any, errors: list[str]) -> None:
         errors.append(f"{label}.public_quality_verdict_started must be false")
 
 
+def validate_run2_83_workflow_taxonomy_bias_audit(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "results" / "run2_83_workflow_taxonomy_bias_audit.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_83_workflow_taxonomy_bias_audit"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "stage_policy",
+            "creates_new_ppt_deck",
+            "starts_renderer_rerun",
+            "updates_html_viewer",
+            "public_release_started",
+            "public_ready",
+            "quality_claim_boundary",
+            "consumed_sources",
+            "source_inputs",
+            "engineering_rigor_preservation",
+            "taxonomy_bias_summary",
+            "layer_bias_records",
+            "run2_series_pattern",
+            "missing_design_taxonomy",
+            "required_next_layer",
+            "no_new_renderer_proof",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part P0":
+        errors.append(f"{label}.part must be Part P0")
+    if data.get("run_id") != "2.83":
+        errors.append(f"{label}.run_id must be 2.83")
+    if data.get("status") != RUN2_83_WORKFLOW_TAXONOMY_BIAS_AUDIT_STATUS:
+        errors.append(f"{label}.status must be {RUN2_83_WORKFLOW_TAXONOMY_BIAS_AUDIT_STATUS}")
+    if data.get("stage_policy") != "part_p0_audit_only_no_renderer_rerun_no_viewer_update_no_public_release":
+        errors.append(
+            f"{label}.stage_policy must be part_p0_audit_only_no_renderer_rerun_no_viewer_update_no_public_release"
+        )
+    for key in [
+        "creates_new_ppt_deck",
+        "starts_renderer_rerun",
+        "updates_html_viewer",
+        "public_release_started",
+        "public_ready",
+    ]:
+        if data.get(key) is not False:
+            errors.append(f"{label}.{key} must be false")
+    if data.get("quality_claim_boundary") != "workflow_taxonomy_bias_audit_only_no_visual_quality_pass_no_public_release":
+        errors.append(
+            f"{label}.quality_claim_boundary must be workflow_taxonomy_bias_audit_only_no_visual_quality_pass_no_public_release"
+        )
+    validate_exact_string_set(
+        f"{label}.consumed_sources",
+        data.get("consumed_sources", []),
+        RUN2_83_WORKFLOW_TAXONOMY_BIAS_CONSUMED_SOURCE_PATHS,
+        errors,
+    )
+    validate_run2_83_source_inputs(f"{label}.source_inputs", data.get("source_inputs", []), errors)
+    validate_run2_83_engineering_rigor_preservation(
+        f"{label}.engineering_rigor_preservation",
+        data.get("engineering_rigor_preservation", {}),
+        errors,
+    )
+    validate_run2_83_taxonomy_bias_summary(
+        f"{label}.taxonomy_bias_summary",
+        data.get("taxonomy_bias_summary", {}),
+        errors,
+    )
+    validate_run2_83_layer_bias_records(f"{label}.layer_bias_records", data.get("layer_bias_records", []), errors)
+    validate_run2_83_series_pattern(f"{label}.run2_series_pattern", data.get("run2_series_pattern", []), errors)
+    validate_run2_83_missing_design_taxonomy(
+        f"{label}.missing_design_taxonomy",
+        data.get("missing_design_taxonomy", []),
+        errors,
+    )
+    validate_run2_83_required_next_layer(f"{label}.required_next_layer", data.get("required_next_layer", {}), errors)
+    validate_run2_83_no_new_renderer_proof(f"{label}.no_new_renderer_proof", data.get("no_new_renderer_proof", {}), errors)
+    if data.get("next_required_action") != "part_p1_design_motif_taxonomy_and_style_router_plan":
+        errors.append(f"{label}.next_required_action must be part_p1_design_motif_taxonomy_and_style_router_plan")
+
+
+def validate_run2_83_source_inputs(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    paths: list[str] = []
+    for index, source in enumerate(value):
+        source_label = f"{label}[{index}]"
+        if not isinstance(source, dict):
+            errors.append(f"{source_label} must be an object")
+            continue
+        require_keys(source_label, source, ["path", "available", "usage"], errors)
+        path = source.get("path")
+        if require_non_empty_string(f"{source_label}.path", path, errors):
+            paths.append(path)
+        if source.get("available") is not True:
+            errors.append(f"{source_label}.available must be true")
+        if "usage" in source:
+            require_non_empty_string(f"{source_label}.usage", source["usage"], errors)
+    for path in sorted(RUN2_83_WORKFLOW_TAXONOMY_BIAS_CONSUMED_SOURCE_PATHS - set(paths)):
+        errors.append(f"{label} missing path: {path}")
+
+
+def validate_run2_83_engineering_rigor_preservation(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        [
+            "preserve_existing_gates",
+            "do_not_weaken_traceability",
+            "public_release_gate_remains_blocked",
+            "design_layer_adds_to_engineering_layer",
+        ],
+        errors,
+    )
+    validate_exact_string_set(
+        f"{label}.preserve_existing_gates",
+        value.get("preserve_existing_gates", []),
+        RUN2_83_ENGINEERING_GATES_TO_PRESERVE,
+        errors,
+    )
+    for key in [
+        "do_not_weaken_traceability",
+        "public_release_gate_remains_blocked",
+        "design_layer_adds_to_engineering_layer",
+    ]:
+        if value.get(key) is not True:
+            errors.append(f"{label}.{key} must be true")
+
+
+def validate_run2_83_taxonomy_bias_summary(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["primary_bias", "root_cause", "required_correction"], errors)
+    if value.get("primary_bias") != "engineering_constraint_labels_over_design_motif_labels":
+        errors.append(f"{label}.primary_bias must be engineering_constraint_labels_over_design_motif_labels")
+    if value.get("root_cause") != "design_motif_taxonomy_missing_between_tutorial_memory_and_renderer_adapter":
+        errors.append(f"{label}.root_cause must be design_motif_taxonomy_missing_between_tutorial_memory_and_renderer_adapter")
+    correction = value.get("required_correction")
+    if require_non_empty_string(f"{label}.required_correction", correction, errors) and "design_motif_layer" not in correction:
+        errors.append(f"{label}.required_correction must mention design_motif_layer")
+
+
+def validate_run2_83_layer_bias_records(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    layer_ids: list[str] = []
+    for index, record in enumerate(value):
+        record_label = f"{label}[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{record_label} must be an object")
+            continue
+        require_keys(
+            record_label,
+            record,
+            [
+                "layer_id",
+                "layer_name",
+                "engineering_strength",
+                "design_signal_loss",
+                "bias_direction",
+                "evidence",
+                "impact_on_ppt",
+                "must_preserve",
+                "needs_new_design_layer",
+            ],
+            errors,
+        )
+        layer_id = record.get("layer_id")
+        if require_non_empty_string(f"{record_label}.layer_id", layer_id, errors):
+            layer_ids.append(layer_id)
+        for key in ["layer_name", "engineering_strength", "design_signal_loss", "impact_on_ppt", "must_preserve"]:
+            if key in record:
+                require_non_empty_string(f"{record_label}.{key}", record[key], errors)
+        if "bias_direction" in record:
+            validate_choice(f"{record_label}.bias_direction", record["bias_direction"], RUN2_83_LAYER_BIAS_DIRECTIONS, errors)
+        if "evidence" in record:
+            validate_string_list(f"{record_label}.evidence", record["evidence"], errors)
+        if record.get("needs_new_design_layer") is not True:
+            errors.append(f"{record_label}.needs_new_design_layer must be true")
+    actual = set(layer_ids)
+    for layer_id in sorted(RUN2_83_LAYER_BIAS_IDS - actual):
+        errors.append(f"{label} missing layer_id: {layer_id}")
+    for layer_id in sorted(actual - RUN2_83_LAYER_BIAS_IDS):
+        errors.append(f"{label} has unexpected layer_id: {layer_id}")
+
+
+def validate_run2_83_series_pattern(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    stage_ranges: list[str] = []
+    for index, stage in enumerate(value):
+        stage_label = f"{label}[{index}]"
+        if not isinstance(stage, dict):
+            errors.append(f"{stage_label} must be an object")
+            continue
+        require_keys(stage_label, stage, ["stage_range", "dominant_work", "effect_on_ppt"], errors)
+        stage_range = stage.get("stage_range")
+        if require_non_empty_string(f"{stage_label}.stage_range", stage_range, errors):
+            stage_ranges.append(stage_range)
+        for key in ["dominant_work", "effect_on_ppt"]:
+            if key in stage:
+                require_non_empty_string(f"{stage_label}.{key}", stage[key], errors)
+    if stage_ranges != RUN2_83_SERIES_STAGE_RANGES:
+        errors.append(f"{label} stage_range values must be {', '.join(RUN2_83_SERIES_STAGE_RANGES)}")
+
+
+def validate_run2_83_missing_design_taxonomy(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    fields: list[str] = []
+    for index, item in enumerate(value):
+        item_label = f"{label}[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{item_label} must be an object")
+            continue
+        require_keys(item_label, item, ["field", "why_needed", "renderer_contract_implication"], errors)
+        field = item.get("field")
+        if require_non_empty_string(f"{item_label}.field", field, errors):
+            fields.append(field)
+        for key in ["why_needed", "renderer_contract_implication"]:
+            if key in item:
+                require_non_empty_string(f"{item_label}.{key}", item[key], errors)
+    actual = set(fields)
+    for field in sorted(RUN2_83_MISSING_DESIGN_TAXONOMY_FIELDS - actual):
+        errors.append(f"{label} missing field: {field}")
+    for field in sorted(actual - RUN2_83_MISSING_DESIGN_TAXONOMY_FIELDS):
+        errors.append(f"{label} has unexpected field: {field}")
+
+
+def validate_run2_83_required_next_layer(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        ["layer_id", "must_add_fields", "must_preserve_engineering_gates", "must_not_replace_validator"],
+        errors,
+    )
+    if value.get("layer_id") != "design_motif_layer":
+        errors.append(f"{label}.layer_id must be design_motif_layer")
+    validate_exact_string_set(
+        f"{label}.must_add_fields",
+        value.get("must_add_fields", []),
+        RUN2_83_MISSING_DESIGN_TAXONOMY_FIELDS,
+        errors,
+    )
+    for key in ["must_preserve_engineering_gates", "must_not_replace_validator"]:
+        if value.get(key) is not True:
+            errors.append(f"{label}.{key} must be true")
+
+
+def validate_run2_83_no_new_renderer_proof(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    for key in ["new_ppt_created", "new_html_created", "viewer_updated"]:
+        if key not in value:
+            errors.append(f"{label} missing key: {key}")
+        elif value.get(key) is not False:
+            errors.append(f"{label}.{key} must be false")
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -7426,6 +7759,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_80_visual_quality_evaluation(root, errors)
             validate_run2_81_text_composition_typography_plan(root, errors)
             validate_run2_82_renderer_product_surface_text_composition_rerun_result(root, errors)
+            validate_run2_83_workflow_taxonomy_bias_audit(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)
