@@ -1529,6 +1529,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_83_workflow_taxonomy_bias_audit(), indent=2),
         encoding="utf-8",
     )
+    (pack / "run2_84_design_motif_taxonomy_style_router_plan.json").write_text(
+        json.dumps(valid_run2_84_design_motif_taxonomy_style_router_plan(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -3428,6 +3432,194 @@ def valid_run2_83_workflow_taxonomy_bias_audit() -> dict:
     }
 
 
+def valid_run2_84_design_motif_taxonomy_style_router_plan() -> dict:
+    consumed_sources = [
+        "docs/product/ppt-run2-data-skill-quality/results/run2_83_workflow_taxonomy_bias_audit.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_source_quality_audit.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_tutorial_to_design_moves.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_design_grammar.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_43_editorial_composition_typography_memory.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_49_readability_memory.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+        "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
+    ]
+    motif_families = [
+        "editorial_text_field",
+        "modular_matrix",
+        "overlay_sticker_stack",
+        "product_theater",
+        "before_after_theater",
+        "evidence_workspace",
+        "decision_map",
+    ]
+    style_families = [
+        "public_product_keynote",
+        "technical_editorial",
+        "dense_teaching_walkthrough",
+        "financial_decision_brief",
+        "high_contrast_demo",
+    ]
+    scenarios = [
+        "product_pitch",
+        "teaching_tutorial",
+        "financial_product",
+        "technical_proof",
+        "public_video_demo",
+    ]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    primary_by_role = {
+        "cover": "motif_2_84_product_theater",
+        "setup": "motif_2_84_editorial_text_field",
+        "contrast": "motif_2_84_before_after_theater",
+        "proof": "motif_2_84_modular_matrix",
+        "climax": "motif_2_84_overlay_sticker_stack",
+        "close": "motif_2_84_decision_map",
+    }
+
+    def motif(family: str, index: int) -> dict:
+        return {
+            "motif_id": f"motif_2_84_{family}",
+            "motif_family": family,
+            "layout_recipe": {
+                "composition_pattern": f"{family} composition pattern",
+                "reading_path": "headline_to_object_to_evidence_to_caption",
+                "focal_object_strategy": "single dominant object with supporting layers",
+            },
+            "spatial_relation": {
+                "text_to_object_relation": "anchored_to_visible_product_or_evidence_object",
+                "object_to_background_relation": "foreground_surface_over_supporting_field",
+                "evidence_relation": "attached_rail_or_matrix_cell",
+            },
+            "typography_treatment": {
+                "hierarchy_model": "headline_subhead_proof_caption",
+                "paragraph_behavior": "editorial_block_not_floating_label",
+                "caption_behavior": "attached_to_object_edge",
+            },
+            "visual_density": ["balanced", "dense", "climax", "sparse"][index % 4],
+            "style_family": style_families[index % len(style_families)],
+            "scenario_fit": [scenarios[index % len(scenarios)], scenarios[(index + 1) % len(scenarios)]],
+            "renderer_recipe": {
+                "native_ppt_primitives": ["editable text", "native shape", "image placeholder"],
+                "forbidden_renderer_shortcuts": ["generic rectangles only", "traceability labels on canvas"],
+                "metadata_routes": ["source trace", "motif id", "fidelity checks"],
+            },
+            "motif_fidelity_checks": [
+                "motif_family_visible",
+                "not_rectangle_only",
+                "text_integrated_with_shape",
+            ],
+            "source_trace": ["run2_73_tutorial_to_design_moves.json"],
+        }
+
+    return {
+        "artifact_id": "run2_84_design_motif_taxonomy_style_router_plan",
+        "part": "Part P1",
+        "schema_version": "ppt_run2_84_design_motif_taxonomy_style_router_plan.v1",
+        "run_id": "2.84",
+        "status": "run2_84_design_motif_taxonomy_style_router_plan_ready_public_blocked",
+        "stage_policy": "part_p1_design_motif_taxonomy_and_style_router_plan_only_no_renderer_rerun_no_public_release",
+        "creates_new_ppt_deck": False,
+        "starts_renderer_rerun": False,
+        "updates_html_viewer": False,
+        "public_release_started": False,
+        "public_ready": False,
+        "quality_claim_boundary": "design_motif_contract_only_no_visual_quality_verdict_no_public_release",
+        "consumed_sources": consumed_sources,
+        "source_inputs": [
+            {"path": source, "available": True, "usage": "design_motif_style_router_source"}
+            for source in consumed_sources
+        ],
+        "source_p0_audit": {
+            "status": "run2_83_workflow_taxonomy_bias_audit_ready_public_blocked",
+            "next_required_action": "part_p1_design_motif_taxonomy_and_style_router_plan",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_83_workflow_taxonomy_bias_audit.json",
+        },
+        "preserved_visual_effects": [
+            "modular_matrix",
+            "rectangle_layering",
+            "overlay_sticker_stack",
+            "product_theater",
+            "editorial_text_density",
+        ],
+        "design_motif_taxonomy": [motif(family, index) for index, family in enumerate(motif_families)],
+        "style_router_rules": [
+            {
+                "scenario": scenario,
+                "primary_style_family": style_families[index % len(style_families)],
+                "allowed_motif_families": motif_families[:3],
+                "density_policy": "choose density by audience and proof burden",
+                "business_fit_rationale": "scenario maps design motif to commercial communication job",
+            }
+            for index, scenario in enumerate(scenarios)
+        ],
+        "page_role_motif_bindings": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "primary_motif_id": primary_by_role[role],
+                "fallback_motif_id": "motif_2_84_editorial_text_field",
+                "style_family": style_families[(index - 1) % len(style_families)],
+                "scenario": scenarios[(index - 1) % len(scenarios)],
+                "required_motif_fidelity_checks": [
+                    "motif_family_visible",
+                    "not_rectangle_only",
+                    "text_integrated_with_shape",
+                ],
+            }
+            for index, role in enumerate(["cover", "setup", "contrast", "proof", "climax", "close"], start=1)
+        ],
+        "engineering_gate_bridge": {
+            "preserve_existing_gates": [
+                "traceability",
+                "source_availability",
+                "validator_required_files",
+                "public_release_block",
+                "negative_controls",
+                "viewer_metadata_routes",
+                "reproducible_scripts",
+            ],
+            "traceability_route": "viewer_metadata_and_speaker_notes",
+            "slide_canvas_traceability_allowed": False,
+            "public_release_gate_remains_blocked": True,
+            "validator_remains_authoritative": True,
+        },
+        "renderer_contract_preview": {
+            "next_renderer_must_consume_p1": True,
+            "required_fields_for_next_rerun": [
+                "motif_id",
+                "motif_family",
+                "layout_recipe",
+                "spatial_relation",
+                "typography_treatment",
+                "visual_density",
+                "style_family",
+                "scenario_fit",
+                "renderer_recipe",
+                "motif_fidelity_checks",
+            ],
+            "does_not_execute_renderer": True,
+        },
+        "no_new_renderer_proof": {
+            "new_ppt_created": False,
+            "new_html_created": False,
+            "viewer_updated": False,
+        },
+        "next_required_action": "part_p2_renderer_rerun_from_design_motif_layer_and_style_router",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -3471,6 +3663,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
         in result.errors
     )
     assert "missing required file: results/run2_83_workflow_taxonomy_bias_audit.json" in result.errors
+    assert "missing required file: run2_84_design_motif_taxonomy_style_router_plan.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -4587,6 +4780,127 @@ def test_run2_profile_rejects_p0_workflow_taxonomy_bias_audit_bad_scope_or_missi
     )
     assert (
         "run2_83_workflow_taxonomy_bias_audit.next_required_action must be part_p1_design_motif_taxonomy_and_style_router_plan"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_p1_design_motif_plan_bad_scope_or_weak_motif_contract(
+    tmp_path: Path,
+) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    plan_path = pack / "run2_84_design_motif_taxonomy_style_router_plan.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan["public_ready"] = True
+    plan["starts_renderer_rerun"] = True
+    plan["updates_html_viewer"] = True
+    plan["consumed_sources"] = plan["consumed_sources"][:-1]
+    plan["source_p0_audit"]["status"] = "missing"
+    plan["preserved_visual_effects"].remove("overlay_sticker_stack")
+    first_motif = plan["design_motif_taxonomy"][0]
+    first_motif["motif_family"] = "generic_blocks"
+    first_motif["layout_recipe"].pop("reading_path")
+    first_motif["renderer_recipe"]["forbidden_renderer_shortcuts"] = ["none"]
+    first_motif["motif_fidelity_checks"] = ["motif_family_visible"]
+    first_motif["source_trace"] = []
+    plan["style_router_rules"] = plan["style_router_rules"][:-1]
+    first_binding = plan["page_role_motif_bindings"][0]
+    first_binding["visual_grammar_module"] = "hero_field"
+    first_binding["primary_motif_id"] = "missing_motif"
+    first_binding["required_motif_fidelity_checks"] = ["motif_family_visible"]
+    plan["engineering_gate_bridge"]["slide_canvas_traceability_allowed"] = True
+    plan["engineering_gate_bridge"]["validator_remains_authoritative"] = False
+    plan["renderer_contract_preview"]["next_renderer_must_consume_p1"] = False
+    plan["renderer_contract_preview"]["required_fields_for_next_rerun"] = ["motif_id"]
+    plan["renderer_contract_preview"]["does_not_execute_renderer"] = False
+    plan["no_new_renderer_proof"]["viewer_updated"] = True
+    plan["next_required_action"] = "public_release"
+    plan_path.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_84_design_motif_taxonomy_style_router_plan.public_ready must be false" in result.errors
+    assert "run2_84_design_motif_taxonomy_style_router_plan.starts_renderer_rerun must be false" in result.errors
+    assert "run2_84_design_motif_taxonomy_style_router_plan.updates_html_viewer must be false" in result.errors
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.source_p0_audit.status must be run2_83_workflow_taxonomy_bias_audit_ready_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.preserved_visual_effects missing value: overlay_sticker_stack"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.design_motif_taxonomy[0].motif_family must be one of before_after_theater, decision_map, editorial_text_field, evidence_workspace, modular_matrix, overlay_sticker_stack, product_theater"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.design_motif_taxonomy[0].layout_recipe missing key: reading_path"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.design_motif_taxonomy[0].renderer_recipe.forbidden_renderer_shortcuts missing value: generic rectangles only"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.design_motif_taxonomy[0].motif_fidelity_checks missing value: not_rectangle_only"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.design_motif_taxonomy[0].source_trace must be a non-empty list"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.style_router_rules missing scenario: public_video_demo"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.page_role_motif_bindings[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.page_role_motif_bindings[0].primary_motif_id references unknown motif: missing_motif"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.page_role_motif_bindings[0].required_motif_fidelity_checks missing value: text_integrated_with_shape"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.engineering_gate_bridge.slide_canvas_traceability_allowed must be false"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.engineering_gate_bridge.validator_remains_authoritative must be true"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.renderer_contract_preview.next_renderer_must_consume_p1 must be true"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.renderer_contract_preview.required_fields_for_next_rerun missing value: motif_fidelity_checks"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.renderer_contract_preview.does_not_execute_renderer must be true"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.no_new_renderer_proof.viewer_updated must be false"
+        in result.errors
+    )
+    assert (
+        "run2_84_design_motif_taxonomy_style_router_plan.next_required_action must be part_p2_renderer_rerun_from_design_motif_layer_and_style_router"
         in result.errors
     )
 

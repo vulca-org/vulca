@@ -877,6 +877,64 @@ EXPECTED_RUN2_P0_PRESERVED_GATES = {
     "viewer_metadata_routes",
     "reproducible_scripts",
 }
+EXPECTED_RUN2_P1_RESULT = PACK / "run2_84_design_motif_taxonomy_style_router_plan.json"
+EXPECTED_RUN2_P1_SCRIPT = ROOT / "scripts" / "build_ppt_run2_84_design_motif_taxonomy_style_router_plan.py"
+EXPECTED_RUN2_P1_REQUIRED_INPUTS = [
+    "docs/product/ppt-run2-data-skill-quality/results/run2_83_workflow_taxonomy_bias_audit.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_source_quality_audit.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_tutorial_to_design_moves.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_design_grammar.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_43_editorial_composition_typography_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_49_readability_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json",
+]
+EXPECTED_RUN2_P1_MOTIF_FIELDS = {
+    "motif_id",
+    "motif_family",
+    "layout_recipe",
+    "spatial_relation",
+    "typography_treatment",
+    "visual_density",
+    "style_family",
+    "scenario_fit",
+    "renderer_recipe",
+    "motif_fidelity_checks",
+}
+EXPECTED_RUN2_P1_MOTIF_FAMILIES = {
+    "editorial_text_field",
+    "modular_matrix",
+    "overlay_sticker_stack",
+    "product_theater",
+    "before_after_theater",
+    "evidence_workspace",
+    "decision_map",
+}
+EXPECTED_RUN2_P1_STYLE_FAMILIES = {
+    "public_product_keynote",
+    "technical_editorial",
+    "dense_teaching_walkthrough",
+    "financial_decision_brief",
+    "high_contrast_demo",
+}
+EXPECTED_RUN2_P1_SCENARIOS = {
+    "product_pitch",
+    "teaching_tutorial",
+    "financial_product",
+    "technical_proof",
+    "public_video_demo",
+}
+EXPECTED_RUN2_P1_PRESERVED_EFFECTS = {
+    "modular_matrix",
+    "rectangle_layering",
+    "overlay_sticker_stack",
+    "product_theater",
+    "editorial_text_density",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -4617,6 +4675,118 @@ def test_run2_83_workflow_taxonomy_bias_audit_preserves_rigor_and_identifies_des
             "not a renderer rerun",
         ],
     )
+
+
+def test_run2_84_design_motif_taxonomy_style_router_plan_adds_design_layer_without_weakening_gates() -> None:
+    assert EXPECTED_RUN2_P1_SCRIPT.exists(), "missing Part P1 design motif/style router plan script"
+    script = EXPECTED_RUN2_P1_SCRIPT.read_text(encoding="utf-8")
+    assert_contains(
+        script,
+        [
+            *EXPECTED_RUN2_P1_REQUIRED_INPUTS,
+            "run2_84_design_motif_taxonomy_style_router_plan.json",
+            "design_motif_taxonomy",
+            "style_router_rules",
+            "motif_fidelity_checks",
+        ],
+    )
+
+    plan = load_json(EXPECTED_RUN2_P1_RESULT)
+    p0 = load_json(EXPECTED_RUN2_P0_RESULT)
+
+    assert plan["artifact_id"] == "run2_84_design_motif_taxonomy_style_router_plan"
+    assert plan["part"] == "Part P1"
+    assert plan["run_id"] == "2.84"
+    assert plan["status"] == "run2_84_design_motif_taxonomy_style_router_plan_ready_public_blocked"
+    assert plan["stage_policy"] == (
+        "part_p1_design_motif_taxonomy_and_style_router_plan_only_no_renderer_rerun_no_public_release"
+    )
+    assert plan["creates_new_ppt_deck"] is False
+    assert plan["starts_renderer_rerun"] is False
+    assert plan["updates_html_viewer"] is False
+    assert plan["public_release_started"] is False
+    assert plan["public_ready"] is False
+    assert plan["quality_claim_boundary"] == (
+        "design_motif_contract_only_no_visual_quality_verdict_no_public_release"
+    )
+    assert plan["consumed_sources"] == EXPECTED_RUN2_P1_REQUIRED_INPUTS
+    assert plan["source_p0_audit"]["status"] == p0["status"]
+    assert plan["source_p0_audit"]["next_required_action"] == (
+        "part_p1_design_motif_taxonomy_and_style_router_plan"
+    )
+
+    source_paths = {source["path"] for source in plan["source_inputs"]}
+    assert set(EXPECTED_RUN2_P1_REQUIRED_INPUTS) <= source_paths
+    assert all(source["available"] is True for source in plan["source_inputs"])
+
+    effects = plan["preserved_visual_effects"]
+    assert set(effects) >= EXPECTED_RUN2_P1_PRESERVED_EFFECTS
+
+    motifs = plan["design_motif_taxonomy"]
+    assert {motif["motif_family"] for motif in motifs} == EXPECTED_RUN2_P1_MOTIF_FAMILIES
+    motif_ids = {motif["motif_id"] for motif in motifs}
+    for motif in motifs:
+        assert EXPECTED_RUN2_P1_MOTIF_FIELDS <= set(motif)
+        assert motif["motif_id"].startswith("motif_2_84_")
+        assert motif["style_family"] in EXPECTED_RUN2_P1_STYLE_FAMILIES
+        assert set(motif["scenario_fit"]) <= EXPECTED_RUN2_P1_SCENARIOS
+        assert motif["layout_recipe"]["composition_pattern"]
+        assert motif["layout_recipe"]["reading_path"]
+        assert motif["spatial_relation"]["text_to_object_relation"]
+        assert motif["typography_treatment"]["hierarchy_model"]
+        assert motif["visual_density"] in {"sparse", "balanced", "dense", "climax"}
+        assert motif["renderer_recipe"]["native_ppt_primitives"]
+        assert "generic rectangles only" in motif["renderer_recipe"]["forbidden_renderer_shortcuts"]
+        assert "traceability labels on canvas" in motif["renderer_recipe"]["forbidden_renderer_shortcuts"]
+        assert set(motif["motif_fidelity_checks"]) >= {
+            "motif_family_visible",
+            "not_rectangle_only",
+            "text_integrated_with_shape",
+        }
+        assert motif["source_trace"]
+
+    router = plan["style_router_rules"]
+    assert {rule["scenario"] for rule in router} == EXPECTED_RUN2_P1_SCENARIOS
+    for rule in router:
+        assert rule["primary_style_family"] in EXPECTED_RUN2_P1_STYLE_FAMILIES
+        assert set(rule["allowed_motif_families"]) <= EXPECTED_RUN2_P1_MOTIF_FAMILIES
+        assert rule["density_policy"]
+        assert rule["business_fit_rationale"]
+
+    bindings = plan["page_role_motif_bindings"]
+    assert [binding["role"] for binding in bindings] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [binding["slide_index"] for binding in bindings] == [1, 2, 3, 4, 5, 6]
+    for binding in bindings:
+        role = binding["role"]
+        assert binding["visual_grammar_module"] == EXPECTED_RUN2_E_PAGE_MODULE_MAP[role]
+        assert binding["primary_motif_id"] in motif_ids
+        assert binding["fallback_motif_id"] in motif_ids
+        assert binding["style_family"] in EXPECTED_RUN2_P1_STYLE_FAMILIES
+        assert binding["scenario"] in EXPECTED_RUN2_P1_SCENARIOS
+        assert set(binding["required_motif_fidelity_checks"]) >= {
+            "motif_family_visible",
+            "not_rectangle_only",
+            "text_integrated_with_shape",
+        }
+
+    bridge = plan["engineering_gate_bridge"]
+    assert set(bridge["preserve_existing_gates"]) >= EXPECTED_RUN2_P0_PRESERVED_GATES
+    assert bridge["traceability_route"] == "viewer_metadata_and_speaker_notes"
+    assert bridge["slide_canvas_traceability_allowed"] is False
+    assert bridge["public_release_gate_remains_blocked"] is True
+    assert bridge["validator_remains_authoritative"] is True
+
+    preview = plan["renderer_contract_preview"]
+    assert preview["next_renderer_must_consume_p1"] is True
+    assert set(preview["required_fields_for_next_rerun"]) >= EXPECTED_RUN2_P1_MOTIF_FIELDS
+    assert preview["does_not_execute_renderer"] is True
+
+    assert plan["no_new_renderer_proof"] == {
+        "new_ppt_created": False,
+        "new_html_created": False,
+        "viewer_updated": False,
+    }
+    assert plan["next_required_action"] == "part_p2_renderer_rerun_from_design_motif_layer_and_style_router"
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
