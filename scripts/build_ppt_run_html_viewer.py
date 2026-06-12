@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.88"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.90"'
 
 
 @dataclass(frozen=True)
@@ -906,6 +906,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.90",
+        "Run 2.90",
+        "run2-90-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-90-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-90-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_90_full_asset_surface_composition",
+                "Run 2.90 full",
+                "ppt-run2-90-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_without_asset_surface_composition",
+                "Bad missing Run 2.90 asset surface",
+                "ppt-run2-90-bad-without-asset-surface-composition",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -1108,6 +1129,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run285_result = read_json(pack / "results" / "run2_85_design_motif_renderer_rerun_result.json")
     run287_plan = read_json(pack / "run2_87_best_layout_recovery_visual_primitive_plan.json")
     run288_result = read_json(pack / "results" / "run2_88_best_layout_visual_primitive_rerun_result.json")
+    run289_evaluation = read_json(pack / "results" / "run2_89_visual_quality_evaluation.json")
+    run290_result = read_json(pack / "results" / "run2_90_renderer_asset_surface_composition_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1712,6 +1735,20 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run288FullTracePath": "ppt-run2-88-full-vulca/trace_manifest.json",
         "run288BadTracePath": "ppt-run2-88-bad-without-best-layout-visual-primitives/trace_manifest.json",
         "run288FourArmSheetPath": "run2-88-four-arm-contact-sheet.png",
+        "run289EvaluationStatus": run289_evaluation.get("status", ""),
+        "run289Evaluation": run289_evaluation,
+        "run289EvaluationPath": "run2_89_visual_quality_evaluation.json",
+        "run289TargetLayer": "renderer_asset_surface_and_composition_detail",
+        "run289GeneratorPath": "scripts/audit_ppt_run2_89_visual_quality_evaluation.py",
+        "run290ResultStatus": run290_result.get("status", ""),
+        "run290Result": run290_result,
+        "run290ResultPath": "run2_90_renderer_asset_surface_composition_rerun_result.json",
+        "run290TargetLayer": "renderer_asset_surface_composition_from_run2_89_t_evaluation",
+        "run290SourceDataStatus": "run2_90_consumes_t_2_88_and_2_87_before_native_ppt_drawing",
+        "run290GeneratorPath": "scripts/generate_ppt_run2_90_renderer_asset_surface_composition_arms.mjs",
+        "run290FullTracePath": "ppt-run2-90-full-vulca/trace_manifest.json",
+        "run290BadTracePath": "ppt-run2-90-bad-without-asset-surface-composition/trace_manifest.json",
+        "run290FourArmSheetPath": "run2-90-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",

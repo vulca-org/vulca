@@ -1553,6 +1553,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_89_visual_quality_evaluation(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_90_renderer_asset_surface_composition_rerun_result.json").write_text(
+        json.dumps(valid_run2_90_renderer_asset_surface_composition_rerun_result(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -4322,6 +4326,127 @@ def valid_run2_89_visual_quality_evaluation() -> dict:
     }
 
 
+def valid_run2_90_renderer_asset_surface_composition_rerun_result() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    function_by_role = {
+        "cover": "drawRun290ProductSurfaceHero",
+        "setup": "drawRun290EditorialSurfaceSpread",
+        "contrast": "drawRun290BeforeAfterProductStage",
+        "proof": "drawRun290EvidenceMatrixSurface",
+        "climax": "drawRun290StickerStageSurface",
+        "close": "drawRun290DecisionBoardSurface",
+    }
+    directives = [
+        "part_t_visual_quality_evaluation_consumed",
+        "asset_surface_rendered",
+        "composition_detail_added",
+        "wireframe_reduced",
+        "collision_repair_applied",
+        "text_heavy_readability_preserved",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed",
+    ]
+    gates = [
+        "product_surface_materiality",
+        "visual_density_above_wireframe",
+        "no_floating_labels",
+        "collision_avoidance",
+        "text_integrated_with_surface",
+    ]
+    return {
+        "artifact_id": "run2_90_renderer_asset_surface_composition_rerun_result",
+        "part": "Part U",
+        "schema_version": "ppt_run2_90_renderer_asset_surface_composition_rerun_result.v1",
+        "run_id": "2.90",
+        "status": "run2_90_renderer_asset_surface_composition_rerun_generated_public_blocked",
+        "public_ready": False,
+        "public_release_started": False,
+        "quality_claim_boundary": "asset_surface_composition_renderer_generated_viewer_check_only_no_quality_verdict",
+        "consumed_sources": [
+            "docs/product/ppt-run2-data-skill-quality/results/run2_89_visual_quality_evaluation.json",
+            "docs/product/ppt-run2-data-skill-quality/results/run2_88_best_layout_visual_primitive_rerun_result.json",
+            "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json",
+        ],
+        "source_t_evaluation": {
+            "status": "run2_89_visual_quality_evaluation_public_blocked",
+            "next_required_action": "part_u_renderer_asset_surface_composition_repair_from_t_evaluation",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_89_visual_quality_evaluation.json",
+            "top_blocker": "layout_primitive_names_changed_but_visual_execution_remains_wireframe_like",
+            "next_layer_to_fix": "renderer_asset_surface_and_composition_detail",
+        },
+        "source_run2_88_renderer_result": {
+            "status": "run2_88_best_layout_visual_primitive_rerun_generated_public_blocked",
+            "next_required_action": "part_t_visual_quality_evaluation_for_run2_88",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_88_best_layout_visual_primitive_rerun_result.json",
+        },
+        "source_run2_87_plan": {
+            "status": "run2_87_best_layout_recovery_visual_primitive_plan_ready_public_blocked",
+            "next_required_action": "part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json",
+        },
+        "renderer_asset_surface_composition_manifest": {
+            "generator": "scripts/generate_ppt_run2_90_renderer_asset_surface_composition_arms.mjs",
+            "consumed_sources": [
+                "docs/product/ppt-run2-data-skill-quality/results/run2_89_visual_quality_evaluation.json",
+                "docs/product/ppt-run2-data-skill-quality/results/run2_88_best_layout_visual_primitive_rerun_result.json",
+                "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json",
+            ],
+            "arms": ["prompt_only", "run1_5_skill", "run2_90_full_asset_surface_composition", "bad_without_asset_surface_composition"],
+            "best_internal_arm": "run2_90_full_asset_surface_composition",
+            "outputs": {
+                "html_viewer": "outputs/thread/presentations/ppt-run2-90-full-vulca/output/run2-90-asset-surface-composition.html",
+                "pptx": "outputs/thread/presentations/ppt-run2-90-full-vulca/output/ppt-run2-90-full-vulca.pptx",
+                "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+                "four_arm_contact_sheet": "outputs/thread/presentations/run2-90-four-arm-contact-sheet.png",
+            },
+            "viewer_update": {"latest_run_id": "2.90", "viewer_can_reference_new_run": True},
+        },
+        "rendered_pages": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "source_t_root_cause_layer": "renderer_asset_surface",
+                "asset_surface_composition_id": f"asset_surface_composition_2_90_{role}",
+                "renderer_function_name": function_by_role[role],
+                "renderer_repair_directives_applied": directives,
+                "anti_regression_gates": gates,
+                "asset_surface_rendered": True,
+                "composition_detail_added": True,
+                "wireframe_like": False,
+                "collision_avoidance_passed": True,
+                "traceability_on_canvas": False,
+                "floating_label_count": 0,
+                "label_count": 2,
+                "min_visible_label_font_size": 12,
+                "surface_detail_count": 10,
+                "filled_surface_count": 5,
+                "mock_asset_count": 2,
+                "public_polish_claimed": False,
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "renderer_asset_surface_composition_checks": {
+            "pages_with_t_evaluation_consumed": 6,
+            "pages_with_asset_surface_rendered": 6,
+            "pages_with_composition_detail_added": 6,
+            "pages_with_wireframe_reduction": 6,
+            "pages_with_collision_avoidance": 6,
+            "pages_with_traceability_routed_off_canvas": 6,
+            "public_quality_verdict_started": False,
+        },
+        "next_required_action": "part_v_visual_quality_evaluation_for_run2_90",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -4371,6 +4496,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: run2_87_best_layout_recovery_visual_primitive_plan.json" in result.errors
     assert "missing required file: results/run2_88_best_layout_visual_primitive_rerun_result.json" in result.errors
     assert "missing required file: results/run2_89_visual_quality_evaluation.json" in result.errors
+    assert "missing required file: results/run2_90_renderer_asset_surface_composition_rerun_result.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -6180,6 +6306,143 @@ def test_run2_profile_rejects_t_visual_quality_evaluation_bad_boundary_or_false_
     assert "run2_89_visual_quality_evaluation.no_new_renderer_proof.new_html_created must be false" in result.errors
     assert (
         "run2_89_visual_quality_evaluation.next_required_action must be part_u_renderer_asset_surface_composition_repair_from_t_evaluation"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_u_asset_surface_renderer_bad_scope_or_wireframe_regression(
+    tmp_path: Path,
+) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    result_path = pack / "results" / "run2_90_renderer_asset_surface_composition_rerun_result.json"
+    result_json = json.loads(result_path.read_text(encoding="utf-8"))
+    result_json["public_ready"] = True
+    result_json["public_release_started"] = True
+    result_json["consumed_sources"] = result_json["consumed_sources"][:-1]
+    result_json["source_t_evaluation"]["status"] = "missing"
+    result_json["source_t_evaluation"]["next_layer_to_fix"] = "data_absence"
+    result_json["source_run2_88_renderer_result"]["status"] = "missing"
+    manifest = result_json["renderer_asset_surface_composition_manifest"]
+    manifest["viewer_update"]["latest_run_id"] = "2.88"
+    manifest["arms"] = ["prompt_only", "run1_5_skill"]
+    manifest["best_internal_arm"] = "run2_88_full_best_layout_visual_primitives"
+    first = result_json["rendered_pages"][0]
+    first["visual_grammar_module"] = "hero_field"
+    first["source_t_root_cause_layer"] = "data_absence"
+    first["renderer_function_name"] = "drawRun287ProductTheaterSurface"
+    first["renderer_repair_directives_applied"] = ["part_t_visual_quality_evaluation_consumed"]
+    first["anti_regression_gates"] = ["collision_avoidance"]
+    first["asset_surface_rendered"] = False
+    first["composition_detail_added"] = False
+    first["wireframe_like"] = True
+    first["collision_avoidance_passed"] = False
+    first["traceability_on_canvas"] = True
+    first["floating_label_count"] = 2
+    first["label_count"] = 5
+    first["min_visible_label_font_size"] = 9
+    first["surface_detail_count"] = 3
+    first["filled_surface_count"] = 1
+    first["mock_asset_count"] = 0
+    first["public_polish_claimed"] = True
+    checks = result_json["renderer_asset_surface_composition_checks"]
+    checks["pages_with_t_evaluation_consumed"] = 5
+    checks["pages_with_asset_surface_rendered"] = 5
+    checks["pages_with_composition_detail_added"] = 5
+    checks["pages_with_wireframe_reduction"] = 5
+    checks["pages_with_collision_avoidance"] = 5
+    checks["pages_with_traceability_routed_off_canvas"] = 5
+    checks["public_quality_verdict_started"] = True
+    result_json["next_required_action"] = "public_release"
+    result_path.write_text(json.dumps(result_json, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_90_renderer_asset_surface_composition_rerun_result.public_ready must be false" in result.errors
+    assert "run2_90_renderer_asset_surface_composition_rerun_result.public_release_started must be false" in result.errors
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.source_t_evaluation.status must be run2_89_visual_quality_evaluation_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.source_t_evaluation.next_layer_to_fix must be renderer_asset_surface_and_composition_detail"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.source_run2_88_renderer_result.status must be run2_88_best_layout_visual_primitive_rerun_generated_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.renderer_asset_surface_composition_manifest.viewer_update.latest_run_id must be 2.90"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.renderer_asset_surface_composition_manifest.arms missing value: run2_90_full_asset_surface_composition"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.renderer_asset_surface_composition_manifest.best_internal_arm must be run2_90_full_asset_surface_composition"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.rendered_pages[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.rendered_pages[0].source_t_root_cause_layer must be one of composition_engine, layout_engine_reuse, renderer_asset_surface, text_composition, visual_primitive_fidelity"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.rendered_pages[0].renderer_function_name must start with drawRun290"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.rendered_pages[0].renderer_repair_directives_applied missing value: asset_surface_rendered"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.rendered_pages[0].anti_regression_gates missing value: product_surface_materiality"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.rendered_pages[0].asset_surface_rendered must be true"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.rendered_pages[0].wireframe_like must be false"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.rendered_pages[0].surface_detail_count must be at least 8"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.rendered_pages[0].filled_surface_count must be at least 4"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.rendered_pages[0].mock_asset_count must be at least 2"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.renderer_asset_surface_composition_checks.pages_with_asset_surface_rendered must be 6"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.renderer_asset_surface_composition_checks.public_quality_verdict_started must be false"
+        in result.errors
+    )
+    assert (
+        "run2_90_renderer_asset_surface_composition_rerun_result.next_required_action must be part_v_visual_quality_evaluation_for_run2_90"
         in result.errors
     )
 

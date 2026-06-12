@@ -113,6 +113,7 @@ RUN2_73_REQUIRED_FILES = [
     "run2_87_best_layout_recovery_visual_primitive_plan.json",
     "results/run2_88_best_layout_visual_primitive_rerun_result.json",
     "results/run2_89_visual_quality_evaluation.json",
+    "results/run2_90_renderer_asset_surface_composition_rerun_result.json",
 ]
 
 
@@ -945,6 +946,43 @@ RUN2_89_ROOT_CAUSE_LAYERS = {
     "visual_primitive_fidelity",
     "text_composition",
     "layout_engine_reuse",
+}
+RUN2_90_ASSET_SURFACE_COMPOSITION_STATUS = "run2_90_renderer_asset_surface_composition_rerun_generated_public_blocked"
+RUN2_90_CONSUMED_SOURCE_PATHS = {
+    "docs/product/ppt-run2-data-skill-quality/results/run2_89_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_88_best_layout_visual_primitive_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json",
+}
+RUN2_90_RENDERER_ARMS = {
+    "prompt_only",
+    "run1_5_skill",
+    "run2_90_full_asset_surface_composition",
+    "bad_without_asset_surface_composition",
+}
+RUN2_90_REPAIR_DIRECTIVES = {
+    "part_t_visual_quality_evaluation_consumed",
+    "asset_surface_rendered",
+    "composition_detail_added",
+    "wireframe_reduced",
+    "collision_repair_applied",
+    "text_heavy_readability_preserved",
+    "traceability_routed_off_canvas",
+    "public_polish_not_claimed",
+}
+RUN2_90_ANTI_REGRESSION_GATES = {
+    "product_surface_materiality",
+    "visual_density_above_wireframe",
+    "no_floating_labels",
+    "collision_avoidance",
+    "text_integrated_with_surface",
+}
+RUN2_90_CHECK_COUNTS = {
+    "pages_with_t_evaluation_consumed": 6,
+    "pages_with_asset_surface_rendered": 6,
+    "pages_with_composition_detail_added": 6,
+    "pages_with_wireframe_reduction": 6,
+    "pages_with_collision_avoidance": 6,
+    "pages_with_traceability_routed_off_canvas": 6,
 }
 
 
@@ -9414,6 +9452,243 @@ def validate_run2_89_root_cause_summary(label: str, value: Any, errors: list[str
         validate_string_list(f"{label}.secondary_layers", secondary, errors)
 
 
+def validate_run2_90_renderer_asset_surface_composition_rerun_result(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "results" / "run2_90_renderer_asset_surface_composition_rerun_result.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_90_renderer_asset_surface_composition_rerun_result"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "public_ready",
+            "public_release_started",
+            "quality_claim_boundary",
+            "consumed_sources",
+            "source_t_evaluation",
+            "source_run2_88_renderer_result",
+            "source_run2_87_plan",
+            "renderer_asset_surface_composition_manifest",
+            "rendered_pages",
+            "renderer_asset_surface_composition_checks",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part U":
+        errors.append(f"{label}.part must be Part U")
+    if data.get("run_id") != "2.90":
+        errors.append(f"{label}.run_id must be 2.90")
+    if data.get("status") != RUN2_90_ASSET_SURFACE_COMPOSITION_STATUS:
+        errors.append(f"{label}.status must be {RUN2_90_ASSET_SURFACE_COMPOSITION_STATUS}")
+    if data.get("public_ready") is not False:
+        errors.append(f"{label}.public_ready must be false")
+    if data.get("public_release_started") is not False:
+        errors.append(f"{label}.public_release_started must be false")
+    expected_boundary = "asset_surface_composition_renderer_generated_viewer_check_only_no_quality_verdict"
+    if data.get("quality_claim_boundary") != expected_boundary:
+        errors.append(f"{label}.quality_claim_boundary must be {expected_boundary}")
+    validate_exact_string_set(f"{label}.consumed_sources", data.get("consumed_sources", []), RUN2_90_CONSUMED_SOURCE_PATHS, errors)
+    validate_run2_90_source_t_evaluation(f"{label}.source_t_evaluation", data.get("source_t_evaluation", {}), errors)
+    validate_run2_90_source_run288(f"{label}.source_run2_88_renderer_result", data.get("source_run2_88_renderer_result", {}), errors)
+    validate_run2_90_source_run287_plan(f"{label}.source_run2_87_plan", data.get("source_run2_87_plan", {}), errors)
+    validate_run2_90_manifest(
+        f"{label}.renderer_asset_surface_composition_manifest",
+        data.get("renderer_asset_surface_composition_manifest", {}),
+        errors,
+    )
+    validate_run2_90_rendered_pages(f"{label}.rendered_pages", data.get("rendered_pages", []), errors)
+    validate_run2_90_checks(
+        f"{label}.renderer_asset_surface_composition_checks",
+        data.get("renderer_asset_surface_composition_checks", {}),
+        errors,
+    )
+    if data.get("next_required_action") != "part_v_visual_quality_evaluation_for_run2_90":
+        errors.append(f"{label}.next_required_action must be part_v_visual_quality_evaluation_for_run2_90")
+
+
+def validate_run2_90_source_t_evaluation(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["status", "next_required_action", "source_result", "top_blocker", "next_layer_to_fix"], errors)
+    if value.get("status") != RUN2_89_VISUAL_QUALITY_EVALUATION_STATUS:
+        errors.append(f"{label}.status must be {RUN2_89_VISUAL_QUALITY_EVALUATION_STATUS}")
+    if value.get("next_required_action") != "part_u_renderer_asset_surface_composition_repair_from_t_evaluation":
+        errors.append(f"{label}.next_required_action must be part_u_renderer_asset_surface_composition_repair_from_t_evaluation")
+    if value.get("source_result") != "docs/product/ppt-run2-data-skill-quality/results/run2_89_visual_quality_evaluation.json":
+        errors.append(f"{label}.source_result must reference run2_89_visual_quality_evaluation.json")
+    if value.get("next_layer_to_fix") != "renderer_asset_surface_and_composition_detail":
+        errors.append(f"{label}.next_layer_to_fix must be renderer_asset_surface_and_composition_detail")
+
+
+def validate_run2_90_source_run288(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["status", "next_required_action", "source_result"], errors)
+    if value.get("status") != RUN2_88_BEST_LAYOUT_VISUAL_PRIMITIVE_STATUS:
+        errors.append(f"{label}.status must be {RUN2_88_BEST_LAYOUT_VISUAL_PRIMITIVE_STATUS}")
+    if value.get("next_required_action") != "part_t_visual_quality_evaluation_for_run2_88":
+        errors.append(f"{label}.next_required_action must be part_t_visual_quality_evaluation_for_run2_88")
+    if value.get("source_result") != "docs/product/ppt-run2-data-skill-quality/results/run2_88_best_layout_visual_primitive_rerun_result.json":
+        errors.append(f"{label}.source_result must reference run2_88_best_layout_visual_primitive_rerun_result.json")
+
+
+def validate_run2_90_source_run287_plan(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["status", "next_required_action", "source_result"], errors)
+    if value.get("status") != RUN2_87_BEST_LAYOUT_PLAN_STATUS:
+        errors.append(f"{label}.status must be {RUN2_87_BEST_LAYOUT_PLAN_STATUS}")
+    if value.get("next_required_action") != "part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan":
+        errors.append(f"{label}.next_required_action must be part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan")
+    if value.get("source_result") != "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json":
+        errors.append(f"{label}.source_result must reference run2_87_best_layout_recovery_visual_primitive_plan.json")
+
+
+def validate_run2_90_manifest(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["generator", "consumed_sources", "arms", "best_internal_arm", "outputs", "viewer_update"], errors)
+    expected_generator = "scripts/generate_ppt_run2_90_renderer_asset_surface_composition_arms.mjs"
+    if value.get("generator") != expected_generator:
+        errors.append(f"{label}.generator must be {expected_generator}")
+    validate_exact_string_set(f"{label}.consumed_sources", value.get("consumed_sources", []), RUN2_90_CONSUMED_SOURCE_PATHS, errors)
+    validate_exact_string_set(f"{label}.arms", value.get("arms", []), RUN2_90_RENDERER_ARMS, errors)
+    if value.get("best_internal_arm") != "run2_90_full_asset_surface_composition":
+        errors.append(f"{label}.best_internal_arm must be run2_90_full_asset_surface_composition")
+    outputs = value.get("outputs", {})
+    if require_non_empty_dict(f"{label}.outputs", outputs, errors):
+        for key in ["html_viewer", "pptx", "ppt_run_viewer", "four_arm_contact_sheet"]:
+            if key not in outputs:
+                errors.append(f"{label}.outputs missing key: {key}")
+            else:
+                require_non_empty_string(f"{label}.outputs.{key}", outputs[key], errors)
+    viewer_update = value.get("viewer_update", {})
+    if require_non_empty_dict(f"{label}.viewer_update", viewer_update, errors):
+        if viewer_update.get("latest_run_id") != "2.90":
+            errors.append(f"{label}.viewer_update.latest_run_id must be 2.90")
+        if viewer_update.get("viewer_can_reference_new_run") is not True:
+            errors.append(f"{label}.viewer_update.viewer_can_reference_new_run must be true")
+
+
+def validate_run2_90_rendered_pages(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    composition_ids: set[str] = set()
+    for index, page in enumerate(value):
+        page_label = f"{label}[{index}]"
+        if not isinstance(page, dict):
+            errors.append(f"{page_label} must be an object")
+            continue
+        require_keys(
+            page_label,
+            page,
+            [
+                "role",
+                "slide_index",
+                "visual_grammar_module",
+                "source_t_root_cause_layer",
+                "asset_surface_composition_id",
+                "renderer_function_name",
+                "renderer_repair_directives_applied",
+                "anti_regression_gates",
+                "asset_surface_rendered",
+                "composition_detail_added",
+                "wireframe_like",
+                "collision_avoidance_passed",
+                "traceability_on_canvas",
+                "floating_label_count",
+                "label_count",
+                "min_visible_label_font_size",
+                "surface_detail_count",
+                "filled_surface_count",
+                "mock_asset_count",
+                "public_polish_claimed",
+            ],
+            errors,
+        )
+        role = page.get("role")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in page and require_integer(f"{page_label}.slide_index", page["slide_index"], errors):
+            if page["slide_index"] != index + 1:
+                errors.append(f"{page_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if page.get("visual_grammar_module") != expected_module:
+                errors.append(f"{page_label}.visual_grammar_module must be {expected_module} for {role}")
+        if "source_t_root_cause_layer" in page:
+            validate_choice(f"{page_label}.source_t_root_cause_layer", page["source_t_root_cause_layer"], RUN2_89_ROOT_CAUSE_LAYERS, errors)
+        composition_id = page.get("asset_surface_composition_id")
+        if require_non_empty_string(f"{page_label}.asset_surface_composition_id", composition_id, errors):
+            composition_ids.add(composition_id)
+        function_name = page.get("renderer_function_name")
+        if require_non_empty_string(f"{page_label}.renderer_function_name", function_name, errors):
+            if not function_name.startswith("drawRun290"):
+                errors.append(f"{page_label}.renderer_function_name must start with drawRun290")
+        validate_exact_string_set(
+            f"{page_label}.renderer_repair_directives_applied",
+            page.get("renderer_repair_directives_applied", []),
+            RUN2_90_REPAIR_DIRECTIVES,
+            errors,
+        )
+        validate_exact_string_set(
+            f"{page_label}.anti_regression_gates",
+            page.get("anti_regression_gates", []),
+            RUN2_90_ANTI_REGRESSION_GATES,
+            errors,
+        )
+        for key in ["asset_surface_rendered", "composition_detail_added", "collision_avoidance_passed"]:
+            if page.get(key) is not True:
+                errors.append(f"{page_label}.{key} must be true")
+        if page.get("wireframe_like") is not False:
+            errors.append(f"{page_label}.wireframe_like must be false")
+        if page.get("traceability_on_canvas") is not False:
+            errors.append(f"{page_label}.traceability_on_canvas must be false")
+        if "floating_label_count" in page and require_integer(f"{page_label}.floating_label_count", page["floating_label_count"], errors):
+            if page["floating_label_count"] != 0:
+                errors.append(f"{page_label}.floating_label_count must be 0")
+        if "label_count" in page and require_integer(f"{page_label}.label_count", page["label_count"], errors):
+            if page["label_count"] > 3:
+                errors.append(f"{page_label}.label_count must be at most 3")
+        if "min_visible_label_font_size" in page and require_integer(f"{page_label}.min_visible_label_font_size", page["min_visible_label_font_size"], errors):
+            if page["min_visible_label_font_size"] < 12:
+                errors.append(f"{page_label}.min_visible_label_font_size must be at least 12")
+        if "surface_detail_count" in page and require_integer(f"{page_label}.surface_detail_count", page["surface_detail_count"], errors):
+            if page["surface_detail_count"] < 8:
+                errors.append(f"{page_label}.surface_detail_count must be at least 8")
+        if "filled_surface_count" in page and require_integer(f"{page_label}.filled_surface_count", page["filled_surface_count"], errors):
+            if page["filled_surface_count"] < 4:
+                errors.append(f"{page_label}.filled_surface_count must be at least 4")
+        if "mock_asset_count" in page and require_integer(f"{page_label}.mock_asset_count", page["mock_asset_count"], errors):
+            if page["mock_asset_count"] < 2:
+                errors.append(f"{page_label}.mock_asset_count must be at least 2")
+        if page.get("public_polish_claimed") is not False:
+            errors.append(f"{page_label}.public_polish_claimed must be false")
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+    if len(composition_ids) != 6:
+        errors.append(f"{label}.asset_surface_composition_id values must be unique for all six pages")
+
+
+def validate_run2_90_checks(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, list(RUN2_90_CHECK_COUNTS) + ["public_quality_verdict_started"], errors)
+    for key, expected in RUN2_90_CHECK_COUNTS.items():
+        if key in value and require_integer(f"{label}.{key}", value[key], errors) and value[key] != expected:
+            errors.append(f"{label}.{key} must be {expected}")
+    if value.get("public_quality_verdict_started") is not False:
+        errors.append(f"{label}.public_quality_verdict_started must be false")
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -9645,6 +9920,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_87_best_layout_recovery_visual_primitive_plan(root, errors)
             validate_run2_88_best_layout_visual_primitive_rerun_result(root, errors)
             validate_run2_89_visual_quality_evaluation(root, errors)
+            validate_run2_90_renderer_asset_surface_composition_rerun_result(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)
