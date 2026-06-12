@@ -112,6 +112,7 @@ RUN2_73_REQUIRED_FILES = [
     "results/run2_86_visual_quality_evaluation.json",
     "run2_87_best_layout_recovery_visual_primitive_plan.json",
     "results/run2_88_best_layout_visual_primitive_rerun_result.json",
+    "results/run2_89_visual_quality_evaluation.json",
 ]
 
 
@@ -918,6 +919,32 @@ RUN2_88_CHECK_COUNTS = {
     "pages_with_visual_primitive_rendered": 6,
     "pages_with_collision_avoidance": 6,
     "pages_with_traceability_routed_off_canvas": 6,
+}
+RUN2_89_VISUAL_QUALITY_EVALUATION_STATUS = "run2_89_visual_quality_evaluation_public_blocked"
+RUN2_89_VISUAL_QUALITY_QUESTION_IDS = {
+    "is_2_88_better_than_2_85",
+    "did_2_88_recover_best_layout_visual_primitives",
+    "did_2_88_keep_text_heavy_readability",
+    "did_2_88_preserve_modular_matrix_and_sticker_effects",
+    "does_2_88_fix_late_2_series_aesthetic_bottleneck",
+    "does_2_88_reach_public_video_presentation_direction",
+    "which_layer_needs_next_repair",
+}
+RUN2_89_VISUAL_QUALITY_EXPECTED_ANSWERS = {
+    "is_2_88_better_than_2_85": "partial_semantic_framing_up_visual_delta_small_public_blocked",
+    "did_2_88_recover_best_layout_visual_primitives": "partial_primitives_named_but_layout_engine_positions_remain_similar",
+    "did_2_88_keep_text_heavy_readability": "yes_text_hierarchy_readable_but_sparse_and_wireframe",
+    "did_2_88_preserve_modular_matrix_and_sticker_effects": "partial_slide_04_05_preserved_but_not_high_fidelity",
+    "does_2_88_fix_late_2_series_aesthetic_bottleneck": "no_visual_execution_still_wireframe_like",
+    "does_2_88_reach_public_video_presentation_direction": "no_public_blocked",
+    "which_layer_needs_next_repair": "renderer_asset_surface_and_composition_detail",
+}
+RUN2_89_ROOT_CAUSE_LAYERS = {
+    "renderer_asset_surface",
+    "composition_engine",
+    "visual_primitive_fidelity",
+    "text_composition",
+    "layout_engine_reuse",
 }
 
 
@@ -9100,6 +9127,293 @@ def validate_run2_88_checks(label: str, value: Any, errors: list[str]) -> None:
         errors.append(f"{label}.public_quality_verdict_started must be false")
 
 
+def validate_run2_89_visual_quality_evaluation(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "results" / "run2_89_visual_quality_evaluation.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_89_visual_quality_evaluation"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "creates_new_ppt_deck",
+            "starts_renderer_rerun",
+            "updates_html_viewer",
+            "public_release_started",
+            "public_ready",
+            "quality_claim_boundary",
+            "source_runs",
+            "input_chain",
+            "viewer_comparison_closure",
+            "gemini_agent_review_summary",
+            "evaluation_questions",
+            "visual_quality_assessment",
+            "role_assessments",
+            "root_cause_summary",
+            "no_new_renderer_proof",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part T":
+        errors.append(f"{label}.part must be Part T")
+    if data.get("run_id") != "2.89":
+        errors.append(f"{label}.run_id must be 2.89")
+    if data.get("status") != RUN2_89_VISUAL_QUALITY_EVALUATION_STATUS:
+        errors.append(f"{label}.status must be {RUN2_89_VISUAL_QUALITY_EVALUATION_STATUS}")
+    for key in [
+        "creates_new_ppt_deck",
+        "starts_renderer_rerun",
+        "updates_html_viewer",
+        "public_release_started",
+        "public_ready",
+    ]:
+        if data.get(key) is not False:
+            errors.append(f"{label}.{key} must be false")
+    if data.get("quality_claim_boundary") != "part_t_evaluation_only_no_public_release_no_renderer_rerun":
+        errors.append(f"{label}.quality_claim_boundary must be part_t_evaluation_only_no_public_release_no_renderer_rerun")
+    validate_run2_89_source_runs(f"{label}.source_runs", data.get("source_runs", {}), errors)
+    validate_run2_89_input_chain(f"{label}.input_chain", data.get("input_chain", {}), errors)
+    validate_run2_89_viewer_closure(f"{label}.viewer_comparison_closure", data.get("viewer_comparison_closure", {}), errors)
+    validate_run2_89_gemini_summary(f"{label}.gemini_agent_review_summary", data.get("gemini_agent_review_summary", {}), errors)
+    validate_run2_89_questions(f"{label}.evaluation_questions", data.get("evaluation_questions", {}), errors)
+    validate_run2_89_assessment(f"{label}.visual_quality_assessment", data.get("visual_quality_assessment", {}), errors)
+    validate_run2_89_role_assessments(f"{label}.role_assessments", data.get("role_assessments", []), errors)
+    validate_run2_89_root_cause_summary(f"{label}.root_cause_summary", data.get("root_cause_summary", {}), errors)
+    validate_run2_80_no_new_renderer_proof(f"{label}.no_new_renderer_proof", data.get("no_new_renderer_proof", {}), errors)
+    if data.get("next_required_action") != "part_u_renderer_asset_surface_composition_repair_from_t_evaluation":
+        errors.append(f"{label}.next_required_action must be part_u_renderer_asset_surface_composition_repair_from_t_evaluation")
+
+
+def validate_run2_89_source_runs(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    expected = {
+        "comparison_baseline": "2.85",
+        "evaluated_run": "2.88",
+        "repair_contract_run": "2.87",
+        "prior_reference_run": "2.82",
+    }
+    require_keys(label, value, list(expected), errors)
+    for key, expected_value in expected.items():
+        if value.get(key) != expected_value:
+            errors.append(f"{label}.{key} must be {expected_value}")
+
+
+def validate_run2_89_input_chain(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    required = [
+        "run2_88_result",
+        "run2_87_plan",
+        "run2_85_result",
+        "run2_85_full_contact_sheet",
+        "run2_88_full_contact_sheet",
+        "run2_88_four_arm_contact_sheet",
+        "ppt_run_viewer",
+    ]
+    require_keys(label, value, required, errors)
+    for key in required:
+        if key in value:
+            require_non_empty_string(f"{label}.{key}", value[key], errors)
+
+
+def validate_run2_89_viewer_closure(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        [
+            "viewer_latest_run_id",
+            "viewer_can_compare_2_85_and_2_88",
+            "run2_85_full_preview_count",
+            "run2_88_full_preview_count",
+            "run2_88_arm_count",
+            "browser_check_required_for_handoff",
+        ],
+        errors,
+    )
+    if value.get("viewer_latest_run_id") != "2.88":
+        errors.append(f"{label}.viewer_latest_run_id must be 2.88")
+    if value.get("viewer_can_compare_2_85_and_2_88") is not True:
+        errors.append(f"{label}.viewer_can_compare_2_85_and_2_88 must be true")
+    for key in ["run2_85_full_preview_count", "run2_88_full_preview_count"]:
+        if key in value and require_integer(f"{label}.{key}", value[key], errors) and value[key] != 6:
+            errors.append(f"{label}.{key} must be 6")
+    if "run2_88_arm_count" in value and require_integer(f"{label}.run2_88_arm_count", value["run2_88_arm_count"], errors):
+        if value["run2_88_arm_count"] != 4:
+            errors.append(f"{label}.run2_88_arm_count must be 4")
+    if value.get("browser_check_required_for_handoff") is not True:
+        errors.append(f"{label}.browser_check_required_for_handoff must be true")
+
+
+def validate_run2_89_gemini_summary(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["tool", "model", "review_count", "used_for_verdict", "run2_88_findings", "run2_88_risks"], errors)
+    if value.get("tool") != "gemini-agent artifact-review":
+        errors.append(f"{label}.tool must be gemini-agent artifact-review")
+    if value.get("model") != "gemini-3.5-flash":
+        errors.append(f"{label}.model must be gemini-3.5-flash")
+    if "review_count" in value and require_integer(f"{label}.review_count", value["review_count"], errors) and value["review_count"] != 1:
+        errors.append(f"{label}.review_count must be 1")
+    if value.get("used_for_verdict") is not True:
+        errors.append(f"{label}.used_for_verdict must be true")
+    if "run2_88_findings" in value:
+        validate_string_list(f"{label}.run2_88_findings", value["run2_88_findings"], errors)
+    if "run2_88_risks" in value:
+        validate_string_list(f"{label}.run2_88_risks", value["run2_88_risks"], errors)
+
+
+def validate_run2_89_questions(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    for question_id in sorted(RUN2_89_VISUAL_QUALITY_QUESTION_IDS):
+        if question_id not in value:
+            errors.append(f"{label} missing key: {question_id}")
+            continue
+        question = value[question_id]
+        question_label = f"{label}.{question_id}"
+        if not require_non_empty_dict(question_label, question, errors):
+            continue
+        require_keys(question_label, question, ["answer"], errors)
+        if "answer" in question:
+            require_non_empty_string(f"{question_label}.answer", question["answer"], errors)
+    for question_id, expected in RUN2_89_VISUAL_QUALITY_EXPECTED_ANSWERS.items():
+        question = value.get(question_id)
+        if isinstance(question, dict) and question.get("answer") != expected:
+            errors.append(f"{label}.{question_id}.answer must be {expected}")
+
+
+def validate_run2_89_assessment(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    expected_values = {
+        "data_workflow_entry_gate": "pass_internal_only",
+        "viewer_comparison_gate": "pass_internal_only",
+        "design_quality_gate": "blocked",
+        "public_video_readiness": "blocked",
+        "global_delta_vs_2_85": "best_layout_language_up_but_visual_structure_mostly_unchanged",
+        "top_blocker": "layout_primitive_names_changed_but_visual_execution_remains_wireframe_like",
+        "next_layer_to_fix": "renderer_asset_surface_and_composition_detail",
+    }
+    require_keys(label, value, list(expected_values), errors)
+    for key, expected in expected_values.items():
+        if value.get(key) != expected:
+            errors.append(f"{label}.{key} must be {expected}")
+
+
+def validate_run2_89_role_assessments(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    repair_count = 0
+    for index, record in enumerate(value):
+        record_label = f"{label}[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{record_label} must be an object")
+            continue
+        require_keys(
+            record_label,
+            record,
+            [
+                "role",
+                "slide_index",
+                "visual_grammar_module",
+                "delta_vs_2_85",
+                "best_layout_recovery",
+                "visual_primitive_fidelity",
+                "text_composition",
+                "public_video_direction",
+                "root_cause_layer",
+                "repair_required",
+                "next_repair_instruction",
+                "trace_support",
+            ],
+            errors,
+        )
+        role = record.get("role")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in record and require_integer(f"{record_label}.slide_index", record["slide_index"], errors):
+            if record["slide_index"] != index + 1:
+                errors.append(f"{record_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if record.get("visual_grammar_module") != expected_module:
+                errors.append(f"{record_label}.visual_grammar_module must be {expected_module} for {role}")
+        if "delta_vs_2_85" in record:
+            validate_choice(f"{record_label}.delta_vs_2_85", record["delta_vs_2_85"], RUN2_86_DELTA_VALUES, errors)
+        if "best_layout_recovery" in record:
+            validate_choice(f"{record_label}.best_layout_recovery", record["best_layout_recovery"], RUN2_86_LAYOUT_DISTINCTIVENESS_VALUES, errors)
+        if "visual_primitive_fidelity" in record:
+            validate_choice(
+                f"{record_label}.visual_primitive_fidelity",
+                record["visual_primitive_fidelity"],
+                RUN2_86_MOTIF_REALIZATION_VALUES,
+                errors,
+            )
+        if "text_composition" in record:
+            validate_choice(f"{record_label}.text_composition", record["text_composition"], RUN2_86_TEXT_COMPOSITION_VALUES, errors)
+        if "public_video_direction" in record:
+            validate_choice(f"{record_label}.public_video_direction", record["public_video_direction"], RUN2_76_PUBLIC_VIDEO_DIRECTION_VALUES, errors)
+        if "root_cause_layer" in record:
+            validate_choice(f"{record_label}.root_cause_layer", record["root_cause_layer"], RUN2_89_ROOT_CAUSE_LAYERS, errors)
+        if record.get("repair_required") is not True:
+            errors.append(f"{record_label}.repair_required must be true")
+        else:
+            repair_count += 1
+        if "next_repair_instruction" in record:
+            require_non_empty_string(f"{record_label}.next_repair_instruction", record["next_repair_instruction"], errors)
+        trace = record.get("trace_support", {})
+        if require_non_empty_dict(f"{record_label}.trace_support", trace, errors):
+            primitive_id = trace.get("renderer_primitive_id")
+            if require_non_empty_string(f"{record_label}.trace_support.renderer_primitive_id", primitive_id, errors):
+                if primitive_id not in RUN2_87_VISUAL_PRIMITIVE_IDS:
+                    errors.append(
+                        f"{record_label}.trace_support.renderer_primitive_id references unknown Run 2.87 primitive: {primitive_id}"
+                    )
+            function_name = trace.get("renderer_function_name")
+            if require_non_empty_string(f"{record_label}.trace_support.renderer_function_name", function_name, errors):
+                if not function_name.startswith("drawRun287"):
+                    errors.append(f"{record_label}.trace_support.renderer_function_name must start with drawRun287")
+            if "label_count" in trace and require_integer(f"{record_label}.trace_support.label_count", trace["label_count"], errors):
+                if trace["label_count"] > 3:
+                    errors.append(f"{record_label}.trace_support.label_count must be at most 3")
+            elif "label_count" not in trace:
+                errors.append(f"{record_label}.trace_support missing key: label_count")
+            for key in ["not_rectangle_only", "text_integrated_with_shape"]:
+                if trace.get(key) is not True:
+                    errors.append(f"{record_label}.trace_support.{key} must be true")
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+    if repair_count != 6:
+        errors.append(f"{label} must mark all six pages repair_required")
+
+
+def validate_run2_89_root_cause_summary(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["primary_layer", "not_primary_layer", "late_2_series_failure_mode"], errors)
+    if value.get("primary_layer") != "renderer_asset_surface_and_composition_detail":
+        errors.append(f"{label}.primary_layer must be renderer_asset_surface_and_composition_detail")
+    if value.get("not_primary_layer") != "data_absence":
+        errors.append(f"{label}.not_primary_layer must be data_absence")
+    expected_failure_mode = "semantic_contracts_and_primitive_names_changed_faster_than_visible_composition"
+    if value.get("late_2_series_failure_mode") != expected_failure_mode:
+        errors.append(f"{label}.late_2_series_failure_mode must be {expected_failure_mode}")
+    secondary = value.get("secondary_layers")
+    if secondary is not None:
+        validate_string_list(f"{label}.secondary_layers", secondary, errors)
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -9330,6 +9644,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_86_visual_quality_evaluation(root, errors)
             validate_run2_87_best_layout_recovery_visual_primitive_plan(root, errors)
             validate_run2_88_best_layout_visual_primitive_rerun_result(root, errors)
+            validate_run2_89_visual_quality_evaluation(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)
