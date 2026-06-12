@@ -1561,6 +1561,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_91_visual_quality_evaluation(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_92_renderer_text_visual_binding_repair_rerun_result.json").write_text(
+        json.dumps(valid_run2_92_renderer_text_visual_binding_repair_rerun_result(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -4587,6 +4591,158 @@ def valid_run2_91_visual_quality_evaluation() -> dict:
     }
 
 
+def valid_run2_92_renderer_text_visual_binding_repair_rerun_result() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    root_layers = {
+        "cover": "object_bound_typography",
+        "setup": "text_visual_integration",
+        "contrast": "caption_anchor_binding",
+        "proof": "proof_object_embedding",
+        "climax": "composition_rhythm",
+        "close": "object_bound_typography",
+    }
+    function_by_role = {
+        "cover": "drawRun292ProductSurfaceHero",
+        "setup": "drawRun292EditorialSurfaceSpread",
+        "contrast": "drawRun292BeforeAfterStage",
+        "proof": "drawRun292EvidenceWorkspace",
+        "climax": "drawRun292ProductSurfaceHero",
+        "close": "drawRun292DecisionBoard",
+    }
+    directives = [
+        "part_v_visual_quality_evaluation_consumed",
+        "run2_90_asset_surface_preserved",
+        "o1_text_composition_consumed",
+        "object_bound_typography_applied",
+        "caption_anchor_binding_repaired",
+        "proof_sentence_embedded_in_visual_object",
+        "floating_labels_removed",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed",
+    ]
+    gates = [
+        "object_bound_typography",
+        "caption_anchor_binding",
+        "proof_object_embedding",
+        "no_floating_labels",
+        "traceability_off_canvas",
+    ]
+    blocks = ["headline_block", "subhead_block", "proof_sentence", "object_caption"]
+    return {
+        "artifact_id": "run2_92_renderer_text_visual_binding_repair_rerun_result",
+        "part": "Part W",
+        "schema_version": "ppt_run2_92_renderer_text_visual_binding_repair_rerun_result.v1",
+        "run_id": "2.92",
+        "status": "run2_92_renderer_text_visual_binding_repair_rerun_generated_public_blocked",
+        "public_ready": False,
+        "public_release_started": False,
+        "quality_claim_boundary": "text_visual_binding_renderer_generated_viewer_check_only_no_quality_verdict",
+        "consumed_sources": [
+            "docs/product/ppt-run2-data-skill-quality/results/run2_91_visual_quality_evaluation.json",
+            "docs/product/ppt-run2-data-skill-quality/results/run2_90_renderer_asset_surface_composition_rerun_result.json",
+            "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json",
+        ],
+        "source_v_evaluation": {
+            "status": "run2_91_visual_quality_evaluation_public_blocked",
+            "next_required_action": "part_w_renderer_text_visual_binding_repair_from_v_evaluation",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_91_visual_quality_evaluation.json",
+            "top_blocker": "text_blocks_and_product_surfaces_remain_parallel_not_integrated",
+            "next_layer_to_fix": "object_bound_typography_and_text_visual_integration",
+        },
+        "source_run2_90_renderer_result": {
+            "status": "run2_90_renderer_asset_surface_composition_rerun_generated_public_blocked",
+            "next_required_action": "part_v_visual_quality_evaluation_for_run2_90",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_90_renderer_asset_surface_composition_rerun_result.json",
+        },
+        "source_o1_text_composition_plan": {
+            "status": "run2_81_text_composition_typography_plan_ready_public_blocked",
+            "source_result": "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json",
+        },
+        "renderer_text_visual_binding_manifest": {
+            "generator": "scripts/generate_ppt_run2_92_renderer_text_visual_binding_repair_arms.mjs",
+            "consumed_sources": [
+                "docs/product/ppt-run2-data-skill-quality/results/run2_91_visual_quality_evaluation.json",
+                "docs/product/ppt-run2-data-skill-quality/results/run2_90_renderer_asset_surface_composition_rerun_result.json",
+                "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json",
+            ],
+            "arms": ["prompt_only", "run1_5_skill", "run2_92_full_text_visual_binding", "bad_without_text_visual_binding"],
+            "best_internal_arm": "run2_92_full_text_visual_binding",
+            "outputs": {
+                "html_viewer": "outputs/thread/presentations/ppt-run2-92-full-vulca/output/run2-92-text-visual-binding.html",
+                "pptx": "outputs/thread/presentations/ppt-run2-92-full-vulca/output/ppt-run2-92-full-vulca.pptx",
+                "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+                "four_arm_contact_sheet": "outputs/thread/presentations/run2-92-four-arm-contact-sheet.png",
+            },
+            "viewer_update": {"latest_run_id": "2.92", "viewer_can_reference_new_run": True},
+        },
+        "rendered_pages": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "source_v_root_cause_layer": root_layers[role],
+                "source_run2_90_asset_surface_composition_id": f"asset_surface_composition_2_90_{role}",
+                "source_o1_text_composition_id": f"text_composition_2_81_{role}",
+                "text_visual_binding_id": f"text_visual_binding_2_92_{role}",
+                "renderer_function_name": function_by_role[role],
+                "renderer_repair_directives_applied": directives,
+                "anti_regression_gates": gates,
+                "asset_surface_rendered": True,
+                "object_bound_typography_applied": True,
+                "caption_anchor_binding_applied": True,
+                "proof_sentence_embedded_in_visual_object": True,
+                "text_visual_binding_repaired": True,
+                "traceability_on_canvas": False,
+                "floating_label_count": 0,
+                "label_count": 2,
+                "min_visible_label_font_size": 13,
+                "text_blocks_bound_to_objects": blocks,
+                "visual_anchor_count": 4,
+                "public_polish_claimed": False,
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "text_visual_binding_records": [
+            {
+                "role": role,
+                "slide_index": index,
+                "text_visual_binding_id": f"text_visual_binding_2_92_{role}",
+                "source_o1_text_composition_id": f"text_composition_2_81_{role}",
+                "source_v_next_repair_instruction": "Bind headline, proof sentence, and caption into the visible object structure.",
+                "bound_blocks": blocks,
+                "binding_strategy": "proof_inside_dominant_object_caption_attached"
+                if role == "proof"
+                else "decision_text_inside_nodes_caption_attached"
+                if role == "close"
+                else "headline_frames_surface_proof_embedded_caption_attached",
+                "object_anchor_count": 4,
+                "floating_labels_allowed": False,
+                "traceability_on_canvas": False,
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "renderer_text_visual_binding_checks": {
+            "pages_with_v_evaluation_consumed": 6,
+            "pages_with_run2_90_asset_surface_preserved": 6,
+            "pages_with_o1_text_composition_consumed": 6,
+            "pages_with_object_bound_typography": 6,
+            "pages_with_caption_anchor_binding": 6,
+            "pages_with_proof_embedded_in_visual_object": 6,
+            "pages_with_traceability_routed_off_canvas": 6,
+            "public_quality_verdict_started": False,
+        },
+        "next_required_action": "part_x_visual_quality_evaluation_for_run2_92",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -4638,6 +4794,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: results/run2_89_visual_quality_evaluation.json" in result.errors
     assert "missing required file: results/run2_90_renderer_asset_surface_composition_rerun_result.json" in result.errors
     assert "missing required file: results/run2_91_visual_quality_evaluation.json" in result.errors
+    assert "missing required file: results/run2_92_renderer_text_visual_binding_repair_rerun_result.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -6690,6 +6847,156 @@ def test_run2_profile_rejects_v_visual_evaluation_bad_scope_or_missing_text_visu
     assert "run2_91_visual_quality_evaluation.no_new_renderer_proof.new_html_created must be false" in result.errors
     assert (
         "run2_91_visual_quality_evaluation.next_required_action must be part_w_renderer_text_visual_binding_repair_from_v_evaluation"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_w_text_visual_binding_bad_manifest_or_unbound_text(
+    tmp_path: Path,
+) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+
+    result_path = pack / "results" / "run2_92_renderer_text_visual_binding_repair_rerun_result.json"
+    result_json = json.loads(result_path.read_text(encoding="utf-8"))
+    result_json["public_ready"] = True
+    result_json["public_release_started"] = True
+    result_json["consumed_sources"] = [
+        "docs/product/ppt-run2-data-skill-quality/results/run2_90_renderer_asset_surface_composition_rerun_result.json"
+    ]
+    result_json["source_v_evaluation"]["status"] = "wrong"
+    result_json["source_v_evaluation"]["next_required_action"] = "public_release"
+    result_json["source_run2_90_renderer_result"]["status"] = "wrong"
+    result_json["source_o1_text_composition_plan"]["status"] = "wrong"
+    result_json["renderer_text_visual_binding_manifest"]["generator"] = "scripts/wrong.mjs"
+    result_json["renderer_text_visual_binding_manifest"]["best_internal_arm"] = "wrong"
+    result_json["renderer_text_visual_binding_manifest"]["viewer_update"]["latest_run_id"] = "2.90"
+    first_page = result_json["rendered_pages"][0]
+    first_page["visual_grammar_module"] = "hero_field"
+    first_page["source_v_root_cause_layer"] = "data_absence"
+    first_page["renderer_function_name"] = "drawRun290ProductSurfaceHero"
+    first_page["renderer_repair_directives_applied"] = []
+    first_page["anti_regression_gates"] = []
+    first_page["asset_surface_rendered"] = False
+    first_page["object_bound_typography_applied"] = False
+    first_page["caption_anchor_binding_applied"] = False
+    first_page["proof_sentence_embedded_in_visual_object"] = False
+    first_page["text_visual_binding_repaired"] = False
+    first_page["traceability_on_canvas"] = True
+    first_page["floating_label_count"] = 1
+    first_page["label_count"] = 4
+    first_page["min_visible_label_font_size"] = 10
+    first_page["text_blocks_bound_to_objects"] = ["headline_block"]
+    first_page["visual_anchor_count"] = 1
+    first_page["public_polish_claimed"] = True
+    first_record = result_json["text_visual_binding_records"][0]
+    first_record["bound_blocks"] = ["headline_block"]
+    first_record["binding_strategy"] = "floating_labels"
+    first_record["object_anchor_count"] = 1
+    first_record["floating_labels_allowed"] = True
+    first_record["traceability_on_canvas"] = True
+    result_json["renderer_text_visual_binding_checks"]["pages_with_object_bound_typography"] = 5
+    result_json["renderer_text_visual_binding_checks"]["public_quality_verdict_started"] = True
+    result_json["next_required_action"] = "public_release"
+    result_path.write_text(json.dumps(result_json, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.public_ready must be false" in result.errors
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.public_release_started must be false" in result.errors
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/results/run2_91_visual_quality_evaluation.json"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.source_v_evaluation.status must be run2_91_visual_quality_evaluation_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.source_v_evaluation.next_required_action must be part_w_renderer_text_visual_binding_repair_from_v_evaluation"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.source_run2_90_renderer_result.status must be run2_90_renderer_asset_surface_composition_rerun_generated_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.source_o1_text_composition_plan.status must be run2_81_text_composition_typography_plan_ready_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.renderer_text_visual_binding_manifest.generator must be scripts/generate_ppt_run2_92_renderer_text_visual_binding_repair_arms.mjs"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.renderer_text_visual_binding_manifest.best_internal_arm must be run2_92_full_text_visual_binding"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.renderer_text_visual_binding_manifest.viewer_update.latest_run_id must be 2.92"
+        in result.errors
+    )
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].visual_grammar_module must be product_reveal for cover" in result.errors
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].source_v_root_cause_layer must be one of caption_anchor_binding, composition_rhythm, object_bound_typography, proof_object_embedding, renderer_surface_materiality, text_visual_integration"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].renderer_function_name must start with drawRun292"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].renderer_repair_directives_applied must be a non-empty list"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].anti_regression_gates must be a non-empty list"
+        in result.errors
+    )
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].asset_surface_rendered must be true" in result.errors
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].object_bound_typography_applied must be true" in result.errors
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].caption_anchor_binding_applied must be true" in result.errors
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].proof_sentence_embedded_in_visual_object must be true"
+        in result.errors
+    )
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].text_visual_binding_repaired must be true" in result.errors
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].traceability_on_canvas must be false" in result.errors
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].floating_label_count must be 0" in result.errors
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].label_count must be at most 2" in result.errors
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].min_visible_label_font_size must be at least 13" in result.errors
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].text_blocks_bound_to_objects missing value: object_caption"
+        in result.errors
+    )
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].visual_anchor_count must be at least 4" in result.errors
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.rendered_pages[0].public_polish_claimed must be false" in result.errors
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.text_visual_binding_records[0].bound_blocks missing value: object_caption"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.text_visual_binding_records[0].binding_strategy must be one of decision_text_inside_nodes_caption_attached, headline_frames_surface_proof_embedded_caption_attached, proof_inside_dominant_object_caption_attached"
+        in result.errors
+    )
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.text_visual_binding_records[0].object_anchor_count must be at least 4" in result.errors
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.text_visual_binding_records[0].floating_labels_allowed must be false" in result.errors
+    assert "run2_92_renderer_text_visual_binding_repair_rerun_result.text_visual_binding_records[0].traceability_on_canvas must be false" in result.errors
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.renderer_text_visual_binding_checks.pages_with_object_bound_typography must be 6"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.renderer_text_visual_binding_checks.public_quality_verdict_started must be false"
+        in result.errors
+    )
+    assert (
+        "run2_92_renderer_text_visual_binding_repair_rerun_result.next_required_action must be part_x_visual_quality_evaluation_for_run2_92"
         in result.errors
     )
 

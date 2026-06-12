@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.90"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.92"'
 
 
 @dataclass(frozen=True)
@@ -927,6 +927,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.92",
+        "Run 2.92",
+        "run2-92-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-92-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-92-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_92_full_text_visual_binding",
+                "Run 2.92 full",
+                "ppt-run2-92-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_without_text_visual_binding",
+                "Bad missing Run 2.92 text-visual binding",
+                "ppt-run2-92-bad-without-text-visual-binding",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -1131,6 +1152,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run288_result = read_json(pack / "results" / "run2_88_best_layout_visual_primitive_rerun_result.json")
     run289_evaluation = read_json(pack / "results" / "run2_89_visual_quality_evaluation.json")
     run290_result = read_json(pack / "results" / "run2_90_renderer_asset_surface_composition_rerun_result.json")
+    run292_result = read_json(pack / "results" / "run2_92_renderer_text_visual_binding_repair_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1749,6 +1771,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run290FullTracePath": "ppt-run2-90-full-vulca/trace_manifest.json",
         "run290BadTracePath": "ppt-run2-90-bad-without-asset-surface-composition/trace_manifest.json",
         "run290FourArmSheetPath": "run2-90-four-arm-contact-sheet.png",
+        "run292ResultStatus": run292_result.get("status", ""),
+        "run292Result": run292_result,
+        "run292ResultPath": "run2_92_renderer_text_visual_binding_repair_rerun_result.json",
+        "run292TargetLayer": "object_bound_typography_and_text_visual_integration",
+        "run292SourceDataStatus": "run2_92_consumes_v_2_90_and_o1_before_native_ppt_drawing",
+        "run292GeneratorPath": "scripts/generate_ppt_run2_92_renderer_text_visual_binding_repair_arms.mjs",
+        "run292FullTracePath": "ppt-run2-92-full-vulca/trace_manifest.json",
+        "run292BadTracePath": "ppt-run2-92-bad-without-text-visual-binding/trace_manifest.json",
+        "run292FourArmSheetPath": "run2-92-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",

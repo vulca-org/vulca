@@ -1,0 +1,450 @@
+{
+  "artifact_id": "run2_92_renderer_text_visual_binding_repair_rerun_result",
+  "part": "Part W",
+  "schema_version": "ppt_run2_92_renderer_text_visual_binding_repair_rerun_result.v1",
+  "run_id": "2.92",
+  "status": "run2_92_renderer_text_visual_binding_repair_rerun_generated_public_blocked",
+  "public_ready": false,
+  "public_release_started": false,
+  "quality_claim_boundary": "text_visual_binding_renderer_generated_viewer_check_only_no_quality_verdict",
+  "consumed_sources": [
+    "docs/product/ppt-run2-data-skill-quality/results/run2_91_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_90_renderer_asset_surface_composition_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json"
+  ],
+  "source_v_evaluation": {
+    "status": "run2_91_visual_quality_evaluation_public_blocked",
+    "next_required_action": "part_w_renderer_text_visual_binding_repair_from_v_evaluation",
+    "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_91_visual_quality_evaluation.json",
+    "top_blocker": "text_blocks_and_product_surfaces_remain_parallel_not_integrated",
+    "next_layer_to_fix": "object_bound_typography_and_text_visual_integration"
+  },
+  "source_run2_90_renderer_result": {
+    "status": "run2_90_renderer_asset_surface_composition_rerun_generated_public_blocked",
+    "next_required_action": "part_v_visual_quality_evaluation_for_run2_90",
+    "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_90_renderer_asset_surface_composition_rerun_result.json"
+  },
+  "source_o1_text_composition_plan": {
+    "status": "run2_81_text_composition_typography_plan_ready_public_blocked",
+    "source_result": "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json"
+  },
+  "renderer_text_visual_binding_manifest": {
+    "generator": "scripts/generate_ppt_run2_92_renderer_text_visual_binding_repair_arms.mjs",
+    "consumed_sources": [
+      "docs/product/ppt-run2-data-skill-quality/results/run2_91_visual_quality_evaluation.json",
+      "docs/product/ppt-run2-data-skill-quality/results/run2_90_renderer_asset_surface_composition_rerun_result.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_81_text_composition_typography_plan.json"
+    ],
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_92_full_text_visual_binding",
+      "bad_without_text_visual_binding"
+    ],
+    "best_internal_arm": "run2_92_full_text_visual_binding",
+    "outputs": {
+      "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-92-full-vulca/output/run2-92-text-visual-binding.html",
+      "pptx": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-92-full-vulca/output/ppt-run2-92-full-vulca.pptx",
+      "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+      "four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-92-four-arm-contact-sheet.png"
+    },
+    "viewer_update": {
+      "latest_run_id": "2.92",
+      "viewer_can_reference_new_run": true
+    }
+  },
+  "rendered_pages": [
+    {
+      "role": "cover",
+      "slide_index": 1,
+      "visual_grammar_module": "product_reveal",
+      "source_v_root_cause_layer": "object_bound_typography",
+      "source_run2_90_asset_surface_composition_id": "asset_surface_composition_2_90_cover",
+      "source_o1_text_composition_id": "text_composition_2_81_cover",
+      "text_visual_binding_id": "text_visual_binding_2_92_cover",
+      "renderer_primitive_id": "primitive_2_87_product_theater_surface",
+      "renderer_function_name": "drawRun292ProductSurfaceHero",
+      "renderer_repair_directives_applied": [
+        "part_v_visual_quality_evaluation_consumed",
+        "run2_90_asset_surface_preserved",
+        "o1_text_composition_consumed",
+        "object_bound_typography_applied",
+        "caption_anchor_binding_repaired",
+        "proof_sentence_embedded_in_visual_object",
+        "floating_labels_removed",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "object_bound_typography",
+        "caption_anchor_binding",
+        "proof_object_embedding",
+        "no_floating_labels",
+        "traceability_off_canvas"
+      ],
+      "asset_surface_rendered": true,
+      "object_bound_typography_applied": true,
+      "caption_anchor_binding_applied": true,
+      "proof_sentence_embedded_in_visual_object": true,
+      "text_visual_binding_repaired": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 2,
+      "min_visible_label_font_size": 13,
+      "text_blocks_bound_to_objects": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "visual_anchor_count": 4,
+      "public_polish_claimed": false
+    },
+    {
+      "role": "setup",
+      "slide_index": 2,
+      "visual_grammar_module": "hero_field",
+      "source_v_root_cause_layer": "text_visual_integration",
+      "source_run2_90_asset_surface_composition_id": "asset_surface_composition_2_90_setup",
+      "source_o1_text_composition_id": "text_composition_2_81_setup",
+      "text_visual_binding_id": "text_visual_binding_2_92_setup",
+      "renderer_primitive_id": "primitive_2_87_editorial_text_field",
+      "renderer_function_name": "drawRun292EditorialSurfaceSpread",
+      "renderer_repair_directives_applied": [
+        "part_v_visual_quality_evaluation_consumed",
+        "run2_90_asset_surface_preserved",
+        "o1_text_composition_consumed",
+        "object_bound_typography_applied",
+        "caption_anchor_binding_repaired",
+        "proof_sentence_embedded_in_visual_object",
+        "floating_labels_removed",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "object_bound_typography",
+        "caption_anchor_binding",
+        "proof_object_embedding",
+        "no_floating_labels",
+        "traceability_off_canvas"
+      ],
+      "asset_surface_rendered": true,
+      "object_bound_typography_applied": true,
+      "caption_anchor_binding_applied": true,
+      "proof_sentence_embedded_in_visual_object": true,
+      "text_visual_binding_repaired": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 2,
+      "min_visible_label_font_size": 13,
+      "text_blocks_bound_to_objects": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "visual_anchor_count": 4,
+      "public_polish_claimed": false
+    },
+    {
+      "role": "contrast",
+      "slide_index": 3,
+      "visual_grammar_module": "before_after_theater",
+      "source_v_root_cause_layer": "caption_anchor_binding",
+      "source_run2_90_asset_surface_composition_id": "asset_surface_composition_2_90_contrast",
+      "source_o1_text_composition_id": "text_composition_2_81_contrast",
+      "text_visual_binding_id": "text_visual_binding_2_92_contrast",
+      "renderer_primitive_id": "primitive_2_87_before_after_surface",
+      "renderer_function_name": "drawRun292BeforeAfterStage",
+      "renderer_repair_directives_applied": [
+        "part_v_visual_quality_evaluation_consumed",
+        "run2_90_asset_surface_preserved",
+        "o1_text_composition_consumed",
+        "object_bound_typography_applied",
+        "caption_anchor_binding_repaired",
+        "proof_sentence_embedded_in_visual_object",
+        "floating_labels_removed",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "object_bound_typography",
+        "caption_anchor_binding",
+        "proof_object_embedding",
+        "no_floating_labels",
+        "traceability_off_canvas"
+      ],
+      "asset_surface_rendered": true,
+      "object_bound_typography_applied": true,
+      "caption_anchor_binding_applied": true,
+      "proof_sentence_embedded_in_visual_object": true,
+      "text_visual_binding_repaired": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 2,
+      "min_visible_label_font_size": 13,
+      "text_blocks_bound_to_objects": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "visual_anchor_count": 4,
+      "public_polish_claimed": false
+    },
+    {
+      "role": "proof",
+      "slide_index": 4,
+      "visual_grammar_module": "evidence_workspace",
+      "source_v_root_cause_layer": "proof_object_embedding",
+      "source_run2_90_asset_surface_composition_id": "asset_surface_composition_2_90_proof",
+      "source_o1_text_composition_id": "text_composition_2_81_proof",
+      "text_visual_binding_id": "text_visual_binding_2_92_proof",
+      "renderer_primitive_id": "primitive_2_87_modular_matrix_workspace",
+      "renderer_function_name": "drawRun292EvidenceWorkspace",
+      "renderer_repair_directives_applied": [
+        "part_v_visual_quality_evaluation_consumed",
+        "run2_90_asset_surface_preserved",
+        "o1_text_composition_consumed",
+        "object_bound_typography_applied",
+        "caption_anchor_binding_repaired",
+        "proof_sentence_embedded_in_visual_object",
+        "floating_labels_removed",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "object_bound_typography",
+        "caption_anchor_binding",
+        "proof_object_embedding",
+        "no_floating_labels",
+        "traceability_off_canvas"
+      ],
+      "asset_surface_rendered": true,
+      "object_bound_typography_applied": true,
+      "caption_anchor_binding_applied": true,
+      "proof_sentence_embedded_in_visual_object": true,
+      "text_visual_binding_repaired": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 2,
+      "min_visible_label_font_size": 13,
+      "text_blocks_bound_to_objects": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "visual_anchor_count": 4,
+      "public_polish_claimed": false
+    },
+    {
+      "role": "climax",
+      "slide_index": 5,
+      "visual_grammar_module": "product_reveal",
+      "source_v_root_cause_layer": "composition_rhythm",
+      "source_run2_90_asset_surface_composition_id": "asset_surface_composition_2_90_climax",
+      "source_o1_text_composition_id": "text_composition_2_81_climax",
+      "text_visual_binding_id": "text_visual_binding_2_92_climax",
+      "renderer_primitive_id": "primitive_2_87_overlay_sticker_stack",
+      "renderer_function_name": "drawRun292StickerStageSurface",
+      "renderer_repair_directives_applied": [
+        "part_v_visual_quality_evaluation_consumed",
+        "run2_90_asset_surface_preserved",
+        "o1_text_composition_consumed",
+        "object_bound_typography_applied",
+        "caption_anchor_binding_repaired",
+        "proof_sentence_embedded_in_visual_object",
+        "floating_labels_removed",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "object_bound_typography",
+        "caption_anchor_binding",
+        "proof_object_embedding",
+        "no_floating_labels",
+        "traceability_off_canvas"
+      ],
+      "asset_surface_rendered": true,
+      "object_bound_typography_applied": true,
+      "caption_anchor_binding_applied": true,
+      "proof_sentence_embedded_in_visual_object": true,
+      "text_visual_binding_repaired": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 2,
+      "min_visible_label_font_size": 13,
+      "text_blocks_bound_to_objects": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "visual_anchor_count": 4,
+      "public_polish_claimed": false
+    },
+    {
+      "role": "close",
+      "slide_index": 6,
+      "visual_grammar_module": "decision_map",
+      "source_v_root_cause_layer": "object_bound_typography",
+      "source_run2_90_asset_surface_composition_id": "asset_surface_composition_2_90_close",
+      "source_o1_text_composition_id": "text_composition_2_81_close",
+      "text_visual_binding_id": "text_visual_binding_2_92_close",
+      "renderer_primitive_id": "primitive_2_87_decision_map_board",
+      "renderer_function_name": "drawRun292DecisionBoard",
+      "renderer_repair_directives_applied": [
+        "part_v_visual_quality_evaluation_consumed",
+        "run2_90_asset_surface_preserved",
+        "o1_text_composition_consumed",
+        "object_bound_typography_applied",
+        "caption_anchor_binding_repaired",
+        "proof_sentence_embedded_in_visual_object",
+        "floating_labels_removed",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "object_bound_typography",
+        "caption_anchor_binding",
+        "proof_object_embedding",
+        "no_floating_labels",
+        "traceability_off_canvas"
+      ],
+      "asset_surface_rendered": true,
+      "object_bound_typography_applied": true,
+      "caption_anchor_binding_applied": true,
+      "proof_sentence_embedded_in_visual_object": true,
+      "text_visual_binding_repaired": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 2,
+      "min_visible_label_font_size": 13,
+      "text_blocks_bound_to_objects": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "visual_anchor_count": 4,
+      "public_polish_claimed": false
+    }
+  ],
+  "text_visual_binding_records": [
+    {
+      "role": "cover",
+      "slide_index": 1,
+      "text_visual_binding_id": "text_visual_binding_2_92_cover",
+      "source_o1_text_composition_id": "text_composition_2_81_cover",
+      "source_v_next_repair_instruction": "Make the headline overlap or frame the hero surface and bind the proof sentence to a visible product state.",
+      "bound_blocks": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "binding_strategy": "headline_frames_surface_proof_embedded_caption_attached",
+      "object_anchor_count": 4,
+      "floating_labels_allowed": false,
+      "traceability_on_canvas": false
+    },
+    {
+      "role": "setup",
+      "slide_index": 2,
+      "text_visual_binding_id": "text_visual_binding_2_92_setup",
+      "source_o1_text_composition_id": "text_composition_2_81_setup",
+      "source_v_next_repair_instruction": "Turn the text block into an editorial spread whose captions and sidebars attach to the visible destination object.",
+      "bound_blocks": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "binding_strategy": "headline_frames_surface_proof_embedded_caption_attached",
+      "object_anchor_count": 4,
+      "floating_labels_allowed": false,
+      "traceability_on_canvas": false
+    },
+    {
+      "role": "contrast",
+      "slide_index": 3,
+      "text_visual_binding_id": "text_visual_binding_2_92_contrast",
+      "source_o1_text_composition_id": "text_composition_2_81_contrast",
+      "source_v_next_repair_instruction": "Embed the before and after claims into the two product states rather than keeping them as external annotations.",
+      "bound_blocks": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "binding_strategy": "headline_frames_surface_proof_embedded_caption_attached",
+      "object_anchor_count": 4,
+      "floating_labels_allowed": false,
+      "traceability_on_canvas": false
+    },
+    {
+      "role": "proof",
+      "slide_index": 4,
+      "text_visual_binding_id": "text_visual_binding_2_92_proof",
+      "source_o1_text_composition_id": "text_composition_2_81_proof",
+      "source_v_next_repair_instruction": "Put the proof sentence into a dominant evidence cell and bind support captions to cell geometry.",
+      "bound_blocks": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "binding_strategy": "proof_inside_dominant_object_caption_attached",
+      "object_anchor_count": 4,
+      "floating_labels_allowed": false,
+      "traceability_on_canvas": false
+    },
+    {
+      "role": "climax",
+      "slide_index": 5,
+      "text_visual_binding_id": "text_visual_binding_2_92_climax",
+      "source_o1_text_composition_id": "text_composition_2_81_climax",
+      "source_v_next_repair_instruction": "Make the badges, deck surface, and proof copy form one staged reveal path.",
+      "bound_blocks": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "binding_strategy": "headline_frames_surface_proof_embedded_caption_attached",
+      "object_anchor_count": 4,
+      "floating_labels_allowed": false,
+      "traceability_on_canvas": false
+    },
+    {
+      "role": "close",
+      "slide_index": 6,
+      "text_visual_binding_id": "text_visual_binding_2_92_close",
+      "source_o1_text_composition_id": "text_composition_2_81_close",
+      "source_v_next_repair_instruction": "Move decision text into board nodes and make the blocked-public outcome the dominant visual object.",
+      "bound_blocks": [
+        "headline_block",
+        "subhead_block",
+        "proof_sentence",
+        "object_caption"
+      ],
+      "binding_strategy": "decision_text_inside_nodes_caption_attached",
+      "object_anchor_count": 4,
+      "floating_labels_allowed": false,
+      "traceability_on_canvas": false
+    }
+  ],
+  "renderer_text_visual_binding_checks": {
+    "pages_with_v_evaluation_consumed": 6,
+    "pages_with_run2_90_asset_surface_preserved": 6,
+    "pages_with_o1_text_composition_consumed": 6,
+    "pages_with_asset_surface_rendered": 6,
+    "pages_with_object_bound_typography": 6,
+    "pages_with_caption_anchor_binding": 6,
+    "pages_with_proof_embedded_in_visual_object": 6,
+    "pages_with_traceability_routed_off_canvas": 6,
+    "public_quality_verdict_started": false
+  },
+  "next_required_action": "part_x_visual_quality_evaluation_for_run2_92"
+}
