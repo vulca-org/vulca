@@ -18,6 +18,8 @@ Vulca should become the agent-native control layer around visual generation: it 
 
 A usecase-first visual workflow system where an agent starts from a real business or creative problem, converts it into a sourced claim spine and visual plan, routes generation or editing through appropriate providers, evaluates the result, and packages an editable artifact for review.
 
+The research-to-deck surface is a next product bet, not a shipped Vulca MCP capability today. Current capability claims should stay grounded in the existing visual workflow, provider routing, editing, evaluation, and artifact packaging surface.
+
 ## Six-Slide Arc
 
 | Slide | Role | Audience-Facing Claim | Proof Object | Source Or Basis |
@@ -38,6 +40,7 @@ A usecase-first visual workflow system where an agent starts from a real busines
 - The deck exposes local run labels, implementation ids, low-level rendering vocabulary, or review artifact wording in slide copy.
 - The deck uses screenshots, copied source layouts, logos, or invented metrics as proof.
 - The deck becomes a dense engineering report with no visible product climax or decision handoff.
+- The deck forgets to show editability, review, and source boundaries as the wedge's concrete control mechanisms.
 
 ## Copy Ban Applied
 

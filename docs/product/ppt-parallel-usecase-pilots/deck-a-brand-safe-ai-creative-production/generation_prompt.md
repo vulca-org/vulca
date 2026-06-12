@@ -12,11 +12,11 @@ Use this thesis: The next AI creative product category is not "generate an image
 
 Use this six-slide arc:
 1. Campaign teams now manage variant systems, not single hero assets. Proof object: before-and-after production model showing a hero asset becoming a variant system.
-2. Public brand AI cases show that approved archives, approved inputs, and governed workflows matter. Proof object: approved input stack with source boundary labels.
-3. A campaign brief becomes a workflow, not a prompt. Proof object: campaign workflow map from brief to assets, rules, generation, review, and packet.
-4. Brand rules, asset boundaries, review states, and delivery systems should be first-class workflow objects. Proof object: control board with rules, assets, approvals, integrations, and handoff lanes.
+2. Independent industry examples show that approved archives, approved inputs, and governed workflows matter. Proof object: approved input stack with source boundary labels and non-endorsement note.
+3. A campaign brief should become a tested workflow plan, not a loose prompt. Proof object: campaign workflow map from brief to assets, rules, generation, review, and packet.
+4. Brand rules, asset boundaries, review states, and delivery systems should stay visible for human review. Proof object: control board with rules, assets, approvals, integrations, and handoff lanes.
 5. One approved workflow can organize channel, region, language, and format variants for review. Proof object: variant matrix with channel, localization, format, and status columns.
-6. Production should advance only when workflow validation, brand review, and handoff checks pass. Proof object: release gate checklist with validation, flagged items, rerun status, and review packet.
+6. Production should advance only when workflow validation, human brand review, and handoff checks pass. Proof object: release gate checklist with validation, flagged items, rerun status, human signoff, and review packet.
 
 Constraints:
 - Keep all core text editable.
@@ -24,6 +24,8 @@ Constraints:
 - Do not copy source visuals, logos, screenshots, layouts, or long prose.
 - Do not invent metrics.
 - Do not imply Coca-Cola or Adobe endorses Vulca.
+- Treat Coca-Cola and Adobe as independent reference examples, not partners, customers, integrations, sponsors, or endorsements.
+- Show human review as a required gate; do not imply automated governance guarantees brand safety.
 - Do not use internal implementation terms in slide copy.
 - Keep publication gated until render and human review pass.
 

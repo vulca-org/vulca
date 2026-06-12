@@ -25,6 +25,8 @@ Constraints:
 - Do not invent metrics.
 - Do not use internal implementation terms in slide copy.
 - Do not put source ids on audience-facing slides.
+- Make Slide 6 visibly a future productization bet, not a currently shipped Vulca MCP surface.
+- Make Slide 5 emphasize editability, review, and source boundaries, not only generation.
 - Keep the output draft-only until render inspection and human review pass.
 
 ## Source Boundary
