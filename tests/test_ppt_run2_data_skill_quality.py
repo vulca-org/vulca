@@ -1050,6 +1050,27 @@ EXPECTED_RUN2_U_REPAIR_FLAGS = {
     "traceability_routed_off_canvas",
     "public_polish_not_claimed",
 }
+EXPECTED_RUN2_V_RESULT = (
+    PACK / "results" / "run2_91_visual_quality_evaluation.json"
+)
+EXPECTED_RUN2_V_SCRIPT = ROOT / "scripts" / "audit_ppt_run2_91_visual_quality_evaluation.py"
+EXPECTED_RUN2_V_QUESTIONS = {
+    "is_2_90_better_than_2_88",
+    "did_2_90_fix_wireframe_surface_visibility",
+    "did_2_90_keep_text_heavy_readability",
+    "did_2_90_integrate_text_with_visual_objects",
+    "does_2_90_reduce_debug_label_aesthetic",
+    "does_2_90_reach_public_video_presentation_direction",
+    "which_layer_needs_next_repair",
+}
+EXPECTED_RUN2_V_ROOT_CAUSE_LAYERS = {
+    "text_visual_integration",
+    "object_bound_typography",
+    "caption_anchor_binding",
+    "proof_object_embedding",
+    "composition_rhythm",
+    "renderer_surface_materiality",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -5706,6 +5727,159 @@ def test_run2_90_renderer_asset_surface_composition_rerun_consumes_t_and_updates
     assert run["fullArm"]["id"] == "run2_90_full_asset_surface_composition"
     assert len(run["fullArm"]["slides"]) == 6
     assert result["next_required_action"] == "part_v_visual_quality_evaluation_for_run2_90"
+
+
+def test_run2_91_visual_quality_evaluation_compares_2_90_against_2_88(
+    tmp_path: Path,
+) -> None:
+    assert EXPECTED_RUN2_V_SCRIPT.exists(), "missing Part V visual quality evaluation script"
+    script = EXPECTED_RUN2_V_SCRIPT.read_text(encoding="utf-8")
+    assert_contains(
+        script,
+        [
+            "run2_90_renderer_asset_surface_composition_rerun_result.json",
+            "run2_89_visual_quality_evaluation.json",
+            "run2_88_best_layout_visual_primitive_rerun_result.json",
+            "ppt-run2-88-full-vulca/preview/contact-sheet.png",
+            "ppt-run2-90-full-vulca/preview/contact-sheet.png",
+            "run2-90-four-arm-contact-sheet.png",
+            "gemini-3.5-flash",
+            "text_visual_integration",
+        ],
+    )
+    result_json = tmp_path / "run2_91_visual_quality_evaluation.json"
+    result_md = tmp_path / "run2_91_visual_quality_evaluation.md"
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(EXPECTED_RUN2_V_SCRIPT),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    audit = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+    assert "run2_91_visual_quality_evaluation_public_blocked" in completed.stdout
+    assert audit["artifact_id"] == "run2_91_visual_quality_evaluation"
+    assert audit["part"] == "Part V"
+    assert audit["run_id"] == "2.91"
+    assert audit["status"] == "run2_91_visual_quality_evaluation_public_blocked"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["starts_renderer_rerun"] is False
+    assert audit["updates_html_viewer"] is False
+    assert audit["public_ready"] is False
+    assert audit["public_release_started"] is False
+    assert audit["quality_claim_boundary"] == "part_v_evaluation_only_no_public_release_no_renderer_rerun"
+    assert audit["source_runs"] == {
+        "comparison_baseline": "2.88",
+        "evaluated_run": "2.90",
+        "repair_source_run": "2.89",
+        "prior_reference_run": "2.85",
+    }
+
+    input_chain = audit["input_chain"]
+    assert input_chain["run2_90_result"].endswith("run2_90_renderer_asset_surface_composition_rerun_result.json")
+    assert input_chain["run2_89_t_evaluation"].endswith("run2_89_visual_quality_evaluation.json")
+    assert input_chain["run2_88_result"].endswith("run2_88_best_layout_visual_primitive_rerun_result.json")
+    assert input_chain["run2_88_full_contact_sheet"].endswith("ppt-run2-88-full-vulca/preview/contact-sheet.png")
+    assert input_chain["run2_90_full_contact_sheet"].endswith("ppt-run2-90-full-vulca/preview/contact-sheet.png")
+    assert input_chain["run2_90_four_arm_contact_sheet"].endswith("run2-90-four-arm-contact-sheet.png")
+
+    closure = audit["viewer_comparison_closure"]
+    assert closure["viewer_latest_run_id"] == "2.90"
+    assert closure["viewer_can_compare_2_88_and_2_90"] is True
+    assert closure["run2_88_full_preview_count"] == 6
+    assert closure["run2_90_full_preview_count"] == 6
+    assert closure["run2_90_arm_count"] == 4
+
+    gemini = audit["gemini_agent_review_summary"]
+    assert gemini["model"] == "gemini-3.5-flash"
+    assert gemini["used_for_verdict"] is True
+    assert gemini["review_count"] == 1
+    assert "surface visibility" in " ".join(gemini["run2_90_findings"])
+    assert "text-visual" in " ".join(gemini["run2_90_risks"])
+
+    assert set(audit["evaluation_questions"]) == EXPECTED_RUN2_V_QUESTIONS
+    assert audit["evaluation_questions"]["is_2_90_better_than_2_88"]["answer"] == (
+        "yes_asset_surface_visibility_up_public_still_blocked"
+    )
+    assert audit["evaluation_questions"]["did_2_90_integrate_text_with_visual_objects"]["answer"] == (
+        "no_text_visual_binding_still_weak"
+    )
+    assert audit["evaluation_questions"]["which_layer_needs_next_repair"]["answer"] == (
+        "object_bound_typography_and_text_visual_integration"
+    )
+
+    assessment = audit["visual_quality_assessment"]
+    assert assessment["data_workflow_entry_gate"] == "pass_internal_only"
+    assert assessment["viewer_comparison_gate"] == "pass_internal_only"
+    assert assessment["design_quality_gate"] == "blocked"
+    assert assessment["public_video_readiness"] == "blocked"
+    assert assessment["global_delta_vs_2_88"] == (
+        "asset_surface_visibility_up_text_visual_integration_still_split"
+    )
+    assert assessment["top_blocker"] == "text_blocks_and_product_surfaces_remain_parallel_not_integrated"
+    assert assessment["next_layer_to_fix"] == "object_bound_typography_and_text_visual_integration"
+
+    role_assessments = audit["role_assessments"]
+    assert [record["role"] for record in role_assessments] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [record["slide_index"] for record in role_assessments] == [1, 2, 3, 4, 5, 6]
+    assert len(role_assessments) == 6
+    assert {record["root_cause_layer"] for record in role_assessments} <= EXPECTED_RUN2_V_ROOT_CAUSE_LAYERS
+    assert all(record["repair_required"] is True for record in role_assessments)
+    assert any(record["asset_surface_delta"] == "strong" for record in role_assessments)
+    assert any(record["text_visual_integration"] == "weak" for record in role_assessments)
+    for record in role_assessments:
+        role = record["role"]
+        assert record["visual_grammar_module"] == EXPECTED_RUN2_E_PAGE_MODULE_MAP[role]
+        assert record["trace_support"]["renderer_function_name"].startswith("drawRun290")
+        assert record["trace_support"]["asset_surface_rendered"] is True
+        assert record["trace_support"]["traceability_on_canvas"] is False
+        assert record["next_repair_instruction"]
+
+    assert audit["root_cause_summary"]["primary_layer"] == "object_bound_typography_and_text_visual_integration"
+    assert "text_visual_integration" in audit["root_cause_summary"]["secondary_layers"]
+    assert audit["no_new_renderer_proof"]["new_pptx_created"] is False
+    assert audit["no_new_renderer_proof"]["new_html_created"] is False
+    assert audit["no_new_renderer_proof"]["starts_renderer_rerun"] is False
+    assert audit["next_required_action"] == "part_w_renderer_text_visual_binding_repair_from_v_evaluation"
+    assert_contains(
+        report,
+        [
+            "Run 2.91 Visual Quality Evaluation",
+            "2.90 vs 2.88",
+            "asset surface visibility",
+            "text-visual integration",
+            "public blocked",
+            "Part W",
+        ],
+    )
+
+
+def test_run2_91_records_visual_quality_evaluation_result() -> None:
+    audit = load_json(EXPECTED_RUN2_V_RESULT)
+    report = (
+        PACK / "results" / "run2_91_visual_quality_evaluation.md"
+    ).read_text(encoding="utf-8")
+
+    assert audit["status"] == "run2_91_visual_quality_evaluation_public_blocked"
+    assert audit["public_ready"] is False
+    assert audit["public_release_started"] is False
+    assert audit["visual_quality_assessment"]["design_quality_gate"] == "blocked"
+    assert audit["visual_quality_assessment"]["global_delta_vs_2_88"] == (
+        "asset_surface_visibility_up_text_visual_integration_still_split"
+    )
+    assert audit["viewer_comparison_closure"]["viewer_latest_run_id"] == "2.90"
+    assert len(audit["role_assessments"]) == 6
+    assert "text and visual systems still behave as parallel layers" in report
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
