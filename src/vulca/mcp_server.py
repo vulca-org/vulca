@@ -751,7 +751,7 @@ async def layers_split(
         layers, manifest_path, split_mode. For orchestrated: detection_report
         with per-entity status and success_rate. When case logging succeeds,
         also returns case_id and case_log_path; when enabled logging fails,
-        returns case_log_error.
+        returns case_log_error. Palette mode also returns debug artifact paths.
     """
     from pathlib import Path
 
@@ -885,6 +885,13 @@ async def layers_split(
             for r in results
         ],
     }
+    if mode == "palette":
+        payload.update({
+            "palette_mask_path": str(Path(out) / "palette_mask.png"),
+            "palette_mask_quantized_path": str(Path(out) / "palette_mask_quantized.png"),
+            "decode_report_path": str(Path(out) / "decode_report.json"),
+            "contact_sheet_path": str(Path(out) / "contact_sheet.png"),
+        })
 
     from vulca.layers.decompose_cases import (
         append_decompose_case,
