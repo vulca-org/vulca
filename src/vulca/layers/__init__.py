@@ -2,6 +2,7 @@
 from vulca.layers.types import LayerInfo, LayerResult, LayeredArtwork
 from vulca.layers.analyze import analyze_layers, parse_layer_response
 from vulca.layers.split import split_extract, split_regenerate, split_vlm, crop_layer, chromakey_white, chromakey_black
+from vulca.layers.palette_mask import split_palette, build_palette_mask_prompt, decode_palette_mask
 from vulca.layers.composite import composite_layers
 from vulca.layers.blend import blend_normal, blend_screen, blend_multiply, blend_overlay, blend_soft_light, blend_darken, blend_lighten, blend_color_dodge, blend_color_burn, blend_layers
 from vulca.layers.export import export_psd
@@ -40,7 +41,8 @@ from vulca.layers.manifest import load_manifest as load_artwork
 __all__ = [
     "LayerInfo", "LayerResult", "LayeredArtwork",
     "analyze_layers", "parse_layer_response",
-    "split_extract", "split_regenerate", "split_vlm",
+    "split_extract", "split_regenerate", "split_vlm", "split_palette",
+    "build_palette_mask_prompt", "decode_palette_mask",
     "crop_layer", "chromakey_white", "chromakey_black",
     "composite_layers",
     "blend_normal", "blend_screen", "blend_multiply",
