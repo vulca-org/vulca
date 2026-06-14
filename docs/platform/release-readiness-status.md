@@ -60,10 +60,11 @@ Observed skills:
 - `vulca:visual-plan`
 
 ```bash
-/opt/homebrew/bin/python3 scripts/sync_plugin_skills.py
+/opt/homebrew/bin/python3 scripts/sync_plugin.py
+/opt/homebrew/bin/python3 scripts/sync_plugin.py --check
 ```
 
-Observed: synced `.agents/skills` into `.claude/skills`, `skills`, and `plugins/vulca/skills`.
+Observed: synced `.agents/skills` into `.claude/skills`, `skills`, and `plugins/vulca/skills`, then checked plugin package README and manifest drift.
 
 ```bash
 /opt/homebrew/bin/python3 -m pytest tests/test_prompting.py tests/test_visual_discovery_docs_truth.py tests/test_visual_discovery_prompting.py tests/test_visual_discovery_benchmark.py tests/test_gemini_image_size.py tests/test_generate_image_extended_signature.py -q

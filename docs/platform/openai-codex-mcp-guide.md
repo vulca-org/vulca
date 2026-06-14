@@ -32,7 +32,8 @@ The package is intentionally self-contained for Codex validation. The copied ski
 Run:
 
 ```bash
-python scripts/sync_plugin_skills.py
+python scripts/sync_plugin.py
+python scripts/sync_plugin.py --check
 ```
 
 Observed local CLI:

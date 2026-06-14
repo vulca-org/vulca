@@ -44,14 +44,16 @@ The marketplace plugin root is the repository root:
 The source of truth for skill authoring remains `.agents/skills/`. Run this after changing a skill:
 
 ```bash
-python scripts/sync_plugin_skills.py
+python scripts/sync_plugin.py
+python scripts/sync_plugin.py --check
 ```
 
 That syncs:
 
 - `.claude/skills/` for project-local Claude iteration;
 - `skills/` for Claude plugin packaging;
-- `plugins/vulca/skills/` for Codex plugin packaging.
+- `plugins/vulca/skills/` for Codex plugin packaging;
+- `plugins/vulca/README.md` and plugin manifest versions from SDK source truth.
 
 ## Pre-Submission Gate
 
