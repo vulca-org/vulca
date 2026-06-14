@@ -951,6 +951,33 @@ def test_real_brief_benchmark_script_errors_do_not_traceback(tmp_path):
     assert "Traceback" not in completed.stderr
 
 
+def test_real_brief_benchmark_quiets_litellm_import_logs(monkeypatch):
+    import logging
+    import os
+
+    from scripts.real_brief_benchmark import _quiet_litellm_import_logs
+
+    monkeypatch.delenv("LITELLM_LOG", raising=False)
+    loggers = [
+        logging.getLogger("LiteLLM"),
+        logging.getLogger("litellm"),
+    ]
+    previous_levels = {logger.name: logger.level for logger in loggers}
+
+    try:
+        for logger in loggers:
+            logger.setLevel(logging.WARNING)
+
+        _quiet_litellm_import_logs()
+
+        assert os.environ["LITELLM_LOG"] == "ERROR"
+        for logger in loggers:
+            assert logger.level == logging.ERROR
+    finally:
+        for logger in loggers:
+            logger.setLevel(previous_levels[logger.name])
+
+
 def test_real_brief_benchmark_cli_dry_run_uses_local_cost_map(tmp_path):
     import os
     import subprocess

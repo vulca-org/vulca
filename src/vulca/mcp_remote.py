@@ -4,7 +4,15 @@ import os
 from pathlib import Path
 
 from fastmcp import FastMCP
+from fastmcp.apps.config import AppConfig, ResourceCSP
+from fastmcp.tools import ToolResult
+from fastmcp.utilities.mime import UI_MIME_TYPE
 
+from vulca.chatgpt_prompt_studio import (
+    PROMPT_STUDIO_WIDGET_URI,
+    build_prompt_studio_package,
+)
+from vulca.chatgpt_prompt_studio_widget import PROMPT_STUDIO_WIDGET_HTML
 from vulca.mcp_profiles import get_remote_tool_policy, list_remote_safe_tools
 
 
@@ -24,8 +32,34 @@ def _policy_to_dict(tool_name: str) -> dict[str, object]:
     }
 
 
-def build_remote_mcp_server_summary() -> dict[str, object]:
-    allowed_tools = list_remote_safe_tools()
+def is_prompt_studio_preview_enabled() -> bool:
+    return os.environ.get(
+        "VULCA_REMOTE_ENABLE_PROMPT_STUDIO",
+        "",
+    ).lower() in {"1", "true", "yes", "on"}
+
+
+def _remote_tool_annotations(tool_names: list[str]) -> dict[str, dict[str, bool]]:
+    return {
+        tool_name: {
+            "readOnlyHint": True,
+            "destructiveHint": False,
+            "openWorldHint": False,
+            "idempotentHint": True,
+        }
+        for tool_name in tool_names
+    }
+
+
+def build_remote_mcp_server_summary(
+    *,
+    enable_prompt_studio: bool | None = None,
+) -> dict[str, object]:
+    if enable_prompt_studio is None:
+        enable_prompt_studio = is_prompt_studio_preview_enabled()
+    allowed_tools = list_remote_safe_tools(
+        include_prompt_studio=enable_prompt_studio
+    )
     return {
         "profile": "chatgpt_remote_safe",
         "transport_status": "streamable_http_ready",
@@ -105,26 +139,6 @@ async def _remote_evaluate_artwork(
     return result
 
 
-remote_mcp = FastMCP(
-    "VULCA Remote",
-    instructions=(
-        "Remote-safe Vulca profile for ChatGPT and OpenAI Responses MCP. "
-        "Only discovery, tradition lookup, prompt composition, and mock "
-        "rubric evaluation tools are exposed."
-    ),
-)
-
-REMOTE_APP_TOOL_ANNOTATIONS: dict[str, dict[str, bool]] = {
-    tool_name: {
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "openWorldHint": False,
-        "idempotentHint": True,
-    }
-    for tool_name in list_remote_safe_tools()
-}
-
-
 async def _remote_list_traditions() -> dict:
     """Use this when selecting from Vulca's traditions before prompt or evaluation work."""
     from vulca.mcp_server import list_traditions
@@ -146,26 +160,113 @@ async def _remote_search_traditions(tags: list[str], limit: int = 5) -> dict:
     return await search_traditions(tags=tags, limit=limit)
 
 
-remote_mcp.tool(
-    name="list_traditions",
-    annotations=REMOTE_APP_TOOL_ANNOTATIONS["list_traditions"],
-)(_remote_list_traditions)
-remote_mcp.tool(
-    name="get_tradition_guide",
-    annotations=REMOTE_APP_TOOL_ANNOTATIONS["get_tradition_guide"],
-)(_remote_get_tradition_guide)
-remote_mcp.tool(
-    name="search_traditions",
-    annotations=REMOTE_APP_TOOL_ANNOTATIONS["search_traditions"],
-)(_remote_search_traditions)
-remote_mcp.tool(
-    name="compose_prompt_from_design",
-    annotations=REMOTE_APP_TOOL_ANNOTATIONS["compose_prompt_from_design"],
-)(_remote_compose_prompt_from_design)
-remote_mcp.tool(
-    name="evaluate_artwork",
-    annotations=REMOTE_APP_TOOL_ANNOTATIONS["evaluate_artwork"],
-)(_remote_evaluate_artwork)
+async def _remote_open_prompt_studio(
+    final_prompt: str,
+    prompt_title: str = "",
+    tradition: str = "",
+    negative_prompt: str = "",
+    generation_notes: str = "",
+    rubric_summary: str = "",
+) -> ToolResult:
+    """Use this when the user wants a ChatGPT-native image generation handoff from a Vulca prompt package."""
+    try:
+        package = build_prompt_studio_package(
+            prompt_title=prompt_title,
+            tradition=tradition,
+            final_prompt=final_prompt,
+            negative_prompt=negative_prompt,
+            generation_notes=generation_notes,
+            rubric_summary=rubric_summary,
+        )
+        content = "Opened Vulca Prompt Studio for ChatGPT-native image generation."
+    except ValueError as exc:
+        package = {
+            "error": str(exc),
+            "widget_uri": PROMPT_STUDIO_WIDGET_URI,
+        }
+        content = f"Vulca Prompt Studio could not open: {exc}"
+
+    return ToolResult(
+        content=content,
+        structured_content=package,
+        meta={"openai/outputTemplate": PROMPT_STUDIO_WIDGET_URI},
+    )
+
+
+def _register_prompt_studio(
+    server: FastMCP,
+    annotations: dict[str, dict[str, bool]],
+) -> None:
+    server.resource(
+        PROMPT_STUDIO_WIDGET_URI,
+        name="prompt_studio_widget",
+        mime_type=UI_MIME_TYPE,
+        app=AppConfig(
+            prefersBorder=True,
+            csp=ResourceCSP(connectDomains=[], resourceDomains=[]),
+        ),
+    )(lambda: PROMPT_STUDIO_WIDGET_HTML)
+
+    server.tool(
+        name="open_prompt_studio",
+        annotations=annotations["open_prompt_studio"],
+        app=AppConfig(
+            resourceUri=PROMPT_STUDIO_WIDGET_URI,
+            visibility=["model"],
+            prefersBorder=True,
+        ),
+        meta={
+            "openai/toolInvocation/invoking": "Opening Vulca Prompt Studio",
+            "openai/toolInvocation/invoked": "Vulca Prompt Studio ready",
+        },
+    )(_remote_open_prompt_studio)
+
+
+def build_remote_mcp_server(*, enable_prompt_studio: bool = False) -> FastMCP:
+    server = FastMCP(
+        "VULCA Remote",
+        instructions=(
+            "Remote-safe Vulca profile for ChatGPT and OpenAI Responses MCP. "
+            "Only discovery, tradition lookup, prompt composition, and mock "
+            "rubric evaluation tools are exposed."
+        ),
+    )
+    tool_names = list_remote_safe_tools(
+        include_prompt_studio=enable_prompt_studio
+    )
+    annotations = _remote_tool_annotations(tool_names)
+
+    server.tool(
+        name="list_traditions",
+        annotations=annotations["list_traditions"],
+    )(_remote_list_traditions)
+    server.tool(
+        name="get_tradition_guide",
+        annotations=annotations["get_tradition_guide"],
+    )(_remote_get_tradition_guide)
+    server.tool(
+        name="search_traditions",
+        annotations=annotations["search_traditions"],
+    )(_remote_search_traditions)
+    server.tool(
+        name="compose_prompt_from_design",
+        annotations=annotations["compose_prompt_from_design"],
+    )(_remote_compose_prompt_from_design)
+    server.tool(
+        name="evaluate_artwork",
+        annotations=annotations["evaluate_artwork"],
+    )(_remote_evaluate_artwork)
+
+    if enable_prompt_studio:
+        _register_prompt_studio(server, annotations)
+
+    return server
+
+
+REMOTE_APP_TOOL_ANNOTATIONS = _remote_tool_annotations(list_remote_safe_tools())
+remote_mcp = build_remote_mcp_server(
+    enable_prompt_studio=is_prompt_studio_preview_enabled()
+)
 
 
 def main() -> None:
