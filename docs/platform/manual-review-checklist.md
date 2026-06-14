@@ -25,7 +25,8 @@ Use this checklist before merging or submitting Vulca to a plugin directory.
 Run:
 
 ```bash
-python scripts/sync_plugin_skills.py
+python scripts/sync_plugin.py
+python scripts/sync_plugin.py --check
 python -m pytest tests/test_visual_discovery_docs_truth.py tests/test_prompting.py -q
 ```
 
