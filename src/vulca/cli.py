@@ -1454,7 +1454,9 @@ def _cmd_layers(args: argparse.Namespace) -> None:
     if args.layers_command == "analyze":
         from vulca.layers.analyze import analyze_layers
         loop = asyncio.new_event_loop()
-        layers = loop.run_until_complete(analyze_layers(args.image))
+        layers = loop.run_until_complete(
+            analyze_layers(args.image, provider=args.provider)
+        )
         loop.close()
         print(f"\n  Identified {len(layers)} layers:")
         for la in layers:
@@ -1466,7 +1468,9 @@ def _cmd_layers(args: argparse.Namespace) -> None:
     elif args.layers_command == "split":
         from vulca.layers.analyze import analyze_layers
         loop = asyncio.new_event_loop()
-        layers = loop.run_until_complete(analyze_layers(args.image))
+        layers = loop.run_until_complete(
+            analyze_layers(args.image, provider=args.provider)
+        )
         out_dir = args.output or str(Path(args.image).parent / "layers")
         print(f"\n  Splitting {len(layers)} layers ({args.mode} mode) -> {out_dir}")
         if args.mode == "extract":

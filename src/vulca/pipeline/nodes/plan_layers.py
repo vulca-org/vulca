@@ -90,7 +90,11 @@ class PlanLayersNode(PipelineNode):
 
     async def _analyze_existing(self, ctx: NodeContext) -> list[LayerInfo]:
         from vulca.layers import analyze_layers
-        return await analyze_layers(ctx.get("source_image_path", ""), api_key=ctx.api_key)
+        return await analyze_layers(
+            ctx.get("source_image_path", ""),
+            api_key=ctx.api_key,
+            provider=ctx.provider,
+        )
 
     def _mock_plan(self, tradition: str) -> list[LayerInfo]:
         order = get_tradition_layer_order(tradition)

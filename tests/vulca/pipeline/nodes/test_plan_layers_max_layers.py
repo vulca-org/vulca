@@ -1,7 +1,9 @@
 """Phase 0 Task 0 rework: plan_layers must respect ctx.max_layers up to 20."""
 import asyncio
+from unittest.mock import AsyncMock
 
 import pytest
+from PIL import Image
 
 from vulca.layers.types import LayerInfo
 from vulca.pipeline.node import NodeContext
@@ -49,3 +51,25 @@ def test_plan_layers_defaults_to_legacy_cap_when_unset():
     ctx.set("planned_layers", _make_layers(15))
     out = _run(ctx)
     assert out["layer_count"] == 10
+
+
+def test_plan_layers_existing_source_mock_provider_skips_litellm(tmp_path, monkeypatch):
+    source = tmp_path / "source.png"
+    Image.new("RGB", (6, 4), (120, 160, 200)).save(source)
+
+    import vulca.layers.analyze as analyze_mod
+
+    monkeypatch.setattr(
+        analyze_mod.litellm,
+        "acompletion",
+        AsyncMock(side_effect=AssertionError("mock provider called LiteLLM")),
+    )
+
+    ctx = NodeContext(subject="x", tradition="default", provider="mock")
+    ctx.set("source_image_b64", "AAAA")
+    ctx.set("source_image_path", str(source))
+
+    out = _run(ctx)
+
+    assert out["layer_count"] == 2
+    assert [layer.name for layer in out["planned_layers"]] == ["background", "foreground"]
