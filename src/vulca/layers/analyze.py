@@ -56,12 +56,35 @@ def parse_layer_response(raw: dict) -> list[LayerInfo]:
     return parse_v2_response(raw)
 
 
-async def analyze_layers(image_path: str, *, api_key: str = "") -> list[LayerInfo]:
+async def analyze_layers(
+    image_path: str,
+    *,
+    api_key: str = "",
+    provider: str = "",
+) -> list[LayerInfo]:
     """Use VLM to identify semantic layers in an image.
 
     Retries up to _MAX_RETRIES times on transient failures.
     Uses V2 prompt from build_analyze_prompt().
     """
+    if provider == "mock":
+        return [
+            LayerInfo(
+                name="background",
+                description="Mock background layer",
+                z_index=0,
+                content_type="background",
+                dominant_colors=["#7890a8"],
+            ),
+            LayerInfo(
+                name="foreground",
+                description="Mock foreground layer",
+                z_index=1,
+                content_type="subject",
+                dominant_colors=[],
+            ),
+        ]
+
     from vulca._image import load_image_base64
 
     img_b64, mime = await load_image_base64(image_path)

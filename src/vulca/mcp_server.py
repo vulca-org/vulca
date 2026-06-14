@@ -843,7 +843,7 @@ async def layers_split(
     from vulca.layers.analyze import analyze_layers as _analyze
     from vulca.layers.split import split_extract, split_regenerate
 
-    layers = await _analyze(image_path)
+    layers = await _analyze(image_path, provider=provider)
     out = output_dir or str(Path(image_path).parent / "layers")
 
     if mode == "extract":
