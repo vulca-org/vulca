@@ -29,6 +29,17 @@ from fastmcp import FastMCP
 
 mcp = FastMCP("VULCA", instructions="AI-native cultural art creation & evaluation")
 
+try:
+    from vulca.telemetry import McpTelemetryMiddleware, TelemetryClient
+
+    mcp.add_middleware(McpTelemetryMiddleware())
+    TelemetryClient(interface="mcp").emit(
+        "mcp_server_started",
+        {"transport": "stdio"},
+    )
+except Exception:
+    pass
+
 
 _TOOL_TIERS: dict[str, str] = {
     "create_artwork": "core", "evaluate_artwork": "core",
