@@ -154,6 +154,15 @@ def main(argv: list[str] | None = None) -> None:
     sync_parser.add_argument("--push-only", action="store_true", help="Only push local data")
     sync_parser.add_argument("--pull-only", action="store_true", help="Only pull evolved weights")
 
+    # telemetry command
+    telemetry_parser = sub.add_parser("telemetry", help="Inspect or change opt-in telemetry settings")
+    telemetry_parser.add_argument("--json", action="store_true", help="Output raw JSON")
+    telemetry_sub = telemetry_parser.add_subparsers(dest="telemetry_command")
+    telemetry_sub.add_parser("status", help="Show telemetry status")
+    telemetry_sub.add_parser("enable", help="Enable local opt-in telemetry")
+    telemetry_sub.add_parser("disable", help="Disable local opt-in telemetry")
+    telemetry_sub.add_parser("reset-id", help="Reset the anonymous install id")
+
     # inpaint command
     inpaint_p = sub.add_parser("inpaint", help="Repaint a region of an artwork")
     inpaint_p.add_argument("image", help="Path to image")
@@ -502,6 +511,12 @@ def main(argv: list[str] | None = None) -> None:
 
     args = parser.parse_args(argv)
 
+    try:
+        from vulca.telemetry import emit_cli_invoked
+        emit_cli_invoked(args.command or "help")
+    except Exception:
+        pass
+
     if args.command in ("evaluate", "eval", "e"):
         _cmd_evaluate(args)
     elif args.command in ("create", "c"):
@@ -534,6 +549,8 @@ def main(argv: list[str] | None = None) -> None:
         _cmd_concept(args)
     elif args.command == "sync":
         _cmd_sync(args)
+    elif args.command == "telemetry":
+        _cmd_telemetry(args)
     elif args.command == "inpaint":
         _cmd_inpaint(args)
     elif args.command == "layers":
@@ -1407,6 +1424,43 @@ def _cmd_sync(args: argparse.Namespace) -> None:
         except Exception as exc:
             print(f"Pull failed: {exc}", file=sys.stderr)
             sys.exit(1)
+
+
+# ---------------------------------------------------------------------------
+# Telemetry command
+# ---------------------------------------------------------------------------
+
+def _cmd_telemetry(args: argparse.Namespace) -> None:
+    import json as json_mod
+    from vulca.telemetry import (
+        reset_anonymous_install_id,
+        set_telemetry_enabled,
+        telemetry_status,
+    )
+
+    command = args.telemetry_command or "status"
+    if command == "enable":
+        set_telemetry_enabled(True)
+    elif command == "disable":
+        set_telemetry_enabled(False)
+    elif command == "reset-id":
+        reset_anonymous_install_id()
+    elif command != "status":
+        print(f"Error: unknown telemetry command {command!r}", file=sys.stderr)
+        sys.exit(1)
+
+    status = telemetry_status()
+    if args.json:
+        print(json_mod.dumps(status, indent=2, ensure_ascii=False))
+        return
+
+    print("VULCA Telemetry")
+    print(f"  enabled: {str(status['enabled']).lower()}")
+    print(f"  source: {status['source']}")
+    print(f"  do_not_track: {str(status['do_not_track']).lower()}")
+    print(f"  config_path: {status['config_path']}")
+    install_id = status["anonymous_install_id"] or "(not created)"
+    print(f"  anonymous_install_id: {install_id}")
 
 
 # ---------------------------------------------------------------------------
