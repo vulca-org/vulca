@@ -92,6 +92,23 @@ async def test_analyze_layers_no_api_base_for_cloud():
             assert call_kwargs.get("api_key") == "fake"
 
 
+def test_analyze_layers_mock_provider_does_not_call_litellm():
+    """provider='mock' must keep layer analysis local/offline."""
+    import asyncio
+
+    from vulca.layers import analyze as analyze_mod
+
+    with patch.object(
+        analyze_mod.litellm,
+        "acompletion",
+        new=AsyncMock(side_effect=AssertionError("mock analysis called LiteLLM")),
+    ):
+        layers = asyncio.run(analyze_mod.analyze_layers("dummy.png", provider="mock"))
+
+    assert [layer.name for layer in layers] == ["background", "foreground"]
+    assert [layer.content_type for layer in layers] == ["background", "subject"]
+
+
 # --- ComfyUI: shared transport fixture ------------------------------------
 
 @contextmanager

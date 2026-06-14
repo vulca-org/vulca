@@ -736,6 +736,7 @@ async def layers_split(
         image_path: Path to the image file.
         output_dir: Output directory (default: image parent/layers).
         mode: "regenerate" (img2img), "extract" (color-range), "vlm" (VLM masks),
+              "palette" (provider-generated color-coded ownership masks),
               "sam3" (SAM3, GPU), "orchestrated" (YOLO26 + Grounding DINO + SAM +
               SegFormer face-parsing; SOTA — requires plan_path).
         provider: Image provider for regenerate/vlm modes.
@@ -750,7 +751,7 @@ async def layers_split(
         layers, manifest_path, split_mode. For orchestrated: detection_report
         with per-entity status and success_rate. When case logging succeeds,
         also returns case_id and case_log_path; when enabled logging fails,
-        returns case_log_error.
+        returns case_log_error. Palette mode also returns debug artifact paths.
     """
     from pathlib import Path
 
@@ -842,7 +843,7 @@ async def layers_split(
     from vulca.layers.analyze import analyze_layers as _analyze
     from vulca.layers.split import split_extract, split_regenerate
 
-    layers = await _analyze(image_path)
+    layers = await _analyze(image_path, provider=provider)
     out = output_dir or str(Path(image_path).parent / "layers")
 
     if mode == "extract":
@@ -850,6 +851,12 @@ async def layers_split(
     elif mode == "vlm":
         from vulca.layers.split import split_vlm
         results = await split_vlm(
+            image_path, layers, output_dir=out,
+            provider=provider,
+        )
+    elif mode == "palette":
+        from vulca.layers.palette_mask import split_palette
+        results = await split_palette(
             image_path, layers, output_dir=out,
             provider=provider,
         )
@@ -878,6 +885,13 @@ async def layers_split(
             for r in results
         ],
     }
+    if mode == "palette":
+        payload.update({
+            "palette_mask_path": str(Path(out) / "palette_mask.png"),
+            "palette_mask_quantized_path": str(Path(out) / "palette_mask_quantized.png"),
+            "decode_report_path": str(Path(out) / "decode_report.json"),
+            "contact_sheet_path": str(Path(out) / "contact_sheet.png"),
+        })
 
     from vulca.layers.decompose_cases import (
         append_decompose_case,
