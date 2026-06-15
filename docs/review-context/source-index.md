@@ -95,6 +95,10 @@ check before changing high-level VULCA claims.
   - Agent surfaces and provider capability matrix.
 - `docs/platform/release-readiness-status.md`
   - Public claim boundaries and manual gates.
+- `docs/review-context/14-release-readiness-evidence-gate.md`
+  - Protected M5 release-readiness gate for Workspace persistence, artifact
+    ingestion, evidence rendering, human release workflow, public examples,
+    and website/PPT copy review.
 
 ## Artifact Bridge
 

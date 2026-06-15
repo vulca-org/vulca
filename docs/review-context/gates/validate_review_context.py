@@ -38,6 +38,7 @@ CORE_HISTORY_FILES = [
     "11-artifact-bridge-spec.md",
     "12-complete-demo-path.md",
     "13-website-ppt-claim-spine.md",
+    "14-release-readiness-evidence-gate.md",
 ]
 
 
