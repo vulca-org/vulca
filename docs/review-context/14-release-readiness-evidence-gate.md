@@ -35,6 +35,8 @@ As of the current vault state:
 - SDK/MCP has implemented execution capabilities and case/evidence substrates.
 - The artifact bridge, demo path, and website/PPT claim spine are specified in
   protected vault documents.
+- RR1 has a fixed release-readiness report template in
+  `release-readiness/TEMPLATE.md`.
 - PPT proof lab remains public blocked by the latest remembered Run 2.93 gate.
 
 Still missing for product release readiness:
@@ -237,6 +239,8 @@ must index them before any status upgrade is treated as durable memory.
 
 Create a machine-readable checklist or Markdown report template for the M5
 gates.
+
+Status: represented by `release-readiness/TEMPLATE.md`.
 
 Acceptance:
 

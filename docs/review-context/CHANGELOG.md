@@ -4,6 +4,21 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added Release Readiness Report Template
+
+- Added `release-readiness/README.md` and
+  `release-readiness/TEMPLATE.md` as the protected RR1 checklist/report format
+  for M5 release-readiness reviews.
+- Wired the template into the README read order, manifest, source index,
+  validator, and vault tests.
+- Updated the M5 gate record so RR1 now points to the fixed report template.
+
+Source basis:
+
+- `docs/review-context/14-release-readiness-evidence-gate.md`.
+- `docs/review-context/13-website-ppt-claim-spine.md`.
+- `docs/review-context/09-claim-boundaries.md`.
+
 ### Added Release Readiness Evidence Gate
 
 - Added `14-release-readiness-evidence-gate.md` as the protected M5 standard

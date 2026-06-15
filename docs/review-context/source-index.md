@@ -99,6 +99,9 @@ check before changing high-level VULCA claims.
   - Protected M5 release-readiness gate for Workspace persistence, artifact
     ingestion, evidence rendering, human release workflow, public examples,
     and website/PPT copy review.
+- `docs/review-context/release-readiness/TEMPLATE.md`
+  - Protected RR1 report template for recording evidence links, reviewer/owner
+    fields, Gate 1-6 status, and release decisions.
 
 ## Artifact Bridge
 

@@ -44,6 +44,7 @@ mainline and does not carry or require the vault validation gate.
 - `13-website-ppt-claim-spine.md`: shared website, README, PPT, and public
   story claim spine.
 - `14-release-readiness-evidence-gate.md`: M5 release-readiness evidence gate.
+- `release-readiness/`: fixed report template for release-readiness reviews.
 - `requests/`: proposed changes from other sessions.
 - `gates/`: validation rules and local gate checks.
 
@@ -64,4 +65,6 @@ mainline and does not carry or require the vault validation gate.
    positioning, public decks, or PPT proof-lab summaries.
 9. Read `14-release-readiness-evidence-gate.md` before upgrading any preview,
    internal, public-blocked, or release-readiness status.
-10. If this vault needs a change, create a request packet instead of editing it.
+10. Use `release-readiness/TEMPLATE.md` before proposing a stronger release
+    level, public example, website claim, or PPT claim.
+11. If this vault needs a change, create a request packet instead of editing it.
