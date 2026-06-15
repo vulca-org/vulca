@@ -2,13 +2,13 @@
 
 ## Status
 
-Approved design for implementation planning.
+Applied protection design. Branch-only vault policy confirmed on 2026-06-15.
 
 ## Context
 
 The repository is `vulca-org/vulca`. The default branch is `master`.
 
-Current remote protection state checked on 2026-06-15:
+Initial remote protection state checked on 2026-06-15 before rollout:
 
 - `master` has no branch protection rule.
 - repository rulesets are empty.
@@ -111,8 +111,8 @@ Required checks:
 - CI Python 3.12 job.
 
 Do not require the review-context validation job on `master` until
-`.github/workflows/review-context.yml` has landed on `master` and a successful
-`validate` check has been observed on that branch.
+an explicit future human instruction reverses the branch-only vault decision
+and lands the vault workflow on `master`.
 
 Ruleset name:
 
@@ -127,11 +127,8 @@ Required checks:
 - Review Context Vault validation job.
 
 The `validate` check from `Review Context Vault` must run on every
-context-vault PR and push, and can later be required on `master` after the
-workflow exists there.
-The implementation should remove path filters from `.github/workflows/review-context.yml`
-before the rulesets require that check. The validator is lightweight and safe to
-run on all protected branch changes.
+context-vault PR and push. Under the current branch-only policy, the workflow is
+scoped to `codex/vulca-context-vault` and is not a `master` requirement.
 
 The exact GitHub check context names must be bound after the workflows have run
 at least once on GitHub. Implementation must read the names from GitHub's
@@ -159,7 +156,7 @@ Applied on 2026-06-15:
   - active branch ruleset
   - targets `refs/heads/master`
   - requires `test (3.11)` and `test (3.12)`
-  - does not yet require `validate`
+  - does not require `validate` under the branch-only vault policy
 - `protected-context-vault-required-checks` id `17697367`
   - active branch ruleset
   - targets `refs/heads/codex/vulca-context-vault`
@@ -169,15 +166,17 @@ Reason for staged review settings:
 
 - The repository currently has one collaborator, `yha9806`.
 - A one-approval plus code-owner review rule would lock out a solo maintainer.
-- `review-context.yml` is not yet on `master`, so requiring `validate` on
-  `master` would risk blocking the first PR that lands the workflow.
+- The current human decision keeps the vault on `codex/vulca-context-vault`,
+  so `master` must not require the vault-only `validate` check.
 
-Follow-up after `review-context.yml` lands on `master` and a valid second
-reviewer or team exists:
+Future changes require separate decisions:
 
-1. Add `validate` to `protected-master-required-checks`.
-2. Re-enable `required_approving_review_count: 1`.
-3. Re-enable `require_code_owner_review: true`.
+1. Adding `validate` to `protected-master-required-checks` requires an explicit
+   human instruction to move or mirror the vault workflow onto `master`.
+2. Re-enabling `required_approving_review_count: 1` requires a valid second
+   reviewer or team.
+3. Re-enabling `require_code_owner_review: true` requires a valid second
+   reviewer or team that can satisfy CODEOWNERS review.
 
 ## Bootstrap Sequence
 
@@ -187,8 +186,9 @@ future updates and before the review-context workflow can produce a check run.
 
 Sequence:
 
-1. Remove path filters from `.github/workflows/review-context.yml` and commit the
-   workflow change if it has not already been done.
+1. Scope `.github/workflows/review-context.yml` to
+   `codex/vulca-context-vault` and commit the workflow change if it has not
+   already been done.
 2. Push `codex/vulca-context-vault` to `origin`.
 3. Wait for GitHub Actions to run on the pushed branch.
 4. Inspect exact check context names from the completed runs.
@@ -212,7 +212,7 @@ The GitHub ruleset complements, but does not replace, the vault rules:
   after `require_code_owner_review` is re-enabled and a non-author reviewer or
   team exists.
 - the review-context workflow makes the local validator enforceable on PRs and
-  pushes to protected branches.
+  pushes to `codex/vulca-context-vault`.
 
 Other sessions may still read the vault and propose request packets. They should
 not directly edit protected vault files or merge their own changes into the

@@ -2,9 +2,9 @@ name: Review Context Vault
 
 on:
   pull_request:
-    branches: [master, codex/vulca-context-vault]
+    branches: [codex/vulca-context-vault]
   push:
-    branches: [master, codex/vulca-context-vault]
+    branches: [codex/vulca-context-vault]
 
 concurrency:
   group: review-context-${{ github.workflow }}-${{ github.ref }}

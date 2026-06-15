@@ -16,10 +16,14 @@ Other sessions may read this folder and cite it. They must not directly modify
 it. Proposed edits go through `requests/` and are accepted only by a dedicated
 context-curator session on the `codex/vulca-context-vault` branch.
 
+The vault is intentionally branch-only. `master` remains the protected product
+mainline and does not carry or require the vault validation gate.
+
 ## Current Vault Contents
 
 - `LOCK.md`: non-negotiable access and modification boundary.
 - `GOVERNANCE.md`: request, review, and curator workflow.
+- `PROTECTION.md`: branch-only decision and live GitHub protection record.
 - `MANIFEST.json`: machine-readable vault inventory and gate metadata.
 - `source-index.md`: source references for historical claims.
 - `00-project-overview.md`: current integrated VULCA picture.

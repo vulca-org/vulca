@@ -101,14 +101,32 @@ The gate must pass before commit.
 Pull requests that touch the vault also run `.github/workflows/review-context.yml`,
 which executes the gate and its validator tests.
 
+## Branch Boundary
+
+The vault is branch-only by current human decision.
+
+- `codex/vulca-context-vault` is the protected context branch.
+- `master` is the protected product mainline.
+- `master` does not carry the vault as a required context artifact.
+- `master` does not require the `validate` review-context status check.
+- Moving the vault into `master` requires a new explicit human instruction and
+  a governance update in this folder.
+
 ## Repository Guardrails
 
 The vault relies on both local and repository-level controls:
 
-- `.github/CODEOWNERS` assigns `/docs/review-context/` to `@yhryzy`.
-- `.github/workflows/review-context.yml` runs the validator on vault changes.
+- `.github/CODEOWNERS` assigns `/docs/review-context/` to `@yha9806`.
+- `.github/workflows/review-context.yml` runs the validator on
+  `codex/vulca-context-vault` PRs and pushes.
 - `tests/test_review_context_vault.py` checks the validator catches missing files,
   missing request-lock checklist items, and forbidden claim upgrades.
+- GitHub rulesets protect `master` and `codex/vulca-context-vault` from direct
+  branch mutation, deletion, and non-fast-forward updates.
+- `protected-context-vault-required-checks` requires the `validate` status check
+  on `codex/vulca-context-vault`.
+- `protected-master-required-checks` requires only the existing CI checks on
+  `master`: `test (3.11)` and `test (3.12)`.
 
 These controls do not replace curator judgment. They make bypasses visible in
 review and keep future sessions from silently weakening the context lock.
