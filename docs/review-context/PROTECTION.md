@@ -69,6 +69,23 @@ the context-vault rule shape: require pull requests, block deletion, block
 non-fast-forward updates, configure no bypass actors by default, and require
 `Run Tests` plus `security` for `master`.
 
+### Platform CI Hygiene
+
+As of 2026-06-15, `yha9806/vulca-platform` PR #33,
+`[codex] Update GitHub Actions for Node 24`, merged to `master` at
+`0a7dd392de1eb24eacd245e91cb3c2d0234a5f81`.
+
+That PR updated the platform workflows to current Node 24-compatible action
+pins:
+
+- `actions/checkout@v6.0.3`
+- `actions/setup-node@v6.4.0`
+- `actions/setup-python@v6.2.0`
+- `gitleaks/gitleaks-action@v3.0.0`
+
+Its PR gate passed `Run Tests` and `security`; the deploy job remained skipped
+for the PR event.
+
 ## Modification Path
 
 Reader sessions may:
@@ -106,5 +123,6 @@ If a critical repair requires temporary bypass:
 
 - Repository rulesets verified through the GitHub API on 2026-06-15.
 - `yha9806/vulca-platform` protection and ruleset API checks on 2026-06-15.
+- `yha9806/vulca-platform` PR #33.
 - Context-vault branch: `codex/vulca-context-vault`.
 - GitHub user owner in `.github/CODEOWNERS`: `@yha9806`.

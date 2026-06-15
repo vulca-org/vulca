@@ -4,6 +4,19 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Recorded Platform CI Hygiene Merge
+
+- Recorded platform PR #33 as merged to `master` with Node 24-compatible
+  GitHub Actions pins for checkout, setup-node, setup-python, and
+  gitleaks-action.
+- Recorded that #33 passed `Run Tests` and `security`; the deploy job remained
+  skipped for the PR event.
+
+Source basis:
+
+- `yha9806/vulca-platform` PR #33.
+- GitHub latest-release API checks for the upgraded actions on 2026-06-15.
+
 ### Recorded Platform PR And Protection Status
 
 - Recorded platform PR #31 as merged to `master` with a Workspace-focused PR
