@@ -44,6 +44,8 @@ mainline and does not carry or require the vault validation gate.
 - `13-website-ppt-claim-spine.md`: shared website, README, PPT, and public
   story claim spine.
 - `14-release-readiness-evidence-gate.md`: M5 release-readiness evidence gate.
+- `artifact-bridge/`: RR2 reference fixture for projecting SDK/MCP artifacts
+  into Workspace review objects.
 - `release-readiness/`: fixed report template for release-readiness reviews.
 - `requests/`: proposed changes from other sessions.
 - `gates/`: validation rules and local gate checks.
@@ -61,10 +63,12 @@ mainline and does not carry or require the vault validation gate.
    Workspace imports, evidence packs, review checks, or demo paths.
 7. Read `12-complete-demo-path.md` before building or describing the standard
    VULCA demo scenario.
-8. Read `13-website-ppt-claim-spine.md` before writing website copy, README
+8. Use `artifact-bridge/m3-demo-bridge-fixture.json` before implementing or
+   reviewing the first M3 bridge adapter path.
+9. Read `13-website-ppt-claim-spine.md` before writing website copy, README
    positioning, public decks, or PPT proof-lab summaries.
-9. Read `14-release-readiness-evidence-gate.md` before upgrading any preview,
+10. Read `14-release-readiness-evidence-gate.md` before upgrading any preview,
    internal, public-blocked, or release-readiness status.
-10. Use `release-readiness/TEMPLATE.md` before proposing a stronger release
+11. Use `release-readiness/TEMPLATE.md` before proposing a stronger release
     level, public example, website claim, or PPT claim.
-11. If this vault needs a change, create a request packet instead of editing it.
+12. If this vault needs a change, create a request packet instead of editing it.

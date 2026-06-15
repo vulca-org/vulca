@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "fixture_id": "m3-demo-bridge-fixture-v1",
+  "fixture_status": "protected_rr2_reference",
+  "source_demo": "docs/review-context/12-complete-demo-path.md",
+  "source_spec": "docs/review-context/11-artifact-bridge-spec.md",
+  "bridge_records": [
+    {
+      "schema_version": 1,
+      "bridge_record_id": "bridge-generate-key-visual-v1",
+      "created_at": "2026-06-15T00:00:00Z",
+      "source_system": "vulca-sdk-mcp",
+      "source_operation": "generate_image",
+      "source_refs": {
+        "repo": "vulca",
+        "commit": "fixture-placeholder",
+        "tool": "generate_image",
+        "case_id": "",
+        "case_log_path": "",
+        "agent_session_id": ""
+      },
+      "workspace_targets": {
+        "creative_repo_id": "repo-cultural-key-visual-review",
+        "brief_id": "brief-cultural-key-visual",
+        "motif_branch_id": "motif-proof-spine",
+        "visual_variant_id": "variant-key-visual-v1",
+        "review_request_id": "review-key-visual-v1",
+        "release_gate_id": "releasegate-key-visual-v1"
+      },
+      "operation": {
+        "kind": "generate",
+        "input_summary": "Generate one campaign key visual candidate for internal review.",
+        "instruction": "Create an internally reviewed campaign key visual candidate.",
+        "tradition": "source-backed visual direction",
+        "provider": "openai",
+        "model": "gpt-image-1",
+        "route": "generate_image",
+        "parameters": {
+          "size": "1024x1024",
+          "quality": "preview"
+        }
+      },
+      "artifacts": {
+        "primary_asset_path": "artifacts/m3-demo/key-visual-v1.png",
+        "manifest_path": "",
+        "layer_paths": [],
+        "mask_paths": [],
+        "composite_path": "",
+        "pasteback_path": "",
+        "debug_paths": []
+      },
+      "evidence": {
+        "prompt_refs": [
+          "prompt:m3-demo-key-visual-v1"
+        ],
+        "semantic_paths": [],
+        "quality": {},
+        "evaluation": {},
+        "warnings": [
+          "Provider-backed visual output requires human visual review before public use."
+        ],
+        "risk_flags": [
+          "human_release_review_required"
+        ],
+        "missing_evidence": [
+          "durable Workspace persistence",
+          "human release decision"
+        ]
+      },
+      "review": {
+        "human_accept": null,
+        "agent_recommendation": "review_required",
+        "failure_type": "",
+        "preferred_action": "route_to_workspace_review",
+        "reviewer": "",
+        "reviewed_at": ""
+      },
+      "claim_state": {
+        "status": "preview_gated",
+        "public_ready": false,
+        "boundary_notes": "M3 preview fixture only; public release remains blocked until M5 gates pass."
+      }
+    },
+    {
+      "schema_version": 1,
+      "bridge_record_id": "bridge-decompose-key-visual-v1",
+      "created_at": "2026-06-15T00:00:00Z",
+      "source_system": "vulca-sdk-mcp",
+      "source_operation": "layers_split",
+      "source_refs": {
+        "repo": "vulca",
+        "commit": "fixture-placeholder",
+        "tool": "layers_split",
+        "case_id": "decompose-case-placeholder",
+        "case_log_path": "cases/decompose/m3-demo.jsonl",
+        "agent_session_id": ""
+      },
+      "workspace_targets": {
+        "creative_repo_id": "repo-cultural-key-visual-review",
+        "brief_id": "brief-cultural-key-visual",
+        "motif_branch_id": "motif-proof-spine",
+        "visual_variant_id": "variant-key-visual-v1",
+        "review_request_id": "review-key-visual-v1",
+        "release_gate_id": "releasegate-key-visual-v1"
+      },
+      "operation": {
+        "kind": "decompose",
+        "input_summary": "Split the generated key visual into inspectable semantic layers.",
+        "instruction": "Create layer evidence for reviewer inspection.",
+        "tradition": "source-backed visual direction",
+        "provider": "vulca",
+        "model": "layers-v2",
+        "route": "layers_split",
+        "parameters": {
+          "split_mode": "semantic"
+        }
+      },
+      "artifacts": {
+        "primary_asset_path": "artifacts/m3-demo/key-visual-v1.png",
+        "manifest_path": "artifacts/m3-demo/layers/manifest.json",
+        "layer_paths": [
+          "artifacts/m3-demo/layers/background.png",
+          "artifacts/m3-demo/layers/subject.png"
+        ],
+        "mask_paths": [],
+        "composite_path": "",
+        "pasteback_path": "",
+        "debug_paths": [
+          "artifacts/m3-demo/layers/detection-report.json"
+        ]
+      },
+      "evidence": {
+        "prompt_refs": [
+          "prompt:m3-demo-key-visual-v1"
+        ],
+        "semantic_paths": [
+          "artifacts/m3-demo/layers/manifest.json"
+        ],
+        "quality": {
+          "layer_count": 2,
+          "review_required": true
+        },
+        "evaluation": {},
+        "warnings": [
+          "Layer split is evidence support, not final review approval."
+        ],
+        "risk_flags": [
+          "human_release_review_required"
+        ],
+        "missing_evidence": [
+          "durable Workspace persistence",
+          "human release decision"
+        ]
+      },
+      "review": {
+        "human_accept": null,
+        "agent_recommendation": "review_required",
+        "failure_type": "",
+        "preferred_action": "attach_to_evidence_pack",
+        "reviewer": "",
+        "reviewed_at": ""
+      },
+      "claim_state": {
+        "status": "preview_gated",
+        "public_ready": false,
+        "boundary_notes": "Decompose evidence supports review but does not upgrade release state."
+      }
+    }
+  ],
+  "workspace_projection": {
+    "creative_repo_id": "repo-cultural-key-visual-review",
+    "brief": {
+      "id": "brief-cultural-key-visual",
+      "objective": "Create an internally reviewed campaign key visual.",
+      "source_bridge_records": [
+        "bridge-generate-key-visual-v1"
+      ]
+    },
+    "motif_branch": {
+      "id": "motif-proof-spine",
+      "status": "in_review",
+      "source_bridge_records": [
+        "bridge-generate-key-visual-v1"
+      ]
+    },
+    "visual_variant": {
+      "id": "variant-key-visual-v1",
+      "title": "M3 key visual candidate v1",
+      "primary_asset_path": "artifacts/m3-demo/key-visual-v1.png",
+      "source_bridge_records": [
+        "bridge-generate-key-visual-v1",
+        "bridge-decompose-key-visual-v1"
+      ],
+      "internal_review_status": "needs_human_review"
+    },
+    "agent_runs": [
+      {
+        "id": "agentrun-generate-key-visual-v1",
+        "tool": "generate_image",
+        "source_bridge_record": "bridge-generate-key-visual-v1"
+      },
+      {
+        "id": "agentrun-decompose-key-visual-v1",
+        "tool": "layers_split",
+        "source_bridge_record": "bridge-decompose-key-visual-v1"
+      }
+    ],
+    "evidence_pack": {
+      "id": "evidencepack-key-visual-v1",
+      "source_bridge_records": [
+        "bridge-generate-key-visual-v1",
+        "bridge-decompose-key-visual-v1"
+      ],
+      "artifact_refs": [
+        "artifacts/m3-demo/key-visual-v1.png",
+        "artifacts/m3-demo/layers/manifest.json"
+      ],
+      "missing_evidence": [
+        "durable Workspace persistence",
+        "human release decision"
+      ],
+      "blockers": [
+        "durable Workspace persistence",
+        "human release decision"
+      ],
+      "visible_to_reviewers": true
+    },
+    "review_request": {
+      "id": "review-key-visual-v1",
+      "linked_variant_id": "variant-key-visual-v1",
+      "required_checks": [
+        "visual-quality-review",
+        "cultural-evidence-review",
+        "claim-boundary-review"
+      ],
+      "current_blocker": "durable Workspace persistence and human release decision are missing",
+      "decision_state": "blocked"
+    },
+    "release_gate": {
+      "id": "releasegate-key-visual-v1",
+      "release_label": "preview_gated",
+      "publicReady": false,
+      "blockers": [
+        "durable Workspace persistence",
+        "human release decision"
+      ],
+      "human_owner_required": true,
+      "decision_state": "blocked"
+    }
+  },
+  "rr2_acceptance": {
+    "asset_becomes_bridge_record": true,
+    "bridge_projects_to_workspace_objects": true,
+    "missing_evidence_visible": true
+  }
+}

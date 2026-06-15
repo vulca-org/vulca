@@ -69,6 +69,11 @@ Use these object names unless implementation constraints require stable IDs:
 The implementation may create more granular `AgentRun` records, but it should
 still present one readable chain in Workspace.
 
+Reference fixture:
+
+- `artifact-bridge/m3-demo-bridge-fixture.json` records the RR2 canonical
+  bridge-to-Workspace projection for this object spine.
+
 ## Step 1: Brief
 
 The demo brief should include:

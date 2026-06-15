@@ -31,6 +31,8 @@ Current status:
 - SDK/MCP outputs are source-backed in the `vulca` repository.
 - Workspace review objects are source-backed in the `vulca-platform` preview.
 - `master` documents Workspace direction and current boundaries.
+- RR2 has a protected M3 demo fixture at
+  `artifact-bridge/m3-demo-bridge-fixture.json`.
 - Real artifact ingestion into Workspace remains a next implementation step.
 
 ## Bridge Envelope

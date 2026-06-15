@@ -4,6 +4,23 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added M3 Bridge Fixture
+
+- Added `artifact-bridge/README.md` and
+  `artifact-bridge/m3-demo-bridge-fixture.json` as the protected RR2 reference
+  fixture for projecting SDK/MCP artifacts into Workspace review objects.
+- Wired the fixture into the README read order, manifest, source index,
+  artifact bridge spec, complete demo path, release-readiness gate, validator,
+  and vault tests.
+- Preserved the boundary that missing evidence remains visible and public
+  release remains blocked.
+
+Source basis:
+
+- `docs/review-context/11-artifact-bridge-spec.md`.
+- `docs/review-context/12-complete-demo-path.md`.
+- `docs/review-context/14-release-readiness-evidence-gate.md`.
+
 ### Added Release Readiness Report Template
 
 - Added `release-readiness/README.md` and
