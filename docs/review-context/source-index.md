@@ -8,8 +8,15 @@ check before changing high-level VULCA claims.
 
 ## SDK / MCP Mainline
 
+- Mainline reference:
+  - `origin/master` commit `cb6d52fe docs: surface VULCA Workspace product
+    direction`
+  - Public README now includes the Workspace product direction and links to
+    `docs/product/workspace-current-state-audit.md` on `master`.
 - `README.md`
   - Product thesis: fuzzy visual intent to controlled creative production.
+  - Workspace framing: SDK/MCP is the execution layer; Workspace is the
+    Creative Repo review surface.
   - Workflow: discovery, brainstorm, spec, plan, generate, decompose, edit,
     evaluate, archive.
   - Decompose and layer-edit examples.
@@ -95,7 +102,9 @@ Workspace product code lives in the separate `vulca-platform` repository.
 
 - Branch: `master` in
   `/Users/yhryzy/.config/superpowers/worktrees/vulca-platform/workspace-interactive-demo`
-- Commit: `6efef07 fix: align workspace context review controls`
+- Context baseline: `6efef07 fix: align workspace context review controls`
+- Latest observed local preview:
+  `5f4a666 feat: add manual upload intake workflow`
 - Important files:
   - `wenxin-moyun/src/content/workspaceDemo.ts`
   - `wenxin-moyun/src/components/workspace/`
@@ -108,6 +117,9 @@ Workspace product code lives in the separate `vulca-platform` repository.
   - Result: 29 passed.
   - `npm run type-check`
   - Result: passed.
+- Mainline audit:
+  - `origin/master:docs/product/workspace-current-state-audit.md`
+  - Merge commit: `cb6d52fe docs: surface VULCA Workspace product direction`
 
 ## Website
 
