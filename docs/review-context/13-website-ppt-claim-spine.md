@@ -301,8 +301,9 @@ M4 is satisfied when:
 
 ## Next Milestone
 
-M5 is release readiness. It should not begin from copy polish. It should begin
-from implementation evidence:
+M5 release readiness is specified in
+`14-release-readiness-evidence-gate.md`. It should not begin from copy polish.
+It should begin from implementation evidence:
 
 - real artifact ingestion into Workspace;
 - persistent Creative Repo and review state;

@@ -249,9 +249,9 @@ The protected website/PPT claim spine defines:
 
 ### M5: Release readiness
 
-Status: next, blocked until stronger implementation evidence.
+Status: specified in `14-release-readiness-evidence-gate.md`.
 
-Release readiness requires:
+The protected release-readiness gate requires:
 
 - real artifact ingestion into Workspace;
 - persistence for Creative Repos and review state;

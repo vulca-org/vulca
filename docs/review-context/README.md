@@ -43,6 +43,7 @@ mainline and does not carry or require the vault validation gate.
   path.
 - `13-website-ppt-claim-spine.md`: shared website, README, PPT, and public
   story claim spine.
+- `14-release-readiness-evidence-gate.md`: M5 release-readiness evidence gate.
 - `requests/`: proposed changes from other sessions.
 - `gates/`: validation rules and local gate checks.
 
@@ -61,4 +62,6 @@ mainline and does not carry or require the vault validation gate.
    VULCA demo scenario.
 8. Read `13-website-ppt-claim-spine.md` before writing website copy, README
    positioning, public decks, or PPT proof-lab summaries.
-9. If this vault needs a change, create a request packet instead of editing it.
+9. Read `14-release-readiness-evidence-gate.md` before upgrading any preview,
+   internal, public-blocked, or release-readiness status.
+10. If this vault needs a change, create a request packet instead of editing it.

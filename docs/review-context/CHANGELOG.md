@@ -4,6 +4,26 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added Release Readiness Evidence Gate
+
+- Added `14-release-readiness-evidence-gate.md` as the protected M5 standard
+  for upgrading preview/internal/public-blocked work toward release-ready
+  claims.
+- Wired the release gate into the README read order, manifest, source index,
+  validator, and vault tests.
+- Updated the integration spine and website/PPT claim spine so M5 points to the
+  dedicated evidence-gate document.
+
+Source basis:
+
+- `docs/review-context/09-claim-boundaries.md`.
+- `docs/review-context/10-integration-spine.md`.
+- `docs/review-context/11-artifact-bridge-spec.md`.
+- `docs/review-context/12-complete-demo-path.md`.
+- `docs/review-context/13-website-ppt-claim-spine.md`.
+- `docs/platform/release-readiness-status.md`.
+- `origin/master:docs/product/workspace-current-state-audit.md`.
+
 ### Added Website And PPT Claim Spine
 
 - Added `13-website-ppt-claim-spine.md` as the protected M4 standard for
