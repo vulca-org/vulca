@@ -43,13 +43,18 @@ through pull requests, review, and required checks.
 
 ## Recommended Mechanism
 
-Use one repository ruleset instead of separate branch protection rules.
+Use repository rulesets instead of classic branch protection rules.
 
-Ruleset name:
+Use one shared base ruleset for both protected branches, then add status-check
+rulesets where the required checks differ by branch. This avoids requiring the
+full `ci.yml` matrix on `codex/vulca-context-vault`, where CI is not currently
+triggered and where full SDK CI would be unnecessary for context-only updates.
 
-`protected-main-and-context-vault`
+Shared base ruleset name:
 
-Ruleset target:
+`protected-main-and-context-vault-base`
+
+Base ruleset target:
 
 branch refs only.
 
@@ -72,14 +77,13 @@ actors.
 
 ## Required Rules
 
-The ruleset should enforce:
+The base ruleset should enforce:
 
 - Require pull request before merging.
 - Require at least one approving review.
 - Require review from Code Owners.
 - Dismiss stale approvals when new commits are pushed.
 - Require conversation resolution before merge.
-- Require status checks before merge.
 - Block force pushes.
 - Block branch deletion.
 
@@ -87,22 +91,51 @@ The ruleset should not require linear history in this pass. The current repo has
 merge commits on `master`, and changing history policy is a separate workflow
 decision.
 
-## Required Status Checks
+## Required Status Check Rulesets
 
-Initial required checks:
+Status checks should be enforced with branch-specific rulesets.
+
+Ruleset name:
+
+`protected-master-required-checks`
+
+Target:
+
+- `refs/heads/master`
+
+Required checks:
 
 - CI Python 3.11 job.
 - CI Python 3.12 job.
 - Review Context Vault validation job.
 
+Ruleset name:
+
+`protected-context-vault-required-checks`
+
+Target:
+
+- `refs/heads/codex/vulca-context-vault`
+
+Required checks:
+
+- Review Context Vault validation job.
+
+`Review Context Vault / validate` must run on every protected-branch PR and push.
+The implementation should remove path filters from `.github/workflows/review-context.yml`
+before the rulesets require that check. The validator is lightweight and safe to
+run on all protected branch changes.
+
 The exact GitHub check context names must be bound after the workflows have run
-at least once on GitHub. Expected display names are derived from:
+at least once on GitHub. Implementation must read the names from GitHub's
+commit check-runs API, not from local workflow filenames or UI guesses. Candidate
+names are derived from:
 
 - `.github/workflows/ci.yml`, matrix job `test` for Python 3.11 and 3.12.
 - `.github/workflows/review-context.yml`, job `validate`.
 
 Implementation must inspect recent check runs and use the exact context names
-reported by GitHub, rather than guessing strings locally.
+reported by GitHub.
 
 ## Bootstrap Sequence
 
@@ -112,16 +145,20 @@ future updates and before the review-context workflow can produce a check run.
 
 Sequence:
 
-1. Push `codex/vulca-context-vault` to `origin`.
-2. Wait for GitHub Actions to run on the pushed branch.
-3. Inspect exact check context names from the completed runs.
-4. Create the active repository ruleset targeting `master` and
-   `codex/vulca-context-vault`.
-5. Verify the ruleset through the GitHub API.
-6. Optionally attempt a harmless direct-push dry run only if GitHub provides a
+1. Remove path filters from `.github/workflows/review-context.yml` and commit the
+   workflow change if it has not already been done.
+2. Push `codex/vulca-context-vault` to `origin`.
+3. Wait for GitHub Actions to run on the pushed branch.
+4. Inspect exact check context names from the completed runs.
+5. Create the active repository rulesets:
+   `protected-main-and-context-vault-base`,
+   `protected-master-required-checks`, and
+   `protected-context-vault-required-checks`.
+6. Verify the rulesets through the GitHub API.
+7. Optionally attempt a harmless direct-push dry run only if GitHub provides a
    non-mutating way to inspect active rules; otherwise avoid test pushes.
 
-After step 4, future changes to either protected branch must go through PRs.
+After step 5, future changes to either protected branch must go through PRs.
 
 ## Review-Context Interaction
 
@@ -130,7 +167,8 @@ The GitHub ruleset complements, but does not replace, the vault rules:
 - `docs/review-context/LOCK.md` defines who may modify vault context.
 - `docs/review-context/GOVERNANCE.md` defines request and curator behavior.
 - CODEOWNERS makes owner review visible and enforceable.
-- the review-context workflow makes the local validator enforceable on PRs.
+- the review-context workflow makes the local validator enforceable on PRs and
+  pushes to protected branches.
 
 Other sessions may still read the vault and propose request packets. They should
 not directly edit protected vault files or merge their own changes into the
@@ -172,7 +210,9 @@ Before creating the ruleset:
 After creating the ruleset:
 
 - `gh api repos/vulca-org/vulca/rulesets` should list
-  `protected-main-and-context-vault` with active enforcement.
+  `protected-main-and-context-vault-base`,
+  `protected-master-required-checks`, and
+  `protected-context-vault-required-checks` with active enforcement.
 - `gh api repos/vulca-org/vulca/rules/branches/master` should show active rules
   for `master`.
 - `gh api repos/vulca-org/vulca/rules/branches/codex/vulca-context-vault`
