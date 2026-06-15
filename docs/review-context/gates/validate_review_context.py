@@ -34,6 +34,7 @@ CORE_HISTORY_FILES = [
     "07-workspace-product-model.md",
     "08-website-and-ppt-boundaries.md",
     "09-claim-boundaries.md",
+    "10-integration-spine.md",
 ]
 
 

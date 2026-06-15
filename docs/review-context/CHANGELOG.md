@@ -4,6 +4,23 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added Integration Spine
+
+- Added `10-integration-spine.md` as the routing layer across Workspace,
+  SDK/MCP, website, PPT proof lab, and protected vault context.
+- Updated the vault manifest, README read order, source index, and validator
+  tests so future sessions can find and gate the integration spine.
+- Recorded the `master` README alignment merge commit
+  `cb6d52fe docs: surface VULCA Workspace product direction`.
+- Updated Workspace source memory to distinguish the user-cited baseline
+  `6efef07` from the latest observed local preview `5f4a666`.
+
+Source basis:
+
+- `origin/master` commit `cb6d52fe`.
+- `origin/master:docs/product/workspace-current-state-audit.md`.
+- Platform Workspace baseline `6efef07` and observed preview `5f4a666`.
+
 ### Confirmed Branch-Only Protection
 
 - Recorded the human decision to keep the vault only on

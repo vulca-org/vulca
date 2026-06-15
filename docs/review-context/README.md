@@ -36,6 +36,8 @@ mainline and does not carry or require the vault validation gate.
 - `07-workspace-product-model.md`: Workspace / Creative Repo product model.
 - `08-website-and-ppt-boundaries.md`: website and PPT integration boundaries.
 - `09-claim-boundaries.md`: public, internal, blocked, and human-confirmed claims.
+- `10-integration-spine.md`: routing layer across Workspace, SDK/MCP, website,
+  PPT, and vault context.
 - `requests/`: proposed changes from other sessions.
 - `gates/`: validation rules and local gate checks.
 
@@ -46,4 +48,6 @@ mainline and does not carry or require the vault validation gate.
 3. Read the focused history file for the workstream being changed.
 4. Read `09-claim-boundaries.md` before writing public copy, decks, README text,
    or product claims.
-5. If this vault needs a change, create a request packet instead of editing it.
+5. Read `10-integration-spine.md` before connecting Workspace, SDK/MCP,
+   website, PPT, or vault workstreams.
+6. If this vault needs a change, create a request packet instead of editing it.
