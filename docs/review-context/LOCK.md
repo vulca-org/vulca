@@ -38,6 +38,11 @@ Direct vault edits are allowed only when all of these are true:
 
 The vault branch is not a feature branch. It is a protected memory branch.
 
+Current human decision: keep this vault only on `codex/vulca-context-vault`.
+Do not move or mirror it into `master` unless a future explicit instruction
+changes this policy and records that change in `GOVERNANCE.md`,
+`PROTECTION.md`, and `CHANGELOG.md`.
+
 - SDK implementation branches may read it.
 - Platform / Workspace branches may read it.
 - Website branches may read it.

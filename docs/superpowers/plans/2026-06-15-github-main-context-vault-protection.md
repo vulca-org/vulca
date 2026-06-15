@@ -4,7 +4,7 @@
 
 **Goal:** Enforce GitHub repository-side protection for `master` and `codex/vulca-context-vault` so both branches require PR workflow and checks before updates.
 
-**Architecture:** Use three GitHub repository rulesets: one shared base ruleset for PR-required/no-force-push/no-delete behavior, one master-only status-check ruleset, and one context-vault-only status-check ruleset. Keep master checks to existing CI until `review-context.yml` lands on `master`; keep context-vault gated by the lightweight `validate` job.
+**Architecture:** Use three GitHub repository rulesets: one shared base ruleset for PR-required/no-force-push/no-delete behavior, one master-only status-check ruleset, and one context-vault-only status-check ruleset. Keep master checks to existing CI; under the branch-only vault decision, only `codex/vulca-context-vault` is gated by the lightweight `validate` job.
 
 **Tech Stack:** Git, GitHub CLI (`gh`), GitHub REST repository rulesets API, GitHub Actions, Python 3.
 
@@ -13,7 +13,7 @@
 ## File Structure
 
 - Modify: `.github/workflows/review-context.yml`
-  - Remove path filters so the `validate` check appears on every context-vault PR/push and can later be required on `master` after the workflow lands there.
+  - Scope the workflow to `codex/vulca-context-vault` so the `validate` check appears on every context-vault PR/push without making it a `master` requirement.
 - Read: `.github/workflows/ci.yml`
   - Confirm CI matrix job names before binding required checks for `master`.
 - Read: `docs/superpowers/specs/2026-06-15-github-main-context-vault-protection-design.md`
@@ -38,9 +38,9 @@ name: Review Context Vault
 
 on:
   pull_request:
-    branches: [master, codex/vulca-context-vault]
+    branches: [codex/vulca-context-vault]
   push:
-    branches: [master, codex/vulca-context-vault]
+    branches: [codex/vulca-context-vault]
 
 concurrency:
   group: review-context-${{ github.workflow }}-${{ github.ref }}
@@ -412,8 +412,10 @@ In the initial solo-maintainer rollout, expected checks are:
 - `master-checks.json`: `test (3.11)`, `test (3.12)`
 - `context-checks.json`: `validate`
 
-Do not put `validate` in `master-checks.json` until `review-context.yml` has
-landed on `master` and a successful `validate` check exists on that branch.
+Do not put `validate` in `master-checks.json` under the branch-only vault
+decision. Any future change that makes `master` require `validate` must first
+record an explicit governance decision to move or mirror the vault workflow onto
+`master`.
 
 ## Task 5: Create Repository Rulesets
 
