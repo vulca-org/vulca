@@ -77,6 +77,17 @@ WEBSITE_PPT_COPY_ACCEPTANCE = {
     "translations_preserve_claim_level": True,
 }
 
+M5_CLOSEOUT_REQUIRED_ARTIFACTS = [
+    "release readiness implementation report",
+    "artifact bridge adapter test report",
+    "Workspace persistence test report",
+    "EvidencePack rendering test report",
+    "human release workflow test report",
+    "public example gate report",
+    "website/PPT copy review report",
+    "release decision record",
+]
+
 
 def load_validator():
     spec = importlib.util.spec_from_file_location("review_context_validator", VALIDATOR_PATH)
@@ -98,6 +109,7 @@ def write_minimal_vault(
     omit_durable_decision_history: bool = False,
     omit_public_example_owner: bool = False,
     omit_translation_boundary: bool = False,
+    allow_m5_product_release: bool = False,
 ) -> None:
     required_files = [
         "README.md",
@@ -117,6 +129,8 @@ def write_minimal_vault(
         "copy-gates/website-ppt-copy-gate.json",
         "release-readiness/README.md",
         "release-readiness/TEMPLATE.md",
+        "release-readiness/M5-CLOSEOUT.md",
+        "release-readiness/m5-closeout-summary.json",
         "requests/README.md",
         "requests/TEMPLATE.md",
         "gates/validate-review-context.md",
@@ -367,6 +381,44 @@ def write_minimal_vault(
                 ),
                 encoding="utf-8",
             )
+        elif rel == "release-readiness/M5-CLOSEOUT.md":
+            path.write_text(
+                "# M5 Closeout\n\n"
+                "Vault status: protected release-readiness closeout.\n\n"
+                "## Sources\n\n- test source\n",
+                encoding="utf-8",
+            )
+        elif rel == "release-readiness/m5-closeout-summary.json":
+            path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "closeout_id": "m5-closeout-v1",
+                        "approved_level": "R4",
+                        "product_release_ready": allow_m5_product_release,
+                        "human_release_owner_required": True,
+                        "human_release_owner_recorded": False,
+                        "artifact_index": [
+                            {
+                                "name": name,
+                                "status": "indexed",
+                                "source": "test source",
+                            }
+                            for name in M5_CLOSEOUT_REQUIRED_ARTIFACTS
+                        ],
+                        "release_decision": {
+                            "decision": "product_release_blocked",
+                            "max_allowed_level": "R4",
+                            "human_owner": None,
+                        },
+                        "remaining_blockers": [
+                            "production Workspace persistence evidence"
+                        ],
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
         elif path.suffix == ".md":
             text = standard_text
             if rel == forbidden_claim_file:
@@ -384,6 +436,7 @@ def run_validator_on(module, root: Path) -> int:
     module.DURABLE_REVIEW_FIXTURE_PATH = root / "workspace-durable" / "m3-durable-review-fixture.json"
     module.PUBLIC_EXAMPLE_GATE_PATH = root / "public-examples" / "m3-public-example-gate.json"
     module.WEBSITE_PPT_COPY_GATE_PATH = root / "copy-gates" / "website-ppt-copy-gate.json"
+    module.M5_CLOSEOUT_SUMMARY_PATH = root / "release-readiness" / "m5-closeout-summary.json"
     return module.main()
 
 
@@ -459,6 +512,14 @@ def test_public_example_gate_must_record_release_owner(tmp_path: Path) -> None:
 def test_website_ppt_copy_gate_must_preserve_translation_claim_level(tmp_path: Path) -> None:
     module = load_validator()
     write_minimal_vault(tmp_path, omit_translation_boundary=True)
+
+    with pytest.raises(SystemExit):
+        run_validator_on(module, tmp_path)
+
+
+def test_m5_closeout_must_not_mark_product_release_ready(tmp_path: Path) -> None:
+    module = load_validator()
+    write_minimal_vault(tmp_path, allow_m5_product_release=True)
 
     with pytest.raises(SystemExit):
         run_validator_on(module, tmp_path)

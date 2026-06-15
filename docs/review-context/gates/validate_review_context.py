@@ -15,6 +15,7 @@ BRIDGE_FIXTURE_PATH = ROOT / "artifact-bridge" / "m3-demo-bridge-fixture.json"
 DURABLE_REVIEW_FIXTURE_PATH = ROOT / "workspace-durable" / "m3-durable-review-fixture.json"
 PUBLIC_EXAMPLE_GATE_PATH = ROOT / "public-examples" / "m3-public-example-gate.json"
 WEBSITE_PPT_COPY_GATE_PATH = ROOT / "copy-gates" / "website-ppt-copy-gate.json"
+M5_CLOSEOUT_SUMMARY_PATH = ROOT / "release-readiness" / "m5-closeout-summary.json"
 
 
 FORBIDDEN_OUTSIDE_ALLOWLIST = [
@@ -102,6 +103,17 @@ WEBSITE_PPT_COPY_REQUIRED_ACCEPTANCE = [
     "public_copy_uses_r_level_status",
     "proof_lab_remains_bounded",
     "translations_preserve_claim_level",
+]
+
+M5_CLOSEOUT_REQUIRED_ARTIFACTS = [
+    "release readiness implementation report",
+    "artifact bridge adapter test report",
+    "Workspace persistence test report",
+    "EvidencePack rendering test report",
+    "human release workflow test report",
+    "public example gate report",
+    "website/PPT copy review report",
+    "release decision record",
 ]
 
 
@@ -482,6 +494,53 @@ def check_website_ppt_copy_gate() -> None:
             fail(f"website/PPT copy gate rr5_acceptance.{key} must be true")
 
 
+def check_m5_closeout_summary() -> None:
+    summary = load_json_file(M5_CLOSEOUT_SUMMARY_PATH, "M5 closeout summary")
+    if summary.get("schema_version") != 1:
+        fail("M5 closeout summary schema_version must be 1")
+    if not summary.get("closeout_id"):
+        fail("M5 closeout summary missing closeout_id")
+    if summary.get("approved_level") != "R4":
+        fail("M5 closeout summary approved_level must remain R4")
+    if summary.get("product_release_ready") is not False:
+        fail("M5 closeout summary must not mark product-level release ready")
+    if summary.get("human_release_owner_required") is not True:
+        fail("M5 closeout summary must require human release owner")
+    if summary.get("human_release_owner_recorded") is not False:
+        fail("M5 closeout summary must not claim recorded human release owner")
+
+    artifact_index = summary.get("artifact_index")
+    if not isinstance(artifact_index, list):
+        fail("M5 closeout summary missing artifact_index")
+    indexed = {}
+    for item in artifact_index:
+        if not isinstance(item, dict):
+            fail("M5 closeout summary artifact_index entries must be objects")
+        name = item.get("name")
+        if name:
+            indexed[name] = item
+    for name in M5_CLOSEOUT_REQUIRED_ARTIFACTS:
+        item = indexed.get(name)
+        if not item:
+            fail(f"M5 closeout summary missing required artifact: {name}")
+        if item.get("status") != "indexed" or not item.get("source"):
+            fail(f"M5 closeout summary artifact not indexed with source: {name}")
+
+    decision = summary.get("release_decision")
+    if not isinstance(decision, dict):
+        fail("M5 closeout summary missing release_decision")
+    if decision.get("decision") != "product_release_blocked":
+        fail("M5 closeout summary decision must block product release")
+    if decision.get("max_allowed_level") != "R4":
+        fail("M5 closeout summary max_allowed_level must be R4")
+    if decision.get("human_owner") is not None:
+        fail("M5 closeout summary must not fabricate human owner")
+
+    blockers = summary.get("remaining_blockers")
+    if not isinstance(blockers, list) or not blockers:
+        fail("M5 closeout summary must list remaining blockers")
+
+
 def main() -> int:
     manifest = load_manifest()
     check_required_files(manifest)
@@ -494,6 +553,7 @@ def main() -> int:
     check_durable_review_fixture()
     check_public_example_gate()
     check_website_ppt_copy_gate()
+    check_m5_closeout_summary()
     print("review-context gate passed")
     return 0
 

@@ -144,6 +144,9 @@ check before changing high-level VULCA claims.
   - `docs/review-context/copy-gates/website-ppt-copy-gate.json`
   - Protected RR5 reference for website, README, PPT, and translation
     claim-level alignment.
+- M5 closeout:
+  - `docs/review-context/release-readiness/m5-closeout-summary.json`
+  - Current release-readiness index and product-level release boundary.
 
 ## Workspace Product
 

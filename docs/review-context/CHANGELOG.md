@@ -4,6 +4,25 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added M5 Closeout Summary
+
+- Added `release-readiness/M5-CLOSEOUT.md` and
+  `release-readiness/m5-closeout-summary.json` as the protected closeout index
+  for RR1-RR5.
+- Wired the closeout into the README read order, manifest, source index,
+  release-readiness gate, validator, and vault tests.
+- Preserved the boundary that current evidence supports R4 example-specific
+  public copy only, while product-level R5 remains blocked.
+
+Source basis:
+
+- `docs/review-context/14-release-readiness-evidence-gate.md`.
+- `docs/review-context/release-readiness/TEMPLATE.md`.
+- `docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json`.
+- `docs/review-context/workspace-durable/m3-durable-review-fixture.json`.
+- `docs/review-context/public-examples/m3-public-example-gate.json`.
+- `docs/review-context/copy-gates/website-ppt-copy-gate.json`.
+
 ### Added Website And PPT Copy Gate
 
 - Added `copy-gates/README.md` and

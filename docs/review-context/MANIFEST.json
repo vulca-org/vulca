@@ -44,6 +44,8 @@
     "copy-gates/website-ppt-copy-gate.json",
     "release-readiness/README.md",
     "release-readiness/TEMPLATE.md",
+    "release-readiness/M5-CLOSEOUT.md",
+    "release-readiness/m5-closeout-summary.json",
     "requests/README.md",
     "requests/TEMPLATE.md",
     "gates/validate-review-context.md",
@@ -62,6 +64,7 @@
     "website_ppt_claim_spine": "13-website-ppt-claim-spine.md",
     "release_readiness_gate": "14-release-readiness-evidence-gate.md",
     "release_readiness_report_template": "release-readiness/TEMPLATE.md",
+    "m5_closeout_summary": "release-readiness/m5-closeout-summary.json",
     "website_film_led_homepage_branch": "5dc32cd",
     "ppt_case_pack_branch": "codex/vulca-ppt-case-pack",
     "ppt_latest_quality_gate": "run2_93_visual_quality_evaluation_public_blocked"
