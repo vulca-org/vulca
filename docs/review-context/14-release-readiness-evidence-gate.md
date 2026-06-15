@@ -45,6 +45,8 @@ As of the current vault state:
   `public-examples/m3-public-example-gate.json`.
 - RR5 has a protected website/PPT copy gate in
   `copy-gates/website-ppt-copy-gate.json`.
+- M5 closeout is recorded in
+  `release-readiness/m5-closeout-summary.json`.
 - PPT proof lab remains public blocked by the latest remembered Run 2.93 gate.
 
 Still missing for product release readiness:
@@ -55,6 +57,11 @@ Still missing for product release readiness:
 - human-owned release workflow with audit trail;
 - public example visual quality gates;
 - copy reviewed against claim boundaries after implementation evidence lands.
+
+Closeout note:
+
+- The current protected vault closeout supports R4 example-specific public copy
+  only. Product-level R5 remains blocked.
 
 ## Release Levels
 

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "closeout_id": "m5-closeout-v1",
+  "closeout_status": "protected_m5_closeout",
+  "approved_level": "R4",
+  "product_release_ready": false,
+  "human_release_owner_required": true,
+  "human_release_owner_recorded": false,
+  "artifact_index": [
+    {
+      "name": "release readiness implementation report",
+      "status": "indexed",
+      "source": "docs/review-context/release-readiness/M5-CLOSEOUT.md"
+    },
+    {
+      "name": "artifact bridge adapter test report",
+      "status": "indexed",
+      "source": "docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json"
+    },
+    {
+      "name": "Workspace persistence test report",
+      "status": "indexed",
+      "source": "docs/review-context/workspace-durable/m3-durable-review-fixture.json"
+    },
+    {
+      "name": "EvidencePack rendering test report",
+      "status": "indexed",
+      "source": "docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json"
+    },
+    {
+      "name": "human release workflow test report",
+      "status": "indexed",
+      "source": "docs/review-context/workspace-durable/m3-durable-review-fixture.json"
+    },
+    {
+      "name": "public example gate report",
+      "status": "indexed",
+      "source": "docs/review-context/public-examples/m3-public-example-gate.json"
+    },
+    {
+      "name": "website/PPT copy review report",
+      "status": "indexed",
+      "source": "docs/review-context/copy-gates/website-ppt-copy-gate.json"
+    },
+    {
+      "name": "release decision record",
+      "status": "indexed",
+      "source": "docs/review-context/release-readiness/m5-closeout-summary.json"
+    }
+  ],
+  "release_decision": {
+    "decision": "product_release_blocked",
+    "max_allowed_level": "R4",
+    "example_scope": "public-example-key-visual-v1",
+    "human_owner": null,
+    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked."
+  },
+  "remaining_blockers": [
+    "production Workspace persistence evidence",
+    "repeated bridge ingestion evidence",
+    "production EvidencePack rendering evidence",
+    "human-owned release workflow implementation evidence",
+    "release owner decision for product-level release"
+  ]
+}

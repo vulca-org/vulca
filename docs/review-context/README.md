@@ -52,6 +52,8 @@ mainline and does not carry or require the vault validation gate.
   artifact and copy scope.
 - `copy-gates/`: RR5 website, README, PPT, and translation claim-level gate.
 - `release-readiness/`: fixed report template for release-readiness reviews.
+- `release-readiness/M5-CLOSEOUT.md`: current M5 closeout and product-level
+  release boundary.
 - `requests/`: proposed changes from other sessions.
 - `gates/`: validation rules and local gate checks.
 
@@ -82,4 +84,6 @@ mainline and does not carry or require the vault validation gate.
     internal, public-blocked, or release-readiness status.
 14. Use `release-readiness/TEMPLATE.md` before proposing a stronger release
     level, public example, website claim, or PPT claim.
-15. If this vault needs a change, create a request packet instead of editing it.
+15. Read `release-readiness/M5-CLOSEOUT.md` before summarizing current
+    release-readiness state.
+16. If this vault needs a change, create a request packet instead of editing it.

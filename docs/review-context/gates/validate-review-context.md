@@ -25,6 +25,8 @@ The gate checks:
   release-owner decision, example-specific public copy, and RR4 acceptance flags
 - RR5 copy gate contains website/README/PPT R-level statuses, bounded proof-lab
   status, translation claim-level preservation, and no forbidden upgrades
+- M5 closeout summary indexes required release-readiness artifacts and keeps
+  product-level release state blocked without a recorded human release owner
 
 Passing this gate is necessary but not sufficient. A curator must still apply
 source and claim judgment.
