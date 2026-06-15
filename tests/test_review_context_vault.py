@@ -71,6 +71,12 @@ PUBLIC_EXAMPLE_ACCEPTANCE = {
     "public_copy_example_specific": True,
 }
 
+WEBSITE_PPT_COPY_ACCEPTANCE = {
+    "public_copy_uses_r_level_status": True,
+    "proof_lab_remains_bounded": True,
+    "translations_preserve_claim_level": True,
+}
+
 
 def load_validator():
     spec = importlib.util.spec_from_file_location("review_context_validator", VALIDATOR_PATH)
@@ -91,6 +97,7 @@ def write_minimal_vault(
     omit_bridge_missing_evidence: bool = False,
     omit_durable_decision_history: bool = False,
     omit_public_example_owner: bool = False,
+    omit_translation_boundary: bool = False,
 ) -> None:
     required_files = [
         "README.md",
@@ -106,6 +113,8 @@ def write_minimal_vault(
         "workspace-durable/m3-durable-review-fixture.json",
         "public-examples/README.md",
         "public-examples/m3-public-example-gate.json",
+        "copy-gates/README.md",
+        "copy-gates/website-ppt-copy-gate.json",
         "release-readiness/README.md",
         "release-readiness/TEMPLATE.md",
         "requests/README.md",
@@ -317,6 +326,47 @@ def write_minimal_vault(
                 ),
                 encoding="utf-8",
             )
+        elif rel == "copy-gates/website-ppt-copy-gate.json":
+            translation_level = "R5" if omit_translation_boundary else "R4"
+            path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "gate_id": "website-ppt-copy-gate-v1",
+                        "website": {
+                            "claim_level": "R4",
+                            "status_language": "example-specific public example",
+                            "blocked_claim_scope": "product-level release readiness",
+                        },
+                        "readme": {
+                            "claim_level": "R4",
+                            "status_language": "example-specific public example",
+                            "blocked_claim_scope": "production Workspace readiness",
+                        },
+                        "ppt": {
+                            "proof_lab_status": "public_blocked_unless_example_cleared",
+                            "claim_level": "R2",
+                        },
+                        "translations": [
+                            {
+                                "locale": "zh-CN",
+                                "source_surface": "website",
+                                "claim_level": translation_level,
+                                "matches_source_claim_level": not omit_translation_boundary,
+                            }
+                        ],
+                        "forbidden_upgrade_checks": {
+                            "copy_upgrades_missing_implementation": False,
+                            "ppt_outputs_cleared_without_specific_gate": False,
+                            "translation_upgrades_claim_level": False,
+                            "example_generalized_to_product_level": False,
+                        },
+                        "rr5_acceptance": WEBSITE_PPT_COPY_ACCEPTANCE,
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
         elif path.suffix == ".md":
             text = standard_text
             if rel == forbidden_claim_file:
@@ -333,6 +383,7 @@ def run_validator_on(module, root: Path) -> int:
     module.BRIDGE_FIXTURE_PATH = root / "artifact-bridge" / "m3-demo-bridge-fixture.json"
     module.DURABLE_REVIEW_FIXTURE_PATH = root / "workspace-durable" / "m3-durable-review-fixture.json"
     module.PUBLIC_EXAMPLE_GATE_PATH = root / "public-examples" / "m3-public-example-gate.json"
+    module.WEBSITE_PPT_COPY_GATE_PATH = root / "copy-gates" / "website-ppt-copy-gate.json"
     return module.main()
 
 
@@ -400,6 +451,14 @@ def test_durable_review_fixture_must_keep_human_decision_history(tmp_path: Path)
 def test_public_example_gate_must_record_release_owner(tmp_path: Path) -> None:
     module = load_validator()
     write_minimal_vault(tmp_path, omit_public_example_owner=True)
+
+    with pytest.raises(SystemExit):
+        run_validator_on(module, tmp_path)
+
+
+def test_website_ppt_copy_gate_must_preserve_translation_claim_level(tmp_path: Path) -> None:
+    module = load_validator()
+    write_minimal_vault(tmp_path, omit_translation_boundary=True)
 
     with pytest.raises(SystemExit):
         run_validator_on(module, tmp_path)

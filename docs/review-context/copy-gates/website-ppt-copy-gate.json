@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "gate_id": "website-ppt-copy-gate-v1",
+  "gate_status": "protected_rr5_reference",
+  "source_claim_spine": "docs/review-context/13-website-ppt-claim-spine.md",
+  "source_public_example_gate": "docs/review-context/public-examples/m3-public-example-gate.json",
+  "website": {
+    "surface": "website",
+    "claim_level": "R4",
+    "status_language": "example-specific public example",
+    "allowed_claim": "VULCA can show one evidence-bound preview path from brief to public-example gate.",
+    "blocked_claim_scope": "product-level release readiness",
+    "source_refs": [
+      "docs/review-context/public-examples/m3-public-example-gate.json"
+    ]
+  },
+  "readme": {
+    "surface": "README",
+    "claim_level": "R4",
+    "status_language": "example-specific public example",
+    "allowed_claim": "The protected review context includes an example-scoped public gate.",
+    "blocked_claim_scope": "production Workspace readiness",
+    "source_refs": [
+      "docs/review-context/public-examples/m3-public-example-gate.json"
+    ]
+  },
+  "ppt": {
+    "surface": "PPT",
+    "claim_level": "R2",
+    "proof_lab_status": "public_blocked_unless_example_cleared",
+    "allowed_claim": "PPT remains an internal proof lab unless a specific artifact clears its own gate.",
+    "blocked_claim_scope": "all PPT proof-lab outputs",
+    "source_refs": [
+      "docs/review-context/13-website-ppt-claim-spine.md"
+    ]
+  },
+  "translations": [
+    {
+      "locale": "zh-CN",
+      "source_surface": "website",
+      "claim_level": "R4",
+      "matches_source_claim_level": true,
+      "status_language": "example-specific public example",
+      "notes": "Translation preserves example-specific scope and does not upgrade the claim."
+    }
+  ],
+  "forbidden_upgrade_checks": {
+    "copy_upgrades_missing_implementation": false,
+    "ppt_outputs_cleared_without_specific_gate": false,
+    "translation_upgrades_claim_level": false,
+    "example_generalized_to_product_level": false
+  },
+  "rr5_acceptance": {
+    "public_copy_uses_r_level_status": true,
+    "proof_lab_remains_bounded": true,
+    "translations_preserve_claim_level": true
+  }
+}

@@ -4,6 +4,22 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added Website And PPT Copy Gate
+
+- Added `copy-gates/README.md` and
+  `copy-gates/website-ppt-copy-gate.json` as the protected RR5 reference for
+  website, README, PPT, and translation claim-level alignment.
+- Wired the gate into the README read order, manifest, source index,
+  website/PPT claim spine, release-readiness gate, validator, and vault tests.
+- Preserved the boundary that translations cannot upgrade claim level and PPT
+  proof-lab outputs remain bounded unless separately cleared.
+
+Source basis:
+
+- `docs/review-context/13-website-ppt-claim-spine.md`.
+- `docs/review-context/14-release-readiness-evidence-gate.md`.
+- `docs/review-context/public-examples/m3-public-example-gate.json`.
+
 ### Added Public Example Gate
 
 - Added `public-examples/README.md` and
