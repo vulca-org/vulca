@@ -47,6 +47,28 @@ While the repository has only one maintainer, the shared pull-request rule uses
 `require_code_owner_review: false` to avoid a solo-maintainer lockout. Code
 owner review can be re-enabled only after a second valid reviewer or team exists.
 
+## Related Platform Repository Protection
+
+As of 2026-06-15, `yha9806/vulca-platform` is a private repository. GitHub's
+branch-protection and ruleset APIs returned HTTP 403 with the message that the
+feature requires GitHub Pro or a public repository. Therefore, the platform
+repository cannot currently enforce the same hard no-direct-push rule through
+GitHub branch protection.
+
+Operational rule until the repository is upgraded or made public:
+
+- do not push directly to `master`;
+- push product work to `codex/*` branches;
+- use PRs for `master` integration;
+- treat `Run Tests` and `security` as required evidence even when GitHub cannot
+  technically enforce them;
+- record any exception in this vault before merging.
+
+Once GitHub protection becomes available for `yha9806/vulca-platform`, mirror
+the context-vault rule shape: require pull requests, block deletion, block
+non-fast-forward updates, configure no bypass actors by default, and require
+`Run Tests` plus `security` for `master`.
+
 ## Modification Path
 
 Reader sessions may:
@@ -83,5 +105,6 @@ If a critical repair requires temporary bypass:
 ## Sources
 
 - Repository rulesets verified through the GitHub API on 2026-06-15.
+- `yha9806/vulca-platform` protection and ruleset API checks on 2026-06-15.
 - Context-vault branch: `codex/vulca-context-vault`.
 - GitHub user owner in `.github/CODEOWNERS`: `@yha9806`.
