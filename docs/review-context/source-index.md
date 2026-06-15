@@ -96,6 +96,30 @@ check before changing high-level VULCA claims.
 - `docs/platform/release-readiness-status.md`
   - Public claim boundaries and manual gates.
 
+## Artifact Bridge
+
+- `docs/review-context/11-artifact-bridge-spec.md`
+  - Protected bridge spec for SDK/MCP outputs entering Workspace review.
+- `src/vulca/mcp_server.py`
+  - `generate_image` returns `image_path`, cost, latency, provider, MIME, and
+    provider metadata.
+  - `layers_split` returns manifest path, layers, split mode, optional
+    detection report, optional palette debug paths, and optional case logging
+    fields.
+  - `layers_redraw` returns redrawn layer path, source pasteback path,
+    advisory fields, and optional `redraw_case` logging fields.
+  - `evaluate_artwork` returns score, dimensions, rationales,
+    recommendations, deviation types, risk flags, and risk level.
+- Case schema specs:
+  - `docs/superpowers/specs/2026-05-05-vulca-learning-loop-v0-design.md`
+  - `docs/superpowers/specs/2026-05-05-decompose-case-design.md`
+  - `docs/superpowers/specs/2026-05-05-layer-generate-case-design.md`
+- Workspace source:
+  - `/Users/yhryzy/.config/superpowers/worktrees/vulca-platform/workspace-interactive-demo/wenxin-moyun/src/content/workspaceDemo.ts`
+  - Defines `Brief`, `MotifBranch`, `VisualVariant`, `AgentRun`,
+    `EvidencePack`, `ReviewRequest`, `ReviewItem`, `ReviewCheck`,
+    `ReviewIntake`, and `ReleaseGate`.
+
 ## Workspace Product
 
 Workspace product code lives in the separate `vulca-platform` repository.

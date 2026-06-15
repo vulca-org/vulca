@@ -38,6 +38,7 @@ mainline and does not carry or require the vault validation gate.
 - `09-claim-boundaries.md`: public, internal, blocked, and human-confirmed claims.
 - `10-integration-spine.md`: routing layer across Workspace, SDK/MCP, website,
   PPT, and vault context.
+- `11-artifact-bridge-spec.md`: SDK/MCP artifact to Workspace object bridge.
 - `requests/`: proposed changes from other sessions.
 - `gates/`: validation rules and local gate checks.
 
@@ -50,4 +51,6 @@ mainline and does not carry or require the vault validation gate.
    or product claims.
 5. Read `10-integration-spine.md` before connecting Workspace, SDK/MCP,
    website, PPT, or vault workstreams.
-6. If this vault needs a change, create a request packet instead of editing it.
+6. Read `11-artifact-bridge-spec.md` before designing artifact ingestion,
+   Workspace imports, evidence packs, review checks, or demo paths.
+7. If this vault needs a change, create a request packet instead of editing it.

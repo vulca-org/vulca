@@ -30,6 +30,7 @@
     "08-website-and-ppt-boundaries.md",
     "09-claim-boundaries.md",
     "10-integration-spine.md",
+    "11-artifact-bridge-spec.md",
     "requests/README.md",
     "requests/TEMPLATE.md",
     "gates/validate-review-context.md",
@@ -39,6 +40,7 @@
     "sdk_mainline": "cb6d52fe",
     "workspace_context_baseline": "6efef07",
     "workspace_latest_observed": "5f4a666",
+    "artifact_bridge_spec": "11-artifact-bridge-spec.md",
     "website_film_led_homepage_branch": "5dc32cd",
     "ppt_case_pack_branch": "codex/vulca-ppt-case-pack",
     "ppt_latest_quality_gate": "run2_93_visual_quality_evaluation_public_blocked"
