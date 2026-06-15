@@ -18,17 +18,19 @@ and a human release owner decision exist.
 - Required boundary: public copy may cite the example-specific gate only when
   it preserves the R4 scope.
 
-## Current Platform PR State
+## Current Platform Merge State
 
 As of 2026-06-15:
 
-- Platform PR #31, `[codex] Workspace review product shell`, is ready for
-  review. Its PR gate includes `tests/e2e/specs/workspace.spec.ts`, while the
-  legacy full E2E suite is manual advisory because it still covers retired
-  `/login` and `/canvas` flows.
-- Platform PR #32, `[codex] Durable workspace review persistence`, is a
-  stacked draft on PR #31. It implements local durable review state and the
-  release-owner audit trail, with local verification and remote security scan.
+- Platform PR #31, `[codex] Workspace review product shell`, merged to
+  `master` at `6810e67ca967a47782b5d9f83d751148d1eb6d26`. Its PR gate
+  includes `tests/e2e/specs/workspace.spec.ts`, while the legacy full E2E suite
+  is manual advisory because it still covers retired `/login` and `/canvas`
+  flows.
+- Platform PR #32, `[codex] Durable workspace review persistence`, merged to
+  `master` at `61da8e9f296b7c1e66f61720e487e8e42d4eb6ce`. It implements local
+  durable review state and the release-owner audit trail, with local
+  verification plus remote `Run Tests` and `security` gates.
 
 These PRs improve R5 evidence, but they do not change the product-level
 decision above.

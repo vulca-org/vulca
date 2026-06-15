@@ -6,11 +6,11 @@ Vault status: append-only change log.
 
 ### Recorded Platform PR And Protection Status
 
-- Recorded platform PR #31 as ready for review with a Workspace-focused PR
+- Recorded platform PR #31 as merged to `master` with a Workspace-focused PR
   gate and legacy full E2E suite moved to manual advisory.
-- Recorded platform PR #32 as the stacked durable Workspace persistence draft,
-  including local durable review state, staged decision persistence, advisory
-  agent completion persistence, and release-owner audit trail scope.
+- Recorded platform PR #32 as merged to `master`, including local durable
+  review state, staged decision persistence, advisory agent completion
+  persistence, and release-owner audit trail scope.
 - Clarified that these PRs improve R5 evidence but do not change product-level
   release readiness, which remains blocked.
 - Recorded the GitHub protection limitation for the private

@@ -12,17 +12,17 @@ blocker, decision-state, and human-audit boundaries.
 
 ## Product Implementation Status
 
-As of 2026-06-15, the platform implementation is split into two protected PRs:
+As of 2026-06-15, the platform implementation has two merged PRs on
+`yha9806/vulca-platform` `master`:
 
-- PR #31, `[codex] Workspace review product shell`, is ready for review on
-  `yha9806/vulca-platform` with head `codex/workspace-interactive-demo`.
-  Its PR gate blocks on TypeScript, quiet ESLint, frontend unit tests, backend
-  tests, backend coverage, and `tests/e2e/specs/workspace.spec.ts`.
-- PR #32, `[codex] Durable workspace review persistence`, is a stacked draft
-  on `codex/workspace-interactive-demo` with head
-  `codex/vulca-workspace-durable-review`. It adds local durable review state,
-  staged decision persistence, advisory-agent completion persistence, and the
-  release-owner audit trail.
+- PR #31, `[codex] Workspace review product shell`, merged at
+  `6810e67ca967a47782b5d9f83d751148d1eb6d26`. Its PR gate blocked on
+  TypeScript, quiet ESLint, frontend unit tests, backend tests, backend
+  coverage, and `tests/e2e/specs/workspace.spec.ts`.
+- PR #32, `[codex] Durable workspace review persistence`, merged at
+  `61da8e9f296b7c1e66f61720e487e8e42d4eb6ce`. It adds local durable review
+  state, staged decision persistence, advisory-agent completion persistence,
+  and the release-owner audit trail.
 
 PR #32 is intentionally a local durability slice. It does not certify shared
 production persistence or product-level release readiness.
