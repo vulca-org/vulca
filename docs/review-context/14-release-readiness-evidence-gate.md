@@ -41,6 +41,8 @@ As of the current vault state:
   `artifact-bridge/m3-demo-bridge-fixture.json`.
 - RR3 has a protected durable review fixture in
   `workspace-durable/m3-durable-review-fixture.json`.
+- RR4 has a protected public example gate in
+  `public-examples/m3-public-example-gate.json`.
 - PPT proof lab remains public blocked by the latest remembered Run 2.93 gate.
 
 Still missing for product release readiness:
@@ -280,6 +282,8 @@ Acceptance:
 ### RR4: Public Example Gate
 
 Run one example through visual, evidence, copy, and release review.
+
+Status: represented by `public-examples/m3-public-example-gate.json`.
 
 Acceptance:
 

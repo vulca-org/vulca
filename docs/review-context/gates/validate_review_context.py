@@ -13,6 +13,7 @@ MANIFEST_PATH = ROOT / "MANIFEST.json"
 RELEASE_READINESS_TEMPLATE_PATH = ROOT / "release-readiness" / "TEMPLATE.md"
 BRIDGE_FIXTURE_PATH = ROOT / "artifact-bridge" / "m3-demo-bridge-fixture.json"
 DURABLE_REVIEW_FIXTURE_PATH = ROOT / "workspace-durable" / "m3-durable-review-fixture.json"
+PUBLIC_EXAMPLE_GATE_PATH = ROOT / "public-examples" / "m3-public-example-gate.json"
 
 
 FORBIDDEN_OUTSIDE_ALLOWLIST = [
@@ -87,6 +88,13 @@ DURABLE_REVIEW_REQUIRED_ACCEPTANCE = [
     "reload_preserves_decision_state",
     "agent_system_cannot_finalize_public_release",
     "human_decision_history_auditable",
+]
+
+PUBLIC_EXAMPLE_REQUIRED_ACCEPTANCE = [
+    "evidence_pack_exists",
+    "visual_quality_reviewed",
+    "release_owner_records_decision",
+    "public_copy_example_specific",
 ]
 
 
@@ -350,6 +358,63 @@ def check_durable_review_fixture() -> None:
             fail(f"durable review fixture rr3_acceptance.{key} must be true")
 
 
+def check_public_example_gate() -> None:
+    gate = load_json_file(PUBLIC_EXAMPLE_GATE_PATH, "public example gate")
+    if gate.get("schema_version") != 1:
+        fail("public example gate schema_version must be 1")
+    if not gate.get("gate_id") or not gate.get("example_id"):
+        fail("public example gate missing gate_id or example_id")
+    if gate.get("release_level") != "R4":
+        fail("public example gate release_level must be R4")
+    if gate.get("scope") != "example_specific":
+        fail("public example gate scope must be example_specific")
+
+    evidence_pack = gate.get("evidence_pack")
+    if not isinstance(evidence_pack, dict):
+        fail("public example gate missing evidence_pack")
+    if evidence_pack.get("status") != "complete":
+        fail("public example gate evidence_pack must be complete")
+    if not evidence_pack.get("id"):
+        fail("public example gate evidence_pack missing id")
+
+    visual_review = gate.get("visual_quality_review")
+    if not isinstance(visual_review, dict):
+        fail("public example gate missing visual_quality_review")
+    if visual_review.get("status") != "pass" or not visual_review.get("reviewer"):
+        fail("public example gate visual quality review must pass with reviewer")
+
+    evidence_review = gate.get("evidence_review")
+    if not isinstance(evidence_review, dict):
+        fail("public example gate missing evidence_review")
+    if evidence_review.get("status") != "pass" or evidence_review.get("source_backed") is not True:
+        fail("public example gate evidence review must pass and be source-backed")
+
+    release_decision = gate.get("release_decision")
+    if not isinstance(release_decision, dict):
+        fail("public example gate missing release_decision")
+    if release_decision.get("status") != "public_example_approved":
+        fail("public example gate release decision must approve public example")
+    if not release_decision.get("release_owner"):
+        fail("public example gate release decision missing release owner")
+    if release_decision.get("decision_scope") != gate.get("example_id"):
+        fail("public example gate release decision must be scoped to the example")
+
+    public_copy = gate.get("public_copy")
+    if not isinstance(public_copy, dict):
+        fail("public example gate missing public_copy")
+    if public_copy.get("claim_scope") != "example_specific":
+        fail("public example gate public copy must be example-specific")
+    if public_copy.get("product_level_claim") is not False:
+        fail("public example gate must not approve product-level claims")
+
+    acceptance = gate.get("rr4_acceptance")
+    if not isinstance(acceptance, dict):
+        fail("public example gate missing rr4_acceptance")
+    for key in PUBLIC_EXAMPLE_REQUIRED_ACCEPTANCE:
+        if acceptance.get(key) is not True:
+            fail(f"public example gate rr4_acceptance.{key} must be true")
+
+
 def main() -> int:
     manifest = load_manifest()
     check_required_files(manifest)
@@ -360,6 +425,7 @@ def main() -> int:
     check_release_readiness_template()
     check_bridge_fixture()
     check_durable_review_fixture()
+    check_public_example_gate()
     print("review-context gate passed")
     return 0
 

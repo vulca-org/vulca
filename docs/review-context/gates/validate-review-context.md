@@ -21,6 +21,8 @@ The gate checks:
   visible missing evidence, blocked release gate, and RR2 acceptance flags
 - RR3 durable review fixture contains reload-preserved review item, evidence,
   blockers, decision state, permission checks, and human decision history
+- RR4 public example gate contains EvidencePack, visual/evidence reviews,
+  release-owner decision, example-specific public copy, and RR4 acceptance flags
 
 Passing this gate is necessary but not sufficient. A curator must still apply
 source and claim judgment.

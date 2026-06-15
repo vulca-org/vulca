@@ -136,6 +136,10 @@ check before changing high-level VULCA claims.
   - `docs/review-context/workspace-durable/m3-durable-review-fixture.json`
   - Protected RR3 reference for reload-preserved review item, EvidencePack,
     release blockers, decision state, and human decision history.
+- Public example gate:
+  - `docs/review-context/public-examples/m3-public-example-gate.json`
+  - Protected RR4 reference for one example-specific public artifact and copy
+    scope.
 
 ## Workspace Product
 
