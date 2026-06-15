@@ -17,6 +17,8 @@ The gate checks:
 - request template contains required gate checklist items
 - release-readiness template contains required Gates 1-6, evidence index,
   owner, and decision controls
+- M3 bridge fixture contains an asset bridge record, Workspace projection,
+  visible missing evidence, blocked release gate, and RR2 acceptance flags
 
 Passing this gate is necessary but not sufficient. A curator must still apply
 source and claim judgment.

@@ -37,6 +37,8 @@ As of the current vault state:
   protected vault documents.
 - RR1 has a fixed release-readiness report template in
   `release-readiness/TEMPLATE.md`.
+- RR2 has a protected M3 bridge fixture in
+  `artifact-bridge/m3-demo-bridge-fixture.json`.
 - PPT proof lab remains public blocked by the latest remembered Run 2.93 gate.
 
 Still missing for product release readiness:
@@ -252,6 +254,8 @@ Acceptance:
 ### RR2: Bridge Adapter And Fixture
 
 Implement or document one real bridge adapter path for the M3 demo.
+
+Status: represented by `artifact-bridge/m3-demo-bridge-fixture.json`.
 
 Acceptance:
 

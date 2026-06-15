@@ -49,6 +49,12 @@ RELEASE_READINESS_TEMPLATE_CHECKS = [
     "blocked / internal_only / preview_gated / internal_pilot / public_example / product_release",
 ]
 
+BRIDGE_FIXTURE_ACCEPTANCE = {
+    "asset_becomes_bridge_record": True,
+    "bridge_projects_to_workspace_objects": True,
+    "missing_evidence_visible": True,
+}
+
 
 def load_validator():
     spec = importlib.util.spec_from_file_location("review_context_validator", VALIDATOR_PATH)
@@ -66,6 +72,7 @@ def write_minimal_vault(
     forbidden_claim_file: str | None = None,
     omit_request_lock_item: bool = False,
     omit_release_gate_item: bool = False,
+    omit_bridge_missing_evidence: bool = False,
 ) -> None:
     required_files = [
         "README.md",
@@ -75,6 +82,8 @@ def write_minimal_vault(
         "MANIFEST.json",
         "source-index.md",
         *CORE_HISTORY_FILES,
+        "artifact-bridge/README.md",
+        "artifact-bridge/m3-demo-bridge-fixture.json",
         "release-readiness/README.md",
         "release-readiness/TEMPLATE.md",
         "requests/README.md",
@@ -98,6 +107,7 @@ def write_minimal_vault(
     (root / "MANIFEST.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     standard_text = "# Test\n\nVault status: test.\n\n## Sources\n\n- test source\n"
+    missing_evidence = [] if omit_bridge_missing_evidence else ["durable storage evidence"]
     for rel in required_files:
         if rel == "MANIFEST.json" or rel == missing_required_file:
             continue
@@ -122,6 +132,68 @@ def write_minimal_vault(
                 + "\n\n## Sources\n\n- test source\n",
                 encoding="utf-8",
             )
+        elif rel == "artifact-bridge/m3-demo-bridge-fixture.json":
+            path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "fixture_id": "m3-demo-bridge-fixture-v1",
+                        "bridge_records": [
+                            {
+                                "bridge_record_id": "bridge-generate-key-visual-v1",
+                                "source_operation": "generate_image",
+                                "workspace_targets": {
+                                    "visual_variant_id": "variant-key-visual-v1"
+                                },
+                                "operation": {"kind": "generate"},
+                                "artifacts": {
+                                    "primary_asset_path": "artifacts/key-visual.png"
+                                },
+                                "evidence": {"prompt_refs": ["prompt-ref"]},
+                                "claim_state": {
+                                    "status": "preview_gated",
+                                    "public_ready": False,
+                                },
+                            }
+                        ],
+                        "workspace_projection": {
+                            "brief": {"id": "brief-cultural-key-visual"},
+                            "motif_branch": {"id": "motif-proof-spine"},
+                            "visual_variant": {
+                                "id": "variant-key-visual-v1",
+                                "source_bridge_records": [
+                                    "bridge-generate-key-visual-v1"
+                                ],
+                            },
+                            "agent_runs": [
+                                {
+                                    "id": "agentrun-generate-key-visual-v1",
+                                    "source_bridge_record": "bridge-generate-key-visual-v1",
+                                }
+                            ],
+                            "evidence_pack": {
+                                "id": "evidencepack-key-visual-v1",
+                                "source_bridge_records": [
+                                    "bridge-generate-key-visual-v1"
+                                ],
+                                "missing_evidence": missing_evidence,
+                                "blockers": missing_evidence,
+                                "visible_to_reviewers": True,
+                            },
+                            "review_request": {"id": "review-key-visual-v1"},
+                            "release_gate": {
+                                "id": "releasegate-key-visual-v1",
+                                "publicReady": False,
+                                "blockers": missing_evidence,
+                                "human_owner_required": True,
+                            },
+                        },
+                        "rr2_acceptance": BRIDGE_FIXTURE_ACCEPTANCE,
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
         elif path.suffix == ".md":
             text = standard_text
             if rel == forbidden_claim_file:
@@ -135,6 +207,7 @@ def run_validator_on(module, root: Path) -> int:
     module.ROOT = root
     module.MANIFEST_PATH = root / "MANIFEST.json"
     module.RELEASE_READINESS_TEMPLATE_PATH = root / "release-readiness" / "TEMPLATE.md"
+    module.BRIDGE_FIXTURE_PATH = root / "artifact-bridge" / "m3-demo-bridge-fixture.json"
     return module.main()
 
 
@@ -171,6 +244,14 @@ def test_request_template_must_preserve_lock_checklist(tmp_path: Path) -> None:
 def test_release_readiness_template_must_include_all_gate_controls(tmp_path: Path) -> None:
     module = load_validator()
     write_minimal_vault(tmp_path, omit_release_gate_item=True)
+
+    with pytest.raises(SystemExit):
+        run_validator_on(module, tmp_path)
+
+
+def test_bridge_fixture_must_keep_missing_evidence_visible(tmp_path: Path) -> None:
+    module = load_validator()
+    write_minimal_vault(tmp_path, omit_bridge_missing_evidence=True)
 
     with pytest.raises(SystemExit):
         run_validator_on(module, tmp_path)
