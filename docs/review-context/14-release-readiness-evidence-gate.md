@@ -39,6 +39,8 @@ As of the current vault state:
   `release-readiness/TEMPLATE.md`.
 - RR2 has a protected M3 bridge fixture in
   `artifact-bridge/m3-demo-bridge-fixture.json`.
+- RR3 has a protected durable review fixture in
+  `workspace-durable/m3-durable-review-fixture.json`.
 - PPT proof lab remains public blocked by the latest remembered Run 2.93 gate.
 
 Still missing for product release readiness:
@@ -266,6 +268,8 @@ Acceptance:
 ### RR3: Workspace Durable Review Path
 
 Implement persistence or a clearly bounded durable demo store.
+
+Status: represented by `workspace-durable/m3-durable-review-fixture.json`.
 
 Acceptance:
 

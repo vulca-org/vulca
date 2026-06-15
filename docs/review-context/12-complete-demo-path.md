@@ -73,6 +73,8 @@ Reference fixture:
 
 - `artifact-bridge/m3-demo-bridge-fixture.json` records the RR2 canonical
   bridge-to-Workspace projection for this object spine.
+- `workspace-durable/m3-durable-review-fixture.json` records the RR3 durable
+  review state required after the object spine is imported.
 
 ## Step 1: Brief
 

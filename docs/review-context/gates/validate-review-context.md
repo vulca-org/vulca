@@ -19,6 +19,8 @@ The gate checks:
   owner, and decision controls
 - M3 bridge fixture contains an asset bridge record, Workspace projection,
   visible missing evidence, blocked release gate, and RR2 acceptance flags
+- RR3 durable review fixture contains reload-preserved review item, evidence,
+  blockers, decision state, permission checks, and human decision history
 
 Passing this gate is necessary but not sufficient. A curator must still apply
 source and claim judgment.

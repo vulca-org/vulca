@@ -55,6 +55,15 @@ BRIDGE_FIXTURE_ACCEPTANCE = {
     "missing_evidence_visible": True,
 }
 
+DURABLE_REVIEW_ACCEPTANCE = {
+    "reload_preserves_review_item": True,
+    "reload_preserves_evidence": True,
+    "reload_preserves_blockers": True,
+    "reload_preserves_decision_state": True,
+    "agent_system_cannot_finalize_public_release": True,
+    "human_decision_history_auditable": True,
+}
+
 
 def load_validator():
     spec = importlib.util.spec_from_file_location("review_context_validator", VALIDATOR_PATH)
@@ -73,6 +82,7 @@ def write_minimal_vault(
     omit_request_lock_item: bool = False,
     omit_release_gate_item: bool = False,
     omit_bridge_missing_evidence: bool = False,
+    omit_durable_decision_history: bool = False,
 ) -> None:
     required_files = [
         "README.md",
@@ -84,6 +94,8 @@ def write_minimal_vault(
         *CORE_HISTORY_FILES,
         "artifact-bridge/README.md",
         "artifact-bridge/m3-demo-bridge-fixture.json",
+        "workspace-durable/README.md",
+        "workspace-durable/m3-durable-review-fixture.json",
         "release-readiness/README.md",
         "release-readiness/TEMPLATE.md",
         "requests/README.md",
@@ -194,6 +206,69 @@ def write_minimal_vault(
                 ),
                 encoding="utf-8",
             )
+        elif rel == "workspace-durable/m3-durable-review-fixture.json":
+            decision_history = (
+                []
+                if omit_durable_decision_history
+                else [
+                    {
+                        "actor_role": "human_release_owner",
+                        "action": "block_public_release",
+                        "summary": "Durable review fixture keeps public release blocked.",
+                        "timestamp": "2026-06-15T00:00:00Z",
+                    }
+                ]
+            )
+            path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "fixture_id": "m3-durable-review-fixture-v1",
+                        "storage_boundary": {
+                            "mode": "bounded_durable_demo_store",
+                            "reload_supported": True,
+                        },
+                        "persisted_objects": {
+                            "review_item": {
+                                "id": "review-key-visual-v1",
+                                "after_reload": True,
+                            },
+                            "evidence_pack": {
+                                "id": "evidencepack-key-visual-v1",
+                                "after_reload": True,
+                                "source_bridge_records": [
+                                    "bridge-generate-key-visual-v1"
+                                ],
+                            },
+                            "release_gate": {
+                                "id": "releasegate-key-visual-v1",
+                                "after_reload": True,
+                                "publicReady": False,
+                                "blockers": ["human release decision missing"],
+                            },
+                        },
+                        "decision_state": {
+                            "before_reload": "blocked",
+                            "after_reload": "blocked",
+                        },
+                        "permission_checks": {
+                            "agent_can_set_public_ready": False,
+                            "system_can_set_public_ready": False,
+                            "human_release_owner_required": True,
+                        },
+                        "decision_history": decision_history,
+                        "reload_assertions": [
+                            {"name": "review item survives reload"},
+                            {"name": "evidence pack survives reload"},
+                            {"name": "release blockers survive reload"},
+                            {"name": "decision state survives reload"},
+                        ],
+                        "rr3_acceptance": DURABLE_REVIEW_ACCEPTANCE,
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
         elif path.suffix == ".md":
             text = standard_text
             if rel == forbidden_claim_file:
@@ -208,6 +283,7 @@ def run_validator_on(module, root: Path) -> int:
     module.MANIFEST_PATH = root / "MANIFEST.json"
     module.RELEASE_READINESS_TEMPLATE_PATH = root / "release-readiness" / "TEMPLATE.md"
     module.BRIDGE_FIXTURE_PATH = root / "artifact-bridge" / "m3-demo-bridge-fixture.json"
+    module.DURABLE_REVIEW_FIXTURE_PATH = root / "workspace-durable" / "m3-durable-review-fixture.json"
     return module.main()
 
 
@@ -223,6 +299,13 @@ def test_missing_required_file_fails(tmp_path: Path) -> None:
 
     with pytest.raises(SystemExit):
         run_validator_on(module, tmp_path)
+
+
+def test_minimal_review_context_vault_fixture_passes(tmp_path: Path) -> None:
+    module = load_validator()
+    write_minimal_vault(tmp_path)
+
+    assert run_validator_on(module, tmp_path) == 0
 
 
 def test_forbidden_claim_outside_allowlist_fails(tmp_path: Path) -> None:
@@ -252,6 +335,14 @@ def test_release_readiness_template_must_include_all_gate_controls(tmp_path: Pat
 def test_bridge_fixture_must_keep_missing_evidence_visible(tmp_path: Path) -> None:
     module = load_validator()
     write_minimal_vault(tmp_path, omit_bridge_missing_evidence=True)
+
+    with pytest.raises(SystemExit):
+        run_validator_on(module, tmp_path)
+
+
+def test_durable_review_fixture_must_keep_human_decision_history(tmp_path: Path) -> None:
+    module = load_validator()
+    write_minimal_vault(tmp_path, omit_durable_decision_history=True)
 
     with pytest.raises(SystemExit):
         run_validator_on(module, tmp_path)

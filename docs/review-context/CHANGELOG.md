@@ -4,6 +4,24 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added Workspace Durable Review Fixture
+
+- Added `workspace-durable/README.md` and
+  `workspace-durable/m3-durable-review-fixture.json` as the protected RR3
+  reference for reload-preserved Workspace review state.
+- Wired the fixture into the README read order, manifest, source index,
+  Workspace product model, demo path, release-readiness gate, validator, and
+  vault tests.
+- Preserved the boundary that agent/system checks cannot set public release
+  state and human decision history must remain auditable.
+
+Source basis:
+
+- `docs/review-context/07-workspace-product-model.md`.
+- `docs/review-context/12-complete-demo-path.md`.
+- `docs/review-context/14-release-readiness-evidence-gate.md`.
+- `docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json`.
+
 ### Added M3 Bridge Fixture
 
 - Added `artifact-bridge/README.md` and
