@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "fixture_id": "m3-durable-review-fixture-v1",
+  "fixture_status": "protected_rr3_reference",
+  "source_demo": "docs/review-context/12-complete-demo-path.md",
+  "source_bridge_fixture": "docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json",
+  "storage_boundary": {
+    "mode": "bounded_durable_demo_store",
+    "implementation_status": "reference_fixture",
+    "reload_supported": true,
+    "production_backend_required_for_r5": true,
+    "boundary_notes": "This fixture proves the required durable state shape. It is not by itself a hosted Workspace backend."
+  },
+  "persisted_objects": {
+    "review_item": {
+      "id": "review-key-visual-v1",
+      "object_type": "ReviewRequest",
+      "before_reload": true,
+      "after_reload": true,
+      "source_bridge_records": [
+        "bridge-generate-key-visual-v1",
+        "bridge-decompose-key-visual-v1"
+      ]
+    },
+    "evidence_pack": {
+      "id": "evidencepack-key-visual-v1",
+      "object_type": "EvidencePack",
+      "before_reload": true,
+      "after_reload": true,
+      "source_bridge_records": [
+        "bridge-generate-key-visual-v1",
+        "bridge-decompose-key-visual-v1"
+      ],
+      "artifact_refs": [
+        "artifacts/m3-demo/key-visual-v1.png",
+        "artifacts/m3-demo/layers/manifest.json"
+      ]
+    },
+    "release_gate": {
+      "id": "releasegate-key-visual-v1",
+      "object_type": "ReleaseGate",
+      "before_reload": true,
+      "after_reload": true,
+      "release_label": "preview_gated",
+      "publicReady": false,
+      "blockers": [
+        "durable Workspace implementation report missing",
+        "human release owner decision required"
+      ]
+    }
+  },
+  "decision_state": {
+    "before_reload": "blocked",
+    "after_reload": "blocked",
+    "allowed_states": [
+      "blocked",
+      "changes_requested",
+      "internal_approved",
+      "public_example_approved"
+    ],
+    "state_source": "human_review_workflow"
+  },
+  "permission_checks": {
+    "agent_can_set_public_ready": false,
+    "system_can_set_public_ready": false,
+    "external_check_can_set_public_ready": false,
+    "human_release_owner_required": true
+  },
+  "decision_history": [
+    {
+      "actor_role": "human_release_owner",
+      "actor_id": "release-owner-placeholder",
+      "action": "block_public_release",
+      "summary": "Durable review fixture keeps public release blocked until Workspace persistence and human release evidence exist.",
+      "timestamp": "2026-06-15T00:00:00Z",
+      "source": "RR3 fixture"
+    }
+  ],
+  "reload_assertions": [
+    {
+      "name": "review item survives reload",
+      "object_ref": "review-key-visual-v1",
+      "expected_after_reload": true
+    },
+    {
+      "name": "evidence pack survives reload",
+      "object_ref": "evidencepack-key-visual-v1",
+      "expected_after_reload": true
+    },
+    {
+      "name": "release blockers survive reload",
+      "object_ref": "releasegate-key-visual-v1",
+      "expected_blockers_after_reload": [
+        "durable Workspace implementation report missing",
+        "human release owner decision required"
+      ]
+    },
+    {
+      "name": "decision state survives reload",
+      "object_ref": "releasegate-key-visual-v1",
+      "expected_decision_state_after_reload": "blocked"
+    }
+  ],
+  "rr3_acceptance": {
+    "reload_preserves_review_item": true,
+    "reload_preserves_evidence": true,
+    "reload_preserves_blockers": true,
+    "reload_preserves_decision_state": true,
+    "agent_system_cannot_finalize_public_release": true,
+    "human_decision_history_auditable": true
+  }
+}

@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "MANIFEST.json"
 RELEASE_READINESS_TEMPLATE_PATH = ROOT / "release-readiness" / "TEMPLATE.md"
 BRIDGE_FIXTURE_PATH = ROOT / "artifact-bridge" / "m3-demo-bridge-fixture.json"
+DURABLE_REVIEW_FIXTURE_PATH = ROOT / "workspace-durable" / "m3-durable-review-fixture.json"
 
 
 FORBIDDEN_OUTSIDE_ALLOWLIST = [
@@ -71,6 +72,21 @@ BRIDGE_FIXTURE_REQUIRED_ACCEPTANCE = [
     "asset_becomes_bridge_record",
     "bridge_projects_to_workspace_objects",
     "missing_evidence_visible",
+]
+
+DURABLE_REVIEW_REQUIRED_OBJECTS = [
+    "review_item",
+    "evidence_pack",
+    "release_gate",
+]
+
+DURABLE_REVIEW_REQUIRED_ACCEPTANCE = [
+    "reload_preserves_review_item",
+    "reload_preserves_evidence",
+    "reload_preserves_blockers",
+    "reload_preserves_decision_state",
+    "agent_system_cannot_finalize_public_release",
+    "human_decision_history_auditable",
 ]
 
 
@@ -259,6 +275,81 @@ def check_bridge_fixture() -> None:
             fail(f"bridge fixture rr2_acceptance.{key} must be true")
 
 
+def check_durable_review_fixture() -> None:
+    fixture = load_json_file(DURABLE_REVIEW_FIXTURE_PATH, "durable review fixture")
+    if fixture.get("schema_version") != 1:
+        fail("durable review fixture schema_version must be 1")
+    if not fixture.get("fixture_id"):
+        fail("durable review fixture missing fixture_id")
+
+    storage = fixture.get("storage_boundary")
+    if not isinstance(storage, dict):
+        fail("durable review fixture missing storage_boundary")
+    if storage.get("reload_supported") is not True:
+        fail("durable review fixture must set storage_boundary.reload_supported true")
+
+    persisted_objects = fixture.get("persisted_objects")
+    if not isinstance(persisted_objects, dict):
+        fail("durable review fixture missing persisted_objects")
+    for key in DURABLE_REVIEW_REQUIRED_OBJECTS:
+        obj = persisted_objects.get(key)
+        if not isinstance(obj, dict):
+            fail(f"durable review fixture missing persisted object: {key}")
+        if obj.get("after_reload") is not True:
+            fail(f"durable review fixture {key} must survive reload")
+
+    evidence_pack = persisted_objects["evidence_pack"]
+    if not evidence_pack.get("source_bridge_records"):
+        fail("durable review fixture evidence_pack must preserve source bridge records")
+
+    release_gate = persisted_objects["release_gate"]
+    if release_gate.get("publicReady") is not False:
+        fail("durable review fixture release_gate must keep publicReady false")
+    blockers = release_gate.get("blockers")
+    if not isinstance(blockers, list) or not blockers:
+        fail("durable review fixture release_gate must preserve blockers")
+
+    decision_state = fixture.get("decision_state")
+    if not isinstance(decision_state, dict):
+        fail("durable review fixture missing decision_state")
+    if not decision_state.get("before_reload") or not decision_state.get("after_reload"):
+        fail("durable review fixture must record decision state before and after reload")
+    if decision_state.get("before_reload") != decision_state.get("after_reload"):
+        fail("durable review fixture decision state must survive reload unchanged")
+
+    permissions = fixture.get("permission_checks")
+    if not isinstance(permissions, dict):
+        fail("durable review fixture missing permission_checks")
+    if permissions.get("agent_can_set_public_ready") is not False:
+        fail("durable review fixture must block agent public release finalization")
+    if permissions.get("system_can_set_public_ready") is not False:
+        fail("durable review fixture must block system public release finalization")
+    if permissions.get("human_release_owner_required") is not True:
+        fail("durable review fixture must require a human release owner")
+
+    decision_history = fixture.get("decision_history")
+    if not isinstance(decision_history, list) or not decision_history:
+        fail("durable review fixture must include auditable human decision history")
+    for index, event in enumerate(decision_history):
+        if not isinstance(event, dict):
+            fail(f"durable review decision_history[{index}] must be an object")
+        if event.get("actor_role") != "human_release_owner":
+            fail(f"durable review decision_history[{index}] must record human release owner")
+        if not event.get("action") or not event.get("timestamp"):
+            fail(f"durable review decision_history[{index}] missing action or timestamp")
+
+    assertions = fixture.get("reload_assertions")
+    if not isinstance(assertions, list) or len(assertions) < 4:
+        fail("durable review fixture must include reload assertions")
+
+    acceptance = fixture.get("rr3_acceptance")
+    if not isinstance(acceptance, dict):
+        fail("durable review fixture missing rr3_acceptance")
+    for key in DURABLE_REVIEW_REQUIRED_ACCEPTANCE:
+        if acceptance.get(key) is not True:
+            fail(f"durable review fixture rr3_acceptance.{key} must be true")
+
+
 def main() -> int:
     manifest = load_manifest()
     check_required_files(manifest)
@@ -268,6 +359,7 @@ def main() -> int:
     check_request_template()
     check_release_readiness_template()
     check_bridge_fixture()
+    check_durable_review_fixture()
     print("review-context gate passed")
     return 0
 

@@ -39,6 +39,8 @@ In the `vulca-platform` Workspace branch:
 - Pin filters
 - Context review controls
 - `public_ready=false` boundaries
+- RR3 durable review fixture:
+  `workspace-durable/m3-durable-review-fixture.json`
 
 Verified prior to vault creation:
 

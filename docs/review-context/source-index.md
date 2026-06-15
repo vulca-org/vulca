@@ -132,6 +132,10 @@ check before changing high-level VULCA claims.
   - Defines `Brief`, `MotifBranch`, `VisualVariant`, `AgentRun`,
     `EvidencePack`, `ReviewRequest`, `ReviewItem`, `ReviewCheck`,
     `ReviewIntake`, and `ReleaseGate`.
+- Durable review fixture:
+  - `docs/review-context/workspace-durable/m3-durable-review-fixture.json`
+  - Protected RR3 reference for reload-preserved review item, EvidencePack,
+    release blockers, decision state, and human decision history.
 
 ## Workspace Product
 
