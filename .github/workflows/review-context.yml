@@ -1,0 +1,39 @@
+name: Review Context Vault
+
+on:
+  pull_request:
+    branches: [master, codex/vulca-context-vault]
+    paths:
+      - 'docs/review-context/**'
+      - 'tests/test_review_context_vault.py'
+      - '.github/CODEOWNERS'
+      - '.github/workflows/review-context.yml'
+  push:
+    branches: [master, codex/vulca-context-vault]
+    paths:
+      - 'docs/review-context/**'
+      - 'tests/test_review_context_vault.py'
+      - '.github/CODEOWNERS'
+      - '.github/workflows/review-context.yml'
+
+concurrency:
+  group: review-context-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install test runner
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+      - name: Validate review context vault
+        run: python docs/review-context/gates/validate_review_context.py
+      - name: Test review context validator
+        run: python -m pytest tests/test_review_context_vault.py -q

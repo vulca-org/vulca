@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "vault_status": "protected",
+  "branch": "codex/vulca-context-vault",
+  "created_at": "2026-06-15",
+  "owner_rule": "Only a context-curator session may directly modify docs/review-context.",
+  "required_gates": [
+    "source_gate",
+    "claim_boundary_gate",
+    "request_gate",
+    "validation_gate"
+  ],
+  "validation_command": "python3 docs/review-context/gates/validate_review_context.py",
+  "required_files": [
+    "README.md",
+    "LOCK.md",
+    "GOVERNANCE.md",
+    "CHANGELOG.md",
+    "MANIFEST.json",
+    "source-index.md",
+    "00-project-overview.md",
+    "01-development-history.md",
+    "02-capability-map.md",
+    "03-layering-and-decompose.md",
+    "04-prompt-control.md",
+    "05-layer-redraw-and-mask-gates.md",
+    "06-learning-loop-and-case-records.md",
+    "07-workspace-product-model.md",
+    "08-website-and-ppt-boundaries.md",
+    "09-claim-boundaries.md",
+    "requests/README.md",
+    "requests/TEMPLATE.md",
+    "gates/validate-review-context.md",
+    "gates/validate_review_context.py"
+  ],
+  "core_sources": {
+    "sdk_mainline": "d6b8b559",
+    "workspace_product_branch": "6efef07",
+    "website_film_led_homepage_branch": "5dc32cd",
+    "ppt_case_pack_branch": "codex/vulca-ppt-case-pack",
+    "ppt_latest_quality_gate": "run2_93_visual_quality_evaluation_public_blocked"
+  },
+  "claim_boundary_allowlist": [
+    "09-claim-boundaries.md",
+    "GOVERNANCE.md",
+    "LOCK.md",
+    "requests/TEMPLATE.md"
+  ]
+}

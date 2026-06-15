@@ -6,6 +6,10 @@
 
 * @yhryzy
 
+# Protected context vault. Reader sessions may cite it, but direct edits require
+# owner review and the review-context gate.
+/docs/review-context/ @yhryzy
+
 # When future contributors emerge, add per-path ownership here, e.g.:
 #   /src/vulca/cultural/  @culture-team
 #   /docs/bp/             @bp-review
