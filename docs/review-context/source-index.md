@@ -152,6 +152,10 @@ Workspace product code lives in the separate `vulca-platform` repository.
 
 Website code lives in the separate `vulca-platform` repository.
 
+- Claim spine:
+  - `docs/review-context/13-website-ppt-claim-spine.md`
+  - Shared public-story standard for website, README-facing copy, PPT, and
+    internal proof-lab summaries.
 - Branch: `codex/vulcaart-film-led-homepage`
 - Commit: `5dc32cd docs: plan flora-method homepage redesign`
 - Important files:
@@ -166,6 +170,10 @@ Website code lives in the separate `vulca-platform` repository.
 
 ## PPT Proof Lab
 
+- Claim spine:
+  - `docs/review-context/13-website-ppt-claim-spine.md`
+  - Defines how PPT proof-lab material can support public story only when
+    labeled internal, preview-gated, or public blocked as appropriate.
 - Branch: `codex/vulca-ppt-case-pack`
 - Important files:
   - `docs/product/ppt-case-pack-v1/`

@@ -413,8 +413,8 @@ Acceptance:
 
 ### DP4: Website/PPT Alignment
 
-Use the same scenario for public story and internal deck work with explicit
-preview-gated language.
+Use `13-website-ppt-claim-spine.md` and this scenario for public story and
+internal deck work with explicit preview-gated language.
 
 Acceptance:
 

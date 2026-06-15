@@ -24,6 +24,7 @@ CORE_HISTORY_FILES = [
     "10-integration-spine.md",
     "11-artifact-bridge-spec.md",
     "12-complete-demo-path.md",
+    "13-website-ppt-claim-spine.md",
 ]
 
 REQUEST_TEMPLATE_CHECKS = [

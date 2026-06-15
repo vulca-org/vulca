@@ -237,9 +237,9 @@ This should be preview-gated until real persistence and SDK/MCP ingestion land.
 
 ### M4: Website and deck alignment
 
-Status: next after demo-path standardization.
+Status: specified in `13-website-ppt-claim-spine.md`.
 
-The website and PPT should share one claim spine:
+The protected website/PPT claim spine defines:
 
 - what VULCA is;
 - what Workspace does;
@@ -249,7 +249,7 @@ The website and PPT should share one claim spine:
 
 ### M5: Release readiness
 
-Status: blocked until stronger implementation evidence.
+Status: next, blocked until stronger implementation evidence.
 
 Release readiness requires:
 

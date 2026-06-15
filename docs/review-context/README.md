@@ -41,6 +41,8 @@ mainline and does not carry or require the vault validation gate.
 - `11-artifact-bridge-spec.md`: SDK/MCP artifact to Workspace object bridge.
 - `12-complete-demo-path.md`: standard brief-to-evidence-to-release-gate demo
   path.
+- `13-website-ppt-claim-spine.md`: shared website, README, PPT, and public
+  story claim spine.
 - `requests/`: proposed changes from other sessions.
 - `gates/`: validation rules and local gate checks.
 
@@ -57,4 +59,6 @@ mainline and does not carry or require the vault validation gate.
    Workspace imports, evidence packs, review checks, or demo paths.
 7. Read `12-complete-demo-path.md` before building or describing the standard
    VULCA demo scenario.
-8. If this vault needs a change, create a request packet instead of editing it.
+8. Read `13-website-ppt-claim-spine.md` before writing website copy, README
+   positioning, public decks, or PPT proof-lab summaries.
+9. If this vault needs a change, create a request packet instead of editing it.
