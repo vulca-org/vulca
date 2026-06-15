@@ -39,6 +39,23 @@ fuzzy intent
 | Evaluate | L1-L5 cultural and visual scoring | Current |
 | Archive | Prompts, masks, layers, evaluations, errors, user overrides | Current |
 
+## Product direction: VULCA Workspace
+
+The SDK and MCP tools are the execution layer. The product direction is
+**VULCA Workspace**: a Creative Repo surface for AI-native teams to review
+briefs, visual variants, agent findings, evidence packs, and release gates
+before anything is treated as ready for public release.
+
+The current Workspace preview is review-first, not an editor replacement:
+Review Inbox, Single Asset Review, Context Drawer, typed review checks,
+decision actions, manual upload intake, and a visible `public_ready=false`
+release boundary. Agents can advise inside the workflow, but human reviewers
+own release decisions.
+
+See [Workspace current-state audit](docs/product/workspace-current-state-audit.md)
+for how the Workspace preview connects to the SDK/MCP tools, website, PPT proof
+lab, and protected project context.
+
 > *Concrete demo below: Michelangelo's *Creation of Adam* → 5 semantic layers via `/decompose` (background · adam · god_and_angels · red_cloak · green_ground), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK surface: MCP tools plus agent skills, validated by the test suite.*
 
 ## What happens when you run `/decompose`
