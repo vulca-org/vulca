@@ -3,18 +3,8 @@ name: Review Context Vault
 on:
   pull_request:
     branches: [master, codex/vulca-context-vault]
-    paths:
-      - 'docs/review-context/**'
-      - 'tests/test_review_context_vault.py'
-      - '.github/CODEOWNERS'
-      - '.github/workflows/review-context.yml'
   push:
     branches: [master, codex/vulca-context-vault]
-    paths:
-      - 'docs/review-context/**'
-      - 'tests/test_review_context_vault.py'
-      - '.github/CODEOWNERS'
-      - '.github/workflows/review-context.yml'
 
 concurrency:
   group: review-context-${{ github.workflow }}-${{ github.ref }}
