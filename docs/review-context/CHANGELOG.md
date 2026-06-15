@@ -4,6 +4,26 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Recorded Platform PR And Protection Status
+
+- Recorded platform PR #31 as ready for review with a Workspace-focused PR
+  gate and legacy full E2E suite moved to manual advisory.
+- Recorded platform PR #32 as the stacked durable Workspace persistence draft,
+  including local durable review state, staged decision persistence, advisory
+  agent completion persistence, and release-owner audit trail scope.
+- Clarified that these PRs improve R5 evidence but do not change product-level
+  release readiness, which remains blocked.
+- Recorded the GitHub protection limitation for the private
+  `yha9806/vulca-platform` repository and the temporary no-direct-master
+  operational rule until GitHub branch protection becomes available.
+
+Source basis:
+
+- `yha9806/vulca-platform` PR #31.
+- `yha9806/vulca-platform` PR #32.
+- GitHub ruleset/protection API checks on 2026-06-15.
+- Local verification for `codex/vulca-workspace-durable-review`.
+
 ### Added M5 Closeout Summary
 
 - Added `release-readiness/M5-CLOSEOUT.md` and

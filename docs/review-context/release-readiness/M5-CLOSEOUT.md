@@ -18,6 +18,21 @@ and a human release owner decision exist.
 - Required boundary: public copy may cite the example-specific gate only when
   it preserves the R4 scope.
 
+## Current Platform PR State
+
+As of 2026-06-15:
+
+- Platform PR #31, `[codex] Workspace review product shell`, is ready for
+  review. Its PR gate includes `tests/e2e/specs/workspace.spec.ts`, while the
+  legacy full E2E suite is manual advisory because it still covers retired
+  `/login` and `/canvas` flows.
+- Platform PR #32, `[codex] Durable workspace review persistence`, is a
+  stacked draft on PR #31. It implements local durable review state and the
+  release-owner audit trail, with local verification and remote security scan.
+
+These PRs improve R5 evidence, but they do not change the product-level
+decision above.
+
 ## Indexed Evidence
 
 - RR1 checklist/report template:
@@ -35,7 +50,7 @@ and a human release owner decision exist.
 
 ## Remaining R5 Blockers
 
-- production Workspace persistence evidence;
+- production/shared Workspace persistence evidence beyond the local durable PR;
 - repeated bridge ingestion across more than one workflow;
 - production EvidencePack rendering evidence;
 - human-owned release workflow implementation evidence;
@@ -49,3 +64,5 @@ and a human release owner decision exist.
 - `docs/review-context/workspace-durable/m3-durable-review-fixture.json`
 - `docs/review-context/public-examples/m3-public-example-gate.json`
 - `docs/review-context/copy-gates/website-ppt-copy-gate.json`
+- `yha9806/vulca-platform` PR #31.
+- `yha9806/vulca-platform` PR #32.
