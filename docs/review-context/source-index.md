@@ -140,6 +140,10 @@ check before changing high-level VULCA claims.
   - `docs/review-context/public-examples/m3-public-example-gate.json`
   - Protected RR4 reference for one example-specific public artifact and copy
     scope.
+- Website/PPT copy gate:
+  - `docs/review-context/copy-gates/website-ppt-copy-gate.json`
+  - Protected RR5 reference for website, README, PPT, and translation
+    claim-level alignment.
 
 ## Workspace Product
 

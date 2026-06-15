@@ -21,6 +21,8 @@ PPT is an internal proof and packaging lab until its gates clear.
 This file does not replace `09-claim-boundaries.md`. It applies those boundaries
 to the public website and presentation surfaces.
 
+RR5 applies this spine through `copy-gates/website-ppt-copy-gate.json`.
+
 ## Shared Public Thesis
 
 Use this as the common top-level claim:
@@ -215,6 +217,8 @@ Required release boundary:
 ```text
 public_ready=false until a human-owned release workflow clears the blockers.
 ```
+
+RR5 copy review must preserve this boundary in translated copy.
 
 ## Copy Blocks
 

@@ -23,6 +23,8 @@ The gate checks:
   blockers, decision state, permission checks, and human decision history
 - RR4 public example gate contains EvidencePack, visual/evidence reviews,
   release-owner decision, example-specific public copy, and RR4 acceptance flags
+- RR5 copy gate contains website/README/PPT R-level statuses, bounded proof-lab
+  status, translation claim-level preservation, and no forbidden upgrades
 
 Passing this gate is necessary but not sufficient. A curator must still apply
 source and claim judgment.

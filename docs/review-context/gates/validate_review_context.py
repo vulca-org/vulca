@@ -14,6 +14,7 @@ RELEASE_READINESS_TEMPLATE_PATH = ROOT / "release-readiness" / "TEMPLATE.md"
 BRIDGE_FIXTURE_PATH = ROOT / "artifact-bridge" / "m3-demo-bridge-fixture.json"
 DURABLE_REVIEW_FIXTURE_PATH = ROOT / "workspace-durable" / "m3-durable-review-fixture.json"
 PUBLIC_EXAMPLE_GATE_PATH = ROOT / "public-examples" / "m3-public-example-gate.json"
+WEBSITE_PPT_COPY_GATE_PATH = ROOT / "copy-gates" / "website-ppt-copy-gate.json"
 
 
 FORBIDDEN_OUTSIDE_ALLOWLIST = [
@@ -95,6 +96,12 @@ PUBLIC_EXAMPLE_REQUIRED_ACCEPTANCE = [
     "visual_quality_reviewed",
     "release_owner_records_decision",
     "public_copy_example_specific",
+]
+
+WEBSITE_PPT_COPY_REQUIRED_ACCEPTANCE = [
+    "public_copy_uses_r_level_status",
+    "proof_lab_remains_bounded",
+    "translations_preserve_claim_level",
 ]
 
 
@@ -415,6 +422,66 @@ def check_public_example_gate() -> None:
             fail(f"public example gate rr4_acceptance.{key} must be true")
 
 
+def check_website_ppt_copy_gate() -> None:
+    gate = load_json_file(WEBSITE_PPT_COPY_GATE_PATH, "website/PPT copy gate")
+    if gate.get("schema_version") != 1:
+        fail("website/PPT copy gate schema_version must be 1")
+    if not gate.get("gate_id"):
+        fail("website/PPT copy gate missing gate_id")
+
+    for surface in ["website", "readme"]:
+        value = gate.get(surface)
+        if not isinstance(value, dict):
+            fail(f"website/PPT copy gate missing {surface}")
+        if not value.get("claim_level"):
+            fail(f"website/PPT copy gate {surface} missing claim_level")
+        if not value.get("status_language"):
+            fail(f"website/PPT copy gate {surface} missing status_language")
+        if value.get("blocked_claim_scope") in {"", None}:
+            fail(f"website/PPT copy gate {surface} missing blocked_claim_scope")
+
+    ppt = gate.get("ppt")
+    if not isinstance(ppt, dict):
+        fail("website/PPT copy gate missing ppt")
+    if ppt.get("proof_lab_status") != "public_blocked_unless_example_cleared":
+        fail("website/PPT copy gate must preserve PPT proof-lab boundary")
+    if not ppt.get("claim_level"):
+        fail("website/PPT copy gate ppt missing claim_level")
+
+    translations = gate.get("translations")
+    if not isinstance(translations, list) or not translations:
+        fail("website/PPT copy gate must include translations")
+    surface_levels = {
+        "website": gate["website"].get("claim_level"),
+        "readme": gate["readme"].get("claim_level"),
+        "ppt": ppt.get("claim_level"),
+    }
+    for index, translation in enumerate(translations):
+        if not isinstance(translation, dict):
+            fail(f"website/PPT copy gate translations[{index}] must be an object")
+        source_surface = translation.get("source_surface")
+        if source_surface not in surface_levels:
+            fail(f"website/PPT copy gate translations[{index}] has invalid source_surface")
+        if translation.get("matches_source_claim_level") is not True:
+            fail(f"website/PPT copy gate translations[{index}] must preserve claim level")
+        if translation.get("claim_level") != surface_levels[source_surface]:
+            fail(f"website/PPT copy gate translations[{index}] claim_level must match source")
+
+    forbidden_upgrades = gate.get("forbidden_upgrade_checks")
+    if not isinstance(forbidden_upgrades, dict):
+        fail("website/PPT copy gate missing forbidden_upgrade_checks")
+    for key, value in forbidden_upgrades.items():
+        if value is not False:
+            fail(f"website/PPT copy gate forbidden upgrade must remain false: {key}")
+
+    acceptance = gate.get("rr5_acceptance")
+    if not isinstance(acceptance, dict):
+        fail("website/PPT copy gate missing rr5_acceptance")
+    for key in WEBSITE_PPT_COPY_REQUIRED_ACCEPTANCE:
+        if acceptance.get(key) is not True:
+            fail(f"website/PPT copy gate rr5_acceptance.{key} must be true")
+
+
 def main() -> int:
     manifest = load_manifest()
     check_required_files(manifest)
@@ -426,6 +493,7 @@ def main() -> int:
     check_bridge_fixture()
     check_durable_review_fixture()
     check_public_example_gate()
+    check_website_ppt_copy_gate()
     print("review-context gate passed")
     return 0
 

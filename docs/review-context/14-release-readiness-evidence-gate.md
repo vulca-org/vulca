@@ -43,6 +43,8 @@ As of the current vault state:
   `workspace-durable/m3-durable-review-fixture.json`.
 - RR4 has a protected public example gate in
   `public-examples/m3-public-example-gate.json`.
+- RR5 has a protected website/PPT copy gate in
+  `copy-gates/website-ppt-copy-gate.json`.
 - PPT proof lab remains public blocked by the latest remembered Run 2.93 gate.
 
 Still missing for product release readiness:
@@ -296,6 +298,8 @@ Acceptance:
 
 Apply the M4 claim spine to website and deck copy after implementation evidence
 exists.
+
+Status: represented by `copy-gates/website-ppt-copy-gate.json`.
 
 Acceptance:
 
