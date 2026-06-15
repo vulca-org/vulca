@@ -401,7 +401,8 @@ release workflow, persistence, and source-backed release audit trail.
 
 ## Minimal Demo Path
 
-The next implementation demo should use one path end to end:
+The complete demo standard lives in `12-complete-demo-path.md`. The
+implementation demo should use one path end to end:
 
 ```text
 Brief
@@ -459,7 +460,7 @@ Minimum acceptance:
 ### AB4: One Complete Scenario
 
 Create the first full demo path from brief to blocked or internally approved
-release gate.
+release gate, using `12-complete-demo-path.md` as the product standard.
 
 Minimum acceptance:
 

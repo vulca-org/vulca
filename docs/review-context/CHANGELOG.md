@@ -4,6 +4,22 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added Complete Demo Path Standard
+
+- Added `12-complete-demo-path.md` as the protected M3 standard for one
+  complete VULCA preview scenario from brief to evidence pack and release gate.
+- Wired the demo path into the README read order, manifest, source index,
+  validator, and vault tests.
+- Updated the integration spine and artifact bridge spec so M3 points to the
+  dedicated demo-path standard.
+
+Source basis:
+
+- `docs/review-context/10-integration-spine.md`.
+- `docs/review-context/11-artifact-bridge-spec.md`.
+- `origin/master:docs/product/workspace-current-state-audit.md`.
+- Workspace `workspaceDemo.ts` object model.
+
 ### Added Artifact Bridge Specification
 
 - Added `11-artifact-bridge-spec.md` as the protected M2 specification for
