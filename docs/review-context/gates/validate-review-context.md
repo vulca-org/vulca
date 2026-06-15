@@ -15,6 +15,8 @@ The gate checks:
 - core history files include source references
 - protected claim phrases do not appear outside allowed boundary files
 - request template contains required gate checklist items
+- release-readiness template contains required Gates 1-6, evidence index,
+  owner, and decision controls
 
 Passing this gate is necessary but not sufficient. A curator must still apply
 source and claim judgment.

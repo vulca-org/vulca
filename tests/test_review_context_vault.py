@@ -35,6 +35,20 @@ REQUEST_TEMPLATE_CHECKS = [
     "This request preserves `docs/review-context/LOCK.md`.",
 ]
 
+RELEASE_READINESS_TEMPLATE_CHECKS = [
+    "Public release remains blocked until every required gate below is passed and a human release owner records approval.",
+    "Evidence Index",
+    "Gate 1: Workspace Persistence",
+    "Gate 2: Artifact Ingestion",
+    "Gate 3: EvidencePack Rendering",
+    "Gate 4: Human Release Workflow",
+    "Gate 5: Public Example Quality",
+    "Gate 6: Website/PPT Claim Review",
+    "Human release owner",
+    "Release Decision",
+    "blocked / internal_only / preview_gated / internal_pilot / public_example / product_release",
+]
+
 
 def load_validator():
     spec = importlib.util.spec_from_file_location("review_context_validator", VALIDATOR_PATH)
@@ -51,6 +65,7 @@ def write_minimal_vault(
     missing_required_file: str | None = None,
     forbidden_claim_file: str | None = None,
     omit_request_lock_item: bool = False,
+    omit_release_gate_item: bool = False,
 ) -> None:
     required_files = [
         "README.md",
@@ -60,6 +75,8 @@ def write_minimal_vault(
         "MANIFEST.json",
         "source-index.md",
         *CORE_HISTORY_FILES,
+        "release-readiness/README.md",
+        "release-readiness/TEMPLATE.md",
         "requests/README.md",
         "requests/TEMPLATE.md",
         "gates/validate-review-context.md",
@@ -92,6 +109,19 @@ def write_minimal_vault(
                 "# Request\n\n" + "\n".join(f"- [ ] {item}" for item in checks) + "\n",
                 encoding="utf-8",
             )
+        elif rel == "release-readiness/TEMPLATE.md":
+            checks = (
+                RELEASE_READINESS_TEMPLATE_CHECKS[:-1]
+                if omit_release_gate_item
+                else RELEASE_READINESS_TEMPLATE_CHECKS
+            )
+            path.write_text(
+                "# Release Readiness Report\n\n"
+                "Vault status: test.\n\n"
+                + "\n".join(f"- {item}" for item in checks)
+                + "\n\n## Sources\n\n- test source\n",
+                encoding="utf-8",
+            )
         elif path.suffix == ".md":
             text = standard_text
             if rel == forbidden_claim_file:
@@ -104,6 +134,7 @@ def write_minimal_vault(
 def run_validator_on(module, root: Path) -> int:
     module.ROOT = root
     module.MANIFEST_PATH = root / "MANIFEST.json"
+    module.RELEASE_READINESS_TEMPLATE_PATH = root / "release-readiness" / "TEMPLATE.md"
     return module.main()
 
 
@@ -132,6 +163,14 @@ def test_forbidden_claim_outside_allowlist_fails(tmp_path: Path) -> None:
 def test_request_template_must_preserve_lock_checklist(tmp_path: Path) -> None:
     module = load_validator()
     write_minimal_vault(tmp_path, omit_request_lock_item=True)
+
+    with pytest.raises(SystemExit):
+        run_validator_on(module, tmp_path)
+
+
+def test_release_readiness_template_must_include_all_gate_controls(tmp_path: Path) -> None:
+    module = load_validator()
+    write_minimal_vault(tmp_path, omit_release_gate_item=True)
 
     with pytest.raises(SystemExit):
         run_validator_on(module, tmp_path)

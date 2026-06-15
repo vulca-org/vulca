@@ -34,6 +34,8 @@
     "12-complete-demo-path.md",
     "13-website-ppt-claim-spine.md",
     "14-release-readiness-evidence-gate.md",
+    "release-readiness/README.md",
+    "release-readiness/TEMPLATE.md",
     "requests/README.md",
     "requests/TEMPLATE.md",
     "gates/validate-review-context.md",
@@ -47,6 +49,7 @@
     "complete_demo_path": "12-complete-demo-path.md",
     "website_ppt_claim_spine": "13-website-ppt-claim-spine.md",
     "release_readiness_gate": "14-release-readiness-evidence-gate.md",
+    "release_readiness_report_template": "release-readiness/TEMPLATE.md",
     "website_film_led_homepage_branch": "5dc32cd",
     "ppt_case_pack_branch": "codex/vulca-ppt-case-pack",
     "ppt_latest_quality_gate": "run2_93_visual_quality_evaluation_public_blocked"

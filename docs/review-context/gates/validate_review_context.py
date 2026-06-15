@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "MANIFEST.json"
+RELEASE_READINESS_TEMPLATE_PATH = ROOT / "release-readiness" / "TEMPLATE.md"
 
 
 FORBIDDEN_OUTSIDE_ALLOWLIST = [
@@ -39,6 +40,20 @@ CORE_HISTORY_FILES = [
     "12-complete-demo-path.md",
     "13-website-ppt-claim-spine.md",
     "14-release-readiness-evidence-gate.md",
+]
+
+RELEASE_READINESS_TEMPLATE_REQUIRED_ITEMS = [
+    "Public release remains blocked until every required gate below is passed and a human release owner records approval.",
+    "Evidence Index",
+    "Gate 1: Workspace Persistence",
+    "Gate 2: Artifact Ingestion",
+    "Gate 3: EvidencePack Rendering",
+    "Gate 4: Human Release Workflow",
+    "Gate 5: Public Example Quality",
+    "Gate 6: Website/PPT Claim Review",
+    "Human release owner",
+    "Release Decision",
+    "blocked / internal_only / preview_gated / internal_pilot / public_example / product_release",
 ]
 
 
@@ -108,6 +123,15 @@ def check_request_template() -> None:
             fail(f"request template missing checklist item: {item}")
 
 
+def check_release_readiness_template() -> None:
+    if not RELEASE_READINESS_TEMPLATE_PATH.exists():
+        fail(f"missing release readiness template: {RELEASE_READINESS_TEMPLATE_PATH}")
+    template = RELEASE_READINESS_TEMPLATE_PATH.read_text(encoding="utf-8")
+    for item in RELEASE_READINESS_TEMPLATE_REQUIRED_ITEMS:
+        if item not in template:
+            fail(f"release readiness template missing item: {item}")
+
+
 def main() -> int:
     manifest = load_manifest()
     check_required_files(manifest)
@@ -115,6 +139,7 @@ def main() -> int:
     check_sources()
     check_forbidden_claims(manifest)
     check_request_template()
+    check_release_readiness_template()
     print("review-context gate passed")
     return 0
 
