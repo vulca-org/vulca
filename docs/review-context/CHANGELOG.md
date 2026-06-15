@@ -4,6 +4,23 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added Website And PPT Claim Spine
+
+- Added `13-website-ppt-claim-spine.md` as the protected M4 standard for
+  website, README-facing copy, public decks, and PPT proof-lab summaries.
+- Wired the claim spine into the README read order, manifest, source index,
+  validator, and vault tests.
+- Updated the integration spine so M4 points to the dedicated claim-spine
+  document and M5 becomes the next release-readiness milestone.
+
+Source basis:
+
+- `docs/review-context/08-website-and-ppt-boundaries.md`.
+- `docs/review-context/09-claim-boundaries.md`.
+- `docs/review-context/12-complete-demo-path.md`.
+- Platform website content and homepage plans at commit `5dc32cd`.
+- PPT proof lab source index entry and Run 2.93 public-blocked gate.
+
 ### Added Complete Demo Path Standard
 
 - Added `12-complete-demo-path.md` as the protected M3 standard for one
