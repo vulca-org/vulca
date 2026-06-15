@@ -23,6 +23,7 @@ CORE_HISTORY_FILES = [
     "09-claim-boundaries.md",
     "10-integration-spine.md",
     "11-artifact-bridge-spec.md",
+    "12-complete-demo-path.md",
 ]
 
 REQUEST_TEMPLATE_CHECKS = [

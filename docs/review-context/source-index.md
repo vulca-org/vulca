@@ -100,6 +100,9 @@ check before changing high-level VULCA claims.
 
 - `docs/review-context/11-artifact-bridge-spec.md`
   - Protected bridge spec for SDK/MCP outputs entering Workspace review.
+- `docs/review-context/12-complete-demo-path.md`
+  - Protected M3 standard for the brief-to-evidence-to-release-gate preview
+    scenario.
 - `src/vulca/mcp_server.py`
   - `generate_image` returns `image_path`, cost, latency, provider, MIME, and
     provider metadata.

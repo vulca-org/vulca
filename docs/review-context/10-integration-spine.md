@@ -220,9 +220,9 @@ status, and human decision boundaries.
 
 ### M3: One complete demo path
 
-Status: next after the artifact bridge spec.
+Status: specified in `12-complete-demo-path.md`.
 
-Build a single preview scenario:
+The protected demo-path standard defines a single preview scenario:
 
 ```text
 brief
@@ -237,7 +237,7 @@ This should be preview-gated until real persistence and SDK/MCP ingestion land.
 
 ### M4: Website and deck alignment
 
-Status: after M2/M3.
+Status: next after demo-path standardization.
 
 The website and PPT should share one claim spine:
 
