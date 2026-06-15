@@ -14,7 +14,7 @@ Current remote protection state checked on 2026-06-15:
 - repository rulesets are empty.
 - local branch `codex/vulca-context-vault` contains the protected review-context
   vault initialization commit and is ahead of `origin/master` by one commit.
-- `.github/CODEOWNERS` now assigns `/docs/review-context/` to `@yhryzy`.
+- `.github/CODEOWNERS` now assigns `/docs/review-context/` to `@yha9806`.
 - `.github/workflows/review-context.yml` now validates review-context vault
   changes.
 
@@ -38,8 +38,10 @@ through pull requests, review, and required checks.
   remain cheap to create, update, and discard.
 - Do not make PPT, website, or SDK experiment branches immutable.
 - Do not add signed-commit enforcement in this pass.
-- Do not require two-person review while the repository is operated by a solo
-  maintainer; one owner approval is enough for the first protection layer.
+- Do not require approval while the repository is operated by a solo maintainer.
+  The first protection layer blocks direct branch mutation through PR-required,
+  no-delete, no-force-push, and required-check rules. Approval and code-owner
+  review can be re-enabled after a second valid reviewer or team exists.
 
 ## Recommended Mechanism
 
@@ -80,8 +82,8 @@ actors.
 The base ruleset should enforce:
 
 - Require pull request before merging.
-- Require at least one approving review.
-- Require review from Code Owners.
+- Require zero approving reviews while the repository has only one collaborator.
+- Do not require Code Owner review while the repository has only one collaborator.
 - Dismiss stale approvals when new commits are pushed.
 - Require conversation resolution before merge.
 - Block force pushes.
@@ -107,7 +109,10 @@ Required checks:
 
 - CI Python 3.11 job.
 - CI Python 3.12 job.
-- Review Context Vault validation job.
+
+Do not require the review-context validation job on `master` until
+`.github/workflows/review-context.yml` has landed on `master` and a successful
+`validate` check has been observed on that branch.
 
 Ruleset name:
 
@@ -121,7 +126,9 @@ Required checks:
 
 - Review Context Vault validation job.
 
-`Review Context Vault / validate` must run on every protected-branch PR and push.
+The `validate` check from `Review Context Vault` must run on every
+context-vault PR and push, and can later be required on `master` after the
+workflow exists there.
 The implementation should remove path filters from `.github/workflows/review-context.yml`
 before the rulesets require that check. The validator is lightweight and safe to
 run on all protected branch changes.
@@ -136,6 +143,41 @@ names are derived from:
 
 Implementation must inspect recent check runs and use the exact context names
 reported by GitHub.
+
+## Current Applied State
+
+Applied on 2026-06-15:
+
+- `protected-main-and-context-vault-base` id `17697353`
+  - active branch ruleset
+  - targets `refs/heads/master` and `refs/heads/codex/vulca-context-vault`
+  - requires pull requests but currently uses `required_approving_review_count: 0`
+  - uses `require_code_owner_review: false`
+  - blocks deletion and non-fast-forward updates
+  - has no bypass actors
+- `protected-master-required-checks` id `17697361`
+  - active branch ruleset
+  - targets `refs/heads/master`
+  - requires `test (3.11)` and `test (3.12)`
+  - does not yet require `validate`
+- `protected-context-vault-required-checks` id `17697367`
+  - active branch ruleset
+  - targets `refs/heads/codex/vulca-context-vault`
+  - requires `validate`
+
+Reason for staged review settings:
+
+- The repository currently has one collaborator, `yha9806`.
+- A one-approval plus code-owner review rule would lock out a solo maintainer.
+- `review-context.yml` is not yet on `master`, so requiring `validate` on
+  `master` would risk blocking the first PR that lands the workflow.
+
+Follow-up after `review-context.yml` lands on `master` and a valid second
+reviewer or team exists:
+
+1. Add `validate` to `protected-master-required-checks`.
+2. Re-enable `required_approving_review_count: 1`.
+3. Re-enable `require_code_owner_review: true`.
 
 ## Bootstrap Sequence
 
@@ -166,7 +208,9 @@ The GitHub ruleset complements, but does not replace, the vault rules:
 
 - `docs/review-context/LOCK.md` defines who may modify vault context.
 - `docs/review-context/GOVERNANCE.md` defines request and curator behavior.
-- CODEOWNERS makes owner review visible and enforceable.
+- CODEOWNERS makes ownership visible. Code-owner review becomes enforceable only
+  after `require_code_owner_review` is re-enabled and a non-author reviewer or
+  team exists.
 - the review-context workflow makes the local validator enforceable on PRs and
   pushes to protected branches.
 
@@ -180,8 +224,8 @@ If required checks are misnamed and block all merges:
 
 1. Use admin access to edit the ruleset check list.
 2. Replace guessed contexts with the exact contexts from recent check runs.
-3. Keep PR review, code owner review, force-push block, and deletion block
-   enabled while fixing check names.
+3. Keep PR workflow, force-push block, and deletion block enabled while fixing
+   check names.
 
 If the review-context workflow itself fails:
 

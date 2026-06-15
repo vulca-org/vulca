@@ -2,13 +2,13 @@
 # GitHub uses this to auto-request reviews on PRs and to gate branch-protection
 # rules when enabled.
 #
-# Solo maintainer: @yhryzy owns everything by default.
+# Solo maintainer: @yha9806 owns everything by default.
 
-* @yhryzy
+* @yha9806
 
 # Protected context vault. Reader sessions may cite it, but direct edits require
 # owner review and the review-context gate.
-/docs/review-context/ @yhryzy
+/docs/review-context/ @yha9806
 
 # When future contributors emerge, add per-path ownership here, e.g.:
 #   /src/vulca/cultural/  @culture-team
