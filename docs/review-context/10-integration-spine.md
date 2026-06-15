@@ -212,15 +212,15 @@ Status: done on `master` at `cb6d52fe`.
 
 ### M2: Artifact bridge specification
 
-Status: next.
+Status: specified in `11-artifact-bridge-spec.md`.
 
-Create a source-backed spec that defines how SDK/MCP outputs become Workspace
-objects. This should cover schema fields, artifact paths, provider metadata,
-claim status, review status, and human decision boundaries.
+The protected spec defines how SDK/MCP outputs become Workspace objects. It
+covers schema fields, artifact paths, provider metadata, claim status, review
+status, and human decision boundaries.
 
 ### M3: One complete demo path
 
-Status: next after M2.
+Status: next after the artifact bridge spec.
 
 Build a single preview scenario:
 

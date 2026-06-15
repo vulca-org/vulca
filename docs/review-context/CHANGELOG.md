@@ -4,6 +4,22 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added Artifact Bridge Specification
+
+- Added `11-artifact-bridge-spec.md` as the protected M2 specification for
+  mapping SDK/MCP outputs into Workspace objects.
+- Wired the bridge spec into the README read order, manifest, source index,
+  validator, and vault tests.
+- Updated `10-integration-spine.md` so M2 points to the dedicated bridge spec
+  and M3 becomes the next demo-path milestone.
+
+Source basis:
+
+- `src/vulca/mcp_server.py` MCP payloads.
+- Learning Loop, decompose case, and layer-generate case schema specs.
+- Workspace `workspaceDemo.ts` object model.
+- `origin/master:docs/product/workspace-current-state-audit.md`.
+
 ### Added Integration Spine
 
 - Added `10-integration-spine.md` as the routing layer across Workspace,

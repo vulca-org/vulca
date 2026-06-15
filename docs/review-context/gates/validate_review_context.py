@@ -35,6 +35,7 @@ CORE_HISTORY_FILES = [
     "08-website-and-ppt-boundaries.md",
     "09-claim-boundaries.md",
     "10-integration-spine.md",
+    "11-artifact-bridge-spec.md",
 ]
 
 
