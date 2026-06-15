@@ -48,6 +48,8 @@ mainline and does not carry or require the vault validation gate.
   into Workspace review objects.
 - `workspace-durable/`: RR3 durable review fixture for reload-preserved
   review state, blockers, and human decision history.
+- `public-examples/`: RR4 public example gate for one example-specific public
+  artifact and copy scope.
 - `release-readiness/`: fixed report template for release-readiness reviews.
 - `requests/`: proposed changes from other sessions.
 - `gates/`: validation rules and local gate checks.
@@ -69,10 +71,12 @@ mainline and does not carry or require the vault validation gate.
    reviewing the first M3 bridge adapter path.
 9. Use `workspace-durable/m3-durable-review-fixture.json` before implementing
    or reviewing Workspace persistence, reload, blocker, or decision history.
-10. Read `13-website-ppt-claim-spine.md` before writing website copy, README
+10. Use `public-examples/m3-public-example-gate.json` before claiming that any
+    specific visual example is cleared for public use.
+11. Read `13-website-ppt-claim-spine.md` before writing website copy, README
    positioning, public decks, or PPT proof-lab summaries.
-11. Read `14-release-readiness-evidence-gate.md` before upgrading any preview,
+12. Read `14-release-readiness-evidence-gate.md` before upgrading any preview,
    internal, public-blocked, or release-readiness status.
-12. Use `release-readiness/TEMPLATE.md` before proposing a stronger release
+13. Use `release-readiness/TEMPLATE.md` before proposing a stronger release
     level, public example, website claim, or PPT claim.
-13. If this vault needs a change, create a request packet instead of editing it.
+14. If this vault needs a change, create a request packet instead of editing it.

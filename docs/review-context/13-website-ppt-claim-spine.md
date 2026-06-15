@@ -143,6 +143,7 @@ Allowed proof blocks:
 - SDK/MCP capability overview;
 - artifact bridge concept;
 - complete demo path;
+- one RR4-cleared public example when it remains example-specific;
 - internal proof pipeline with boundary language;
 - release-gate discipline.
 

@@ -64,6 +64,13 @@ DURABLE_REVIEW_ACCEPTANCE = {
     "human_decision_history_auditable": True,
 }
 
+PUBLIC_EXAMPLE_ACCEPTANCE = {
+    "evidence_pack_exists": True,
+    "visual_quality_reviewed": True,
+    "release_owner_records_decision": True,
+    "public_copy_example_specific": True,
+}
+
 
 def load_validator():
     spec = importlib.util.spec_from_file_location("review_context_validator", VALIDATOR_PATH)
@@ -83,6 +90,7 @@ def write_minimal_vault(
     omit_release_gate_item: bool = False,
     omit_bridge_missing_evidence: bool = False,
     omit_durable_decision_history: bool = False,
+    omit_public_example_owner: bool = False,
 ) -> None:
     required_files = [
         "README.md",
@@ -96,6 +104,8 @@ def write_minimal_vault(
         "artifact-bridge/m3-demo-bridge-fixture.json",
         "workspace-durable/README.md",
         "workspace-durable/m3-durable-review-fixture.json",
+        "public-examples/README.md",
+        "public-examples/m3-public-example-gate.json",
         "release-readiness/README.md",
         "release-readiness/TEMPLATE.md",
         "requests/README.md",
@@ -269,6 +279,44 @@ def write_minimal_vault(
                 ),
                 encoding="utf-8",
             )
+        elif rel == "public-examples/m3-public-example-gate.json":
+            release_owner = None if omit_public_example_owner else "release-owner-placeholder"
+            path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "gate_id": "m3-public-example-gate-v1",
+                        "example_id": "public-example-key-visual-v1",
+                        "release_level": "R4",
+                        "scope": "example_specific",
+                        "evidence_pack": {
+                            "id": "evidencepack-key-visual-v1",
+                            "status": "complete",
+                        },
+                        "visual_quality_review": {
+                            "status": "pass",
+                            "reviewer": "visual-reviewer-placeholder",
+                        },
+                        "evidence_review": {
+                            "status": "pass",
+                            "source_backed": True,
+                        },
+                        "release_decision": {
+                            "status": "public_example_approved",
+                            "release_owner": release_owner,
+                            "decision_scope": "public-example-key-visual-v1",
+                            "timestamp": "2026-06-15T00:00:00Z",
+                        },
+                        "public_copy": {
+                            "claim_scope": "example_specific",
+                            "product_level_claim": False,
+                        },
+                        "rr4_acceptance": PUBLIC_EXAMPLE_ACCEPTANCE,
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
         elif path.suffix == ".md":
             text = standard_text
             if rel == forbidden_claim_file:
@@ -284,6 +332,7 @@ def run_validator_on(module, root: Path) -> int:
     module.RELEASE_READINESS_TEMPLATE_PATH = root / "release-readiness" / "TEMPLATE.md"
     module.BRIDGE_FIXTURE_PATH = root / "artifact-bridge" / "m3-demo-bridge-fixture.json"
     module.DURABLE_REVIEW_FIXTURE_PATH = root / "workspace-durable" / "m3-durable-review-fixture.json"
+    module.PUBLIC_EXAMPLE_GATE_PATH = root / "public-examples" / "m3-public-example-gate.json"
     return module.main()
 
 
@@ -343,6 +392,14 @@ def test_bridge_fixture_must_keep_missing_evidence_visible(tmp_path: Path) -> No
 def test_durable_review_fixture_must_keep_human_decision_history(tmp_path: Path) -> None:
     module = load_validator()
     write_minimal_vault(tmp_path, omit_durable_decision_history=True)
+
+    with pytest.raises(SystemExit):
+        run_validator_on(module, tmp_path)
+
+
+def test_public_example_gate_must_record_release_owner(tmp_path: Path) -> None:
+    module = load_validator()
+    write_minimal_vault(tmp_path, omit_public_example_owner=True)
 
     with pytest.raises(SystemExit):
         run_validator_on(module, tmp_path)

@@ -4,6 +4,23 @@ Vault status: append-only change log.
 
 ## 2026-06-15
 
+### Added Public Example Gate
+
+- Added `public-examples/README.md` and
+  `public-examples/m3-public-example-gate.json` as the protected RR4 reference
+  for clearing one public example without upgrading product-level claims.
+- Wired the gate into the README read order, manifest, source index,
+  website/PPT claim spine, release-readiness gate, validator, and vault tests.
+- Preserved the boundary that a public example decision is example-specific
+  and cannot be reused for PPT proof-lab or product-level claims.
+
+Source basis:
+
+- `docs/review-context/12-complete-demo-path.md`.
+- `docs/review-context/13-website-ppt-claim-spine.md`.
+- `docs/review-context/14-release-readiness-evidence-gate.md`.
+- `docs/review-context/workspace-durable/m3-durable-review-fixture.json`.
+
 ### Added Workspace Durable Review Fixture
 
 - Added `workspace-durable/README.md` and

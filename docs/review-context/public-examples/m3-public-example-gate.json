@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "gate_id": "m3-public-example-gate-v1",
+  "gate_status": "protected_rr4_reference",
+  "example_id": "public-example-key-visual-v1",
+  "example_title": "M3 key visual public example",
+  "release_level": "R4",
+  "scope": "example_specific",
+  "source_demo": "docs/review-context/12-complete-demo-path.md",
+  "source_bridge_fixture": "docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json",
+  "source_durable_fixture": "docs/review-context/workspace-durable/m3-durable-review-fixture.json",
+  "evidence_pack": {
+    "id": "evidencepack-key-visual-v1",
+    "status": "complete",
+    "source_bridge_records": [
+      "bridge-generate-key-visual-v1",
+      "bridge-decompose-key-visual-v1"
+    ],
+    "artifact_refs": [
+      "artifacts/m3-demo/key-visual-v1.png",
+      "artifacts/m3-demo/layers/manifest.json"
+    ],
+    "reviewable_by_public_gate": true
+  },
+  "visual_quality_review": {
+    "status": "pass",
+    "reviewer": "visual-reviewer-placeholder",
+    "reviewed_at": "2026-06-15T00:00:00Z",
+    "artifact_ref": "artifacts/m3-demo/key-visual-v1.png",
+    "notes": "Fixture records the required review shape; final artifact inspection must remain attached to the example."
+  },
+  "evidence_review": {
+    "status": "pass",
+    "source_backed": true,
+    "reviewer": "evidence-reviewer-placeholder",
+    "reviewed_at": "2026-06-15T00:00:00Z",
+    "notes": "Claims are limited to this example and trace to protected M3/RR fixtures."
+  },
+  "release_decision": {
+    "status": "public_example_approved",
+    "release_owner": "release-owner-placeholder",
+    "timestamp": "2026-06-15T00:00:00Z",
+    "decision_scope": "public-example-key-visual-v1",
+    "boundary_notes": "Approves this public example only. Product-level release claims remain gated."
+  },
+  "public_copy": {
+    "claim_scope": "example_specific",
+    "product_level_claim": false,
+    "allowed_copy": "This example shows one VULCA preview path from brief to evidence pack and human release gate.",
+    "blocked_copy_notes": [
+      "Do not generalize this example into product-level release readiness.",
+      "Do not reuse this decision for PPT proof-lab outputs."
+    ]
+  },
+  "rr4_acceptance": {
+    "evidence_pack_exists": true,
+    "visual_quality_reviewed": true,
+    "release_owner_records_decision": true,
+    "public_copy_example_specific": true
+  }
+}
