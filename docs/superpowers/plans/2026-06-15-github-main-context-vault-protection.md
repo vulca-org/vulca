@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Enforce GitHub repository-side protection for `master` and `codex/vulca-context-vault` so both branches require PR review and checks before updates.
+**Goal:** Enforce GitHub repository-side protection for `master` and `codex/vulca-context-vault` so both branches require PR workflow and checks before updates.
 
-**Architecture:** Use three GitHub repository rulesets: one shared base ruleset for PR/review/no-force-push/no-delete behavior, one master-only status-check ruleset, and one context-vault-only status-check ruleset. Make the lightweight review-context workflow run on every protected branch PR/push so it can be safely required as a status check.
+**Architecture:** Use three GitHub repository rulesets: one shared base ruleset for PR-required/no-force-push/no-delete behavior, one master-only status-check ruleset, and one context-vault-only status-check ruleset. Keep master checks to existing CI until `review-context.yml` lands on `master`; keep context-vault gated by the lightweight `validate` job.
 
 **Tech Stack:** Git, GitHub CLI (`gh`), GitHub REST repository rulesets API, GitHub Actions, Python 3.
 
@@ -13,7 +13,7 @@
 ## File Structure
 
 - Modify: `.github/workflows/review-context.yml`
-  - Remove path filters so the `Review Context Vault / validate` check appears on every protected branch PR/push.
+  - Remove path filters so the `validate` check appears on every context-vault PR/push and can later be required on `master` after the workflow lands there.
 - Read: `.github/workflows/ci.yml`
   - Confirm CI matrix job names before binding required checks for `master`.
 - Read: `docs/superpowers/specs/2026-06-15-github-main-context-vault-protection-design.md`
@@ -306,9 +306,9 @@ base = {
             "parameters": {
                 "allowed_merge_methods": ["merge", "squash", "rebase"],
                 "dismiss_stale_reviews_on_push": True,
-                "require_code_owner_review": True,
+                "require_code_owner_review": False,
                 "require_last_push_approval": False,
-                "required_approving_review_count": 1,
+                "required_approving_review_count": 0,
                 "required_review_thread_resolution": True,
             },
         },
@@ -336,7 +336,6 @@ master_checks = {
                 "required_status_checks": [
                     {"context": master_check_311},
                     {"context": master_check_312},
-                    {"context": review_context_check},
                 ],
             },
         },
@@ -407,6 +406,14 @@ master-checks.json protected-master-required-checks ['refs/heads/master']
 ```
 
 The printed check names must match the values from Task 3 exactly.
+
+In the initial solo-maintainer rollout, expected checks are:
+
+- `master-checks.json`: `test (3.11)`, `test (3.12)`
+- `context-checks.json`: `validate`
+
+Do not put `validate` in `master-checks.json` until `review-context.yml` has
+landed on `master` and a successful `validate` check exists on that branch.
 
 ## Task 5: Create Repository Rulesets
 
@@ -542,11 +549,11 @@ CONTEXT_RULE_CHECKS="$(gh api repos/vulca-org/vulca/rules/branches/codex%2Fvulca
 printf 'master:\n%s\ncontext vault:\n%s\n' "$MASTER_RULE_CHECKS" "$CONTEXT_RULE_CHECKS"
 printf '%s\n' "$MASTER_RULE_CHECKS" | grep -Fx "$MASTER_CHECK_311"
 printf '%s\n' "$MASTER_RULE_CHECKS" | grep -Fx "$MASTER_CHECK_312"
-printf '%s\n' "$MASTER_RULE_CHECKS" | grep -Fx "$REVIEW_CONTEXT_CHECK"
 printf '%s\n' "$CONTEXT_RULE_CHECKS" | grep -Fx "$REVIEW_CONTEXT_CHECK"
 ```
 
-Expected: all four `grep -Fx` commands echo the matching check name and exit 0.
+Expected: all three `grep -Fx` commands echo the matching check name and exit 0.
+`master` should not require `validate` in the initial rollout.
 
 ## Task 7: Final Local Verification And Handoff
 
