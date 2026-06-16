@@ -126,26 +126,32 @@ Current evidence:
 - Platform PR #41 adds trusted `system` actor routes to provision and
   deactivate the `workspace_review_memberships` rows used by the compatibility
   route gates, with role validation and membership admin audit events.
+- Platform PR #45 adds typed Workspace core records behind the same
+  compatibility route, including bounded typed sync into Creative Repo, review
+  item, evidence pack, release gate, and typed audit tables; typed overlay
+  load with release-gate safety; archive/reactivate lifecycle; rollback,
+  conflict, idempotency, stale-child cleanup, production membership, and
+  OpenAPI stability tests.
 - `15-workspace-production-persistence-spec.md` defines the product design for
   database-backed storage, authorization, conflict handling, audit events, and
   multi-instance behavior.
 
 Remaining boundary:
 
-- PR #41 proves system-only provisioning/deactivation for compatibility-route
-  memberships, but does not prove full user/JWT authentication, end-user or
-  repo-owner self-service membership management UI, typed Workspace
-  aggregates, release-owner human audit semantics, operation-specific writes,
-  ingress header-stripping configuration, or multi-instance acceptance
-  behavior.
+- PR #45 proves a typed core foundation under the compatibility route, but it
+  does not prove full user/JWT authentication, end-user or repo-owner
+  self-service membership management UI, operation-specific frontend writes,
+  real SDK/MCP artifact ingestion into typed records, release-owner human
+  workflow semantics, ingress header-stripping configuration, multi-instance
+  acceptance behavior, or product-level R5.
 
 Blocked until:
 
-- the compatibility snapshot slice is supplemented by production-grade access
+- the typed core foundation is supplemented by production-grade access
   boundaries beyond trusted headers and system-admin compatibility-route
-  membership checks, typed durable records, operation-specific frontend writes,
-  release-owner audit semantics, and multi-instance evidence for the demo
-  path.
+  membership checks, operation-specific frontend writes, real artifact
+  ingestion, release-owner human workflow semantics, and multi-instance
+  evidence for the demo path.
 
 ### Gate 2: Artifact Ingestion
 

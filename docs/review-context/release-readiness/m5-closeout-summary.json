@@ -58,6 +58,11 @@
       "source": "docs/review-context/workspace-durable/README.md"
     },
     {
+      "name": "Workspace typed core foundation evidence",
+      "status": "indexed",
+      "source": "docs/review-context/workspace-durable/README.md"
+    },
+    {
       "name": "Workspace production persistence product spec",
       "status": "indexed",
       "source": "docs/review-context/15-workspace-production-persistence-spec.md"
@@ -93,14 +98,15 @@
     "max_allowed_level": "R4",
     "example_scope": "public-example-key-visual-v1",
     "human_owner": null,
-    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked. Platform PR #41 adds system-only provisioning/deactivation for compatibility-route membership rows, not full user/JWT authorization, end-user or repo-owner self-service membership management UI, typed aggregates, release-owner human audit semantics, operation-specific writes, ingress header-stripping proof, or multi-instance release readiness."
+    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked. Platform PR #45 adds a typed core foundation behind the compatibility route, not full user/JWT authorization, end-user or repo-owner self-service membership management UI, operation-specific frontend writes, real artifact ingestion into typed records, release-owner human workflow semantics, ingress header-stripping proof, multi-instance release readiness, or a human release-owner decision."
   },
   "remaining_blockers": [
-    "typed Workspace persistence records beyond the compatibility snapshot",
+    "production-grade Workspace persistence beyond the compatibility snapshot and typed core foundation",
     "full user/JWT Workspace authorization",
     "end-user or repo-owner self-service membership management UI beyond the system-only compatibility admin route",
-    "release-owner human audit semantics beyond compatibility snapshot events",
-    "operation-specific Workspace write evidence",
+    "operation-specific Workspace frontend write evidence",
+    "real artifact ingestion into typed Workspace records",
+    "release-owner human workflow semantics beyond compatibility snapshot events",
     "ingress header-stripping proof for trusted Workspace actor headers",
     "multi-instance Workspace persistence acceptance evidence",
     "repeated bridge ingestion evidence",

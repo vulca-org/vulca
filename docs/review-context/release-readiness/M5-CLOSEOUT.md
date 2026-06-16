@@ -79,6 +79,14 @@ As of 2026-06-16:
   validation, deactivate-with-history behavior, stable error responses,
   membership admin audit events, and deployment notes. Its PR gate passed
   remote `Run Tests` and `security`.
+- Platform PR #45, `feat: add workspace typed production core`, merged to
+  `master` at `530ecb8fc80a93756f96cba75ecdd9991bcb8db4` from head
+  `97a001a`. It adds typed Workspace core persistence tables behind the
+  existing compatibility API, bounded typed sync from compatibility saves,
+  typed overlay load, archive/reactivate lifecycle, typed audit events,
+  rollback/conflict safety, production membership integration, OpenAPI
+  stability, and README boundary notes. Its PR gate passed remote `Run Tests`
+  and `security`.
 
 These PRs improve R5 evidence, but they do not change the product-level
 decision above.
@@ -106,11 +114,11 @@ blocker is `15-workspace-production-persistence-spec.md`.
 ## Remaining R5 Blockers
 
 - production-grade Workspace persistence beyond the DB-backed compatibility
-  snapshot, including typed durable records, full user/JWT authorization,
+  snapshot and typed core foundation, including full user/JWT authorization,
   end-user or repo-owner self-service membership management UI beyond the
-  system-only compatibility admin route,
-  release-owner human audit semantics, operation-specific writes, ingress
-  header-stripping proof, and multi-instance behavior;
+  system-only compatibility admin route, operation-specific frontend writes,
+  real artifact ingestion into typed records, release-owner human workflow
+  semantics, ingress header-stripping proof, and multi-instance behavior;
 - repeated bridge ingestion across more than one workflow;
 - production EvidencePack rendering evidence;
 - human-owned release workflow implementation evidence;
@@ -134,3 +142,4 @@ blocker is `15-workspace-production-persistence-spec.md`.
 - `yha9806/vulca-platform` PR #39.
 - `yha9806/vulca-platform` PR #40.
 - `yha9806/vulca-platform` PR #41.
+- `yha9806/vulca-platform` PR #45.

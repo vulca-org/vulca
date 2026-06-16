@@ -12,7 +12,7 @@ blocker, decision-state, and human-audit boundaries.
 
 ## Product Implementation Status
 
-As of 2026-06-16, the platform implementation has nine merged PRs on
+As of 2026-06-16, the platform implementation has ten merged PRs on
 `yha9806/vulca-platform` `master`:
 
 - PR #31, `[codex] Workspace review product shell`, merged at
@@ -60,6 +60,13 @@ As of 2026-06-16, the platform implementation has nine merged PRs on
   routes to provision and deactivate Workspace review memberships on the
   compatibility surface, including role validation, deactivate-with-history,
   stable error responses, membership admin audit events, and deployment notes.
+- PR #45, `feat: add workspace typed production core`, merged at
+  `530ecb8fc80a93756f96cba75ecdd9991bcb8db4`. It adds typed Workspace core
+  tables behind the existing compatibility route, bounded typed sync from
+  compatibility snapshots, typed overlay load, archive/reactivate lifecycle,
+  typed audit events, rollback/conflict gates, idempotency and stale-child
+  cleanup tests, production membership integration, OpenAPI stability, and
+  README boundary notes.
 
 PR #32 is intentionally a local durability slice. PR #34 is intentionally a
 shared in-process backend slice. PR #35 upgrades that compatibility route to
@@ -68,13 +75,14 @@ conflict checks and snapshot audit events. PR #37 adds a trusted-header actor
 gate for that compatibility route. PR #39 adds an active-membership check for
 production save/clear on that same route. PR #40 extends that check to
 production load. PR #41 adds system-only provisioning/deactivation for the
-membership rows used by those gates. Together they improve Workspace
+membership rows used by those gates. PR #45 adds the first typed core
+foundation behind that compatibility route. Together they improve Workspace
 persistence and compatibility-route authorization evidence, but they do not
 certify the full production model: user/JWT identity, end-user or repo-owner
-self-service membership management UI, typed CreativeRepo, ReviewItem, and
-EvidencePack aggregates, release-owner human audit semantics,
-operation-specific writes, multi-instance acceptance, ingress header-stripping
-proof, or product-level release readiness.
+self-service membership management UI, operation-specific frontend writes,
+real SDK/MCP artifact ingestion into typed records, release-owner human
+workflow semantics, multi-instance acceptance, ingress header-stripping proof,
+or product-level release readiness.
 
 Use `../15-workspace-production-persistence-spec.md` for the product design
 that turns these slices into the full production persistence model.
@@ -110,3 +118,4 @@ that turns these slices into the full production persistence model.
 - `yha9806/vulca-platform` PR #39.
 - `yha9806/vulca-platform` PR #40.
 - `yha9806/vulca-platform` PR #41.
+- `yha9806/vulca-platform` PR #45.
