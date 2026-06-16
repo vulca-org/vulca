@@ -47,6 +47,8 @@ As of the current vault state:
   `copy-gates/website-ppt-copy-gate.json`.
 - M5 closeout is recorded in
   `release-readiness/m5-closeout-summary.json`.
+- Production Workspace persistence design is specified in
+  `15-workspace-production-persistence-spec.md`.
 - PPT proof lab remains public blocked by the latest remembered Run 2.93 gate.
 
 Still missing for product release readiness:
@@ -106,6 +108,9 @@ Current evidence:
 - Platform PR #34 adds a shared in-process backend review-state API and
   frontend Workspace load/save mirroring, with backend-side
   `public_ready=false` locking.
+- `15-workspace-production-persistence-spec.md` defines the product design for
+  database-backed storage, authorization, conflict handling, audit events, and
+  multi-instance behavior.
 
 Remaining boundary:
 
@@ -344,6 +349,7 @@ Acceptance:
 - `docs/review-context/11-artifact-bridge-spec.md`
 - `docs/review-context/12-complete-demo-path.md`
 - `docs/review-context/13-website-ppt-claim-spine.md`
+- `docs/review-context/15-workspace-production-persistence-spec.md`
 - `origin/master:docs/product/workspace-current-state-audit.md`
 - `docs/platform/release-readiness-status.md`
 - Platform Workspace baseline `6efef07 fix: align workspace context review controls`

@@ -57,6 +57,16 @@ VULCA should combine:
 
 It should not become a generic file review tool or an editor replacement.
 
+## Production Persistence Layer
+
+Production persistence is part of the Workspace product design, not a separate
+backend-only concern. It defines durable Creative Repo state, reviewer and
+release-owner permissions, conflict handling, multi-instance behavior, and
+audit history.
+
+Use `15-workspace-production-persistence-spec.md` before implementing or
+reviewing database-backed Workspace persistence.
+
 ## Key Boundary
 
 VULCA reviews and controls creative judgment. It does not replace Figma, Canva,
@@ -67,3 +77,4 @@ Agents can operate inside VULCA. Agents are not the product identity.
 Sources:
 
 - `source-index.md` Workspace section
+- `15-workspace-production-persistence-spec.md`

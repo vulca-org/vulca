@@ -99,6 +99,10 @@ check before changing high-level VULCA claims.
   - Protected M5 release-readiness gate for Workspace persistence, artifact
     ingestion, evidence rendering, human release workflow, public examples,
     and website/PPT copy review.
+- `docs/review-context/15-workspace-production-persistence-spec.md`
+  - Protected product spec for production Workspace database persistence,
+    authorization, conflict handling, audit history, and multi-instance
+    behavior.
 - `docs/review-context/release-readiness/TEMPLATE.md`
   - Protected RR1 report template for recording evidence links, reviewer/owner
     fields, Gate 1-6 status, and release decisions.
@@ -149,6 +153,10 @@ check before changing high-level VULCA claims.
 - M5 closeout:
   - `docs/review-context/release-readiness/m5-closeout-summary.json`
   - Current release-readiness index and product-level release boundary.
+- Workspace production persistence spec:
+  - `docs/review-context/15-workspace-production-persistence-spec.md`
+  - Product design for database-backed persistence, authorization, revision
+    conflicts, audit history, and multi-instance behavior.
 
 ## Workspace Product
 
@@ -182,6 +190,10 @@ Workspace product code lives in the separate `vulca-platform` repository.
   - Merge commit: `d06a713bf490ad870fe9273f933c310e2955b4e9`.
   - Boundary: in-process shared backend state only; not production
     database-backed, authorized, conflict-safe, or multi-instance persistence.
+- Production persistence design:
+  - `docs/review-context/15-workspace-production-persistence-spec.md`.
+  - This is the next product-layer design reference before changing the
+    platform database, permissions, conflict, or audit model.
 
 ## Website
 

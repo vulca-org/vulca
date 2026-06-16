@@ -28,6 +28,11 @@
       "source": "docs/review-context/workspace-durable/README.md"
     },
     {
+      "name": "Workspace production persistence product spec",
+      "status": "indexed",
+      "source": "docs/review-context/15-workspace-production-persistence-spec.md"
+    },
+    {
       "name": "EvidencePack rendering test report",
       "status": "indexed",
       "source": "docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json"

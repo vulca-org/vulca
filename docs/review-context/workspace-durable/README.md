@@ -35,6 +35,9 @@ evidence, but they do not certify production persistence, authorization,
 conflict handling, multi-instance durability, or product-level release
 readiness.
 
+Use `../15-workspace-production-persistence-spec.md` for the product design
+that turns these slices into production database-backed persistence.
+
 ## Current Fixtures
 
 - `m3-durable-review-fixture.json`: RR3 reference fixture showing the M3
@@ -55,6 +58,7 @@ readiness.
 - `docs/review-context/07-workspace-product-model.md`
 - `docs/review-context/12-complete-demo-path.md`
 - `docs/review-context/14-release-readiness-evidence-gate.md`
+- `docs/review-context/15-workspace-production-persistence-spec.md`
 - `docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json`
 - `yha9806/vulca-platform` PR #31.
 - `yha9806/vulca-platform` PR #32.
