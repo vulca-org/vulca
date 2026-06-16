@@ -12,7 +12,7 @@ blocker, decision-state, and human-audit boundaries.
 
 ## Product Implementation Status
 
-As of 2026-06-16, the platform implementation has eight merged PRs on
+As of 2026-06-16, the platform implementation has nine merged PRs on
 `yha9806/vulca-platform` `master`:
 
 - PR #31, `[codex] Workspace review product shell`, merged at
@@ -55,6 +55,11 @@ As of 2026-06-16, the platform implementation has eight merged PRs on
   actor and active membership checks to production load operations, so
   load/save/clear all fail closed without a trusted actor and matching active
   membership.
+- PR #41, `feat: add workspace membership admin routes`, merged at
+  `becbb072434bd4e0d9241e11a87717c7891926b5`. It adds trusted `system` actor
+  routes to provision and deactivate Workspace review memberships on the
+  compatibility surface, including role validation, deactivate-with-history,
+  stable error responses, membership admin audit events, and deployment notes.
 
 PR #32 is intentionally a local durability slice. PR #34 is intentionally a
 shared in-process backend slice. PR #35 upgrades that compatibility route to
@@ -62,12 +67,14 @@ database-backed snapshot persistence. PR #36 adds compatibility-route revision
 conflict checks and snapshot audit events. PR #37 adds a trusted-header actor
 gate for that compatibility route. PR #39 adds an active-membership check for
 production save/clear on that same route. PR #40 extends that check to
-production load. Together they improve Workspace persistence and compatibility
-route authorization evidence, but they do not certify the full production
-model: user/JWT identity, membership management APIs/UI, typed
-CreativeRepo/ReviewItem/EvidencePack aggregates, release-owner human audit
-semantics, operation-specific writes, multi-instance acceptance, ingress
-header-stripping proof, or product-level release readiness.
+production load. PR #41 adds system-only provisioning/deactivation for the
+membership rows used by those gates. Together they improve Workspace
+persistence and compatibility-route authorization evidence, but they do not
+certify the full production model: user/JWT identity, end-user or repo-owner
+self-service membership management UI, typed CreativeRepo, ReviewItem, and
+EvidencePack aggregates, release-owner human audit semantics,
+operation-specific writes, multi-instance acceptance, ingress header-stripping
+proof, or product-level release readiness.
 
 Use `../15-workspace-production-persistence-spec.md` for the product design
 that turns these slices into the full production persistence model.
@@ -102,3 +109,4 @@ that turns these slices into the full production persistence model.
 - `yha9806/vulca-platform` PR #37.
 - `yha9806/vulca-platform` PR #39.
 - `yha9806/vulca-platform` PR #40.
+- `yha9806/vulca-platform` PR #41.

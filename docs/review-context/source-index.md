@@ -161,14 +161,22 @@ check before changing high-level VULCA claims.
   - Platform PR #39 adds `workspace_review_memberships` and requires
     production save/clear operations on the compatibility route to match an
     active repo membership for the trusted actor id and role. Full user/JWT
-    identity, read authorization, membership management APIs/UI, typed
-    aggregates, release-owner human semantics, operation-specific writes,
-    ingress header stripping, and multi-instance acceptance remain gated.
+    identity, read authorization, end-user or repo-owner self-service
+    membership management UI, typed aggregates, release-owner human semantics,
+    operation-specific writes, ingress header stripping, and multi-instance
+    acceptance remain gated.
   - Platform PR #40 extends the same trusted actor and active membership gate
     to production load operations on the compatibility route. Full user/JWT
-    identity, membership management APIs/UI, typed aggregates, release-owner
-    human semantics, operation-specific writes, ingress header stripping, and
-    multi-instance acceptance remain gated.
+    identity, end-user or repo-owner self-service membership management UI,
+    typed aggregates, release-owner human semantics, operation-specific writes,
+    ingress header stripping, and multi-instance acceptance remain gated.
+  - Platform PR #41 adds system-only Workspace review membership provisioning
+    and deactivation routes on the compatibility surface. A trusted actor with
+    role `system` can upsert active memberships, deactivate memberships without
+    deleting history, and emit membership admin audit events. Full user/JWT
+    identity, end-user or repo-owner self-service membership management UI,
+    typed aggregates, release-owner human semantics, operation-specific writes,
+    ingress header stripping, and multi-instance acceptance remain gated.
 - Public example gate:
   - `docs/review-context/public-examples/m3-public-example-gate.json`
   - Protected RR4 reference for one example-specific public artifact and copy
@@ -193,8 +201,8 @@ Workspace product code lives in the separate `vulca-platform` repository.
   `/Users/yhryzy/.config/superpowers/worktrees/vulca-platform/workspace-interactive-demo`
 - Context baseline: `6efef07 fix: align workspace context review controls`
 - Latest merged platform master:
-  `d31e9bf8f6139c60ee10605337c32221a5098b8b` from PR #40,
-  `feat: gate workspace review reads`.
+  `becbb072434bd4e0d9241e11a87717c7891926b5` from PR #41,
+  `feat: add workspace membership admin routes`.
 - Important files:
   - `wenxin-moyun/src/content/workspaceDemo.ts`
   - `wenxin-moyun/src/components/workspace/`
@@ -280,7 +288,25 @@ Workspace product code lives in the separate `vulca-platform` repository.
     data are configured; tests cover preview load rejection, non-member load,
     inactive member load, role mismatch on load, and successful member load.
   - Boundary: compatibility-route load/save/clear membership gate only; not
-    full user/JWT authentication, not membership management APIs/UI, not typed
+    full user/JWT authentication, not end-user or repo-owner self-service
+    membership management UI, not typed
+    CreativeRepo/ReviewItem/EvidencePack/ReleaseGate aggregates, not
+    operation-specific frontend writes, not release-owner human audit
+    semantics, not ingress/gateway header-stripping proof, and not
+    multi-instance acceptance evidence.
+- Workspace membership admin compatibility merge:
+  - `yha9806/vulca-platform` PR #41.
+  - Merge commit: `becbb072434bd4e0d9241e11a87717c7891926b5`.
+  - Evidence: trusted `system` actor gate for
+    `/api/v1/workspace/review-memberships/{repo_id}/{member_actor_id}`,
+    `PUT` upsert with role validation and active flag, `DELETE` deactivate
+    without deleting history, stable 403/404/422 error responses, membership
+    admin audit events for upsert/deactivate, README deployment notes, and
+    tests for provisioning, non-system rejection, invalid role rejection, blank
+    actor rejection, deactivation, and missing deactivate rejection.
+  - Boundary: compatibility-route system admin provisioning only; not full
+    user/JWT authentication, not end-user or repo-owner self-service
+    membership management UI, not typed
     CreativeRepo/ReviewItem/EvidencePack/ReleaseGate aggregates, not
     operation-specific frontend writes, not release-owner human audit
     semantics, not ingress/gateway header-stripping proof, and not
