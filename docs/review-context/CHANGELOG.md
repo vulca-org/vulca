@@ -4,6 +4,27 @@ Vault status: append-only change log.
 
 ## 2026-06-16
 
+### Recorded Platform Workspace Membership Admin Merge
+
+- Recorded platform PR #41 as merged to `master` with system-only
+  provisioning and deactivation routes for Workspace review memberships on the
+  existing compatibility surface.
+- Clarified that #41 adds `PUT`/`DELETE`
+  `/api/v1/workspace/review-memberships/{repo_id}/{member_actor_id}` for a
+  trusted `system` actor, validates member roles, deactivates memberships
+  without deleting history, and records membership admin audit events.
+- Preserved the boundary that #41 is still a compatibility-route
+  administration slice: full user/JWT identity, end-user or repo-owner
+  self-service membership management UI, typed Workspace aggregates,
+  release-owner human semantics, operation-specific writes, ingress
+  header-stripping proof, and multi-instance acceptance evidence remain gated.
+
+Source basis:
+
+- `yha9806/vulca-platform` PR #41.
+- Merge commit `becbb072434bd4e0d9241e11a87717c7891926b5`.
+- Remote checks: `Run Tests` and `security` passed on PR #41.
+
 ### Recorded Platform Workspace Read Gate Merge
 
 - Recorded platform PR #40 as merged to `master` with production read
@@ -12,10 +33,10 @@ Vault status: append-only change log.
   save/clear to load/save/clear, so production clients fail closed until a
   trusted upstream actor and matching active membership are configured.
 - Preserved the boundary that #40 is still a compatibility-route gate: full
-  user/JWT identity, membership management APIs/UI, typed Workspace aggregates,
-  release-owner human semantics, operation-specific writes,
-  ingress header-stripping proof, and multi-instance acceptance evidence remain
-  gated.
+  user/JWT identity, end-user or repo-owner self-service membership
+  management UI, typed Workspace aggregates, release-owner human semantics,
+  operation-specific writes, ingress header-stripping proof, and multi-instance
+  acceptance evidence remain gated.
 
 Source basis:
 

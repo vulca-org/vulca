@@ -123,24 +123,29 @@ Current evidence:
 - Platform PR #40 extends trusted actor and active membership checks to
   production load operations on the compatibility route, so load/save/clear
   all fail closed without trusted actor and matching active membership.
+- Platform PR #41 adds trusted `system` actor routes to provision and
+  deactivate the `workspace_review_memberships` rows used by the compatibility
+  route gates, with role validation and membership admin audit events.
 - `15-workspace-production-persistence-spec.md` defines the product design for
   database-backed storage, authorization, conflict handling, audit events, and
   multi-instance behavior.
 
 Remaining boundary:
 
-- PR #40 proves a compatibility-route active membership check for production
-  load/save/clear, but does not prove full user/JWT authentication, membership
-  management APIs/UI, typed Workspace aggregates, release-owner human audit
-  semantics, operation-specific writes, ingress header-stripping
-  configuration, or multi-instance acceptance behavior.
+- PR #41 proves system-only provisioning/deactivation for compatibility-route
+  memberships, but does not prove full user/JWT authentication, end-user or
+  repo-owner self-service membership management UI, typed Workspace
+  aggregates, release-owner human audit semantics, operation-specific writes,
+  ingress header-stripping configuration, or multi-instance acceptance
+  behavior.
 
 Blocked until:
 
 - the compatibility snapshot slice is supplemented by production-grade access
-  boundaries beyond trusted headers and compatibility-route membership checks, typed
-  durable records, operation-specific frontend writes, release-owner audit
-  semantics, and multi-instance evidence for the demo path.
+  boundaries beyond trusted headers and system-admin compatibility-route
+  membership checks, typed durable records, operation-specific frontend writes,
+  release-owner audit semantics, and multi-instance evidence for the demo
+  path.
 
 ### Gate 2: Artifact Ingestion
 
