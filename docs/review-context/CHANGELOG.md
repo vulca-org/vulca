@@ -4,6 +4,25 @@ Vault status: append-only change log.
 
 ## 2026-06-16
 
+### Recorded Platform Review Revision Conflict And Audit Merge
+
+- Recorded platform PR #36 as merged to `master` with revision metadata,
+  optional `baseRevision` 409 conflict checks, and append-only save/clear audit
+  events for the existing Workspace review-state compatibility endpoint.
+- Clarified that #36 strengthens the DB-backed snapshot route from #35, but
+  still does not complete full production persistence: authorization, typed
+  object aggregates, release-owner audit semantics, operation-specific writes,
+  and multi-instance acceptance evidence remain gated.
+- Updated the source index, durable Workspace status, M5 closeout, release
+  readiness gate, production persistence spec, and manifest so future sessions
+  inherit the correct boundary.
+
+Source basis:
+
+- `yha9806/vulca-platform` PR #36.
+- Merge commit `3310093131132268ec9658736d3bd172ecccbe58`.
+- Remote checks: `Run Tests` and `security` passed on PR #36.
+
 ### Recorded Platform DB-Backed Workspace Review-State Merge
 
 - Recorded platform PR #35 as merged to `master` with database-backed

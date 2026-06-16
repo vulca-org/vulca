@@ -12,7 +12,7 @@ blocker, decision-state, and human-audit boundaries.
 
 ## Product Implementation Status
 
-As of 2026-06-16, the platform implementation has four merged PRs on
+As of 2026-06-16, the platform implementation has five merged PRs on
 `yha9806/vulca-platform` `master`:
 
 - PR #31, `[codex] Workspace review product shell`, merged at
@@ -34,14 +34,20 @@ As of 2026-06-16, the platform implementation has four merged PRs on
   preserves backend-side release gate normalization, and adds SQLite-backed
   tests for cross-client persistence, process-local reset survival, table
   registration, and clearing.
+- PR #36, `feat: add workspace review revision conflicts`, merged at
+  `3310093131132268ec9658736d3bd172ecccbe58`. It adds revision metadata,
+  optional `baseRevision` 409 conflict checks, stale-after-clear protection,
+  row locking on write/delete paths, append-only save/clear audit events, and
+  an Alembic migration for the audit table.
 
 PR #32 is intentionally a local durability slice. PR #34 is intentionally a
 shared in-process backend slice. PR #35 upgrades that compatibility route to
-database-backed snapshot persistence. Together they improve Workspace
+database-backed snapshot persistence. PR #36 adds compatibility-route revision
+conflict checks and snapshot audit events. Together they improve Workspace
 persistence evidence, but they do not certify the full production model:
-authorization, conflict handling, typed CreativeRepo/ReviewItem/EvidencePack
-aggregates, append-only audit events, multi-instance acceptance, or
-product-level release readiness.
+authorization, typed CreativeRepo/ReviewItem/EvidencePack aggregates,
+release-owner audit semantics, operation-specific writes, multi-instance
+acceptance, or product-level release readiness.
 
 Use `../15-workspace-production-persistence-spec.md` for the product design
 that turns these slices into the full production persistence model.
@@ -72,3 +78,4 @@ that turns these slices into the full production persistence model.
 - `yha9806/vulca-platform` PR #32.
 - `yha9806/vulca-platform` PR #34.
 - `yha9806/vulca-platform` PR #35.
+- `yha9806/vulca-platform` PR #36.

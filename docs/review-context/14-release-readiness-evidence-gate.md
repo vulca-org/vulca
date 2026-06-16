@@ -110,21 +110,25 @@ Current evidence:
   `public_ready=false` locking.
 - Platform PR #35 upgrades that compatibility endpoint from process memory to
   SQLAlchemy-backed database persistence for the whole review-state snapshot.
+- Platform PR #36 adds revision metadata, optional `baseRevision` 409 conflict
+  checks, stale-after-clear protection, write/delete row locking, and
+  append-only save/clear audit events for the compatibility snapshot route.
 - `15-workspace-production-persistence-spec.md` defines the product design for
   database-backed storage, authorization, conflict handling, audit events, and
   multi-instance behavior.
 
 Remaining boundary:
 
-- PR #35 proves database-backed compatibility snapshot persistence, but does
-  not prove authorization, conflict handling, typed Workspace aggregates,
-  append-only audit events, or multi-instance acceptance behavior.
+- PR #36 proves compatibility snapshot revision conflict checks and audit
+  events, but does not prove authorization, typed Workspace aggregates,
+  release-owner audit semantics, operation-specific writes, or multi-instance
+  acceptance behavior.
 
 Blocked until:
 
 - the compatibility snapshot slice is supplemented by production-grade access
-  boundaries, conflict handling, audit events, typed durable records, and
-  multi-instance evidence for the demo path.
+  boundaries, typed durable records, operation-specific frontend writes,
+  release-owner audit semantics, and multi-instance evidence for the demo path.
 
 ### Gate 2: Artifact Ingestion
 
