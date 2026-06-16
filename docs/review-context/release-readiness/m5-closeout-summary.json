@@ -28,6 +28,11 @@
       "source": "docs/review-context/workspace-durable/README.md"
     },
     {
+      "name": "database-backed Workspace review-state compatibility evidence",
+      "status": "indexed",
+      "source": "docs/review-context/workspace-durable/README.md"
+    },
+    {
       "name": "Workspace production persistence product spec",
       "status": "indexed",
       "source": "docs/review-context/15-workspace-production-persistence-spec.md"
@@ -63,11 +68,13 @@
     "max_allowed_level": "R4",
     "example_scope": "public-example-key-visual-v1",
     "human_owner": null,
-    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked. Platform PR #34 adds shared in-process review-state evidence, not production-grade release readiness."
+    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked. Platform PR #35 adds database-backed review-state compatibility persistence, not full production authorization, conflict, audit, typed aggregate, or multi-instance release readiness."
   },
   "remaining_blockers": [
-    "production database-backed/multi-instance Workspace persistence evidence",
+    "typed Workspace persistence records beyond the compatibility snapshot",
     "Workspace authorization and conflict handling evidence",
+    "append-only Workspace audit event evidence",
+    "multi-instance Workspace persistence acceptance evidence",
     "repeated bridge ingestion evidence",
     "production EvidencePack rendering evidence",
     "human-owned release workflow implementation evidence",

@@ -142,6 +142,10 @@ check before changing high-level VULCA claims.
     release blockers, decision state, and human decision history.
   - Platform PR #34 adds shared in-process backend review-state API evidence
     for the Workspace page, while production persistence remains gated.
+  - Platform PR #35 upgrades the compatibility review-state endpoint to a
+    SQLAlchemy-backed `workspace_review_states` table, while full production
+    authorization, conflict handling, typed aggregates, append-only audit
+    events, and multi-instance acceptance remain gated.
 - Public example gate:
   - `docs/review-context/public-examples/m3-public-example-gate.json`
   - Protected RR4 reference for one example-specific public artifact and copy
@@ -166,8 +170,8 @@ Workspace product code lives in the separate `vulca-platform` repository.
   `/Users/yhryzy/.config/superpowers/worktrees/vulca-platform/workspace-interactive-demo`
 - Context baseline: `6efef07 fix: align workspace context review controls`
 - Latest merged platform master:
-  `d06a713bf490ad870fe9273f933c310e2955b4e9` from PR #34,
-  `[codex] Shared Workspace review persistence`.
+  `24efaab5101494cfa7777aa3ded6d8c27e923870` from PR #35,
+  `feat: persist workspace review state in db`.
 - Important files:
   - `wenxin-moyun/src/content/workspaceDemo.ts`
   - `wenxin-moyun/src/components/workspace/`
@@ -190,6 +194,18 @@ Workspace product code lives in the separate `vulca-platform` repository.
   - Merge commit: `d06a713bf490ad870fe9273f933c310e2955b4e9`.
   - Boundary: in-process shared backend state only; not production
     database-backed, authorized, conflict-safe, or multi-instance persistence.
+- DB-backed review-state compatibility merge:
+  - `yha9806/vulca-platform` PR #35.
+  - Merge commit: `24efaab5101494cfa7777aa3ded6d8c27e923870`.
+  - Evidence: SQLAlchemy `WorkspaceReviewState` model, existing
+    `/api/v1/workspace/review-state/{repo_id}` API backed by DB persistence,
+    backend-side `public_ready=false` normalization retained, and tests for
+    cross-client load, process-local reset survival, table registration, clear,
+    OpenAPI contract, and DB dependency fallback.
+  - Boundary: compatibility snapshot persistence only; not full typed
+    CreativeRepo/ReviewItem/EvidencePack/ReleaseGate persistence, not
+    authorization, not stale-write conflict handling, not append-only audit
+    events, and not multi-instance acceptance evidence.
 - Production persistence design:
   - `docs/review-context/15-workspace-production-persistence-spec.md`.
   - This is the next product-layer design reference before changing the

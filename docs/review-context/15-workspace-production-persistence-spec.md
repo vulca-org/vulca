@@ -15,7 +15,7 @@ readiness.
 
 ## Current Baseline
 
-The current platform state has three relevant merged slices:
+The current platform state has four relevant merged slices:
 
 - PR #31 adds the Workspace review product shell.
 - PR #32 adds local durable review state and release-owner audit trail
@@ -23,10 +23,14 @@ The current platform state has three relevant merged slices:
 - PR #34 adds a shared in-process backend review-state API at
   `/api/v1/workspace/review-state/{repo_id}` and frontend Workspace load/save
   mirroring.
+- PR #35 replaces the #34 process-memory store behind that compatibility
+  endpoint with a SQLAlchemy `workspace_review_states` table and tests that
+  prove the saved snapshot survives a process-local store reset.
 
-The baseline proves the product direction and a shared API surface. It does not
-prove production persistence, authorization, conflict handling, or
-multi-instance behavior.
+The baseline now proves product direction, a shared API surface, and
+database-backed compatibility snapshot persistence. It does not prove the full
+production persistence model, authorization, conflict handling, append-only
+audit events, typed object aggregates, or multi-instance acceptance behavior.
 
 ## Product Position
 
@@ -197,7 +201,7 @@ Rules:
 
 ## Migration From Current Slice
 
-Migration from PR #34 should be staged:
+Migration from PR #34 and PR #35 should be staged:
 
 1. Keep the existing review-state endpoint as the frontend compatibility route.
 2. Add database tables and service-layer operations behind the endpoint.
@@ -208,6 +212,17 @@ Migration from PR #34 should be staged:
    objects directly.
 6. Add authorization and revision checks before any public demo uses shared
    production data.
+
+Current implementation evidence:
+
+- PR #35 completes the first database-backed compatibility slice of step 2 by
+  persisting the whole review-state snapshot in `workspace_review_states`.
+- PR #35 does not yet implement typed service-layer operations for
+  `CreativeRepo`, `ReviewItem`, `EvidencePack`, `ReleaseGate`, or
+  `AuditEvent`.
+- PR #35 does not yet implement authorization, stale-write conflict handling,
+  seeded repo migration, operation-specific frontend writes, or multi-instance
+  acceptance evidence.
 
 ## Acceptance Gates
 
@@ -245,3 +260,4 @@ This spec does not upgrade current release status by itself.
 - `yha9806/vulca-platform` PR #31.
 - `yha9806/vulca-platform` PR #32.
 - `yha9806/vulca-platform` PR #34.
+- `yha9806/vulca-platform` PR #35.
