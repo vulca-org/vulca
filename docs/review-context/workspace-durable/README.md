@@ -12,7 +12,7 @@ blocker, decision-state, and human-audit boundaries.
 
 ## Product Implementation Status
 
-As of 2026-06-16, the platform implementation has five merged PRs on
+As of 2026-06-16, the platform implementation has six merged PRs on
 `yha9806/vulca-platform` `master`:
 
 - PR #31, `[codex] Workspace review product shell`, merged at
@@ -39,15 +39,23 @@ As of 2026-06-16, the platform implementation has five merged PRs on
   optional `baseRevision` 409 conflict checks, stale-after-clear protection,
   row locking on write/delete paths, append-only save/clear audit events, and
   an Alembic migration for the audit table.
+- PR #37, `feat: gate workspace review actors`, merged at
+  `0faf8748181c4d65f83b22b9a0b6ecfb10409b14`. It adds a trusted actor/role
+  gate for the compatibility endpoint, production fail-closed save/clear
+  behavior without a trusted upstream actor secret, clear restricted to
+  `release_owner`, `repo_owner`, or `system`, audit metadata for actor id and
+  role, and deployment notes for `WORKSPACE_REVIEW_ACTOR_HEADER_SECRET`.
 
 PR #32 is intentionally a local durability slice. PR #34 is intentionally a
 shared in-process backend slice. PR #35 upgrades that compatibility route to
 database-backed snapshot persistence. PR #36 adds compatibility-route revision
-conflict checks and snapshot audit events. Together they improve Workspace
-persistence evidence, but they do not certify the full production model:
-authorization, typed CreativeRepo/ReviewItem/EvidencePack aggregates,
-release-owner audit semantics, operation-specific writes, multi-instance
-acceptance, or product-level release readiness.
+conflict checks and snapshot audit events. PR #37 adds a trusted-header actor
+gate for that compatibility route. Together they improve Workspace persistence
+evidence, but they do not certify the full production model: user/JWT identity,
+repo membership authorization, typed CreativeRepo/ReviewItem/EvidencePack
+aggregates, release-owner human audit semantics, operation-specific writes,
+multi-instance acceptance, ingress header-stripping proof, or product-level
+release readiness.
 
 Use `../15-workspace-production-persistence-spec.md` for the product design
 that turns these slices into the full production persistence model.
@@ -79,3 +87,4 @@ that turns these slices into the full production persistence model.
 - `yha9806/vulca-platform` PR #34.
 - `yha9806/vulca-platform` PR #35.
 - `yha9806/vulca-platform` PR #36.
+- `yha9806/vulca-platform` PR #37.

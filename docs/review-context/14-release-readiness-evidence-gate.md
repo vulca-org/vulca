@@ -113,22 +113,28 @@ Current evidence:
 - Platform PR #36 adds revision metadata, optional `baseRevision` 409 conflict
   checks, stale-after-clear protection, write/delete row locking, and
   append-only save/clear audit events for the compatibility snapshot route.
+- Platform PR #37 adds a trusted actor/role gate for the compatibility route,
+  production fail-closed save/clear behavior without trusted upstream actor
+  headers, clear restricted to `release_owner`, `repo_owner`, or `system`, and
+  actor id/role metadata in save/clear audit events.
 - `15-workspace-production-persistence-spec.md` defines the product design for
   database-backed storage, authorization, conflict handling, audit events, and
   multi-instance behavior.
 
 Remaining boundary:
 
-- PR #36 proves compatibility snapshot revision conflict checks and audit
-  events, but does not prove authorization, typed Workspace aggregates,
-  release-owner audit semantics, operation-specific writes, or multi-instance
-  acceptance behavior.
+- PR #37 proves a trusted-header compatibility actor gate, but does not prove
+  full user/JWT authentication, repo membership authorization, typed Workspace
+  aggregates, release-owner human audit semantics, operation-specific writes,
+  ingress header-stripping configuration, or multi-instance acceptance
+  behavior.
 
 Blocked until:
 
 - the compatibility snapshot slice is supplemented by production-grade access
-  boundaries, typed durable records, operation-specific frontend writes,
-  release-owner audit semantics, and multi-instance evidence for the demo path.
+  boundaries beyond trusted headers, typed durable records, operation-specific
+  frontend writes, release-owner audit semantics, and multi-instance evidence
+  for the demo path.
 
 ### Gate 2: Artifact Ingestion
 
