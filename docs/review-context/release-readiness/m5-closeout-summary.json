@@ -23,6 +23,11 @@
       "source": "docs/review-context/workspace-durable/m3-durable-review-fixture.json"
     },
     {
+      "name": "shared Workspace review-state API evidence",
+      "status": "indexed",
+      "source": "docs/review-context/workspace-durable/README.md"
+    },
+    {
       "name": "EvidencePack rendering test report",
       "status": "indexed",
       "source": "docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json"
@@ -53,10 +58,11 @@
     "max_allowed_level": "R4",
     "example_scope": "public-example-key-visual-v1",
     "human_owner": null,
-    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked."
+    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked. Platform PR #34 adds shared in-process review-state evidence, not production-grade release readiness."
   },
   "remaining_blockers": [
-    "production Workspace persistence evidence",
+    "production database-backed/multi-instance Workspace persistence evidence",
+    "Workspace authorization and conflict handling evidence",
     "repeated bridge ingestion evidence",
     "production EvidencePack rendering evidence",
     "human-owned release workflow implementation evidence",

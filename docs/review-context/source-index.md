@@ -136,6 +136,8 @@ check before changing high-level VULCA claims.
   - `docs/review-context/workspace-durable/m3-durable-review-fixture.json`
   - Protected RR3 reference for reload-preserved review item, EvidencePack,
     release blockers, decision state, and human decision history.
+  - Platform PR #34 adds shared in-process backend review-state API evidence
+    for the Workspace page, while production persistence remains gated.
 - Public example gate:
   - `docs/review-context/public-examples/m3-public-example-gate.json`
   - Protected RR4 reference for one example-specific public artifact and copy
@@ -155,13 +157,16 @@ Workspace product code lives in the separate `vulca-platform` repository.
 - Branch: `master` in
   `/Users/yhryzy/.config/superpowers/worktrees/vulca-platform/workspace-interactive-demo`
 - Context baseline: `6efef07 fix: align workspace context review controls`
-- Latest observed local preview:
-  `5f4a666 feat: add manual upload intake workflow`
+- Latest merged platform master:
+  `d06a713bf490ad870fe9273f933c310e2955b4e9` from PR #34,
+  `[codex] Shared Workspace review persistence`.
 - Important files:
   - `wenxin-moyun/src/content/workspaceDemo.ts`
   - `wenxin-moyun/src/components/workspace/`
   - `wenxin-moyun/src/pages/WorkspacePage.tsx`
   - `wenxin-moyun/src/pages/WorkspaceManualPage.tsx`
+  - `wenxin-backend/app/api/v1/workspace_review_state.py`
+  - `wenxin-moyun/src/services/workspaceDurableReviewStore.ts`
   - `docs/superpowers/specs/2026-06-14-vulca-three-layer-review-workspace-design.md`
   - `docs/superpowers/specs/2026-06-15-vulca-creative-pr-typed-review-modes-design.md`
 - Verified in prior session:
@@ -172,6 +177,11 @@ Workspace product code lives in the separate `vulca-platform` repository.
 - Mainline audit:
   - `origin/master:docs/product/workspace-current-state-audit.md`
   - Merge commit: `cb6d52fe docs: surface VULCA Workspace product direction`
+- Shared review-state merge:
+  - `yha9806/vulca-platform` PR #34.
+  - Merge commit: `d06a713bf490ad870fe9273f933c310e2955b4e9`.
+  - Boundary: in-process shared backend state only; not production
+    database-backed, authorized, conflict-safe, or multi-instance persistence.
 
 ## Website
 
