@@ -99,10 +99,23 @@ Minimum verification:
 - migration or seed-data story for demo objects;
 - failure behavior when persistence fails.
 
+Current evidence:
+
+- Platform PR #32 adds local durable review state and release-owner audit trail
+  persistence for the Workspace preview.
+- Platform PR #34 adds a shared in-process backend review-state API and
+  frontend Workspace load/save mirroring, with backend-side
+  `public_ready=false` locking.
+
+Remaining boundary:
+
+- PR #34 does not prove production database-backed durability, authorization,
+  conflict handling, or multi-instance behavior.
+
 Blocked until:
 
-- the observed frontend/session-local preview is replaced or supplemented by
-  durable storage for the demo path.
+- the local/in-process slices are replaced or supplemented by production-grade
+  durable storage and access boundaries for the demo path.
 
 ### Gate 2: Artifact Ingestion
 
@@ -334,5 +347,6 @@ Acceptance:
 - `origin/master:docs/product/workspace-current-state-audit.md`
 - `docs/platform/release-readiness-status.md`
 - Platform Workspace baseline `6efef07 fix: align workspace context review controls`
-- Latest observed local Workspace preview `5f4a666 feat: add manual upload intake workflow`
+- Latest merged Workspace platform state
+  `d06a713bf490ad870fe9273f933c310e2955b4e9`
 - PPT proof lab source index entry and Run 2.93 public-blocked gate

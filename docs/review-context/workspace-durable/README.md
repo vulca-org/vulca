@@ -12,7 +12,7 @@ blocker, decision-state, and human-audit boundaries.
 
 ## Product Implementation Status
 
-As of 2026-06-15, the platform implementation has two merged PRs on
+As of 2026-06-16, the platform implementation has three merged PRs on
 `yha9806/vulca-platform` `master`:
 
 - PR #31, `[codex] Workspace review product shell`, merged at
@@ -23,9 +23,17 @@ As of 2026-06-15, the platform implementation has two merged PRs on
   `61da8e9f296b7c1e66f61720e487e8e42d4eb6ce`. It adds local durable review
   state, staged decision persistence, advisory-agent completion persistence,
   and the release-owner audit trail.
+- PR #34, `[codex] Shared Workspace review persistence`, merged at
+  `d06a713bf490ad870fe9273f933c310e2955b4e9`. It adds
+  `/api/v1/workspace/review-state/{repo_id}`, frontend load/save mirroring for
+  the Workspace page, backend-side `public_ready=false` normalization, and
+  E2E isolation for the shared review-state API.
 
-PR #32 is intentionally a local durability slice. It does not certify shared
-production persistence or product-level release readiness.
+PR #32 is intentionally a local durability slice. PR #34 is intentionally a
+shared in-process backend slice. Together they improve Workspace persistence
+evidence, but they do not certify production persistence, authorization,
+conflict handling, multi-instance durability, or product-level release
+readiness.
 
 ## Current Fixtures
 
@@ -50,3 +58,4 @@ production persistence or product-level release readiness.
 - `docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json`
 - `yha9806/vulca-platform` PR #31.
 - `yha9806/vulca-platform` PR #32.
+- `yha9806/vulca-platform` PR #34.

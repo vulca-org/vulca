@@ -20,7 +20,7 @@ and a human release owner decision exist.
 
 ## Current Platform Merge State
 
-As of 2026-06-15:
+As of 2026-06-16:
 
 - Platform PR #31, `[codex] Workspace review product shell`, merged to
   `master` at `6810e67ca967a47782b5d9f83d751148d1eb6d26`. Its PR gate
@@ -31,6 +31,13 @@ As of 2026-06-15:
   `master` at `61da8e9f296b7c1e66f61720e487e8e42d4eb6ce`. It implements local
   durable review state and the release-owner audit trail, with local
   verification plus remote `Run Tests` and `security` gates.
+- Platform PR #34, `[codex] Shared Workspace review persistence`, merged to
+  `master` at `d06a713bf490ad870fe9273f933c310e2955b4e9` from head
+  `c6604cc3d59fb93f10c3267dc4ee4816bc63fc9e`. It implements a shared
+  `/api/v1/workspace/review-state/{repo_id}` API, frontend Workspace load/save
+  mirroring, backend-side `public_ready=false` locking, OpenAPI/module-boundary
+  updates, and E2E isolation for shared review state. Its PR gate passed
+  remote `Run Tests` and `security`.
 
 These PRs improve R5 evidence, but they do not change the product-level
 decision above.
@@ -52,7 +59,9 @@ decision above.
 
 ## Remaining R5 Blockers
 
-- production/shared Workspace persistence evidence beyond the local durable PR;
+- production-grade Workspace persistence beyond the local durable PR and
+  in-process shared backend slice, including durable storage,
+  authorization, conflict handling, and multi-instance behavior;
 - repeated bridge ingestion across more than one workflow;
 - production EvidencePack rendering evidence;
 - human-owned release workflow implementation evidence;
@@ -68,3 +77,4 @@ decision above.
 - `docs/review-context/copy-gates/website-ppt-copy-gate.json`
 - `yha9806/vulca-platform` PR #31.
 - `yha9806/vulca-platform` PR #32.
+- `yha9806/vulca-platform` PR #34.

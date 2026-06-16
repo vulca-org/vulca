@@ -2,6 +2,24 @@
 
 Vault status: append-only change log.
 
+## 2026-06-16
+
+### Recorded Platform Shared Workspace Review-State Merge
+
+- Recorded platform PR #34 as merged to `master` with shared backend
+  review-state API evidence for the Workspace page.
+- Clarified that #34 is an in-process shared persistence slice, not
+  production-grade database-backed, authorized, conflict-safe, or
+  multi-instance Workspace persistence.
+- Updated the M5 closeout, source index, manifest, and release-readiness gate
+  so future sessions inherit the same status boundary.
+
+Source basis:
+
+- `yha9806/vulca-platform` PR #34.
+- Merge commit `d06a713bf490ad870fe9273f933c310e2955b4e9`.
+- Remote checks: `Run Tests` and `security` passed on PR #34.
+
 ## 2026-06-15
 
 ### Recorded Platform CI Hygiene Merge
