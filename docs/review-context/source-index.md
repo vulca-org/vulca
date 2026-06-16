@@ -177,6 +177,18 @@ check before changing high-level VULCA claims.
     identity, end-user or repo-owner self-service membership management UI,
     typed aggregates, release-owner human semantics, operation-specific writes,
     ingress header stripping, and multi-instance acceptance remain gated.
+  - Platform PR #45 adds a typed Workspace core foundation behind the same
+    compatibility route. Compatibility saves sync bounded typed records into
+    `workspace_creative_repos`, `workspace_review_items`,
+    `workspace_evidence_packs`, `workspace_release_gates`, and
+    `workspace_typed_audit_events`; loads overlay active typed records without
+    trusting raw client public-release claims; clears archive typed repos; PUT
+    reactivates archived repos; and tests cover rollback, conflict, idempotency,
+    stale child cleanup, bounded query behavior, production membership, and
+    OpenAPI stability. Full user/JWT identity, end-user or repo-owner
+    self-service membership management UI, operation-specific frontend writes,
+    real artifact ingestion, release-owner human workflow semantics, ingress
+    header stripping, multi-instance acceptance, and R5 remain gated.
 - Public example gate:
   - `docs/review-context/public-examples/m3-public-example-gate.json`
   - Protected RR4 reference for one example-specific public artifact and copy
@@ -201,8 +213,8 @@ Workspace product code lives in the separate `vulca-platform` repository.
   `/Users/yhryzy/.config/superpowers/worktrees/vulca-platform/workspace-interactive-demo`
 - Context baseline: `6efef07 fix: align workspace context review controls`
 - Latest merged platform master:
-  `becbb072434bd4e0d9241e11a87717c7891926b5` from PR #41,
-  `feat: add workspace membership admin routes`.
+  `530ecb8fc80a93756f96cba75ecdd9991bcb8db4` from PR #45,
+  `feat: add workspace typed production core`.
 - Important files:
   - `wenxin-moyun/src/content/workspaceDemo.ts`
   - `wenxin-moyun/src/components/workspace/`
@@ -311,6 +323,24 @@ Workspace product code lives in the separate `vulca-platform` repository.
     operation-specific frontend writes, not release-owner human audit
     semantics, not ingress/gateway header-stripping proof, and not
     multi-instance acceptance evidence.
+- Workspace typed core foundation merge:
+  - `yha9806/vulca-platform` PR #45.
+  - Merge commit: `530ecb8fc80a93756f96cba75ecdd9991bcb8db4`.
+  - Evidence: typed SQLAlchemy models and migration for
+    `workspace_creative_repos`, `workspace_review_items`,
+    `workspace_evidence_packs`, `workspace_release_gates`, and
+    `workspace_typed_audit_events`; bounded compatibility snapshot sync with
+    deduped typed review-item projection; typed overlay load preserving legacy
+    fields and locking `publicReady=false`; clear/archive/reactivate lifecycle;
+    typed conflict rollback and non-typed integrity error classification tests;
+    idempotency, stale child cleanup, query-bound, production membership, and
+    OpenAPI contract tests; README boundary notes.
+  - Boundary: typed core foundation behind the compatibility route only; not
+    full user/JWT authentication, not end-user or repo-owner self-service
+    membership management UI, not operation-specific frontend writes, not real
+    SDK/MCP artifact ingestion into typed records, not release-owner human
+    workflow semantics, not ingress/gateway header-stripping proof, not
+    multi-instance acceptance evidence, and not product-level R5.
 - Production persistence design:
   - `docs/review-context/15-workspace-production-persistence-spec.md`.
   - This is the next product-layer design reference before changing the

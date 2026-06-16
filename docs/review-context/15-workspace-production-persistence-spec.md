@@ -15,7 +15,7 @@ readiness.
 
 ## Current Baseline
 
-The current platform state has nine relevant merged slices:
+The current platform state has ten relevant merged slices:
 
 - PR #31 adds the Workspace review product shell.
 - PR #32 adds local durable review state and release-owner audit trail
@@ -45,15 +45,22 @@ The current platform state has nine relevant merged slices:
   `workspace_review_memberships` rows used by the compatibility endpoint,
   including role validation, deactivate-with-history behavior, stable error
   responses, membership admin audit events, and deployment notes.
+- PR #45 adds the first typed Workspace core foundation behind the same
+  compatibility endpoint: Creative Repo, review item, evidence pack, release
+  gate, and typed audit tables; bounded typed sync from compatibility saves;
+  typed overlay load; clear/archive/reactivate lifecycle; typed conflict and
+  rollback gates; production membership integration; and OpenAPI stability.
 
 The baseline now proves product direction, a shared API surface, and
 database-backed compatibility snapshot persistence with basic revision conflict
 audit evidence plus compatibility-route trusted actor, active-membership, and
-system-admin provisioning gates for production load/save/clear. It does not
-prove the full production persistence model, user/JWT authorization, end-user
-or repo-owner self-service membership management UI, typed object aggregates,
-release-owner human audit semantics, operation-specific writes, ingress
-header-stripping proof, or multi-instance acceptance behavior.
+system-admin provisioning gates for production load/save/clear, plus a typed
+core foundation projected from compatibility saves. It does not prove the full
+production persistence model, user/JWT authorization, end-user or repo-owner
+self-service membership management UI, operation-specific frontend writes, real
+SDK/MCP artifact ingestion into typed records, release-owner human workflow
+semantics, ingress header-stripping proof, or multi-instance acceptance
+behavior.
 
 ## Product Position
 
@@ -224,8 +231,8 @@ Rules:
 
 ## Migration From Current Slice
 
-Migration from PR #34, PR #35, PR #36, PR #37, PR #39, PR #40, and PR #41
-should be staged:
+Migration from PR #34, PR #35, PR #36, PR #37, PR #39, PR #40, PR #41, and
+PR #45 should be staged:
 
 1. Keep the existing review-state endpoint as the frontend compatibility route.
 2. Add database tables and service-layer operations behind the endpoint.
@@ -256,14 +263,16 @@ Current implementation evidence:
 - PR #41 adds system-only compatibility routes for provisioning and
   deactivating Workspace review memberships, with role validation and
   membership admin audit events.
-- PR #35 does not yet implement typed service-layer operations for
-  `CreativeRepo`, `ReviewItem`, `EvidencePack`, `ReleaseGate`, or
-  `AuditEvent`.
-- PR #41 does not yet implement full user/JWT authentication, end-user or
-  repo-owner self-service membership management UI, typed service-layer
-  operations, release-owner human audit semantics, seeded repo migration,
-  operation-specific frontend writes, ingress/gateway header-stripping proof,
-  or multi-instance acceptance evidence.
+- PR #45 adds typed core tables and service-layer projection behind the
+  compatibility route for `CreativeRepo`, `ReviewItem`, `EvidencePack`,
+  `ReleaseGate`, and typed audit records, with bounded sync, overlay load,
+  archive/reactivate, typed rollback/conflict gates, and production membership
+  integration.
+- PR #45 does not yet implement full user/JWT authentication, end-user or
+  repo-owner self-service membership management UI, operation-specific
+  frontend writes, real artifact ingestion, release-owner human workflow
+  semantics, seeded repo migration, ingress/gateway header-stripping proof, or
+  multi-instance acceptance evidence.
 
 ## Acceptance Gates
 
@@ -307,3 +316,4 @@ This spec does not upgrade current release status by itself.
 - `yha9806/vulca-platform` PR #39.
 - `yha9806/vulca-platform` PR #40.
 - `yha9806/vulca-platform` PR #41.
+- `yha9806/vulca-platform` PR #45.

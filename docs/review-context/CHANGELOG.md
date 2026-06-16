@@ -4,6 +4,30 @@ Vault status: append-only change log.
 
 ## 2026-06-16
 
+### Recorded Platform Workspace Typed Core Foundation Merge
+
+- Recorded platform PR #45 as merged to `master` with typed Workspace Creative
+  Repo persistence records maintained behind the existing
+  `/api/v1/workspace/review-state/{repo_id}` compatibility route.
+- Clarified that #45 adds `workspace_creative_repos`,
+  `workspace_review_items`, `workspace_evidence_packs`,
+  `workspace_release_gates`, and `workspace_typed_audit_events`, plus
+  bounded snapshot sync, typed overlay load, archive/reactivate lifecycle,
+  typed rollback/conflict gates, production membership integration, and
+  OpenAPI stability tests.
+- Preserved the boundary that #45 is a typed core foundation under the
+  compatibility route: full user/JWT identity, end-user or repo-owner
+  self-service membership UI, operation-specific frontend writes, real
+  artifact ingestion, release-owner human workflow semantics, ingress
+  header-stripping proof, multi-instance acceptance evidence, and product-level
+  R5 release readiness remain gated.
+
+Source basis:
+
+- `yha9806/vulca-platform` PR #45.
+- Merge commit `530ecb8fc80a93756f96cba75ecdd9991bcb8db4`.
+- Remote checks: `Run Tests` and `security` passed on PR #45.
+
 ### Recorded Platform Workspace Membership Admin Merge
 
 - Recorded platform PR #41 as merged to `master` with system-only
