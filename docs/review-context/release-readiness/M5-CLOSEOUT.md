@@ -60,6 +60,12 @@ As of 2026-06-16:
   metadata, and deployment notes for
   `WORKSPACE_REVIEW_ACTOR_HEADER_SECRET`. Its PR gate passed remote
   `Run Tests` and `security`.
+- Platform PR #39, `feat: add workspace review memberships`, merged to
+  `master` at `dff2331f95161ec909a07b76ef7e94ae7def3cfe` from head
+  `b793c50`. It adds database-backed `workspace_review_memberships`, enforces
+  active repo membership and role matching for production save/clear on the
+  compatibility endpoint, and documents the fail-closed deployment boundary.
+  Its PR gate passed remote `Run Tests` and `security`.
 
 These PRs improve R5 evidence, but they do not change the product-level
 decision above.
@@ -87,10 +93,10 @@ blocker is `15-workspace-production-persistence-spec.md`.
 ## Remaining R5 Blockers
 
 - production-grade Workspace persistence beyond the DB-backed compatibility
-  snapshot, including typed durable records, full user/JWT and membership
-  authorization beyond trusted headers, release-owner human audit semantics,
-  operation-specific writes, ingress header-stripping proof, and multi-instance
-  behavior;
+  snapshot, including typed durable records, full user/JWT authorization, read
+  authorization, membership management APIs/UI beyond the save/clear
+  compatibility check, release-owner human audit semantics, operation-specific
+  writes, ingress header-stripping proof, and multi-instance behavior;
 - repeated bridge ingestion across more than one workflow;
 - production EvidencePack rendering evidence;
 - human-owned release workflow implementation evidence;
@@ -111,3 +117,4 @@ blocker is `15-workspace-production-persistence-spec.md`.
 - `yha9806/vulca-platform` PR #35.
 - `yha9806/vulca-platform` PR #36.
 - `yha9806/vulca-platform` PR #37.
+- `yha9806/vulca-platform` PR #39.

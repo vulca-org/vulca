@@ -158,6 +158,12 @@ check before changing high-level VULCA claims.
     user/JWT identity, repo membership, typed aggregates, release-owner human
     semantics, operation-specific writes, ingress header stripping, and
     multi-instance acceptance remain gated.
+  - Platform PR #39 adds `workspace_review_memberships` and requires
+    production save/clear operations on the compatibility route to match an
+    active repo membership for the trusted actor id and role. Full user/JWT
+    identity, read authorization, membership management APIs/UI, typed
+    aggregates, release-owner human semantics, operation-specific writes,
+    ingress header stripping, and multi-instance acceptance remain gated.
 - Public example gate:
   - `docs/review-context/public-examples/m3-public-example-gate.json`
   - Protected RR4 reference for one example-specific public artifact and copy
@@ -182,8 +188,8 @@ Workspace product code lives in the separate `vulca-platform` repository.
   `/Users/yhryzy/.config/superpowers/worktrees/vulca-platform/workspace-interactive-demo`
 - Context baseline: `6efef07 fix: align workspace context review controls`
 - Latest merged platform master:
-  `0faf8748181c4d65f83b22b9a0b6ecfb10409b14` from PR #37,
-  `feat: gate workspace review actors`.
+  `dff2331f95161ec909a07b76ef7e94ae7def3cfe` from PR #39,
+  `feat: add workspace review memberships`.
 - Important files:
   - `wenxin-moyun/src/content/workspaceDemo.ts`
   - `wenxin-moyun/src/components/workspace/`
@@ -245,6 +251,21 @@ Workspace product code lives in the separate `vulca-platform` repository.
     CreativeRepo/ReviewItem/EvidencePack/ReleaseGate aggregates, not
     operation-specific frontend writes, not release-owner human audit
     semantics, and not ingress/gateway header-stripping proof.
+- Workspace membership gate compatibility merge:
+  - `yha9806/vulca-platform` PR #39.
+  - Merge commit: `dff2331f95161ec909a07b76ef7e94ae7def3cfe`.
+  - Evidence: SQLAlchemy `WorkspaceReviewMembership` model, Alembic migration
+    for `workspace_review_memberships`, active membership lookup by repo and
+    trusted actor id, role-mismatch 403 responses, production save/clear
+    membership enforcement, README deployment notes, and tests for non-member,
+    inactive member, role mismatch, OpenAPI contract, and DB dependency
+    fallback.
+  - Boundary: compatibility-route save/clear membership gate only; not full
+    user/JWT authentication, not read authorization, not membership management
+    APIs/UI, not typed CreativeRepo/ReviewItem/EvidencePack/ReleaseGate
+    aggregates, not operation-specific frontend writes, not release-owner human
+    audit semantics, not ingress/gateway header-stripping proof, and not
+    multi-instance acceptance evidence.
 - Production persistence design:
   - `docs/review-context/15-workspace-production-persistence-spec.md`.
   - This is the next product-layer design reference before changing the
