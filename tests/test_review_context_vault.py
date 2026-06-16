@@ -26,6 +26,7 @@ CORE_HISTORY_FILES = [
     "12-complete-demo-path.md",
     "13-website-ppt-claim-spine.md",
     "14-release-readiness-evidence-gate.md",
+    "15-workspace-production-persistence-spec.md",
 ]
 
 REQUEST_TEMPLATE_CHECKS = [

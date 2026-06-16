@@ -4,6 +4,24 @@ Vault status: append-only change log.
 
 ## 2026-06-16
 
+### Added Workspace Production Persistence Spec
+
+- Added `15-workspace-production-persistence-spec.md` as the protected product
+  design for database-backed Workspace persistence, authorization, conflict
+  handling, audit history, and multi-instance behavior.
+- Wired the spec into the README read order, manifest, validator, source index,
+  Workspace product model, durable review status, release-readiness gate, and
+  M5 closeout.
+- Preserved the boundary that this spec does not upgrade product-level R5
+  without implementation evidence and a human release owner decision.
+
+Source basis:
+
+- `docs/review-context/07-workspace-product-model.md`.
+- `docs/review-context/14-release-readiness-evidence-gate.md`.
+- `docs/review-context/release-readiness/M5-CLOSEOUT.md`.
+- `yha9806/vulca-platform` PR #34.
+
 ### Recorded Platform Shared Workspace Review-State Merge
 
 - Recorded platform PR #34 as merged to `master` with shared backend

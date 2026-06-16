@@ -44,6 +44,8 @@ mainline and does not carry or require the vault validation gate.
 - `13-website-ppt-claim-spine.md`: shared website, README, PPT, and public
   story claim spine.
 - `14-release-readiness-evidence-gate.md`: M5 release-readiness evidence gate.
+- `15-workspace-production-persistence-spec.md`: product spec for database,
+  authorization, conflict, audit, and multi-instance Workspace persistence.
 - `artifact-bridge/`: RR2 reference fixture for projecting SDK/MCP artifacts
   into Workspace review objects.
 - `workspace-durable/`: RR3 durable review fixture for reload-preserved
@@ -82,8 +84,11 @@ mainline and does not carry or require the vault validation gate.
     positioning, public decks, or PPT proof-lab summaries.
 13. Read `14-release-readiness-evidence-gate.md` before upgrading any preview,
     internal, public-blocked, or release-readiness status.
-14. Use `release-readiness/TEMPLATE.md` before proposing a stronger release
+14. Read `15-workspace-production-persistence-spec.md` before implementing or
+    reviewing production Workspace persistence, authorization, conflict
+    handling, audit history, or multi-instance behavior.
+15. Use `release-readiness/TEMPLATE.md` before proposing a stronger release
     level, public example, website claim, or PPT claim.
-15. Read `release-readiness/M5-CLOSEOUT.md` before summarizing current
+16. Read `release-readiness/M5-CLOSEOUT.md` before summarizing current
     release-readiness state.
-16. If this vault needs a change, create a request packet instead of editing it.
+17. If this vault needs a change, create a request packet instead of editing it.

@@ -42,6 +42,9 @@ As of 2026-06-16:
 These PRs improve R5 evidence, but they do not change the product-level
 decision above.
 
+The next product-design reference for closing the persistence blocker is
+`15-workspace-production-persistence-spec.md`.
+
 ## Indexed Evidence
 
 - RR1 checklist/report template:
@@ -56,6 +59,8 @@ decision above.
   `copy-gates/website-ppt-copy-gate.json`
 - Machine-readable closeout:
   `release-readiness/m5-closeout-summary.json`
+- Production Workspace persistence spec:
+  `15-workspace-production-persistence-spec.md`
 
 ## Remaining R5 Blockers
 
@@ -70,6 +75,7 @@ decision above.
 ## Sources
 
 - `docs/review-context/14-release-readiness-evidence-gate.md`
+- `docs/review-context/15-workspace-production-persistence-spec.md`
 - `docs/review-context/release-readiness/TEMPLATE.md`
 - `docs/review-context/artifact-bridge/m3-demo-bridge-fixture.json`
 - `docs/review-context/workspace-durable/m3-durable-review-fixture.json`
