@@ -12,7 +12,7 @@ blocker, decision-state, and human-audit boundaries.
 
 ## Product Implementation Status
 
-As of 2026-06-16, the platform implementation has three merged PRs on
+As of 2026-06-16, the platform implementation has four merged PRs on
 `yha9806/vulca-platform` `master`:
 
 - PR #31, `[codex] Workspace review product shell`, merged at
@@ -28,15 +28,23 @@ As of 2026-06-16, the platform implementation has three merged PRs on
   `/api/v1/workspace/review-state/{repo_id}`, frontend load/save mirroring for
   the Workspace page, backend-side `public_ready=false` normalization, and
   E2E isolation for the shared review-state API.
+- PR #35, `feat: persist workspace review state in db`, merged at
+  `24efaab5101494cfa7777aa3ded6d8c27e923870`. It adds a SQLAlchemy
+  `workspace_review_states` table behind the existing compatibility endpoint,
+  preserves backend-side release gate normalization, and adds SQLite-backed
+  tests for cross-client persistence, process-local reset survival, table
+  registration, and clearing.
 
 PR #32 is intentionally a local durability slice. PR #34 is intentionally a
-shared in-process backend slice. Together they improve Workspace persistence
-evidence, but they do not certify production persistence, authorization,
-conflict handling, multi-instance durability, or product-level release
-readiness.
+shared in-process backend slice. PR #35 upgrades that compatibility route to
+database-backed snapshot persistence. Together they improve Workspace
+persistence evidence, but they do not certify the full production model:
+authorization, conflict handling, typed CreativeRepo/ReviewItem/EvidencePack
+aggregates, append-only audit events, multi-instance acceptance, or
+product-level release readiness.
 
 Use `../15-workspace-production-persistence-spec.md` for the product design
-that turns these slices into production database-backed persistence.
+that turns these slices into the full production persistence model.
 
 ## Current Fixtures
 
@@ -63,3 +71,4 @@ that turns these slices into production database-backed persistence.
 - `yha9806/vulca-platform` PR #31.
 - `yha9806/vulca-platform` PR #32.
 - `yha9806/vulca-platform` PR #34.
+- `yha9806/vulca-platform` PR #35.

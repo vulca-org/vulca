@@ -38,12 +38,20 @@ As of 2026-06-16:
   mirroring, backend-side `public_ready=false` locking, OpenAPI/module-boundary
   updates, and E2E isolation for shared review state. Its PR gate passed
   remote `Run Tests` and `security`.
+- Platform PR #35, `feat: persist workspace review state in db`, merged to
+  `master` at `24efaab5101494cfa7777aa3ded6d8c27e923870` from head
+  `563e1dd`. It replaces the #34 in-process store with a SQLAlchemy
+  `workspace_review_states` table behind the existing compatibility endpoint,
+  preserves backend-side `public_ready=false` locking, and adds tests for
+  cross-client DB persistence, process-local reset survival, table
+  registration, clearing, OpenAPI contract stability, and DB dependency
+  fallback. Its PR gate passed remote `Run Tests` and `security`.
 
 These PRs improve R5 evidence, but they do not change the product-level
 decision above.
 
-The next product-design reference for closing the persistence blocker is
-`15-workspace-production-persistence-spec.md`.
+The next product-design reference for closing the remaining persistence
+blocker is `15-workspace-production-persistence-spec.md`.
 
 ## Indexed Evidence
 
@@ -64,9 +72,9 @@ The next product-design reference for closing the persistence blocker is
 
 ## Remaining R5 Blockers
 
-- production-grade Workspace persistence beyond the local durable PR and
-  in-process shared backend slice, including durable storage,
-  authorization, conflict handling, and multi-instance behavior;
+- production-grade Workspace persistence beyond the DB-backed compatibility
+  snapshot, including typed durable records, authorization, conflict handling,
+  append-only audit events, and multi-instance behavior;
 - repeated bridge ingestion across more than one workflow;
 - production EvidencePack rendering evidence;
 - human-owned release workflow implementation evidence;
@@ -84,3 +92,4 @@ The next product-design reference for closing the persistence blocker is
 - `yha9806/vulca-platform` PR #31.
 - `yha9806/vulca-platform` PR #32.
 - `yha9806/vulca-platform` PR #34.
+- `yha9806/vulca-platform` PR #35.

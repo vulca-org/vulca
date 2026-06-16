@@ -55,8 +55,9 @@
   "core_sources": {
     "sdk_mainline": "cb6d52fe",
     "workspace_context_baseline": "6efef07",
-    "workspace_latest_observed": "d06a713b",
+    "workspace_latest_observed": "24efaab5",
     "workspace_shared_review_state_merge": "d06a713b",
+    "workspace_db_review_state_merge": "24efaab5",
     "artifact_bridge_spec": "11-artifact-bridge-spec.md",
     "m3_bridge_fixture": "artifact-bridge/m3-demo-bridge-fixture.json",
     "m3_durable_review_fixture": "workspace-durable/m3-durable-review-fixture.json",

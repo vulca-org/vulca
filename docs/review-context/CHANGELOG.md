@@ -4,6 +4,25 @@ Vault status: append-only change log.
 
 ## 2026-06-16
 
+### Recorded Platform DB-Backed Workspace Review-State Merge
+
+- Recorded platform PR #35 as merged to `master` with database-backed
+  Workspace review-state compatibility persistence behind the existing
+  `/api/v1/workspace/review-state/{repo_id}` endpoint.
+- Clarified that #35 upgrades the #34 in-process store to a SQLAlchemy-backed
+  snapshot table, but does not complete the full production persistence spec:
+  authorization, conflict handling, typed object aggregates, append-only audit
+  events, and multi-instance acceptance evidence remain gated.
+- Updated the source index, durable Workspace status, M5 closeout, release
+  readiness gate, and manifest so future sessions inherit the correct
+  implementation boundary.
+
+Source basis:
+
+- `yha9806/vulca-platform` PR #35.
+- Merge commit `24efaab5101494cfa7777aa3ded6d8c27e923870`.
+- Remote checks: `Run Tests` and `security` passed on PR #35.
+
 ### Added Workspace Production Persistence Spec
 
 - Added `15-workspace-production-persistence-spec.md` as the protected product

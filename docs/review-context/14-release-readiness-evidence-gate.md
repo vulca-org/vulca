@@ -108,19 +108,23 @@ Current evidence:
 - Platform PR #34 adds a shared in-process backend review-state API and
   frontend Workspace load/save mirroring, with backend-side
   `public_ready=false` locking.
+- Platform PR #35 upgrades that compatibility endpoint from process memory to
+  SQLAlchemy-backed database persistence for the whole review-state snapshot.
 - `15-workspace-production-persistence-spec.md` defines the product design for
   database-backed storage, authorization, conflict handling, audit events, and
   multi-instance behavior.
 
 Remaining boundary:
 
-- PR #34 does not prove production database-backed durability, authorization,
-  conflict handling, or multi-instance behavior.
+- PR #35 proves database-backed compatibility snapshot persistence, but does
+  not prove authorization, conflict handling, typed Workspace aggregates,
+  append-only audit events, or multi-instance acceptance behavior.
 
 Blocked until:
 
-- the local/in-process slices are replaced or supplemented by production-grade
-  durable storage and access boundaries for the demo path.
+- the compatibility snapshot slice is supplemented by production-grade access
+  boundaries, conflict handling, audit events, typed durable records, and
+  multi-instance evidence for the demo path.
 
 ### Gate 2: Artifact Ingestion
 
