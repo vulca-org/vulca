@@ -4,6 +4,27 @@ Vault status: append-only change log.
 
 ## 2026-06-16
 
+### Recorded Platform Workspace Trusted Actor Gate Merge
+
+- Recorded platform PR #37 as merged to `master` with a trusted actor/role
+  gate for the existing Workspace review-state compatibility endpoint.
+- Clarified that #37 adds production fail-closed behavior for save/clear
+  without trusted upstream actor headers, restricts clear to
+  `release_owner`, `repo_owner`, or `system`, records actor metadata in
+  save/clear audit events, and documents the required
+  `WORKSPACE_REVIEW_ACTOR_HEADER_SECRET`.
+- Preserved the boundary that #37 is not full production authorization:
+  user/JWT identity, repo membership, typed Workspace aggregates,
+  release-owner human semantics, operation-specific writes, ingress header
+  stripping configuration, and multi-instance acceptance evidence remain
+  gated.
+
+Source basis:
+
+- `yha9806/vulca-platform` PR #37.
+- Merge commit `0faf8748181c4d65f83b22b9a0b6ecfb10409b14`.
+- Remote checks: `Run Tests` and `security` passed on PR #37.
+
 ### Recorded Platform Review Revision Conflict And Audit Merge
 
 - Recorded platform PR #36 as merged to `master` with revision metadata,

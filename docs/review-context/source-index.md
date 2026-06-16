@@ -151,6 +151,13 @@ check before changing high-level VULCA claims.
     snapshot route, while authorization, typed aggregates, release-owner audit
     semantics, operation-specific writes, and multi-instance acceptance remain
     gated.
+  - Platform PR #37 adds a trusted actor/role gate for the same compatibility
+    route, including production fail-closed save/clear behavior without
+    trusted upstream headers, clear restricted to `release_owner`,
+    `repo_owner`, or `system`, and actor metadata in audit events. Full
+    user/JWT identity, repo membership, typed aggregates, release-owner human
+    semantics, operation-specific writes, ingress header stripping, and
+    multi-instance acceptance remain gated.
 - Public example gate:
   - `docs/review-context/public-examples/m3-public-example-gate.json`
   - Protected RR4 reference for one example-specific public artifact and copy
@@ -175,8 +182,8 @@ Workspace product code lives in the separate `vulca-platform` repository.
   `/Users/yhryzy/.config/superpowers/worktrees/vulca-platform/workspace-interactive-demo`
 - Context baseline: `6efef07 fix: align workspace context review controls`
 - Latest merged platform master:
-  `3310093131132268ec9658736d3bd172ecccbe58` from PR #36,
-  `feat: add workspace review revision conflicts`.
+  `0faf8748181c4d65f83b22b9a0b6ecfb10409b14` from PR #37,
+  `feat: gate workspace review actors`.
 - Important files:
   - `wenxin-moyun/src/content/workspaceDemo.ts`
   - `wenxin-moyun/src/components/workspace/`
@@ -223,6 +230,21 @@ Workspace product code lives in the separate `vulca-platform` repository.
     not typed CreativeRepo/ReviewItem/EvidencePack/ReleaseGate aggregates, not
     operation-specific frontend writes, not release-owner audit semantics, and
     not multi-instance acceptance evidence.
+- Trusted actor gate compatibility merge:
+  - `yha9806/vulca-platform` PR #37.
+  - Merge commit: `0faf8748181c4d65f83b22b9a0b6ecfb10409b14`.
+  - Evidence: `WorkspaceReviewActor` header dependency, stable 403 permission
+    responses, development/test `preview` compatibility, production save/clear
+    fail-closed unless trusted upstream actor headers carry a 32+ character
+    `WORKSPACE_REVIEW_ACTOR_HEADER_SECRET`, clear restricted to
+    `release_owner`, `repo_owner`, or `system`, save/clear audit metadata with
+    `actor_id` and `actor_role`, README/env deployment notes, and Workspace
+    E2E reset isolation updated to use a release-owner actor.
+  - Boundary: compatibility route trusted-header gate only; not full
+    user/JWT authentication, not repo membership authorization, not typed
+    CreativeRepo/ReviewItem/EvidencePack/ReleaseGate aggregates, not
+    operation-specific frontend writes, not release-owner human audit
+    semantics, and not ingress/gateway header-stripping proof.
 - Production persistence design:
   - `docs/review-context/15-workspace-production-persistence-spec.md`.
   - This is the next product-layer design reference before changing the

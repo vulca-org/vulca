@@ -38,6 +38,11 @@
       "source": "docs/review-context/workspace-durable/README.md"
     },
     {
+      "name": "Workspace review-state trusted actor gate evidence",
+      "status": "indexed",
+      "source": "docs/review-context/workspace-durable/README.md"
+    },
+    {
       "name": "Workspace production persistence product spec",
       "status": "indexed",
       "source": "docs/review-context/15-workspace-production-persistence-spec.md"
@@ -73,13 +78,14 @@
     "max_allowed_level": "R4",
     "example_scope": "public-example-key-visual-v1",
     "human_owner": null,
-    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked. Platform PR #36 adds compatibility snapshot revision conflict checks and save/clear audit events, not full production authorization, typed aggregate, release-owner audit semantics, operation-specific writes, or multi-instance release readiness."
+    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked. Platform PR #37 adds a trusted-header actor gate for the compatibility snapshot route, not full user/JWT authorization, repo membership authorization, typed aggregates, release-owner human audit semantics, operation-specific writes, ingress header-stripping proof, or multi-instance release readiness."
   },
   "remaining_blockers": [
     "typed Workspace persistence records beyond the compatibility snapshot",
-    "Workspace authorization evidence",
-    "release-owner audit semantics beyond compatibility snapshot events",
+    "full user/JWT Workspace authorization and repo membership evidence beyond trusted headers",
+    "release-owner human audit semantics beyond compatibility snapshot events",
     "operation-specific Workspace write evidence",
+    "ingress header-stripping proof for trusted Workspace actor headers",
     "multi-instance Workspace persistence acceptance evidence",
     "repeated bridge ingestion evidence",
     "production EvidencePack rendering evidence",

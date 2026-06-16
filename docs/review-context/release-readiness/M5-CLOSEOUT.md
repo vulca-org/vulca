@@ -52,6 +52,14 @@ As of 2026-06-16:
   checks, stale-after-clear protection, write/delete row locking, append-only
   save/clear audit events, and an Alembic migration for the audit table. Its
   PR gate passed remote `Run Tests` and `security`.
+- Platform PR #37, `feat: gate workspace review actors`, merged to `master`
+  at `0faf8748181c4d65f83b22b9a0b6ecfb10409b14` from head `b536d7e`. It adds
+  trusted actor/role gating for the compatibility endpoint, production
+  fail-closed save/clear behavior without trusted upstream actor headers, clear
+  restricted to `release_owner`, `repo_owner`, or `system`, actor id/role audit
+  metadata, and deployment notes for
+  `WORKSPACE_REVIEW_ACTOR_HEADER_SECRET`. Its PR gate passed remote
+  `Run Tests` and `security`.
 
 These PRs improve R5 evidence, but they do not change the product-level
 decision above.
@@ -79,8 +87,10 @@ blocker is `15-workspace-production-persistence-spec.md`.
 ## Remaining R5 Blockers
 
 - production-grade Workspace persistence beyond the DB-backed compatibility
-  snapshot, including typed durable records, authorization, release-owner
-  audit semantics, operation-specific writes, and multi-instance behavior;
+  snapshot, including typed durable records, full user/JWT and membership
+  authorization beyond trusted headers, release-owner human audit semantics,
+  operation-specific writes, ingress header-stripping proof, and multi-instance
+  behavior;
 - repeated bridge ingestion across more than one workflow;
 - production EvidencePack rendering evidence;
 - human-owned release workflow implementation evidence;
@@ -100,3 +110,4 @@ blocker is `15-workspace-production-persistence-spec.md`.
 - `yha9806/vulca-platform` PR #34.
 - `yha9806/vulca-platform` PR #35.
 - `yha9806/vulca-platform` PR #36.
+- `yha9806/vulca-platform` PR #37.
