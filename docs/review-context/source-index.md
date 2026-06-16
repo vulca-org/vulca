@@ -146,6 +146,11 @@ check before changing high-level VULCA claims.
     SQLAlchemy-backed `workspace_review_states` table, while full production
     authorization, conflict handling, typed aggregates, append-only audit
     events, and multi-instance acceptance remain gated.
+  - Platform PR #36 adds revision metadata, optional `baseRevision` stale-write
+    409 checks, and append-only save/clear audit events for that compatibility
+    snapshot route, while authorization, typed aggregates, release-owner audit
+    semantics, operation-specific writes, and multi-instance acceptance remain
+    gated.
 - Public example gate:
   - `docs/review-context/public-examples/m3-public-example-gate.json`
   - Protected RR4 reference for one example-specific public artifact and copy
@@ -170,8 +175,8 @@ Workspace product code lives in the separate `vulca-platform` repository.
   `/Users/yhryzy/.config/superpowers/worktrees/vulca-platform/workspace-interactive-demo`
 - Context baseline: `6efef07 fix: align workspace context review controls`
 - Latest merged platform master:
-  `24efaab5101494cfa7777aa3ded6d8c27e923870` from PR #35,
-  `feat: persist workspace review state in db`.
+  `3310093131132268ec9658736d3bd172ecccbe58` from PR #36,
+  `feat: add workspace review revision conflicts`.
 - Important files:
   - `wenxin-moyun/src/content/workspaceDemo.ts`
   - `wenxin-moyun/src/components/workspace/`
@@ -206,6 +211,18 @@ Workspace product code lives in the separate `vulca-platform` repository.
     CreativeRepo/ReviewItem/EvidencePack/ReleaseGate persistence, not
     authorization, not stale-write conflict handling, not append-only audit
     events, and not multi-instance acceptance evidence.
+- Revision conflict and audit compatibility merge:
+  - `yha9806/vulca-platform` PR #36.
+  - Merge commit: `3310093131132268ec9658736d3bd172ecccbe58`.
+  - Evidence: `revision` returned by the existing review-state API,
+    optional wrapped payloads with `baseRevision`, stale-write 409 responses,
+    stale-after-clear 409 responses, row locking on write/delete paths,
+    append-only `workspace_review_audit_events` save/clear records, and an
+    Alembic migration for the audit table.
+  - Boundary: compatibility snapshot conflict/audit only; not authorization,
+    not typed CreativeRepo/ReviewItem/EvidencePack/ReleaseGate aggregates, not
+    operation-specific frontend writes, not release-owner audit semantics, and
+    not multi-instance acceptance evidence.
 - Production persistence design:
   - `docs/review-context/15-workspace-production-persistence-spec.md`.
   - This is the next product-layer design reference before changing the

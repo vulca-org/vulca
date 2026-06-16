@@ -46,6 +46,12 @@ As of 2026-06-16:
   cross-client DB persistence, process-local reset survival, table
   registration, clearing, OpenAPI contract stability, and DB dependency
   fallback. Its PR gate passed remote `Run Tests` and `security`.
+- Platform PR #36, `feat: add workspace review revision conflicts`, merged to
+  `master` at `3310093131132268ec9658736d3bd172ecccbe58` from head
+  `2c1bd63`. It adds revision metadata, optional `baseRevision` 409 conflict
+  checks, stale-after-clear protection, write/delete row locking, append-only
+  save/clear audit events, and an Alembic migration for the audit table. Its
+  PR gate passed remote `Run Tests` and `security`.
 
 These PRs improve R5 evidence, but they do not change the product-level
 decision above.
@@ -73,8 +79,8 @@ blocker is `15-workspace-production-persistence-spec.md`.
 ## Remaining R5 Blockers
 
 - production-grade Workspace persistence beyond the DB-backed compatibility
-  snapshot, including typed durable records, authorization, conflict handling,
-  append-only audit events, and multi-instance behavior;
+  snapshot, including typed durable records, authorization, release-owner
+  audit semantics, operation-specific writes, and multi-instance behavior;
 - repeated bridge ingestion across more than one workflow;
 - production EvidencePack rendering evidence;
 - human-owned release workflow implementation evidence;
@@ -93,3 +99,4 @@ blocker is `15-workspace-production-persistence-spec.md`.
 - `yha9806/vulca-platform` PR #32.
 - `yha9806/vulca-platform` PR #34.
 - `yha9806/vulca-platform` PR #35.
+- `yha9806/vulca-platform` PR #36.

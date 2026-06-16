@@ -15,7 +15,7 @@ readiness.
 
 ## Current Baseline
 
-The current platform state has four relevant merged slices:
+The current platform state has five relevant merged slices:
 
 - PR #31 adds the Workspace review product shell.
 - PR #32 adds local durable review state and release-owner audit trail
@@ -26,11 +26,15 @@ The current platform state has four relevant merged slices:
 - PR #35 replaces the #34 process-memory store behind that compatibility
   endpoint with a SQLAlchemy `workspace_review_states` table and tests that
   prove the saved snapshot survives a process-local store reset.
+- PR #36 adds revision metadata, optional `baseRevision` stale-write 409
+  checks, stale-after-clear protection, row locking on write/delete paths, and
+  append-only save/clear audit events for the same compatibility endpoint.
 
 The baseline now proves product direction, a shared API surface, and
-database-backed compatibility snapshot persistence. It does not prove the full
-production persistence model, authorization, conflict handling, append-only
-audit events, typed object aggregates, or multi-instance acceptance behavior.
+database-backed compatibility snapshot persistence with basic revision conflict
+and audit evidence. It does not prove the full production persistence model,
+authorization, typed object aggregates, release-owner audit semantics,
+operation-specific writes, or multi-instance acceptance behavior.
 
 ## Product Position
 
@@ -201,7 +205,7 @@ Rules:
 
 ## Migration From Current Slice
 
-Migration from PR #34 and PR #35 should be staged:
+Migration from PR #34, PR #35, and PR #36 should be staged:
 
 1. Keep the existing review-state endpoint as the frontend compatibility route.
 2. Add database tables and service-layer operations behind the endpoint.
@@ -217,12 +221,16 @@ Current implementation evidence:
 
 - PR #35 completes the first database-backed compatibility slice of step 2 by
   persisting the whole review-state snapshot in `workspace_review_states`.
+- PR #36 extends that compatibility slice with API revision metadata,
+  optional `baseRevision` 409 checks, stale-after-clear protection, write-path
+  row locks, append-only snapshot audit events, and an Alembic migration for
+  the audit table.
 - PR #35 does not yet implement typed service-layer operations for
   `CreativeRepo`, `ReviewItem`, `EvidencePack`, `ReleaseGate`, or
   `AuditEvent`.
-- PR #35 does not yet implement authorization, stale-write conflict handling,
-  seeded repo migration, operation-specific frontend writes, or multi-instance
-  acceptance evidence.
+- PR #36 does not yet implement authorization, typed service-layer operations,
+  release-owner audit semantics, seeded repo migration, operation-specific
+  frontend writes, or multi-instance acceptance evidence.
 
 ## Acceptance Gates
 
@@ -261,3 +269,4 @@ This spec does not upgrade current release status by itself.
 - `yha9806/vulca-platform` PR #32.
 - `yha9806/vulca-platform` PR #34.
 - `yha9806/vulca-platform` PR #35.
+- `yha9806/vulca-platform` PR #36.
