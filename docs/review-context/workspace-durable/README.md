@@ -12,7 +12,7 @@ blocker, decision-state, and human-audit boundaries.
 
 ## Product Implementation Status
 
-As of 2026-06-16, the platform implementation has seven merged PRs on
+As of 2026-06-16, the platform implementation has eight merged PRs on
 `yha9806/vulca-platform` `master`:
 
 - PR #31, `[codex] Workspace review product shell`, merged at
@@ -50,15 +50,21 @@ As of 2026-06-16, the platform implementation has seven merged PRs on
   `workspace_review_memberships` table and requires production save/clear
   operations on the compatibility endpoint to match an active repo membership
   for the trusted actor id and role.
+- PR #40, `feat: gate workspace review reads`, merged at
+  `d31e9bf8f6139c60ee10605337c32221a5098b8b`. It extends the same trusted
+  actor and active membership checks to production load operations, so
+  load/save/clear all fail closed without a trusted actor and matching active
+  membership.
 
 PR #32 is intentionally a local durability slice. PR #34 is intentionally a
 shared in-process backend slice. PR #35 upgrades that compatibility route to
 database-backed snapshot persistence. PR #36 adds compatibility-route revision
 conflict checks and snapshot audit events. PR #37 adds a trusted-header actor
 gate for that compatibility route. PR #39 adds an active-membership check for
-production save/clear on that same route. Together they improve Workspace
-persistence evidence, but they do not certify the full production model:
-user/JWT identity, read authorization, membership management APIs/UI, typed
+production save/clear on that same route. PR #40 extends that check to
+production load. Together they improve Workspace persistence and compatibility
+route authorization evidence, but they do not certify the full production
+model: user/JWT identity, membership management APIs/UI, typed
 CreativeRepo/ReviewItem/EvidencePack aggregates, release-owner human audit
 semantics, operation-specific writes, multi-instance acceptance, ingress
 header-stripping proof, or product-level release readiness.
@@ -95,3 +101,4 @@ that turns these slices into the full production persistence model.
 - `yha9806/vulca-platform` PR #36.
 - `yha9806/vulca-platform` PR #37.
 - `yha9806/vulca-platform` PR #39.
+- `yha9806/vulca-platform` PR #40.

@@ -164,6 +164,11 @@ check before changing high-level VULCA claims.
     identity, read authorization, membership management APIs/UI, typed
     aggregates, release-owner human semantics, operation-specific writes,
     ingress header stripping, and multi-instance acceptance remain gated.
+  - Platform PR #40 extends the same trusted actor and active membership gate
+    to production load operations on the compatibility route. Full user/JWT
+    identity, membership management APIs/UI, typed aggregates, release-owner
+    human semantics, operation-specific writes, ingress header stripping, and
+    multi-instance acceptance remain gated.
 - Public example gate:
   - `docs/review-context/public-examples/m3-public-example-gate.json`
   - Protected RR4 reference for one example-specific public artifact and copy
@@ -188,8 +193,8 @@ Workspace product code lives in the separate `vulca-platform` repository.
   `/Users/yhryzy/.config/superpowers/worktrees/vulca-platform/workspace-interactive-demo`
 - Context baseline: `6efef07 fix: align workspace context review controls`
 - Latest merged platform master:
-  `dff2331f95161ec909a07b76ef7e94ae7def3cfe` from PR #39,
-  `feat: add workspace review memberships`.
+  `d31e9bf8f6139c60ee10605337c32221a5098b8b` from PR #40,
+  `feat: gate workspace review reads`.
 - Important files:
   - `wenxin-moyun/src/content/workspaceDemo.ts`
   - `wenxin-moyun/src/components/workspace/`
@@ -265,6 +270,20 @@ Workspace product code lives in the separate `vulca-platform` repository.
     APIs/UI, not typed CreativeRepo/ReviewItem/EvidencePack/ReleaseGate
     aggregates, not operation-specific frontend writes, not release-owner human
     audit semantics, not ingress/gateway header-stripping proof, and not
+    multi-instance acceptance evidence.
+- Workspace read gate compatibility merge:
+  - `yha9806/vulca-platform` PR #40.
+  - Merge commit: `d31e9bf8f6139c60ee10605337c32221a5098b8b`.
+  - Evidence: production `load` now requires a trusted actor, active
+    `workspace_review_memberships` row, and role match; README notes that
+    load/save/clear fail closed until trusted upstream headers and membership
+    data are configured; tests cover preview load rejection, non-member load,
+    inactive member load, role mismatch on load, and successful member load.
+  - Boundary: compatibility-route load/save/clear membership gate only; not
+    full user/JWT authentication, not membership management APIs/UI, not typed
+    CreativeRepo/ReviewItem/EvidencePack/ReleaseGate aggregates, not
+    operation-specific frontend writes, not release-owner human audit
+    semantics, not ingress/gateway header-stripping proof, and not
     multi-instance acceptance evidence.
 - Production persistence design:
   - `docs/review-context/15-workspace-production-persistence-spec.md`.

@@ -15,7 +15,7 @@ readiness.
 
 ## Current Baseline
 
-The current platform state has seven relevant merged slices:
+The current platform state has eight relevant merged slices:
 
 - PR #31 adds the Workspace review product shell.
 - PR #32 adds local durable review state and release-owner audit trail
@@ -37,15 +37,18 @@ The current platform state has seven relevant merged slices:
   requires production save/clear operations on that same compatibility
   endpoint to match an active repo membership for the trusted actor id and
   role.
+- PR #40 extends the same trusted actor and active membership checks to
+  production load operations, so the compatibility endpoint now fails closed
+  for load/save/clear unless the actor is trusted and a matching active repo
+  membership exists.
 
 The baseline now proves product direction, a shared API surface, and
 database-backed compatibility snapshot persistence with basic revision conflict
 audit evidence plus compatibility-route trusted actor and active-membership
-gates for production save/clear. It does not prove the full production
-persistence model, user/JWT authorization, read authorization, membership
-management APIs/UI, typed object aggregates, release-owner human audit
-semantics, operation-specific writes, ingress header-stripping proof, or
-multi-instance acceptance behavior.
+gates for production load/save/clear. It does not prove the full production
+persistence model, user/JWT authorization, membership management APIs/UI, typed
+object aggregates, release-owner human audit semantics, operation-specific
+writes, ingress header-stripping proof, or multi-instance acceptance behavior.
 
 ## Product Position
 
@@ -216,7 +219,7 @@ Rules:
 
 ## Migration From Current Slice
 
-Migration from PR #34, PR #35, PR #36, PR #37, and PR #39 should be staged:
+Migration from PR #34, PR #35, PR #36, PR #37, PR #39, and PR #40 should be staged:
 
 1. Keep the existing review-state endpoint as the frontend compatibility route.
 2. Add database tables and service-layer operations behind the endpoint.
@@ -242,14 +245,16 @@ Current implementation evidence:
   metadata in save/clear audit events.
 - PR #39 extends that compatibility slice with active repo membership checks
   for production save/clear, backed by `workspace_review_memberships`.
+- PR #40 extends the trusted actor and active membership checks to production
+  load on the compatibility route.
 - PR #35 does not yet implement typed service-layer operations for
   `CreativeRepo`, `ReviewItem`, `EvidencePack`, `ReleaseGate`, or
   `AuditEvent`.
-- PR #39 does not yet implement full user/JWT authentication, read
-  authorization, membership management APIs/UI, typed service-layer operations,
-  release-owner human audit semantics, seeded repo migration,
-  operation-specific frontend writes, ingress/gateway header-stripping proof,
-  or multi-instance acceptance evidence.
+- PR #40 does not yet implement full user/JWT authentication, membership
+  management APIs/UI, typed service-layer operations, release-owner human audit
+  semantics, seeded repo migration, operation-specific frontend writes,
+  ingress/gateway header-stripping proof, or multi-instance acceptance
+  evidence.
 
 ## Acceptance Gates
 
@@ -291,3 +296,4 @@ This spec does not upgrade current release status by itself.
 - `yha9806/vulca-platform` PR #36.
 - `yha9806/vulca-platform` PR #37.
 - `yha9806/vulca-platform` PR #39.
+- `yha9806/vulca-platform` PR #40.

@@ -66,6 +66,12 @@ As of 2026-06-16:
   active repo membership and role matching for production save/clear on the
   compatibility endpoint, and documents the fail-closed deployment boundary.
   Its PR gate passed remote `Run Tests` and `security`.
+- Platform PR #40, `feat: gate workspace review reads`, merged to `master` at
+  `d31e9bf8f6139c60ee10605337c32221a5098b8b` from head `e0a0bae`. It extends
+  trusted actor and active membership checks to production load operations on
+  the compatibility endpoint, making load/save/clear fail closed without a
+  trusted actor and matching active membership. Its PR gate passed remote
+  `Run Tests` and `security`.
 
 These PRs improve R5 evidence, but they do not change the product-level
 decision above.
@@ -93,10 +99,10 @@ blocker is `15-workspace-production-persistence-spec.md`.
 ## Remaining R5 Blockers
 
 - production-grade Workspace persistence beyond the DB-backed compatibility
-  snapshot, including typed durable records, full user/JWT authorization, read
-  authorization, membership management APIs/UI beyond the save/clear
-  compatibility check, release-owner human audit semantics, operation-specific
-  writes, ingress header-stripping proof, and multi-instance behavior;
+  snapshot, including typed durable records, full user/JWT authorization,
+  membership management APIs/UI beyond the compatibility route check,
+  release-owner human audit semantics, operation-specific writes, ingress
+  header-stripping proof, and multi-instance behavior;
 - repeated bridge ingestion across more than one workflow;
 - production EvidencePack rendering evidence;
 - human-owned release workflow implementation evidence;
@@ -118,3 +124,4 @@ blocker is `15-workspace-production-persistence-spec.md`.
 - `yha9806/vulca-platform` PR #36.
 - `yha9806/vulca-platform` PR #37.
 - `yha9806/vulca-platform` PR #39.
+- `yha9806/vulca-platform` PR #40.

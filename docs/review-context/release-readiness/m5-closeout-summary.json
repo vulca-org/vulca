@@ -48,6 +48,11 @@
       "source": "docs/review-context/workspace-durable/README.md"
     },
     {
+      "name": "Workspace review-state read gate evidence",
+      "status": "indexed",
+      "source": "docs/review-context/workspace-durable/README.md"
+    },
+    {
       "name": "Workspace production persistence product spec",
       "status": "indexed",
       "source": "docs/review-context/15-workspace-production-persistence-spec.md"
@@ -83,12 +88,12 @@
     "max_allowed_level": "R4",
     "example_scope": "public-example-key-visual-v1",
     "human_owner": null,
-    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked. Platform PR #39 adds an active membership gate for production save/clear on the compatibility snapshot route, not full user/JWT authorization, read authorization, membership management APIs/UI, typed aggregates, release-owner human audit semantics, operation-specific writes, ingress header-stripping proof, or multi-instance release readiness."
+    "boundary_notes": "R4 example-specific public copy is allowed only within RR4/RR5 scope. Product-level R5 remains blocked. Platform PR #40 extends the active membership gate to production load/save/clear on the compatibility snapshot route, not full user/JWT authorization, membership management APIs/UI, typed aggregates, release-owner human audit semantics, operation-specific writes, ingress header-stripping proof, or multi-instance release readiness."
   },
   "remaining_blockers": [
     "typed Workspace persistence records beyond the compatibility snapshot",
-    "full user/JWT Workspace authorization and read authorization",
-    "membership management APIs/UI beyond the compatibility save/clear check",
+    "full user/JWT Workspace authorization",
+    "membership management APIs/UI beyond the compatibility route check",
     "release-owner human audit semantics beyond compatibility snapshot events",
     "operation-specific Workspace write evidence",
     "ingress header-stripping proof for trusted Workspace actor headers",
