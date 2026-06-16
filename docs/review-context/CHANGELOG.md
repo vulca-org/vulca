@@ -4,6 +4,25 @@ Vault status: append-only change log.
 
 ## 2026-06-16
 
+### Recorded Platform Workspace Read Gate Merge
+
+- Recorded platform PR #40 as merged to `master` with production read
+  authorization for the existing Workspace review-state compatibility endpoint.
+- Clarified that #40 extends the trusted actor and active membership gate from
+  save/clear to load/save/clear, so production clients fail closed until a
+  trusted upstream actor and matching active membership are configured.
+- Preserved the boundary that #40 is still a compatibility-route gate: full
+  user/JWT identity, membership management APIs/UI, typed Workspace aggregates,
+  release-owner human semantics, operation-specific writes,
+  ingress header-stripping proof, and multi-instance acceptance evidence remain
+  gated.
+
+Source basis:
+
+- `yha9806/vulca-platform` PR #40.
+- Merge commit `d31e9bf8f6139c60ee10605337c32221a5098b8b`.
+- Remote checks: `Run Tests` and `security` passed on PR #40.
+
 ### Recorded Platform Workspace Membership Gate Merge
 
 - Recorded platform PR #39 as merged to `master` with a database-backed

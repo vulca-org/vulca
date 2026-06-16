@@ -120,22 +120,25 @@ Current evidence:
 - Platform PR #39 adds database-backed `workspace_review_memberships` and
   requires production save/clear operations on the compatibility route to
   match an active repo membership for the trusted actor id and role.
+- Platform PR #40 extends trusted actor and active membership checks to
+  production load operations on the compatibility route, so load/save/clear
+  all fail closed without trusted actor and matching active membership.
 - `15-workspace-production-persistence-spec.md` defines the product design for
   database-backed storage, authorization, conflict handling, audit events, and
   multi-instance behavior.
 
 Remaining boundary:
 
-- PR #39 proves a compatibility-route active membership check for production
-  save/clear, but does not prove full user/JWT authentication, read
-  authorization, membership management APIs/UI, typed Workspace aggregates,
-  release-owner human audit semantics, operation-specific writes, ingress
-  header-stripping configuration, or multi-instance acceptance behavior.
+- PR #40 proves a compatibility-route active membership check for production
+  load/save/clear, but does not prove full user/JWT authentication, membership
+  management APIs/UI, typed Workspace aggregates, release-owner human audit
+  semantics, operation-specific writes, ingress header-stripping
+  configuration, or multi-instance acceptance behavior.
 
 Blocked until:
 
 - the compatibility snapshot slice is supplemented by production-grade access
-  boundaries beyond trusted headers and save/clear membership checks, typed
+  boundaries beyond trusted headers and compatibility-route membership checks, typed
   durable records, operation-specific frontend writes, release-owner audit
   semantics, and multi-instance evidence for the demo path.
 
