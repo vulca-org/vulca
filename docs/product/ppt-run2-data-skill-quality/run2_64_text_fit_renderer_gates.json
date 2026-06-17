@@ -1,0 +1,251 @@
+{
+  "schema_version": "ppt_run2_text_fit_renderer_gates.v1",
+  "run_id": "2.64",
+  "status": "run2_64_text_fit_renderer_gates_ready_public_blocked",
+  "source_audit_run": "2.63",
+  "source_data_run": "2.61",
+  "text_fit_renderer_gates": [
+    {
+      "text_fit_gate_id": "text_fit_gate_2_64_cover",
+      "role": "cover",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_cover",
+      "source_narrative_workflow_gate_id": "gate_2_61_cover_narrative_proof_fusion",
+      "runtime_claim_boundary": "must_be_verified_by_run2_65_render_trace",
+      "preflight_gate_status": "metadata_gate_only_not_runtime_proof",
+      "forbid_ellipsis_or_clipped_public_copy": true,
+      "wrap_and_scale_policy": {
+        "prefer_wrap_over_truncate": true,
+        "minimum_font_size_by_socket": {
+          "socket_2_61_cover_headline": 24,
+          "socket_2_61_cover_subhead": 13,
+          "socket_2_61_cover_proof_badges": 10,
+          "socket_2_61_cover_annotations": 9,
+          "socket_2_61_cover_state_labels": 9,
+          "socket_2_61_cover_speaker_note": 8
+        },
+        "max_lines_by_socket": {
+          "socket_2_61_cover_headline": 2,
+          "socket_2_61_cover_subhead": 3,
+          "socket_2_61_cover_proof_badges": 3,
+          "socket_2_61_cover_annotations": 4,
+          "socket_2_61_cover_state_labels": 2,
+          "socket_2_61_cover_speaker_note": 4
+        },
+        "fallback_when_over_capacity": "move nonessential annotation detail to viewer while preserving headline, state label, and proof object"
+      },
+      "max_public_text_boxes_before_trace_overflow": 12,
+      "bad_control_probe": "fail_if_cover_records_zero_truncation_without_runtime_trace",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "text_fit_gate_id": "text_fit_gate_2_64_setup",
+      "role": "setup",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_setup",
+      "source_narrative_workflow_gate_id": "gate_2_61_setup_narrative_proof_fusion",
+      "runtime_claim_boundary": "must_be_verified_by_run2_65_render_trace",
+      "preflight_gate_status": "metadata_gate_only_not_runtime_proof",
+      "forbid_ellipsis_or_clipped_public_copy": true,
+      "wrap_and_scale_policy": {
+        "prefer_wrap_over_truncate": true,
+        "minimum_font_size_by_socket": {
+          "socket_2_61_setup_headline": 24,
+          "socket_2_61_setup_subhead": 13,
+          "socket_2_61_setup_proof_badges": 10,
+          "socket_2_61_setup_annotations": 9,
+          "socket_2_61_setup_state_labels": 9,
+          "socket_2_61_setup_speaker_note": 8
+        },
+        "max_lines_by_socket": {
+          "socket_2_61_setup_headline": 2,
+          "socket_2_61_setup_subhead": 3,
+          "socket_2_61_setup_proof_badges": 3,
+          "socket_2_61_setup_annotations": 4,
+          "socket_2_61_setup_state_labels": 2,
+          "socket_2_61_setup_speaker_note": 4
+        },
+        "fallback_when_over_capacity": "move nonessential annotation detail to viewer while preserving headline, state label, and proof object"
+      },
+      "max_public_text_boxes_before_trace_overflow": 13,
+      "bad_control_probe": "fail_if_setup_records_zero_truncation_without_runtime_trace",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "text_fit_gate_id": "text_fit_gate_2_64_contrast",
+      "role": "contrast",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_contrast",
+      "source_narrative_workflow_gate_id": "gate_2_61_contrast_narrative_proof_fusion",
+      "runtime_claim_boundary": "must_be_verified_by_run2_65_render_trace",
+      "preflight_gate_status": "metadata_gate_only_not_runtime_proof",
+      "forbid_ellipsis_or_clipped_public_copy": true,
+      "wrap_and_scale_policy": {
+        "prefer_wrap_over_truncate": true,
+        "minimum_font_size_by_socket": {
+          "socket_2_61_contrast_headline": 24,
+          "socket_2_61_contrast_subhead": 13,
+          "socket_2_61_contrast_proof_badges": 10,
+          "socket_2_61_contrast_annotations": 9,
+          "socket_2_61_contrast_state_labels": 9,
+          "socket_2_61_contrast_speaker_note": 8
+        },
+        "max_lines_by_socket": {
+          "socket_2_61_contrast_headline": 2,
+          "socket_2_61_contrast_subhead": 3,
+          "socket_2_61_contrast_proof_badges": 3,
+          "socket_2_61_contrast_annotations": 4,
+          "socket_2_61_contrast_state_labels": 2,
+          "socket_2_61_contrast_speaker_note": 4
+        },
+        "fallback_when_over_capacity": "move nonessential annotation detail to viewer while preserving headline, state label, and proof object"
+      },
+      "max_public_text_boxes_before_trace_overflow": 10,
+      "bad_control_probe": "fail_if_contrast_records_zero_truncation_without_runtime_trace",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "text_fit_gate_id": "text_fit_gate_2_64_proof",
+      "role": "proof",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_proof",
+      "source_narrative_workflow_gate_id": "gate_2_61_proof_narrative_proof_fusion",
+      "runtime_claim_boundary": "must_be_verified_by_run2_65_render_trace",
+      "preflight_gate_status": "metadata_gate_only_not_runtime_proof",
+      "forbid_ellipsis_or_clipped_public_copy": true,
+      "wrap_and_scale_policy": {
+        "prefer_wrap_over_truncate": true,
+        "minimum_font_size_by_socket": {
+          "socket_2_61_proof_headline": 24,
+          "socket_2_61_proof_subhead": 13,
+          "socket_2_61_proof_proof_badges": 10,
+          "socket_2_61_proof_annotations": 9,
+          "socket_2_61_proof_state_labels": 9,
+          "socket_2_61_proof_speaker_note": 8
+        },
+        "max_lines_by_socket": {
+          "socket_2_61_proof_headline": 2,
+          "socket_2_61_proof_subhead": 3,
+          "socket_2_61_proof_proof_badges": 3,
+          "socket_2_61_proof_annotations": 4,
+          "socket_2_61_proof_state_labels": 2,
+          "socket_2_61_proof_speaker_note": 4
+        },
+        "fallback_when_over_capacity": "move nonessential annotation detail to viewer while preserving headline, state label, and proof object"
+      },
+      "max_public_text_boxes_before_trace_overflow": 16,
+      "bad_control_probe": "fail_if_proof_records_zero_truncation_without_runtime_trace",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "text_fit_gate_id": "text_fit_gate_2_64_climax",
+      "role": "climax",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_climax",
+      "source_narrative_workflow_gate_id": "gate_2_61_climax_narrative_proof_fusion",
+      "runtime_claim_boundary": "must_be_verified_by_run2_65_render_trace",
+      "preflight_gate_status": "metadata_gate_only_not_runtime_proof",
+      "forbid_ellipsis_or_clipped_public_copy": true,
+      "wrap_and_scale_policy": {
+        "prefer_wrap_over_truncate": true,
+        "minimum_font_size_by_socket": {
+          "socket_2_61_climax_headline": 24,
+          "socket_2_61_climax_subhead": 13,
+          "socket_2_61_climax_proof_badges": 10,
+          "socket_2_61_climax_annotations": 9,
+          "socket_2_61_climax_state_labels": 9,
+          "socket_2_61_climax_speaker_note": 8
+        },
+        "max_lines_by_socket": {
+          "socket_2_61_climax_headline": 2,
+          "socket_2_61_climax_subhead": 3,
+          "socket_2_61_climax_proof_badges": 3,
+          "socket_2_61_climax_annotations": 4,
+          "socket_2_61_climax_state_labels": 2,
+          "socket_2_61_climax_speaker_note": 4
+        },
+        "fallback_when_over_capacity": "move nonessential annotation detail to viewer while preserving headline, state label, and proof object"
+      },
+      "max_public_text_boxes_before_trace_overflow": 12,
+      "bad_control_probe": "fail_if_climax_records_zero_truncation_without_runtime_trace",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "text_fit_gate_id": "text_fit_gate_2_64_close",
+      "role": "close",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_close",
+      "source_narrative_workflow_gate_id": "gate_2_61_close_narrative_proof_fusion",
+      "runtime_claim_boundary": "must_be_verified_by_run2_65_render_trace",
+      "preflight_gate_status": "metadata_gate_only_not_runtime_proof",
+      "forbid_ellipsis_or_clipped_public_copy": true,
+      "wrap_and_scale_policy": {
+        "prefer_wrap_over_truncate": true,
+        "minimum_font_size_by_socket": {
+          "socket_2_61_close_headline": 24,
+          "socket_2_61_close_subhead": 13,
+          "socket_2_61_close_proof_badges": 10,
+          "socket_2_61_close_annotations": 9,
+          "socket_2_61_close_state_labels": 9,
+          "socket_2_61_close_speaker_note": 8
+        },
+        "max_lines_by_socket": {
+          "socket_2_61_close_headline": 2,
+          "socket_2_61_close_subhead": 3,
+          "socket_2_61_close_proof_badges": 3,
+          "socket_2_61_close_annotations": 4,
+          "socket_2_61_close_state_labels": 2,
+          "socket_2_61_close_speaker_note": 4
+        },
+        "fallback_when_over_capacity": "move nonessential annotation detail to viewer while preserving headline, state label, and proof object"
+      },
+      "max_public_text_boxes_before_trace_overflow": 14,
+      "bad_control_probe": "fail_if_close_records_zero_truncation_without_runtime_trace",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    }
+  ],
+  "runtime_claim_boundary": "must_be_verified_by_run2_65_render_trace",
+  "next_required_action": "run2_65_generate_four_arm_ppt_consuming_run2_64_renderer_composition_repair"
+}

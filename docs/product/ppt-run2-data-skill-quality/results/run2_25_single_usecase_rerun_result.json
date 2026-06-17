@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "run_id": "2.25",
+  "status": "run2_25_single_usecase_rerun_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "input_chain": {
+    "content_memory": "docs/product/ppt-run2-data-skill-quality/run2_24_single_usecase_content_memory.json",
+    "visual_evidence_asset_memory": "docs/product/ppt-run2-data-skill-quality/run2_24_visual_evidence_asset_memory.json",
+    "content_visual_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_24_content_visual_workflow_gates.json",
+    "source_data_layer": "docs/product/ppt-run2-data-skill-quality/results/run2_24_single_usecase_thickening_result.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_25_single_usecase_arms.mjs",
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_25_full_single_usecase_content_visual",
+      "bad_content_visual_memory"
+    ],
+    "best_internal_arm": "run2_25_full_single_usecase_content_visual",
+    "best_internal_arm_verdict": "run2_24_pack_executed_before_native_ppt_generation",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-25-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "control_boundary": {
+    "bad_content_visual_memory": "selected_usecase_label_only_without_run2_24_content_memory_visual_assets_or_workflow_gates",
+    "prompt_only": "commercial_case_only_no_run2_24_single_usecase_pack",
+    "run1_5_skill": "prior_baseline_no_run2_24_single_usecase_pack"
+  },
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "trace_manifest_requirements": [
+    "run2_24_selected_usecase_id",
+    "run2_24_content_memory_id",
+    "run2_24_visual_evidence_slot_ids",
+    "run2_24_content_density_gate_id",
+    "run2_25_content_visual_execution_status",
+    "run2_25_code_module_ids"
+  ],
+  "native_module_status": "actual_run2_25_module_calls_recorded_in_trace_manifest",
+  "release_boundary": "public_blocked_until_visual_human_review_native_render_review_motion_review_source_boundary_review_and_human_approval",
+  "next_required_action": "review_run2_25_outputs_against_run2_24_single_usecase_pack_then_continue_thickening_same_five_layers"
+}

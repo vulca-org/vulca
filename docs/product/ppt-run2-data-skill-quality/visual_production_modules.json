@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "status": "run2_5_visual_production_modules_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "purpose": "Define reusable native editable PPT production modules that convert aesthetic memory v2 into generated slide code.",
+  "modules": [
+    {
+      "id": "module_cinematic_cover_field",
+      "production_reference_ids": ["prod_ref_cinematic_cover_field"],
+      "aesthetic_memory_v2_ids": ["aesthetic_v2_cinematic_cover_field"],
+      "slide_roles": ["cover"],
+      "native_ppt_primitives": [
+        "native editable headline text",
+        "native editable focal canvas field",
+        "native grouped shape system cue",
+        "native sequence metadata"
+      ],
+      "layout_recipe": "Create one large focal canvas field, place the headline on an asymmetric edge, and keep all proof/report panels off the cover.",
+      "typography_recipe": "Use one headline with large hierarchy and two or fewer secondary labels.",
+      "spacing_recipe": "Use wide outer margin, broad whitespace around the focal field, and no filler marks in the margin.",
+      "fallback_policy": "If the focal object cannot be represented with native editable PPT primitives, use a simpler native shape field and keep release public_blocked.",
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "fallback_policy"
+      ],
+      "qa_probe": "The contact sheet cover reads as a product opening before small text is readable.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "module_editorial_before_after_delta",
+      "production_reference_ids": ["prod_ref_editorial_before_after_delta"],
+      "aesthetic_memory_v2_ids": ["aesthetic_v2_editorial_before_after_delta"],
+      "slide_roles": ["contrast"],
+      "native_ppt_primitives": [
+        "native editable before thumbnail",
+        "native editable after thumbnail",
+        "native connector and delta marker",
+        "native editable state labels"
+      ],
+      "layout_recipe": "Use an asymmetric canvas with a smaller before state and a larger after state connected by one delta marker.",
+      "typography_recipe": "Use headline hierarchy for state labels and one short implication line.",
+      "spacing_recipe": "Use margin and whitespace to separate state fields; do not give before and after equal grid weight.",
+      "fallback_policy": "If after-state scale cannot be preserved natively, reduce label count before falling back to an equal layout; keep public_blocked.",
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "visual_component_ids",
+        "density_counts"
+      ],
+      "qa_probe": "The contact sheet shows an obvious before/after delta and enlarged after-state object.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "module_proof_route_choreography",
+      "production_reference_ids": ["prod_ref_product_system_mini_preview"],
+      "aesthetic_memory_v2_ids": ["aesthetic_v2_proof_route_choreography"],
+      "slide_roles": ["proof"],
+      "native_ppt_primitives": [
+        "native editable route line",
+        "native editable data anchor node",
+        "native editable memory node",
+        "native editable generated slide target"
+      ],
+      "layout_recipe": "Use the canvas as a route from data to memory to generated slide, with generated slide target as the focal object.",
+      "typography_recipe": "Use one headline and compact route labels; avoid paragraphs inside nodes.",
+      "spacing_recipe": "Use whitespace between route zones and a generous margin around the generated slide target.",
+      "fallback_policy": "If route labels overflow, move detail to trace before adding cards; keep all route objects native and public_blocked.",
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "ordered_reveal_steps",
+        "fallback_policy"
+      ],
+      "qa_probe": "The contact sheet shows a proof route whose focal object is a generated slide target, not equal process boxes.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "module_system_mini_preview",
+      "production_reference_ids": ["prod_ref_product_system_mini_preview"],
+      "aesthetic_memory_v2_ids": ["aesthetic_v2_system_mini_preview"],
+      "slide_roles": ["setup", "proof"],
+      "native_ppt_primitives": [
+        "native editable slide preview frame",
+        "native editable density controls",
+        "native editable selected memory markers",
+        "native editable headline and labels"
+      ],
+      "layout_recipe": "Reserve the canvas center for a mini slide preview and place controls as secondary support objects.",
+      "typography_recipe": "Use a readable headline above or beside the preview and short control labels only.",
+      "spacing_recipe": "Use margin around the preview and whitespace between controls so the preview remains the visual object.",
+      "fallback_policy": "If the native mini preview becomes unreadable, simplify controls first; do not paste a screenshot; keep public_blocked.",
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "selected_memory_ids",
+        "native_ppt_checks"
+      ],
+      "qa_probe": "The contact sheet reads as a native product/system mini-preview, not a text-only workflow.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "module_climax_hero_object",
+      "production_reference_ids": ["prod_ref_climax_handoff_sequence"],
+      "aesthetic_memory_v2_ids": ["aesthetic_v2_climax_hero_object"],
+      "slide_roles": ["climax"],
+      "native_ppt_primitives": [
+        "native editable hero object",
+        "native editable scale cue",
+        "native editable comparison labels",
+        "native editable verdict line"
+      ],
+      "layout_recipe": "Break the previous canvas rhythm and give the hero object the largest visual field in the deck.",
+      "typography_recipe": "Use one short headline/verdict and sparse labels around the hero object.",
+      "spacing_recipe": "Use whitespace and wide margin so object scale reads as deliberate.",
+      "fallback_policy": "If the hero object cannot remain native, simplify it into editable grouped shapes; do not flatten the slide; keep public_blocked.",
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "motion_target_ids",
+        "layout_geometry_checks"
+      ],
+      "qa_probe": "The contact sheet shows a distinct visual climax that is larger than the proof route.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "module_release_handoff_gate",
+      "production_reference_ids": ["prod_ref_climax_handoff_sequence"],
+      "aesthetic_memory_v2_ids": ["aesthetic_v2_release_handoff_gate"],
+      "slide_roles": ["close"],
+      "native_ppt_primitives": [
+        "native editable release gate",
+        "native editable handoff line",
+        "native editable small mark",
+        "native editable public-blocked reason"
+      ],
+      "layout_recipe": "Use a calm canvas with one release gate, one next-action handoff, and one small editable mark.",
+      "typography_recipe": "Use a clear headline hierarchy for status and a smaller support line for next action.",
+      "spacing_recipe": "Use wide margin and whitespace; do not create an appendix-like status grid.",
+      "fallback_policy": "If the native gate cannot stay visually calm, remove secondary labels before adding panels; keep public_blocked until human approval.",
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "release_gate_inputs",
+        "fallback_policy"
+      ],
+      "qa_probe": "The contact sheet closes on a decision handoff rather than another report page.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    }
+  ],
+  "qa_gates": [
+    "module ids must be selected before slide code generation",
+    "module output must use native editable PPT primitives",
+    "fallback policy must remain public_blocked until render and human approval",
+    "contact sheet must show the module as a visible composition change",
+    "trace manifest must record visual_production_module_ids and aesthetic_memory_v2_ids"
+  ]
+}

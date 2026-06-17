@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "status": "run2_8_tutorial_decomposition_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "storage_policy": {
+    "default": "derived_observations_only",
+    "raw_media": "forbidden",
+    "copyright_boundary": "Store only paraphrased design moves, derived rules, and code-generation obligations; do not store copied media, transcripts, source layouts, source brand, or raw assets."
+  },
+  "units": [
+    {
+      "id": "decomp_2_8_duarte_remove_nonessential_data",
+      "source_record_ids": [
+        "mm_2_7_motion_demo_pacing_reference",
+        "mm_2_7_typography_hierarchy_tutorial"
+      ],
+      "source_ids": [
+        "duarte_persuasive_visual_storytelling",
+        "duarte_visual_storytelling"
+      ],
+      "modality_mix": [
+        "video",
+        "audio",
+        "transcript"
+      ],
+      "tutorial_anchor": "Visual storytelling guidance reduced to a generator rule: keep only the data that changes the audience decision.",
+      "observed_design_move": "The decisive claim is isolated first, then secondary evidence is delayed or routed away from the main canvas.",
+      "derived_rule": "Each slide must declare the one decision-driving object before any proof detail is drawn.",
+      "code_generation_binding": "Bind the slide to a native PPT deletion and routing pass before rendering text boxes or proof shapes.",
+      "native_ppt_obligation": "Use editable text and native shapes for the retained claim, with routed detail represented as trace data rather than visible clutter.",
+      "layout_budget": {
+        "max_text_boxes": 6,
+        "max_visible_words": 42,
+        "max_proof_objects": 2
+      },
+      "failure_probe": "Fails if the slide reads as a report page with equal-weight evidence blocks.",
+      "anti_copy_boundary": "Do not copy source visuals, source brand, transcripts, audio, lesson prose, or source layouts.",
+      "qa_probe": "Contact sheet review should show one dominant decision object before supporting evidence is legible.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "decomp_2_8_type_hierarchy_readability_stack",
+      "source_record_ids": [
+        "mm_2_7_typography_hierarchy_tutorial"
+      ],
+      "source_ids": [
+        "run2_7_presentation_hierarchy_reference",
+        "duarte_slide_design_course",
+        "slidemodel_visual_hierarchy"
+      ],
+      "modality_mix": [
+        "text",
+        "transcript",
+        "image_reference"
+      ],
+      "tutorial_anchor": "Type hierarchy guidance converted into explicit native text roles, minimum sizes, and readable line lengths.",
+      "observed_design_move": "Headline, proof phrase, label, and note are separated by scale and placement instead of color alone.",
+      "derived_rule": "Before generation, assign each text object to a type role with a minimum size and a maximum line length.",
+      "code_generation_binding": "Bind type roles to native PPT fontSize values, line limits, and zero letter spacing before slide layout.",
+      "native_ppt_obligation": "Create editable native text boxes with explicit type roles and no negative tracking.",
+      "layout_budget": {
+        "max_text_boxes": 9,
+        "max_visible_words": 52,
+        "max_line_chars": 60
+      },
+      "failure_probe": "Fails if title, body, labels, and notes collapse into equal visual weight.",
+      "anti_copy_boundary": "Do not copy tutorial examples, source brand, diagrams, screenshots, prose, or type specimens.",
+      "qa_probe": "Contact sheet review should identify the reading order before small text is inspected.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "decomp_2_8_makeover_split_text_into_visual_steps",
+      "source_record_ids": [
+        "mm_2_7_spacing_editorial_grid_tutorial",
+        "mm_2_7_product_surface_interaction_reference"
+      ],
+      "source_ids": [
+        "duarte_slide_design_course",
+        "udel_design_principles_video"
+      ],
+      "modality_mix": [
+        "image_reference",
+        "text",
+        "interaction"
+      ],
+      "tutorial_anchor": "Slide makeover guidance reduced to a rule that long prose becomes a small number of native visual steps.",
+      "observed_design_move": "A dense paragraph is split into a before state, an action, and an after state with fewer labels.",
+      "derived_rule": "Convert any long block into two to four native step objects with one visible delta per step.",
+      "code_generation_binding": "Bind text reduction to native PPT beforeAfter and step modules before adding explanatory copy.",
+      "native_ppt_obligation": "Represent steps with editable shapes, connectors, and labels rather than rasterized text or copied examples.",
+      "layout_budget": {
+        "max_text_boxes": 8,
+        "max_visible_words": 48,
+        "max_step_objects": 4
+      },
+      "failure_probe": "Fails if the slide keeps the original prose as a large block.",
+      "anti_copy_boundary": "Do not copy makeover examples, source layouts, source brand, exercise material, or course prose.",
+      "qa_probe": "Contact sheet review should show a visible before to after path with reduced wording.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "decomp_2_8_design_first_code_second_pipeline",
+      "source_record_ids": [
+        "mm_2_7_design_system_launch_case",
+        "mm_2_7_product_surface_interaction_reference"
+      ],
+      "source_ids": [
+        "figma_slides_product",
+        "figma_slides_help",
+        "run2_7_figma_design_system_launch_reference"
+      ],
+      "modality_mix": [
+        "interaction",
+        "text",
+        "image_reference"
+      ],
+      "tutorial_anchor": "Design-first generation guidance converted into an explicit ordering rule: select memory, then gate, then code.",
+      "observed_design_move": "The design decision is named before implementation, so code renders a committed layout instead of improvising.",
+      "derived_rule": "Each slide role must receive selected decomposition units, executable memory bindings, and gate checks before native PPT code runs.",
+      "code_generation_binding": "Bind selected design memory to native PPT function names and parameters before any slide module is called.",
+      "native_ppt_obligation": "Generate only editable native objects whose trace records the selected data, memory, and workflow gate.",
+      "layout_budget": {
+        "max_text_boxes": 9,
+        "max_visible_words": 50,
+        "max_workflow_objects": 5
+      },
+      "failure_probe": "Fails if generated code invents layout choices without traceable memory bindings.",
+      "anti_copy_boundary": "Do not copy product surfaces, source UI, source brand, icons, screenshots, or interaction layouts.",
+      "qa_probe": "Trace review should show that design selections happened before native PPT generation.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "decomp_2_8_climax_object_scale_and_pause",
+      "source_record_ids": [
+        "mm_2_7_video_climax_single_object",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "source_ids": [
+        "run2_7_product_demo_video_reference",
+        "duarte_persuasive_visual_storytelling"
+      ],
+      "modality_mix": [
+        "video",
+        "audio",
+        "transcript"
+      ],
+      "tutorial_anchor": "Video and audio rhythm guidance reduced to a native climax object with a deliberate pause and minimal labels.",
+      "observed_design_move": "The strongest proof object expands while explanation waits until the focal object is understood.",
+      "derived_rule": "The climax slide must reserve the largest canvas zone for one native hero object before labels and secondary proof appear.",
+      "code_generation_binding": "Bind the climax to a native PPT heroObject module with a forty four to fifty eight percent main-canvas occupation rule.",
+      "native_ppt_obligation": "Build the hero object, highlight, connector, and label as editable native PPT shapes and text.",
+      "layout_budget": {
+        "max_text_boxes": 5,
+        "max_visible_words": 34,
+        "hero_object_canvas_share_min": 0.44,
+        "hero_object_canvas_share_max": 0.58
+      },
+      "failure_probe": "Fails if the climax is another grid or if the focal object is visually secondary.",
+      "anti_copy_boundary": "Do not copy video frames, demo UI, source camera composition, audio, transcripts, or source brand.",
+      "qa_probe": "Contact sheet review should show the hero object as the first-read element on the climax slide.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "decomp_2_8_source_brand_sanitized_case_evidence",
+      "source_record_ids": [
+        "mm_2_7_design_system_launch_case",
+        "mm_2_7_product_surface_interaction_reference"
+      ],
+      "source_ids": [
+        "run2_7_figma_design_system_launch_reference",
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap"
+      ],
+      "modality_mix": [
+        "text",
+        "image_reference",
+        "interaction"
+      ],
+      "tutorial_anchor": "Case evidence is kept as sanitized source-to-rule memory, not as borrowed brand or layout material.",
+      "observed_design_move": "Commercial evidence supports the workflow claim while brand-specific surface details are removed.",
+      "derived_rule": "Every proof object must use original naming, neutral shapes, and traceable source-boundary checks.",
+      "code_generation_binding": "Bind source sanitization to a native PPT workflowGate check before evidence shapes are rendered.",
+      "native_ppt_obligation": "Use editable native evidence objects with original labels and explicit source-boundary trace fields.",
+      "layout_budget": {
+        "max_text_boxes": 7,
+        "max_visible_words": 46,
+        "max_brand_like_marks": 0
+      },
+      "failure_probe": "Fails if evidence resembles a source product page or branded launch layout.",
+      "anti_copy_boundary": "Do not copy source UI, source brand, product names, icons, screenshots, launch prose, or source layouts.",
+      "qa_probe": "Review should confirm the evidence is commercially specific but visually original.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    }
+  ]
+}

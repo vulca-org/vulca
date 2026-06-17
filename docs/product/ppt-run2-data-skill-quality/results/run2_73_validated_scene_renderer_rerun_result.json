@@ -1,0 +1,1484 @@
+{
+  "artifact_id": "run2_73_validated_scene_renderer_rerun_result",
+  "part": "Part G",
+  "schema_version": "ppt_run2_73_validated_scene_renderer_rerun_result.v1",
+  "run_id": "2.73",
+  "status": "run2_73_validated_scene_renderer_rerun_generated_public_blocked",
+  "public_ready": false,
+  "public_release_started": false,
+  "quality_claim_boundary": "generated_viewer_check_only_no_part_h_quality_verdict",
+  "consumed_sources": [
+    "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_input_validation.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json"
+  ],
+  "rerun_manifest": {
+    "generator": "scripts/generate_ppt_run2_73_validated_scene_renderer_arms.mjs",
+    "consumed_sources": [
+      "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_input_validation.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json"
+    ],
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_73_full_validated_scene_renderer",
+      "bad_run2_73_without_text_binding"
+    ],
+    "best_internal_arm": "run2_73_full_validated_scene_renderer",
+    "outputs": {
+      "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-73-full-vulca/output/run2-73-validated-scene-renderer.html",
+      "pptx": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-73-full-vulca/output/ppt-run2-73-full-vulca.pptx",
+      "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+      "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-73-four-arm-contact-sheet.png",
+      "full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-73-full-vulca/preview/contact-sheet.png"
+    },
+    "viewer_update": {
+      "latest_run_id": "2.73",
+      "viewer_can_reference_new_run": true
+    }
+  },
+  "rendered_pages": [
+    {
+      "role": "cover",
+      "slide_index": 1,
+      "visual_grammar_module": "product_reveal",
+      "module_variant": "opening_reveal_from_memory_field",
+      "layout_signature": "cover_product_edge_headline_with_orbital_proof_labels",
+      "source_expansion_id": "scene_expansion_2_73_cover",
+      "source_adapter_scene_id": "renderer_adapter_2_73_cover",
+      "source_text_binding_id": "text_binding_2_73_cover",
+      "source_validation_id": "renderer_input_validation_2_73_cover",
+      "text_sockets_used": [
+        "headline_socket",
+        "proof_label_sockets",
+        "supporting_copy_socket",
+        "callout_sockets",
+        "viewer_note_socket"
+      ],
+      "text_socket_bindings": [
+        {
+          "socket_id": "cover_headline_socket",
+          "socket_key": "headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "negative space pocket",
+          "bound_source_id": "renderer_adapter_2_73_cover",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "A real brief becomes editable PPT proof."
+        },
+        {
+          "socket_id": "cover_proof_label_1_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "product edge",
+          "bound_source_id": "cover_proof_panel",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "commercial brief"
+        },
+        {
+          "socket_id": "cover_proof_label_2_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "evidence rail",
+          "bound_source_id": "cover_evidence_marks",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "source memory"
+        },
+        {
+          "socket_id": "cover_supporting_copy_socket",
+          "socket_key": "supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "field route",
+          "bound_source_id": "cover_supporting_copy",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "Commercial brief, curated source memory, and code-generated editable PPT appear as one product path."
+        },
+        {
+          "socket_id": "cover_callout_claim_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "product edge",
+          "bound_source_id": "cover_claim_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "claim anchor"
+        },
+        {
+          "socket_id": "cover_callout_route_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "cover_route_marker_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "viewer route"
+        },
+        {
+          "socket_id": "cover_viewer_note_socket",
+          "socket_key": "viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "cover_viewer_note_route",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          },
+          "canvas_copy": "State that this is not an image-only demo; the product promise is editable PPT with inspectable inputs."
+        }
+      ],
+      "visual_containers": [
+        {
+          "container_id": "cover_negative_space_pocket_1",
+          "source_container_or_component_id": "renderer_adapter_2_73_cover",
+          "visual_object_type": "negative space pocket",
+          "bound_text_socket_ids": [
+            "cover_headline_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "cover_product_edge_2",
+          "source_container_or_component_id": "cover_proof_panel",
+          "visual_object_type": "product edge",
+          "bound_text_socket_ids": [
+            "cover_proof_label_1_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "cover_evidence_rail_3",
+          "source_container_or_component_id": "cover_evidence_marks",
+          "visual_object_type": "evidence rail",
+          "bound_text_socket_ids": [
+            "cover_proof_label_2_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "cover_field_route_4",
+          "source_container_or_component_id": "cover_supporting_copy",
+          "visual_object_type": "field route",
+          "bound_text_socket_ids": [
+            "cover_supporting_copy_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "cover_product_edge_5",
+          "source_container_or_component_id": "cover_claim_container_expanded",
+          "visual_object_type": "product edge",
+          "bound_text_socket_ids": [
+            "cover_callout_claim_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "cover_connector_endpoint_6",
+          "source_container_or_component_id": "cover_route_marker_container_expanded",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "cover_callout_route_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "cover_connector_endpoint_7",
+          "source_container_or_component_id": "cover_viewer_note_route",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "cover_viewer_note_socket"
+          ],
+          "empty": false
+        }
+      ],
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "source_trace_terms_visible_on_canvas": [],
+      "forbidden_text_patterns_absent": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ],
+      "canvas_word_count": 29
+    },
+    {
+      "role": "setup",
+      "slide_index": 2,
+      "visual_grammar_module": "hero_field",
+      "module_variant": "source_to_memory_operating_field",
+      "layout_signature": "setup_source_field_route_with_condenser_labels",
+      "source_expansion_id": "scene_expansion_2_73_setup",
+      "source_adapter_scene_id": "renderer_adapter_2_73_setup",
+      "source_text_binding_id": "text_binding_2_73_setup",
+      "source_validation_id": "renderer_input_validation_2_73_setup",
+      "text_sockets_used": [
+        "headline_socket",
+        "proof_label_sockets",
+        "supporting_copy_socket",
+        "callout_sockets",
+        "viewer_note_socket"
+      ],
+      "text_socket_bindings": [
+        {
+          "socket_id": "setup_headline_socket",
+          "socket_key": "headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "field route",
+          "bound_source_id": "renderer_adapter_2_73_setup",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "Sources become product memory before drawing."
+        },
+        {
+          "socket_id": "setup_proof_label_1_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "evidence rail",
+          "bound_source_id": "setup_proof_panel",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "source pack"
+        },
+        {
+          "socket_id": "setup_proof_label_2_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "setup_evidence_marks",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "capability memory"
+        },
+        {
+          "socket_id": "setup_supporting_copy_socket",
+          "socket_key": "supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "field route",
+          "bound_source_id": "setup_supporting_copy",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "Allowed source observations become capability memory, message obligations, and proof objects."
+        },
+        {
+          "socket_id": "setup_callout_claim_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "setup_claim_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "claim anchor"
+        },
+        {
+          "socket_id": "setup_callout_route_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "negative space pocket",
+          "bound_source_id": "setup_route_marker_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "viewer route"
+        },
+        {
+          "socket_id": "setup_viewer_note_socket",
+          "socket_key": "viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "setup_viewer_note_route",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          },
+          "canvas_copy": "Explain that tutorials and videos guide decisions only after they are converted into original product memory."
+        }
+      ],
+      "visual_containers": [
+        {
+          "container_id": "setup_field_route_1",
+          "source_container_or_component_id": "renderer_adapter_2_73_setup",
+          "visual_object_type": "field route",
+          "bound_text_socket_ids": [
+            "setup_headline_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "setup_evidence_rail_2",
+          "source_container_or_component_id": "setup_proof_panel",
+          "visual_object_type": "evidence rail",
+          "bound_text_socket_ids": [
+            "setup_proof_label_1_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "setup_connector_endpoint_3",
+          "source_container_or_component_id": "setup_evidence_marks",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "setup_proof_label_2_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "setup_field_route_4",
+          "source_container_or_component_id": "setup_supporting_copy",
+          "visual_object_type": "field route",
+          "bound_text_socket_ids": [
+            "setup_supporting_copy_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "setup_connector_endpoint_5",
+          "source_container_or_component_id": "setup_claim_container_expanded",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "setup_callout_claim_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "setup_negative_space_pocket_6",
+          "source_container_or_component_id": "setup_route_marker_container_expanded",
+          "visual_object_type": "negative space pocket",
+          "bound_text_socket_ids": [
+            "setup_callout_route_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "setup_connector_endpoint_7",
+          "source_container_or_component_id": "setup_viewer_note_route",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "setup_viewer_note_socket"
+          ],
+          "empty": false
+        }
+      ],
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "source_trace_terms_visible_on_canvas": [],
+      "forbidden_text_patterns_absent": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ],
+      "canvas_word_count": 25
+    },
+    {
+      "role": "contrast",
+      "slide_index": 3,
+      "visual_grammar_module": "before_after_theater",
+      "module_variant": "asymmetric_route_break_theater",
+      "layout_signature": "contrast_comparison_seam_with_opposed_label_rails",
+      "source_expansion_id": "scene_expansion_2_73_contrast",
+      "source_adapter_scene_id": "renderer_adapter_2_73_contrast",
+      "source_text_binding_id": "text_binding_2_73_contrast",
+      "source_validation_id": "renderer_input_validation_2_73_contrast",
+      "text_sockets_used": [
+        "headline_socket",
+        "proof_label_sockets",
+        "supporting_copy_socket",
+        "callout_sockets",
+        "viewer_note_socket"
+      ],
+      "text_socket_bindings": [
+        {
+          "socket_id": "contrast_headline_socket",
+          "socket_key": "headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "comparison seam",
+          "bound_source_id": "renderer_adapter_2_73_contrast",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "The difference is mechanism, not taste."
+        },
+        {
+          "socket_id": "contrast_proof_label_1_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "comparison seam",
+          "bound_source_id": "contrast_proof_panel",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "source memory"
+        },
+        {
+          "socket_id": "contrast_proof_label_2_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "evidence rail",
+          "bound_source_id": "contrast_evidence_marks",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "proof routing"
+        },
+        {
+          "socket_id": "contrast_supporting_copy_socket",
+          "socket_key": "supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "negative space pocket",
+          "bound_source_id": "contrast_supporting_copy",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "Vulca binds source memory, proof routing, design moves, and editable output before the deck is claimed."
+        },
+        {
+          "socket_id": "contrast_callout_claim_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "comparison seam",
+          "bound_source_id": "contrast_claim_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "claim anchor"
+        },
+        {
+          "socket_id": "contrast_callout_route_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "contrast_route_marker_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "viewer route"
+        },
+        {
+          "socket_id": "contrast_viewer_note_socket",
+          "socket_key": "viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "contrast_viewer_note_route",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          },
+          "canvas_copy": "Name prompt-only and image-only paths as missing mechanism, not as inferior style by default."
+        }
+      ],
+      "visual_containers": [
+        {
+          "container_id": "contrast_comparison_seam_1",
+          "source_container_or_component_id": "renderer_adapter_2_73_contrast",
+          "visual_object_type": "comparison seam",
+          "bound_text_socket_ids": [
+            "contrast_headline_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "contrast_comparison_seam_2",
+          "source_container_or_component_id": "contrast_proof_panel",
+          "visual_object_type": "comparison seam",
+          "bound_text_socket_ids": [
+            "contrast_proof_label_1_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "contrast_evidence_rail_3",
+          "source_container_or_component_id": "contrast_evidence_marks",
+          "visual_object_type": "evidence rail",
+          "bound_text_socket_ids": [
+            "contrast_proof_label_2_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "contrast_negative_space_pocket_4",
+          "source_container_or_component_id": "contrast_supporting_copy",
+          "visual_object_type": "negative space pocket",
+          "bound_text_socket_ids": [
+            "contrast_supporting_copy_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "contrast_comparison_seam_5",
+          "source_container_or_component_id": "contrast_claim_container_expanded",
+          "visual_object_type": "comparison seam",
+          "bound_text_socket_ids": [
+            "contrast_callout_claim_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "contrast_connector_endpoint_6",
+          "source_container_or_component_id": "contrast_route_marker_container_expanded",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "contrast_callout_route_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "contrast_connector_endpoint_7",
+          "source_container_or_component_id": "contrast_viewer_note_route",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "contrast_viewer_note_socket"
+          ],
+          "empty": false
+        }
+      ],
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "source_trace_terms_visible_on_canvas": [],
+      "forbidden_text_patterns_absent": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ],
+      "canvas_word_count": 30
+    },
+    {
+      "role": "proof",
+      "slide_index": 4,
+      "visual_grammar_module": "evidence_workspace",
+      "module_variant": "inspectable_product_workbench",
+      "layout_signature": "proof_evidence_rail_with_inspection_callouts",
+      "source_expansion_id": "scene_expansion_2_73_proof",
+      "source_adapter_scene_id": "renderer_adapter_2_73_proof",
+      "source_text_binding_id": "text_binding_2_73_proof",
+      "source_validation_id": "renderer_input_validation_2_73_proof",
+      "text_sockets_used": [
+        "headline_socket",
+        "proof_label_sockets",
+        "supporting_copy_socket",
+        "callout_sockets",
+        "viewer_note_socket"
+      ],
+      "text_socket_bindings": [
+        {
+          "socket_id": "proof_headline_socket",
+          "socket_key": "headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "evidence rail",
+          "bound_source_id": "renderer_adapter_2_73_proof",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "Proof stays inspectable without taking over the slide."
+        },
+        {
+          "socket_id": "proof_proof_label_1_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "evidence rail",
+          "bound_source_id": "proof_proof_panel",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "capability bound"
+        },
+        {
+          "socket_id": "proof_proof_label_2_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "proof_evidence_marks",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "contract matched"
+        },
+        {
+          "socket_id": "proof_supporting_copy_socket",
+          "socket_key": "supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "field route",
+          "bound_source_id": "proof_supporting_copy",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "Compact proof markers show that the workflow consumed content, contracts, and comparison boundaries."
+        },
+        {
+          "socket_id": "proof_callout_claim_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "evidence rail",
+          "bound_source_id": "proof_claim_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "claim anchor"
+        },
+        {
+          "socket_id": "proof_callout_route_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "proof_route_marker_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "viewer route"
+        },
+        {
+          "socket_id": "proof_viewer_note_socket",
+          "socket_key": "viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "proof_viewer_note_route",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          },
+          "canvas_copy": "Explain that raw proof stays inspectable off-canvas so the public slide remains readable."
+        }
+      ],
+      "visual_containers": [
+        {
+          "container_id": "proof_evidence_rail_1",
+          "source_container_or_component_id": "renderer_adapter_2_73_proof",
+          "visual_object_type": "evidence rail",
+          "bound_text_socket_ids": [
+            "proof_headline_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "proof_evidence_rail_2",
+          "source_container_or_component_id": "proof_proof_panel",
+          "visual_object_type": "evidence rail",
+          "bound_text_socket_ids": [
+            "proof_proof_label_1_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "proof_connector_endpoint_3",
+          "source_container_or_component_id": "proof_evidence_marks",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "proof_proof_label_2_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "proof_field_route_4",
+          "source_container_or_component_id": "proof_supporting_copy",
+          "visual_object_type": "field route",
+          "bound_text_socket_ids": [
+            "proof_supporting_copy_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "proof_evidence_rail_5",
+          "source_container_or_component_id": "proof_claim_container_expanded",
+          "visual_object_type": "evidence rail",
+          "bound_text_socket_ids": [
+            "proof_callout_claim_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "proof_connector_endpoint_6",
+          "source_container_or_component_id": "proof_route_marker_container_expanded",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "proof_callout_route_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "proof_connector_endpoint_7",
+          "source_container_or_component_id": "proof_viewer_note_route",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "proof_viewer_note_socket"
+          ],
+          "empty": false
+        }
+      ],
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "source_trace_terms_visible_on_canvas": [],
+      "forbidden_text_patterns_absent": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ],
+      "canvas_word_count": 29
+    },
+    {
+      "role": "climax",
+      "slide_index": 5,
+      "visual_grammar_module": "product_reveal",
+      "module_variant": "climax_editable_result_reveal",
+      "layout_signature": "climax_product_edge_headline_with_result_perimeter_labels",
+      "source_expansion_id": "scene_expansion_2_73_climax",
+      "source_adapter_scene_id": "renderer_adapter_2_73_climax",
+      "source_text_binding_id": "text_binding_2_73_climax",
+      "source_validation_id": "renderer_input_validation_2_73_climax",
+      "text_sockets_used": [
+        "headline_socket",
+        "proof_label_sockets",
+        "supporting_copy_socket",
+        "callout_sockets",
+        "viewer_note_socket"
+      ],
+      "text_socket_bindings": [
+        {
+          "socket_id": "climax_headline_socket",
+          "socket_key": "headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "product edge",
+          "bound_source_id": "renderer_adapter_2_73_climax",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "One editable result owns the product moment."
+        },
+        {
+          "socket_id": "climax_proof_label_1_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "product edge",
+          "bound_source_id": "climax_proof_panel",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "design memory"
+        },
+        {
+          "socket_id": "climax_proof_label_2_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "evidence rail",
+          "bound_source_id": "climax_evidence_marks",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "mapped design moves"
+        },
+        {
+          "socket_id": "climax_supporting_copy_socket",
+          "socket_key": "supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "negative space pocket",
+          "bound_source_id": "climax_supporting_copy",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "Design memory, mapped design moves, code generation, and proof converge into one editable PPT preview."
+        },
+        {
+          "socket_id": "climax_callout_claim_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "product edge",
+          "bound_source_id": "climax_claim_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "claim anchor"
+        },
+        {
+          "socket_id": "climax_callout_route_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "climax_route_marker_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "viewer route"
+        },
+        {
+          "socket_id": "climax_viewer_note_socket",
+          "socket_key": "viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "climax_viewer_note_route",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          },
+          "canvas_copy": "Keep this slide cinematic and least report-like; proof should orbit the result, not compete with it."
+        }
+      ],
+      "visual_containers": [
+        {
+          "container_id": "climax_product_edge_1",
+          "source_container_or_component_id": "renderer_adapter_2_73_climax",
+          "visual_object_type": "product edge",
+          "bound_text_socket_ids": [
+            "climax_headline_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "climax_product_edge_2",
+          "source_container_or_component_id": "climax_proof_panel",
+          "visual_object_type": "product edge",
+          "bound_text_socket_ids": [
+            "climax_proof_label_1_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "climax_evidence_rail_3",
+          "source_container_or_component_id": "climax_evidence_marks",
+          "visual_object_type": "evidence rail",
+          "bound_text_socket_ids": [
+            "climax_proof_label_2_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "climax_negative_space_pocket_4",
+          "source_container_or_component_id": "climax_supporting_copy",
+          "visual_object_type": "negative space pocket",
+          "bound_text_socket_ids": [
+            "climax_supporting_copy_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "climax_product_edge_5",
+          "source_container_or_component_id": "climax_claim_container_expanded",
+          "visual_object_type": "product edge",
+          "bound_text_socket_ids": [
+            "climax_callout_claim_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "climax_connector_endpoint_6",
+          "source_container_or_component_id": "climax_route_marker_container_expanded",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "climax_callout_route_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "climax_connector_endpoint_7",
+          "source_container_or_component_id": "climax_viewer_note_route",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "climax_viewer_note_socket"
+          ],
+          "empty": false
+        }
+      ],
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "source_trace_terms_visible_on_canvas": [],
+      "forbidden_text_patterns_absent": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ],
+      "canvas_word_count": 31
+    },
+    {
+      "role": "close",
+      "slide_index": 6,
+      "visual_grammar_module": "decision_map",
+      "module_variant": "release_handoff_gate_map",
+      "layout_signature": "close_decision_node_with_quiet_route_labels",
+      "source_expansion_id": "scene_expansion_2_73_close",
+      "source_adapter_scene_id": "renderer_adapter_2_73_close",
+      "source_text_binding_id": "text_binding_2_73_close",
+      "source_validation_id": "renderer_input_validation_2_73_close",
+      "text_sockets_used": [
+        "headline_socket",
+        "proof_label_sockets",
+        "supporting_copy_socket",
+        "callout_sockets",
+        "viewer_note_socket"
+      ],
+      "text_socket_bindings": [
+        {
+          "socket_id": "close_headline_socket",
+          "socket_key": "headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "decision node",
+          "bound_source_id": "renderer_adapter_2_73_close",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "The next proof is generated, not claimed."
+        },
+        {
+          "socket_id": "close_proof_label_1_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "decision node",
+          "bound_source_id": "close_proof_panel",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "story ready"
+        },
+        {
+          "socket_id": "close_proof_label_2_socket",
+          "socket_key": "proof_label_sockets",
+          "binding_role": "proof_label",
+          "bound_visual_object_type": "evidence rail",
+          "bound_source_id": "close_evidence_marks",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 5,
+            "max_lines": 1,
+            "hierarchy_level": "proof_label",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.78
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "generated proof next"
+        },
+        {
+          "socket_id": "close_supporting_copy_socket",
+          "socket_key": "supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "field route",
+          "bound_source_id": "close_supporting_copy",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          },
+          "canvas_copy": "This story becomes input for the next generated deck, then waits for review before release."
+        },
+        {
+          "socket_id": "close_callout_claim_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "decision node",
+          "bound_source_id": "close_claim_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "claim anchor"
+        },
+        {
+          "socket_id": "close_callout_route_socket",
+          "socket_key": "callout_sockets",
+          "binding_role": "callout",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "close_route_marker_container_expanded",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 7,
+            "max_lines": 2,
+            "hierarchy_level": "callout",
+            "allowed_font_scale": {
+              "min": 0.58,
+              "max": 0.72
+            },
+            "overflow_behavior": "route_to_html_viewer_metadata"
+          },
+          "canvas_copy": "viewer route"
+        },
+        {
+          "socket_id": "close_viewer_note_socket",
+          "socket_key": "viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_id": "close_viewer_note_route",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          },
+          "canvas_copy": "Name the remaining gate calmly: generated proof, visual review, native inspection, source-boundary review, and human approval."
+        }
+      ],
+      "visual_containers": [
+        {
+          "container_id": "close_decision_node_1",
+          "source_container_or_component_id": "renderer_adapter_2_73_close",
+          "visual_object_type": "decision node",
+          "bound_text_socket_ids": [
+            "close_headline_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "close_decision_node_2",
+          "source_container_or_component_id": "close_proof_panel",
+          "visual_object_type": "decision node",
+          "bound_text_socket_ids": [
+            "close_proof_label_1_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "close_evidence_rail_3",
+          "source_container_or_component_id": "close_evidence_marks",
+          "visual_object_type": "evidence rail",
+          "bound_text_socket_ids": [
+            "close_proof_label_2_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "close_field_route_4",
+          "source_container_or_component_id": "close_supporting_copy",
+          "visual_object_type": "field route",
+          "bound_text_socket_ids": [
+            "close_supporting_copy_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "close_decision_node_5",
+          "source_container_or_component_id": "close_claim_container_expanded",
+          "visual_object_type": "decision node",
+          "bound_text_socket_ids": [
+            "close_callout_claim_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "close_connector_endpoint_6",
+          "source_container_or_component_id": "close_route_marker_container_expanded",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "close_callout_route_socket"
+          ],
+          "empty": false
+        },
+        {
+          "container_id": "close_connector_endpoint_7",
+          "source_container_or_component_id": "close_viewer_note_route",
+          "visual_object_type": "connector endpoint",
+          "bound_text_socket_ids": [
+            "close_viewer_note_socket"
+          ],
+          "empty": false
+        }
+      ],
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "source_trace_terms_visible_on_canvas": [],
+      "forbidden_text_patterns_absent": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ],
+      "canvas_word_count": 31
+    }
+  ],
+  "render_quality_checks": {
+    "empty_visual_container_count": 0,
+    "floating_text_without_bound_visual_object_count": 0,
+    "generic_rectangle_label_count": 0,
+    "source_trace_terms_visible_on_canvas_count": 0,
+    "distinct_text_layout_signatures": 6,
+    "pages_using_expected_visual_grammar": 6,
+    "pages_using_required_text_sockets": 6
+  },
+  "preliminary_viewer_observations": [
+    "Generated full arm uses role-specific visual grammar modules and socket-bound copy.",
+    "Viewer is updated for local inspection, but Part H still owns visual-quality evaluation."
+  ],
+  "release_boundary": "public_blocked_until_part_h_visual_quality_evaluation_and_human_release_approval",
+  "next_required_action": "part_h_visual_quality_evaluation"
+}

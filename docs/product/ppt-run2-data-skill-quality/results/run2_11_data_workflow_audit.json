@@ -1,0 +1,257 @@
+{
+  "schema_version": "ppt_run2_data_workflow_audit.v1",
+  "status": "run2_11_data_workflow_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "audit_scope": {
+    "run_id": "2.11",
+    "creates_new_ppt_deck": false,
+    "primary_quality_target": "data_workflow_evidence",
+    "review_boundary": "Audit only: inspect Run 2.8, 2.9, and 2.10 data-to-trace chains without generating another PPT deck.",
+    "public_release_policy": "blocked until richer tutorial/video decomposition records are converted into stricter workflow gates"
+  },
+  "source_inventory": {
+    "run2_7_source_records": 6,
+    "run2_8_tutorial_decomposition_units": 6,
+    "run2_9_visual_primitives": 5,
+    "run2_10_visual_system_sources": 5,
+    "run2_10_visual_system_memory_records": 5
+  },
+  "workflow_inventory": {
+    "skill_workflow_stages": 31,
+    "run2_8_workflow_gates": 6,
+    "run2_9_visual_gates": 6,
+    "run2_10_visual_system_gates": 6
+  },
+  "chain_records": [
+    {
+      "chain_id": "chain_2_8_cover_tutorial_to_trace",
+      "run_id": "2.8",
+      "layer": "tutorial_decomposition_to_executable_memory",
+      "source_ids": [
+        "mm_2_7_typography_hierarchy_tutorial",
+        "mm_2_7_design_system_launch_case"
+      ],
+      "decomposition_ids": [
+        "decomp_2_8_duarte_remove_nonessential_data",
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "memory_ids": [
+        "binding_type_scale_readability",
+        "binding_public_gate_legibility"
+      ],
+      "gate_ids": [
+        "gate_2_8_cover"
+      ],
+      "required_code_module_ids": [
+        "drawRun28TypeScale",
+        "drawRun28WorkflowGate"
+      ],
+      "actual_code_module_ids": [
+        "drawRun28TypeScale",
+        "drawRun28WorkflowGate"
+      ],
+      "slide_roles": [
+        "cover"
+      ],
+      "trace_manifest_paths": [
+        "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-8-full-vulca/trace_manifest.json"
+      ],
+      "control_boundary": "Uses only Run 2.7 public-safe source records, Run 2.8 decomposition/memory/gate artifacts, and actual Run 2.8 native module trace fields.",
+      "status": "pass",
+      "reason": "Source records bridge through Run 2.8 decomposition units into trace-grounded memory, gate, and code evidence for the cover slide.",
+      "next_fix": "not_applicable_trace_chain_passed_internal_only"
+    },
+    {
+      "chain_id": "chain_2_9_cover_visual_primitive_to_trace",
+      "run_id": "2.9",
+      "layer": "visual_primitive_to_executable_visual_module",
+      "source_ids": [],
+      "decomposition_ids": [
+        "primitive_2_9_editorial_spread_composition",
+        "primitive_2_9_typographic_field_composition"
+      ],
+      "memory_ids": [
+        "module_2_9_editorial_spread",
+        "module_2_9_typographic_field"
+      ],
+      "gate_ids": [
+        "gate_2_9_cover"
+      ],
+      "required_code_module_ids": [
+        "drawRun29EditorialSpread",
+        "drawRun29TypographicField"
+      ],
+      "actual_code_module_ids": [
+        "drawRun29TypographicField",
+        "drawRun29EditorialSpread"
+      ],
+      "slide_roles": [
+        "cover"
+      ],
+      "trace_manifest_paths": [
+        "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-9-full-vulca/trace_manifest.json"
+      ],
+      "control_boundary": "Uses Run 2.9 visual primitive repairs, executable visual modules, gate matrix records, and actual Run 2.9 native visual module trace fields; no source IDs are claimed for this layer.",
+      "status": "pass",
+      "reason": "Visual primitive IDs map to executable visual modules and gate evidence, and the required native module calls are present in the Run 2.9 cover trace.",
+      "next_fix": "not_applicable_trace_chain_passed_internal_only"
+    },
+    {
+      "chain_id": "chain_2_10_cover_visual_system_to_trace",
+      "run_id": "2.10",
+      "layer": "visual_system_memory_to_gate_matrix",
+      "source_ids": [
+        "vs_source_2_10_editorial_keynote_system",
+        "vs_source_2_10_typographic_launch_field"
+      ],
+      "decomposition_ids": [],
+      "memory_ids": [
+        "visual_system_editorial_cinema",
+        "visual_system_typographic_field"
+      ],
+      "gate_ids": [
+        "gate_2_10_cover_editorial_field"
+      ],
+      "required_code_module_ids": [
+        "drawRun210EditorialTypeSystem",
+        "drawRun210FullBleedVisualField"
+      ],
+      "actual_code_module_ids": [
+        "drawRun210EditorialTypeSystem",
+        "drawRun210FullBleedVisualField"
+      ],
+      "slide_roles": [
+        "cover"
+      ],
+      "trace_manifest_paths": [
+        "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-10-full-vulca/trace_manifest.json"
+      ],
+      "control_boundary": "Uses Run 2.10 visual system source and memory records, Run 2.10 gate matrix records, and actual Run 2.10 native visual module trace fields; no decomposition IDs are claimed for this layer.",
+      "status": "pass",
+      "reason": "Visual system sources connect to memory and gate evidence, and the cover trace records the expected Run 2.10 native visual module calls.",
+      "next_fix": "not_applicable_trace_chain_passed_internal_only"
+    },
+    {
+      "chain_id": "chain_2_10_multimodal_depth_gap_audited_in_2_11",
+      "run_id": "2.10",
+      "layer": "multimodal_database_quality",
+      "source_ids": [
+        "vs_source_2_10_kinetic_climax_sequence",
+        "vs_source_2_10_non_rectangular_proof_path"
+      ],
+      "decomposition_ids": [],
+      "memory_ids": [
+        "visual_system_kinetic_demo",
+        "visual_system_non_rectangular_proof"
+      ],
+      "gate_ids": [
+        "gate_2_10_climax_cinematic_sequence",
+        "gate_2_10_contrast_path_field"
+      ],
+      "required_code_module_ids": [
+        "drawRun210FullBleedVisualField",
+        "drawRun210NonRectangularProofPath",
+        "drawRun210CinematicClimax",
+        "drawRun210KineticSequence"
+      ],
+      "actual_code_module_ids": [
+        "drawRun210FullBleedVisualField",
+        "drawRun210NonRectangularProofPath",
+        "drawRun210CinematicClimax",
+        "drawRun210KineticSequence"
+      ],
+      "slide_roles": [
+        "contrast",
+        "climax"
+      ],
+      "trace_manifest_paths": [
+        "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-10-full-vulca/trace_manifest.json"
+      ],
+      "control_boundary": "Uses Run 2.10 visual system evidence and trace fields, but the underlying multimodal learning evidence is still too shallow for public release.",
+      "status": "weak",
+      "reason": "The contrast and climax traces prove that the visual system IDs reached native module calls, but the audit still finds thin tutorial/video decomposition depth behind those visual systems.",
+      "next_fix": "Add richer tutorial/video decomposition records for kinetic sequence, non-rectangular proof path, rhythm, and visual teaching claims, then bind those records to stricter workflow gates before rerunning the four-arm PPT comparison."
+    }
+  ],
+  "arm_trace_evidence": {
+    "run2_8_full_skill": {
+      "trace_origin": "actual_native_module_calls",
+      "trace_manifest_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-8-full-vulca/trace_manifest.json",
+      "evidence_fields": [
+        "run2_8_decomposition_unit_ids",
+        "run2_8_memory_binding_ids",
+        "run2_8_gate_matrix_ids",
+        "run2_8_code_binding_ids"
+      ],
+      "observed_boundary": "Run 2.8 evidence is trace-grounded to native module calls, not prompt prose alone."
+    },
+    "run2_9_full_skill": {
+      "trace_origin": "actual_native_visual_module_calls",
+      "trace_manifest_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-9-full-vulca/trace_manifest.json",
+      "evidence_fields": [
+        "run2_9_visual_primitive_ids",
+        "run2_9_visual_module_ids",
+        "run2_9_gate_matrix_ids",
+        "run2_9_code_module_ids"
+      ],
+      "observed_boundary": "Run 2.9 evidence is grounded in primitive-to-module traces and actual native visual module calls."
+    },
+    "run2_10_full_skill": {
+      "trace_origin": "actual_native_visual_module_calls",
+      "trace_manifest_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-10-full-vulca/trace_manifest.json",
+      "evidence_fields": [
+        "run2_10_visual_system_source_ids",
+        "run2_10_visual_system_memory_ids",
+        "run2_10_gate_matrix_ids",
+        "run2_10_code_module_ids"
+      ],
+      "observed_boundary": "Run 2.10 evidence is grounded in visual-system source and memory traces plus actual native visual module calls."
+    }
+  },
+  "negative_control_checks": [
+    {
+      "arm_role": "prompt_only",
+      "forbidden_fields": [
+        "run2_8_decomposition_unit_ids",
+        "run2_9_visual_primitive_ids",
+        "run2_10_visual_system_source_ids",
+        "run2_10_visual_system_memory_ids",
+        "actual_native_visual_module_calls"
+      ],
+      "observed_boundary": "Prompt-only output must not claim skill memory, workflow gates, visual system sources, or native visual module trace evidence.",
+      "status": "pass"
+    },
+    {
+      "arm_role": "run1_5_skill",
+      "forbidden_fields": [
+        "run2_8_memory_binding_ids",
+        "run2_9_visual_module_ids",
+        "run2_10_gate_matrix_ids",
+        "run2_10_code_module_ids",
+        "actual_native_visual_module_calls"
+      ],
+      "observed_boundary": "Run 1.5 skill output remains outside the Run 2.8 through Run 2.10 data/workflow chain and must not borrow later trace IDs.",
+      "status": "pass"
+    },
+    {
+      "arm_role": "negative_control",
+      "forbidden_fields": [
+        "run2_8_code_binding_ids",
+        "run2_9_code_module_ids",
+        "run2_10_code_module_ids",
+        "run2_10_visual_system_source_ids",
+        "actual_native_module_calls"
+      ],
+      "observed_boundary": "Negative controls may expose absence or boundary fields only; they must not cite successful Run 2 native module evidence as their own.",
+      "status": "pass"
+    }
+  ],
+  "gate_summary": {
+    "data_workflow_chain_gate": "weak_pass_internal_only",
+    "public_release_gate": "blocked",
+    "deck_generation_gate": "not_run",
+    "summary": "Run 2.11 confirms trace-grounded pass chains for Runs 2.8, 2.9, and 2.10 while marking multimodal database depth as weak for public release."
+  },
+  "next_required_action": "Add richer tutorial/video decomposition records and convert them into stricter workflow gates before the next four-arm PPT rerun."
+}

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "run_id": "2.22",
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "input_chain": {
+    "visual_decision_memory": "docs/product/ppt-run2-data-skill-quality/run2_21_visual_decision_memory.json",
+    "selector_gates": "docs/product/ppt-run2-data-skill-quality/run2_21_per_role_selector_gates.json",
+    "rejection_matrix": "docs/product/ppt-run2-data-skill-quality/run2_21_evidence_rejection_matrix.json",
+    "source_data_layer": "docs/product/ppt-run2-data-skill-quality/results/run2_21_visual_decision_memory_result.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_22_selector_memory_arms.mjs",
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_22_full_selector_memory",
+      "bad_selector_memory"
+    ],
+    "best_internal_arm": "run2_22_full_selector_memory",
+    "best_internal_arm_verdict": "selector_memory_executed_before_native_ppt_generation",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-22-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "control_boundary": {
+    "bad_selector_memory": "decision_memory_only_without_selector_gates_or_rejection_matrix",
+    "prompt_only": "commercial_case_only_no_run2_21_selector_memory",
+    "run1_5_skill": "prior_baseline_no_run2_21_selector_memory"
+  },
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "trace_manifest_requirements": [
+    "run2_21_visual_decision_memory_id",
+    "run2_21_primary_evidence_id",
+    "run2_21_secondary_evidence_ids",
+    "run2_21_rejected_evidence_reasons",
+    "run2_21_selector_gate_id",
+    "run2_21_visual_decision_delta",
+    "run2_22_selector_execution_status",
+    "run2_22_code_module_ids"
+  ],
+  "native_module_status": "actual_run2_22_module_calls_recorded_in_trace_manifest",
+  "release_boundary": "public_blocked_until_visual_human_review_native_render_review_motion_review_source_boundary_review_and_human_approval",
+  "next_required_action": "review_run2_22_outputs_against_run2_21_selector_contract_then_continue_thickening_same_five_layers"
+}

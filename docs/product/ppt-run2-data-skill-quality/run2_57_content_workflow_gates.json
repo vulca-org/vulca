@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "run_id": "2.57",
+  "status": "run2_57_content_workflow_gates_ready_public_blocked",
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_generated_run_id": "2.56",
+  "target_layer": "product_content_specificity_workflow_gates",
+  "content_workflow_gates": [
+    {
+      "gate_id": "gate_2_57_product_capability_binding",
+      "gate_type": "product_capability_binding",
+      "purpose": "Every slide must bind at least one product capability id before native PPT drawing.",
+      "required_trace_fields": [
+        "run2_57_product_capability_ids",
+        "run2_57_product_logic_relation_ids",
+        "run2_57_required_product_terms_rendered"
+      ],
+      "pass_fail_checks": [
+        "pass only when the slide references capability ids from run2_57_product_capability_memory.json",
+        "fail when a slide only states generic design improvement",
+        "fail when required product terms are fewer than the slide contract minimum"
+      ],
+      "bad_control_probe": "bad_run2_56_without_product_capability_content must have empty run2_57_product_capability_ids.",
+      "consumer_contract": {
+        "next_generated_run": "2.58",
+        "must_run_before": "native_ppt_object_drawing",
+        "failure_status": "fail_missing_product_capability_binding"
+      }
+    },
+    {
+      "gate_id": "gate_2_57_reader_question_answer",
+      "gate_type": "reader_question_answer",
+      "purpose": "Every slide must answer its assigned reader question from run2_57_slide_message_contracts.json.",
+      "required_trace_fields": [
+        "run2_57_slide_message_contract_id",
+        "run2_57_reader_question_answered_status",
+        "run2_57_content_specificity_status"
+      ],
+      "pass_fail_checks": [
+        "pass only when the visible slide content answers the reader question in concrete product terms",
+        "fail when the slide has more visual panels than product explanation",
+        "fail when the slide could fit any generic AI design product"
+      ],
+      "bad_control_probe": "bad_run2_56_without_product_capability_content may reuse Run 2.56 visual roles but must fail reader-question answer status.",
+      "consumer_contract": {
+        "next_generated_run": "2.58",
+        "must_run_before": "copy_and_layout_contract_resolution",
+        "failure_status": "fail_reader_question_not_answered"
+      }
+    },
+    {
+      "gate_id": "gate_2_57_code_generated_ppt_claim",
+      "gate_type": "output_claim_boundary",
+      "purpose": "The deck must explain that Vulca's primary output is code-generated editable PPT, with image generation limited to optional backgrounds or illustrations.",
+      "required_trace_fields": [
+        "run2_57_content_workflow_gate_id",
+        "run2_57_required_product_terms_rendered",
+        "run2_57_content_specificity_status"
+      ],
+      "pass_fail_checks": [
+        "pass only when the slide uses code-generated editable PPT wording where output is discussed",
+        "fail when the slide implies the main output is image generation",
+        "fail when native editability, trace, or QA are omitted from the product output explanation"
+      ],
+      "bad_control_probe": "bad_run2_56_without_product_capability_content must not claim code-generated editable PPT unless the content contract is bound.",
+      "consumer_contract": {
+        "next_generated_run": "2.58",
+        "must_run_before": "output_surface_rendering",
+        "failure_status": "fail_wrong_output_claim"
+      }
+    },
+    {
+      "gate_id": "gate_2_57_competitor_boundary",
+      "gate_type": "comparison_boundary",
+      "purpose": "The product value must be explained against prompt-only, image generator, template slide tool, design editor, and office copilot alternatives.",
+      "required_trace_fields": [
+        "run2_57_competitor_boundary_ids",
+        "run2_57_content_specificity_status",
+        "run2_57_generic_claim_count"
+      ],
+      "pass_fail_checks": [
+        "pass only when contrast or proof slides bind at least three competitor boundary ids",
+        "fail when comparison is only visual taste or color preference",
+        "fail when no bad-control boundary is visible in trace"
+      ],
+      "bad_control_probe": "bad_run2_56_without_product_capability_content may compare visually but must not bind competitor boundary ids.",
+      "consumer_contract": {
+        "next_generated_run": "2.58",
+        "must_run_before": "comparison_arm_generation",
+        "failure_status": "fail_missing_competitor_boundary"
+      }
+    },
+    {
+      "gate_id": "gate_2_57_generic_claim_rejection",
+      "gate_type": "generic_claim_rejection",
+      "purpose": "Generic claims like evidence becomes design or better aesthetics from data must be counted and rejected before rendering.",
+      "required_trace_fields": [
+        "run2_57_generic_claim_count",
+        "run2_57_content_specificity_status",
+        "run2_57_required_product_terms_rendered"
+      ],
+      "pass_fail_checks": [
+        "pass only when generic claim count is zero on full-arm slides",
+        "fail when an empty claim appears without product mechanism, output, comparison, or verification detail",
+        "fail when more words are added without more product-specific content units"
+      ],
+      "bad_control_probe": "bad_run2_56_without_product_capability_content should expose generic claim count above zero.",
+      "consumer_contract": {
+        "next_generated_run": "2.58",
+        "must_run_before": "public_copy_finalization",
+        "failure_status": "fail_generic_claim_present"
+      }
+    },
+    {
+      "gate_id": "gate_2_57_repair_loop_handoff",
+      "gate_type": "repair_loop_handoff",
+      "purpose": "The close slide must explain that Run 2.57 creates no deck and Run 2.58 is the next generated proof.",
+      "required_trace_fields": [
+        "run2_57_content_workflow_gate_id",
+        "run2_57_reader_question_answered_status",
+        "run2_57_product_logic_relation_ids"
+      ],
+      "pass_fail_checks": [
+        "pass only when the deck states that Run 2.57 is data/workflow-only",
+        "pass only when Run 2.58 is named as the next generated proof",
+        "fail when the deck claims public-ready output without human review and source-boundary approval"
+      ],
+      "bad_control_probe": "bad_run2_56_without_product_capability_content must fail the 2.57-to-2.58 handoff explanation.",
+      "consumer_contract": {
+        "next_generated_run": "2.58",
+        "must_run_before": "release_gate_slide_rendering",
+        "failure_status": "fail_missing_repair_loop_handoff"
+      }
+    }
+  ],
+  "next_generated_run_contract": {
+    "run_id": "2.58",
+    "must_consume": [
+      "docs/product/ppt-run2-data-skill-quality/run2_57_product_capability_memory.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_57_slide_message_contracts.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_57_content_workflow_gates.json",
+      "docs/product/ppt-run2-data-skill-quality/results/run2_57_product_capability_content_result.json"
+    ],
+    "bad_control_arm": "bad_run2_56_without_product_capability_content",
+    "required_trace_fields": [
+      "run2_57_product_capability_ids",
+      "run2_57_slide_message_contract_id",
+      "run2_57_content_workflow_gate_id",
+      "run2_57_product_logic_relation_ids",
+      "run2_57_competitor_boundary_ids",
+      "run2_57_content_specificity_status",
+      "run2_57_reader_question_answered_status",
+      "run2_57_generic_claim_count",
+      "run2_57_required_product_terms_rendered"
+    ],
+    "full_arm_pass_status": "run2_57_product_capability_content_consumed_before_native_ppt_drawing",
+    "bad_control_fail_status": "fail_missing_run2_57_product_capability_content",
+    "blocked_claim": "Do not claim public-ready output until Run 2.58 consumes this layer and passes visual human review, native render inspection, source-boundary review, and release approval."
+  },
+  "release_boundary": "public_blocked_until_run2_58_generated_output_consumes_run2_57_content_contracts_and_passes_release_gates"
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": "2.19",
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_thickness_layer": "run2_18_thickness_result.json",
+  "input_chain": {
+    "evidence": "docs/product/ppt-run2-data-skill-quality/run2_18_multimodal_evidence_expansion.json",
+    "memory": "docs/product/ppt-run2-data-skill-quality/run2_18_design_memory_expansion.json",
+    "workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_18_workflow_gate_expansion.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_19_thickness_rerun_arms.mjs",
+    "arm_order": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_19_full_skill",
+      "bad_thickness_memory"
+    ],
+    "best_internal_arm": "run2_19_full_skill",
+    "best_internal_arm_verdict": "thickness_pack_executed_before_native_ppt_generation",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-19-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "trace_proof": {
+    "full_arm_required_fields": [
+      "run2_18_selected_evidence_ids",
+      "run2_18_selected_memory_ids",
+      "run2_18_selected_gate_ids",
+      "run2_18_bad_control_probe",
+      "run2_18_release_boundary",
+      "run2_19_code_module_ids",
+      "run2_19_trace_thickness_status",
+      "run2_19_visual_delta_from_run2_16"
+    ],
+    "native_module_status": "actual_run2_19_module_calls_recorded_in_trace_manifest",
+    "surface_policy": "trace_manifest_only_not_public_slide_surface",
+    "layout_gate": "full_arm_slides_must_pass_thickness_budget_self_check"
+  },
+  "control_boundary": {
+    "bad_thickness_memory": "evidence_only_negative_control_forbids_run2_18_design_memory_and_workflow_gates",
+    "prompt_only": "forbids_run2_18_thickness_pack_and_prior_skill_inputs",
+    "run1_5_skill": "forbids_run2_18_thickness_pack_and_uses_prior_baseline_only"
+  },
+  "release_boundary": "public_blocked_until_visual_human_review_native_cross_platform_render_inspection_motion_video_review_source_boundary_review_and_human_approval",
+  "next_required_action": "review_run2_19_outputs_against_run2_18_thickness_contract_then_continue_thickening_same_five_layers"
+}

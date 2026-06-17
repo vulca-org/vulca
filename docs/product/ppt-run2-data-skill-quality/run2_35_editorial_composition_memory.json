@@ -1,0 +1,244 @@
+{
+  "schema_version": "ppt_run2_editorial_composition_memory.v1",
+  "status": "run2_35_editorial_composition_memory_ready_public_blocked",
+  "run_id": "2.35",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_audit_run": "2.34",
+  "derived_from": [
+    "results/run2_34_main_surface_visual_evidence_audit.json",
+    "run2_35_visual_evidence_asset_realism_memory.json"
+  ],
+  "editorial_composition_records": [
+    {
+      "composition_memory_id": "composition_2_35_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "editorial_anchor_object": "launch-system product stage with one visible generated deck object",
+      "hero_canvas_share_target": 0.42,
+      "repairs_run2_34_weak_editorial_anchor": true,
+      "composition_obligations": [
+        "One main object must own the first read before evidence-spine detail appears.",
+        "Secondary proof is allowed only as a rail, badge, or caption that supports the anchor.",
+        "The slide must show a product or business state, not a dashboard of equal tokens.",
+        "Draw a large editable product-stage object with one output deck slab, two memory chips, and one release badge; avoid a row of small abstract cards."
+      ],
+      "typography_obligations": [
+        "Use one short state label for the main object.",
+        "Keep trace language out of the public first-read surface.",
+        "Use captions as proof labels, not paragraphs."
+      ],
+      "spacing_obligations": [
+        "Protect the main object with whitespace on at least two sides.",
+        "Avoid evenly distributed small cards across the main canvas.",
+        "Reserve the right evidence spine for reviewer context only."
+      ],
+      "forbidden_patterns": [
+        "equal-weight schematic panels",
+        "generic block diagram",
+        "feature-card grid",
+        "tiny proof chips as the main visual",
+        "copied brand or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_editorial_anchor_object",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "qa_probe": "At thumbnail scale, the role should have a stronger main anchor than Run 2.33 and should not read as a report panel."
+    },
+    {
+      "composition_memory_id": "composition_2_35_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "editorial_anchor_object": "prompt-only failure path collapsing into a selected product route",
+      "hero_canvas_share_target": 0.38,
+      "repairs_run2_34_weak_editorial_anchor": true,
+      "composition_obligations": [
+        "One main object must own the first read before evidence-spine detail appears.",
+        "Secondary proof is allowed only as a rail, badge, or caption that supports the anchor.",
+        "The slide must show a product or business state, not a dashboard of equal tokens.",
+        "Compress the prompt-only path to a weak left rail and make the selected route the dominant anchor with directional flow and concrete labels."
+      ],
+      "typography_obligations": [
+        "Use one short state label for the main object.",
+        "Keep trace language out of the public first-read surface.",
+        "Use captions as proof labels, not paragraphs."
+      ],
+      "spacing_obligations": [
+        "Protect the main object with whitespace on at least two sides.",
+        "Avoid evenly distributed small cards across the main canvas.",
+        "Reserve the right evidence spine for reviewer context only."
+      ],
+      "forbidden_patterns": [
+        "equal-weight schematic panels",
+        "generic block diagram",
+        "feature-card grid",
+        "tiny proof chips as the main visual",
+        "copied brand or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_editorial_anchor_object",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "qa_probe": "At thumbnail scale, the role should have a stronger main anchor than Run 2.33 and should not read as a report panel."
+    },
+    {
+      "composition_memory_id": "composition_2_35_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "editorial_anchor_object": "before/after product-route comparison with asymmetric weight",
+      "hero_canvas_share_target": 0.4,
+      "repairs_run2_34_weak_editorial_anchor": true,
+      "composition_obligations": [
+        "One main object must own the first read before evidence-spine detail appears.",
+        "Secondary proof is allowed only as a rail, badge, or caption that supports the anchor.",
+        "The slide must show a product or business state, not a dashboard of equal tokens.",
+        "Use a small pale before thumbnail and a larger product-like after thumbnail with clear state labels and one visible gate."
+      ],
+      "typography_obligations": [
+        "Use one short state label for the main object.",
+        "Keep trace language out of the public first-read surface.",
+        "Use captions as proof labels, not paragraphs."
+      ],
+      "spacing_obligations": [
+        "Protect the main object with whitespace on at least two sides.",
+        "Avoid evenly distributed small cards across the main canvas.",
+        "Reserve the right evidence spine for reviewer context only."
+      ],
+      "forbidden_patterns": [
+        "equal-weight schematic panels",
+        "generic block diagram",
+        "feature-card grid",
+        "tiny proof chips as the main visual",
+        "copied brand or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_editorial_anchor_object",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "qa_probe": "At thumbnail scale, the role should have a stronger main anchor than Run 2.33 and should not read as a report panel."
+    },
+    {
+      "composition_memory_id": "composition_2_35_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "editorial_anchor_object": "product proof surface showing content memory as an inspectable object",
+      "hero_canvas_share_target": 0.46,
+      "repairs_run2_34_weak_editorial_anchor": false,
+      "composition_obligations": [
+        "One main object must own the first read before evidence-spine detail appears.",
+        "Secondary proof is allowed only as a rail, badge, or caption that supports the anchor.",
+        "The slide must show a product or business state, not a dashboard of equal tokens.",
+        "Draw an editable product-console surface with rows, status dots, and a single selected row emphasis instead of disconnected rectangles."
+      ],
+      "typography_obligations": [
+        "Use one short state label for the main object.",
+        "Keep trace language out of the public first-read surface.",
+        "Use captions as proof labels, not paragraphs."
+      ],
+      "spacing_obligations": [
+        "Protect the main object with whitespace on at least two sides.",
+        "Avoid evenly distributed small cards across the main canvas.",
+        "Reserve the right evidence spine for reviewer context only."
+      ],
+      "forbidden_patterns": [
+        "equal-weight schematic panels",
+        "generic block diagram",
+        "feature-card grid",
+        "tiny proof chips as the main visual",
+        "copied brand or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_editorial_anchor_object",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "qa_probe": "At thumbnail scale, the role should have a stronger main anchor than Run 2.33 and should not read as a report panel."
+    },
+    {
+      "composition_memory_id": "composition_2_35_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "editorial_anchor_object": "large generated result object with product state and release boundary in one stage",
+      "hero_canvas_share_target": 0.68,
+      "repairs_run2_34_weak_editorial_anchor": false,
+      "composition_obligations": [
+        "One main object must own the first read before evidence-spine detail appears.",
+        "Secondary proof is allowed only as a rail, badge, or caption that supports the anchor.",
+        "The slide must show a product or business state, not a dashboard of equal tokens.",
+        "Keep the hero result object dominant, add one concrete output-state label, and push all secondary evidence into a quiet rail."
+      ],
+      "typography_obligations": [
+        "Use one short state label for the main object.",
+        "Keep trace language out of the public first-read surface.",
+        "Use captions as proof labels, not paragraphs."
+      ],
+      "spacing_obligations": [
+        "Protect the main object with whitespace on at least two sides.",
+        "Avoid evenly distributed small cards across the main canvas.",
+        "Reserve the right evidence spine for reviewer context only."
+      ],
+      "forbidden_patterns": [
+        "equal-weight schematic panels",
+        "generic block diagram",
+        "feature-card grid",
+        "tiny proof chips as the main visual",
+        "copied brand or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_editorial_anchor_object",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "qa_probe": "At thumbnail scale, the role should have a stronger main anchor than Run 2.33 and should not read as a report panel."
+    },
+    {
+      "composition_memory_id": "composition_2_35_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "editorial_anchor_object": "inspectable launch path handoff with next-run contract",
+      "hero_canvas_share_target": 0.36,
+      "repairs_run2_34_weak_editorial_anchor": true,
+      "composition_obligations": [
+        "One main object must own the first read before evidence-spine detail appears.",
+        "Secondary proof is allowed only as a rail, badge, or caption that supports the anchor.",
+        "The slide must show a product or business state, not a dashboard of equal tokens.",
+        "Make one launch-path object the main read, with three release states as supporting markers rather than the whole slide."
+      ],
+      "typography_obligations": [
+        "Use one short state label for the main object.",
+        "Keep trace language out of the public first-read surface.",
+        "Use captions as proof labels, not paragraphs."
+      ],
+      "spacing_obligations": [
+        "Protect the main object with whitespace on at least two sides.",
+        "Avoid evenly distributed small cards across the main canvas.",
+        "Reserve the right evidence spine for reviewer context only."
+      ],
+      "forbidden_patterns": [
+        "equal-weight schematic panels",
+        "generic block diagram",
+        "feature-card grid",
+        "tiny proof chips as the main visual",
+        "copied brand or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_editorial_anchor_object",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "qa_probe": "At thumbnail scale, the role should have a stronger main anchor than Run 2.33 and should not read as a report panel."
+    }
+  ]
+}

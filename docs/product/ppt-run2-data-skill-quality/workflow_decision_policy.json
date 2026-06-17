@@ -1,0 +1,245 @@
+{
+  "schema_version": 1,
+  "status": "run2_6_workflow_decision_policy_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "selection_chain": [
+    "commercial_case",
+    "usecase_id",
+    "benchmark_ids",
+    "theme_policy_id",
+    "typography_system_id",
+    "spacing_token_set_id",
+    "visual_production_module_ids",
+    "qa_probes"
+  ],
+  "usecase_benchmark_map": [
+    {
+      "usecase_id": "usecase_design_to_production_platform_launch",
+      "benchmark_ids": [
+        "benchmark_design_to_production_grid_precision",
+        "benchmark_visual_fidelity_interactive_slide_surface",
+        "benchmark_glance_test_visual_hierarchy"
+      ],
+      "theme_policy_id": "theme_original_high_contrast_product_system",
+      "typography_system_id": "type_system_editorial_product_sans",
+      "spacing_token_set_id": "spacing_tokens_precision_grid_12",
+      "visual_production_module_ids": [
+        "module_cinematic_cover_field",
+        "module_system_mini_preview",
+        "module_editorial_before_after_delta",
+        "module_proof_route_choreography",
+        "module_climax_hero_object",
+        "module_release_handoff_gate"
+      ],
+      "source_brand_sanitization": [
+        "do not copy Figma brand marks",
+        "do not copy Figma UI",
+        "do not use source event colors as identity"
+      ],
+      "fallback_policy": "public_blocked_if_theme_or_spacing_policy_is_not_visible",
+      "qa_probes": [
+        "contact sheet shows product workflow before code",
+        "full arm does not resemble source brand"
+      ]
+    },
+    {
+      "usecase_id": "usecase_fintech_product_keynote",
+      "benchmark_ids": [
+        "benchmark_fintech_product_keynote_breadth_without_grid",
+        "benchmark_story_driven_data_emphasis",
+        "benchmark_glance_test_visual_hierarchy"
+      ],
+      "theme_policy_id": "theme_original_fintech_keynote_contrast",
+      "typography_system_id": "type_system_keynote_product_sans",
+      "spacing_token_set_id": "spacing_tokens_keynote_asymmetric",
+      "visual_production_module_ids": [
+        "module_cinematic_cover_field",
+        "module_editorial_before_after_delta",
+        "module_proof_route_choreography",
+        "module_climax_hero_object"
+      ],
+      "source_brand_sanitization": [
+        "do not copy Stripe brand marks",
+        "do not copy Stripe event graphics",
+        "do not copy transcript text or product framing"
+      ],
+      "fallback_policy": "public_blocked_if_demo_object_degrades_into_feature_grid",
+      "qa_probes": [
+        "contact sheet shows one commerce proof route",
+        "feature breadth is subordinate to the demo object"
+      ]
+    },
+    {
+      "usecase_id": "usecase_ai_cloud_keynote_demo",
+      "benchmark_ids": [
+        "benchmark_ai_platform_demo_climax",
+        "benchmark_story_driven_data_emphasis",
+        "benchmark_glance_test_visual_hierarchy"
+      ],
+      "theme_policy_id": "theme_original_ai_demo_scale",
+      "typography_system_id": "type_system_demo_narrative_sans",
+      "spacing_token_set_id": "spacing_tokens_demo_stage_depth",
+      "visual_production_module_ids": [
+        "module_cinematic_cover_field",
+        "module_proof_route_choreography",
+        "module_climax_hero_object",
+        "module_release_handoff_gate"
+      ],
+      "source_brand_sanitization": [
+        "do not copy Google brand marks",
+        "do not copy Google Cloud stage visuals",
+        "do not use source color identity as theme"
+      ],
+      "fallback_policy": "public_blocked_if_climax_object_is_not_larger_than_supporting_context",
+      "qa_probes": [
+        "contact sheet shows a readable AI demo climax",
+        "enterprise scale remains visible without announcement sprawl"
+      ]
+    },
+    {
+      "usecase_id": "usecase_design_language_public_reveal",
+      "benchmark_ids": [
+        "benchmark_content_first_dynamic_material",
+        "benchmark_visual_fidelity_interactive_slide_surface",
+        "benchmark_glance_test_visual_hierarchy"
+      ],
+      "theme_policy_id": "theme_original_material_language_neutral",
+      "typography_system_id": "type_system_design_language_editorial",
+      "spacing_token_set_id": "spacing_tokens_layered_material",
+      "visual_production_module_ids": [
+        "module_cinematic_cover_field",
+        "module_system_mini_preview",
+        "module_climax_hero_object",
+        "module_release_handoff_gate"
+      ],
+      "source_brand_sanitization": [
+        "do not copy Apple brand marks",
+        "do not copy Apple UI or Liquid Glass visuals",
+        "do not imitate Apple keynote composition"
+      ],
+      "fallback_policy": "public_blocked_if_material_layer_reads_as_source_brand_imitation",
+      "qa_probes": [
+        "contact sheet shows original material behavior",
+        "content remains more important than surface effect"
+      ]
+    }
+  ],
+  "theme_policies": [
+    {
+      "id": "theme_original_high_contrast_product_system",
+      "mode_support": ["dark", "light"],
+      "rules": [
+        "use original palette",
+        "preserve text contrast",
+        "forbid source-brand color cloning"
+      ],
+      "qa_probe": "Theme should read as Vulca/product-system original, not a reference brand."
+    },
+    {
+      "id": "theme_original_fintech_keynote_contrast",
+      "mode_support": ["dark"],
+      "rules": [
+        "use original commerce palette",
+        "separate trust layer from demo layer",
+        "forbid Stripe color or event identity cloning"
+      ],
+      "qa_probe": "Theme should support fintech trust without resembling Stripe."
+    },
+    {
+      "id": "theme_original_ai_demo_scale",
+      "mode_support": ["dark", "light"],
+      "rules": [
+        "use original AI platform palette",
+        "reserve high energy color for the climax object",
+        "forbid Google Cloud color or event identity cloning"
+      ],
+      "qa_probe": "Theme should make the demo climax visible without source-brand resemblance."
+    },
+    {
+      "id": "theme_original_material_language_neutral",
+      "mode_support": ["light", "dark"],
+      "rules": [
+        "use original material language",
+        "keep content above surface effect",
+        "forbid Apple UI, device, and Liquid Glass imitation"
+      ],
+      "qa_probe": "Theme should explain material behavior without Apple-like identity."
+    }
+  ],
+  "typography_systems": [
+    {
+      "id": "type_system_editorial_product_sans",
+      "rules": [
+        "headline at least 2.6x support label size",
+        "body lines stay short",
+        "tiny trace labels stay out of main slide"
+      ],
+      "qa_probe": "Contact sheet headline should be readable before support labels."
+    },
+    {
+      "id": "type_system_keynote_product_sans",
+      "rules": [
+        "commercial shift headline dominates product details",
+        "demo object labels stay short",
+        "financial support text routes to notes when dense"
+      ],
+      "qa_probe": "Reviewer should read the commerce proof before product breadth."
+    },
+    {
+      "id": "type_system_demo_narrative_sans",
+      "rules": [
+        "demo result headline dominates infrastructure context",
+        "model and platform names are secondary",
+        "climax slide uses the largest headline scale"
+      ],
+      "qa_probe": "AI demo story should be readable at contact-sheet scale."
+    },
+    {
+      "id": "type_system_design_language_editorial",
+      "rules": [
+        "material behavior labels stay secondary to content",
+        "design principle headline leads every slide",
+        "avoid source-like phrasing and brand-like names"
+      ],
+      "qa_probe": "Slide should explain a system principle, not imitate a source keynote."
+    }
+  ],
+  "spacing_token_sets": [
+    {
+      "id": "spacing_tokens_precision_grid_12",
+      "rules": [
+        "outer margin >= 54px",
+        "module gutters >= 24px",
+        "focal object has larger margin than support objects"
+      ],
+      "qa_probe": "Focal object should not feel crowded or accidental."
+    },
+    {
+      "id": "spacing_tokens_keynote_asymmetric",
+      "rules": [
+        "hero demo object receives at least 45 percent of slide width",
+        "supporting feature breadth uses one subordinate row or rail",
+        "gutter between demo and support context >= 32px"
+      ],
+      "qa_probe": "Feature breadth should not compete with the commercial proof object."
+    },
+    {
+      "id": "spacing_tokens_demo_stage_depth",
+      "rules": [
+        "climax object receives at least 50 percent of available slide area",
+        "infrastructure context stays outside the primary focal field",
+        "proof route nodes keep consistent 24px internal spacing"
+      ],
+      "qa_probe": "AI climax should feel staged, not packed."
+    },
+    {
+      "id": "spacing_tokens_layered_material",
+      "rules": [
+        "content layer has priority spacing over material layer",
+        "transparent native shapes do not overlap readable text",
+        "control layer remains visually separate from proof content"
+      ],
+      "qa_probe": "Material behavior should not crowd or obscure content."
+    }
+  ]
+}

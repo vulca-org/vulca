@@ -1,0 +1,303 @@
+{
+  "artifact_id": "run2_90_renderer_asset_surface_composition_rerun_result",
+  "part": "Part U",
+  "schema_version": "ppt_run2_90_renderer_asset_surface_composition_rerun_result.v1",
+  "run_id": "2.90",
+  "status": "run2_90_renderer_asset_surface_composition_rerun_generated_public_blocked",
+  "public_ready": false,
+  "public_release_started": false,
+  "quality_claim_boundary": "asset_surface_composition_renderer_generated_viewer_check_only_no_quality_verdict",
+  "consumed_sources": [
+    "docs/product/ppt-run2-data-skill-quality/results/run2_89_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_88_best_layout_visual_primitive_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json"
+  ],
+  "source_t_evaluation": {
+    "status": "run2_89_visual_quality_evaluation_public_blocked",
+    "next_required_action": "part_u_renderer_asset_surface_composition_repair_from_t_evaluation",
+    "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_89_visual_quality_evaluation.json",
+    "top_blocker": "layout_primitive_names_changed_but_visual_execution_remains_wireframe_like",
+    "next_layer_to_fix": "renderer_asset_surface_and_composition_detail"
+  },
+  "source_run2_88_renderer_result": {
+    "status": "run2_88_best_layout_visual_primitive_rerun_generated_public_blocked",
+    "next_required_action": "part_t_visual_quality_evaluation_for_run2_88",
+    "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_88_best_layout_visual_primitive_rerun_result.json"
+  },
+  "source_run2_87_plan": {
+    "status": "run2_87_best_layout_recovery_visual_primitive_plan_ready_public_blocked",
+    "next_required_action": "part_s_renderer_rerun_from_run2_87_best_layout_visual_primitive_plan",
+    "source_result": "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json"
+  },
+  "renderer_asset_surface_composition_manifest": {
+    "generator": "scripts/generate_ppt_run2_90_renderer_asset_surface_composition_arms.mjs",
+    "consumed_sources": [
+      "docs/product/ppt-run2-data-skill-quality/results/run2_89_visual_quality_evaluation.json",
+      "docs/product/ppt-run2-data-skill-quality/results/run2_88_best_layout_visual_primitive_rerun_result.json",
+      "docs/product/ppt-run2-data-skill-quality/run2_87_best_layout_recovery_visual_primitive_plan.json"
+    ],
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_90_full_asset_surface_composition",
+      "bad_without_asset_surface_composition"
+    ],
+    "best_internal_arm": "run2_90_full_asset_surface_composition",
+    "outputs": {
+      "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-90-full-vulca/output/run2-90-asset-surface-composition.html",
+      "pptx": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-90-full-vulca/output/ppt-run2-90-full-vulca.pptx",
+      "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+      "four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-90-four-arm-contact-sheet.png"
+    },
+    "viewer_update": {
+      "latest_run_id": "2.90",
+      "viewer_can_reference_new_run": true
+    }
+  },
+  "rendered_pages": [
+    {
+      "role": "cover",
+      "slide_index": 1,
+      "visual_grammar_module": "product_reveal",
+      "source_t_root_cause_layer": "renderer_asset_surface",
+      "asset_surface_composition_id": "asset_surface_composition_2_90_cover",
+      "renderer_primitive_id": "primitive_2_87_product_theater_surface",
+      "renderer_function_name": "drawRun290ProductSurfaceHero",
+      "renderer_repair_directives_applied": [
+        "part_t_visual_quality_evaluation_consumed",
+        "asset_surface_rendered",
+        "composition_detail_added",
+        "wireframe_reduced",
+        "collision_repair_applied",
+        "text_heavy_readability_preserved",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "product_surface_materiality",
+        "visual_density_above_wireframe",
+        "no_floating_labels",
+        "collision_avoidance",
+        "text_integrated_with_surface"
+      ],
+      "asset_surface_rendered": true,
+      "composition_detail_added": true,
+      "wireframe_like": false,
+      "text_integrated_with_surface": true,
+      "collision_avoidance_passed": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 2,
+      "min_visible_label_font_size": 12,
+      "surface_detail_count": 12,
+      "filled_surface_count": 6,
+      "mock_asset_count": 3,
+      "public_polish_claimed": false
+    },
+    {
+      "role": "setup",
+      "slide_index": 2,
+      "visual_grammar_module": "hero_field",
+      "source_t_root_cause_layer": "text_composition",
+      "asset_surface_composition_id": "asset_surface_composition_2_90_setup",
+      "renderer_primitive_id": "primitive_2_87_editorial_text_field",
+      "renderer_function_name": "drawRun290EditorialSurfaceSpread",
+      "renderer_repair_directives_applied": [
+        "part_t_visual_quality_evaluation_consumed",
+        "asset_surface_rendered",
+        "composition_detail_added",
+        "wireframe_reduced",
+        "collision_repair_applied",
+        "text_heavy_readability_preserved",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "product_surface_materiality",
+        "visual_density_above_wireframe",
+        "no_floating_labels",
+        "collision_avoidance",
+        "text_integrated_with_surface"
+      ],
+      "asset_surface_rendered": true,
+      "composition_detail_added": true,
+      "wireframe_like": false,
+      "text_integrated_with_surface": true,
+      "collision_avoidance_passed": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 3,
+      "min_visible_label_font_size": 12,
+      "surface_detail_count": 12,
+      "filled_surface_count": 6,
+      "mock_asset_count": 3,
+      "public_polish_claimed": false
+    },
+    {
+      "role": "contrast",
+      "slide_index": 3,
+      "visual_grammar_module": "before_after_theater",
+      "source_t_root_cause_layer": "layout_engine_reuse",
+      "asset_surface_composition_id": "asset_surface_composition_2_90_contrast",
+      "renderer_primitive_id": "primitive_2_87_before_after_surface",
+      "renderer_function_name": "drawRun290BeforeAfterProductStage",
+      "renderer_repair_directives_applied": [
+        "part_t_visual_quality_evaluation_consumed",
+        "asset_surface_rendered",
+        "composition_detail_added",
+        "wireframe_reduced",
+        "collision_repair_applied",
+        "text_heavy_readability_preserved",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "product_surface_materiality",
+        "visual_density_above_wireframe",
+        "no_floating_labels",
+        "collision_avoidance",
+        "text_integrated_with_surface"
+      ],
+      "asset_surface_rendered": true,
+      "composition_detail_added": true,
+      "wireframe_like": false,
+      "text_integrated_with_surface": true,
+      "collision_avoidance_passed": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 3,
+      "min_visible_label_font_size": 12,
+      "surface_detail_count": 12,
+      "filled_surface_count": 6,
+      "mock_asset_count": 3,
+      "public_polish_claimed": false
+    },
+    {
+      "role": "proof",
+      "slide_index": 4,
+      "visual_grammar_module": "evidence_workspace",
+      "source_t_root_cause_layer": "visual_primitive_fidelity",
+      "asset_surface_composition_id": "asset_surface_composition_2_90_proof",
+      "renderer_primitive_id": "primitive_2_87_modular_matrix_workspace",
+      "renderer_function_name": "drawRun290EvidenceMatrixSurface",
+      "renderer_repair_directives_applied": [
+        "part_t_visual_quality_evaluation_consumed",
+        "asset_surface_rendered",
+        "composition_detail_added",
+        "wireframe_reduced",
+        "collision_repair_applied",
+        "text_heavy_readability_preserved",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "product_surface_materiality",
+        "visual_density_above_wireframe",
+        "no_floating_labels",
+        "collision_avoidance",
+        "text_integrated_with_surface"
+      ],
+      "asset_surface_rendered": true,
+      "composition_detail_added": true,
+      "wireframe_like": false,
+      "text_integrated_with_surface": true,
+      "collision_avoidance_passed": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 3,
+      "min_visible_label_font_size": 12,
+      "surface_detail_count": 12,
+      "filled_surface_count": 6,
+      "mock_asset_count": 3,
+      "public_polish_claimed": false
+    },
+    {
+      "role": "climax",
+      "slide_index": 5,
+      "visual_grammar_module": "product_reveal",
+      "source_t_root_cause_layer": "composition_engine",
+      "asset_surface_composition_id": "asset_surface_composition_2_90_climax",
+      "renderer_primitive_id": "primitive_2_87_overlay_sticker_stack",
+      "renderer_function_name": "drawRun290StickerStageSurface",
+      "renderer_repair_directives_applied": [
+        "part_t_visual_quality_evaluation_consumed",
+        "asset_surface_rendered",
+        "composition_detail_added",
+        "wireframe_reduced",
+        "collision_repair_applied",
+        "text_heavy_readability_preserved",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "product_surface_materiality",
+        "visual_density_above_wireframe",
+        "no_floating_labels",
+        "collision_avoidance",
+        "text_integrated_with_surface"
+      ],
+      "asset_surface_rendered": true,
+      "composition_detail_added": true,
+      "wireframe_like": false,
+      "text_integrated_with_surface": true,
+      "collision_avoidance_passed": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 3,
+      "min_visible_label_font_size": 12,
+      "surface_detail_count": 12,
+      "filled_surface_count": 6,
+      "mock_asset_count": 3,
+      "public_polish_claimed": false
+    },
+    {
+      "role": "close",
+      "slide_index": 6,
+      "visual_grammar_module": "decision_map",
+      "source_t_root_cause_layer": "composition_engine",
+      "asset_surface_composition_id": "asset_surface_composition_2_90_close",
+      "renderer_primitive_id": "primitive_2_87_decision_map_board",
+      "renderer_function_name": "drawRun290DecisionBoardSurface",
+      "renderer_repair_directives_applied": [
+        "part_t_visual_quality_evaluation_consumed",
+        "asset_surface_rendered",
+        "composition_detail_added",
+        "wireframe_reduced",
+        "collision_repair_applied",
+        "text_heavy_readability_preserved",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "anti_regression_gates": [
+        "product_surface_materiality",
+        "visual_density_above_wireframe",
+        "no_floating_labels",
+        "collision_avoidance",
+        "text_integrated_with_surface"
+      ],
+      "asset_surface_rendered": true,
+      "composition_detail_added": true,
+      "wireframe_like": false,
+      "text_integrated_with_surface": true,
+      "collision_avoidance_passed": true,
+      "traceability_on_canvas": false,
+      "floating_label_count": 0,
+      "label_count": 3,
+      "min_visible_label_font_size": 12,
+      "surface_detail_count": 12,
+      "filled_surface_count": 6,
+      "mock_asset_count": 3,
+      "public_polish_claimed": false
+    }
+  ],
+  "renderer_asset_surface_composition_checks": {
+    "pages_with_t_evaluation_consumed": 6,
+    "pages_with_asset_surface_rendered": 6,
+    "pages_with_composition_detail_added": 6,
+    "pages_with_wireframe_reduction": 6,
+    "pages_with_collision_avoidance": 6,
+    "pages_with_traceability_routed_off_canvas": 6,
+    "public_quality_verdict_started": false
+  },
+  "next_required_action": "part_v_visual_quality_evaluation_for_run2_90"
+}

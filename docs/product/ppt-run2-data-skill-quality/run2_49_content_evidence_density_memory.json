@@ -1,0 +1,267 @@
+{
+  "schema_version": "ppt_run2_content_evidence_density_memory.v1",
+  "status": "run2_49_content_evidence_density_memory_ready_public_blocked",
+  "run_id": "2.49",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_audit_run": "2.48",
+  "source_generated_run": "2.47",
+  "source_composition_memory_run": "2.46",
+  "target_layer": "readability_content_density_and_editorial_renderer_repair",
+  "content_evidence_density_records": [
+    {
+      "content_evidence_density_memory_id": "content_evidence_density_2_49_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "required_readability_memory_id": "readability_memory_2_49_cover",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_cover",
+      "source_run2_24_content_memory_id": "content_2_24_cover",
+      "min_specific_business_evidence_objects": 3,
+      "min_inspectable_visual_proof_objects": 2,
+      "min_role_specific_claims": 3,
+      "business_proof_points": [
+        "The user is evaluating Vulca as a design-to-production presentation workflow, not a prompt-only slide generator.",
+        "The first read must show a product-system promise before any trace detail appears.",
+        "The launch story must avoid source-brand imitation while still feeling like a real commercial product reveal."
+      ],
+      "evidence_object_contract": [
+        "generated launch deck hero object",
+        "memory control field",
+        "commercial launch decision badge"
+      ],
+      "inspectable_visual_proof_object_contract": [
+        "inspectable deck thumbnail cluster",
+        "memory-to-output route marker"
+      ],
+      "forbidden_evidence_substitutes": [
+        "generic abstract proof",
+        "empty square grid",
+        "trace-only badge as business evidence",
+        "decorative icon standing in for a product state",
+        "brand-like copied source screenshot"
+      ],
+      "content_density_checks": [
+        "at least three role-specific evidence objects are visible",
+        "at least two proof objects can be inspected without reading notes",
+        "business proof points are paraphrased into native editable text",
+        "evidence objects support the commercial decision rather than internal process reporting"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    },
+    {
+      "content_evidence_density_memory_id": "content_evidence_density_2_49_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "required_readability_memory_id": "readability_memory_2_49_setup",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_setup",
+      "source_run2_24_content_memory_id": "content_2_24_setup",
+      "min_specific_business_evidence_objects": 3,
+      "min_inspectable_visual_proof_objects": 2,
+      "min_role_specific_claims": 3,
+      "business_proof_points": [
+        "The buyer needs repeatable launch-deck quality for public demos, customer briefings, and investor narratives.",
+        "One-shot prompting cannot show which source records, memory, and gates shaped the output.",
+        "The visual surface should show a thin prompt-only path collapsing before the selected product route appears."
+      ],
+      "evidence_object_contract": [
+        "prompt-only failure thumbnail",
+        "selected commercial route board",
+        "risk-to-route connector"
+      ],
+      "inspectable_visual_proof_object_contract": [
+        "small failed deck state",
+        "route decision surface"
+      ],
+      "forbidden_evidence_substitutes": [
+        "generic abstract proof",
+        "empty square grid",
+        "trace-only badge as business evidence",
+        "decorative icon standing in for a product state",
+        "brand-like copied source screenshot"
+      ],
+      "content_density_checks": [
+        "at least three role-specific evidence objects are visible",
+        "at least two proof objects can be inspected without reading notes",
+        "business proof points are paraphrased into native editable text",
+        "evidence objects support the commercial decision rather than internal process reporting"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    },
+    {
+      "content_evidence_density_memory_id": "content_evidence_density_2_49_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "required_readability_memory_id": "readability_memory_2_49_contrast",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_contrast",
+      "source_run2_24_content_memory_id": "content_2_24_contrast",
+      "min_specific_business_evidence_objects": 3,
+      "min_inspectable_visual_proof_objects": 2,
+      "min_role_specific_claims": 3,
+      "business_proof_points": [
+        "The selected usecase creates a concrete commercial decision instead of a generic AI capability claim.",
+        "The deck must show what changed from prompt-only: more case specificity, visible product surface, and explicit release boundary.",
+        "The visual comparison should be asymmetric: weak prompt output stays small while selected workflow output owns the frame."
+      ],
+      "evidence_object_contract": [
+        "before prompt-only slide strip",
+        "after product-state surface",
+        "delta consequence label"
+      ],
+      "inspectable_visual_proof_object_contract": [
+        "before thumbnail",
+        "after inspectable product canvas"
+      ],
+      "forbidden_evidence_substitutes": [
+        "generic abstract proof",
+        "empty square grid",
+        "trace-only badge as business evidence",
+        "decorative icon standing in for a product state",
+        "brand-like copied source screenshot"
+      ],
+      "content_density_checks": [
+        "at least three role-specific evidence objects are visible",
+        "at least two proof objects can be inspected without reading notes",
+        "business proof points are paraphrased into native editable text",
+        "evidence objects support the commercial decision rather than internal process reporting"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    },
+    {
+      "content_evidence_density_memory_id": "content_evidence_density_2_49_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "required_readability_memory_id": "readability_memory_2_49_proof",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_proof",
+      "source_run2_24_content_memory_id": "content_2_24_proof",
+      "min_specific_business_evidence_objects": 3,
+      "min_inspectable_visual_proof_objects": 2,
+      "min_role_specific_claims": 3,
+      "business_proof_points": [
+        "Each slide role receives a headline, support line, business proof points, and visual evidence slots.",
+        "The product surface must show content memory and visual evidence as inspectable inputs, not hidden prompt text.",
+        "The largest area should be an original native product surface that can later be opened and edited in PPT."
+      ],
+      "evidence_object_contract": [
+        "active decision lane",
+        "deck preview proof object",
+        "review state proof object"
+      ],
+      "inspectable_visual_proof_object_contract": [
+        "inspectable decision lane",
+        "editable deck preview state"
+      ],
+      "forbidden_evidence_substitutes": [
+        "generic abstract proof",
+        "empty square grid",
+        "trace-only badge as business evidence",
+        "decorative icon standing in for a product state",
+        "brand-like copied source screenshot"
+      ],
+      "content_density_checks": [
+        "at least three role-specific evidence objects are visible",
+        "at least two proof objects can be inspected without reading notes",
+        "business proof points are paraphrased into native editable text",
+        "evidence objects support the commercial decision rather than internal process reporting"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    },
+    {
+      "content_evidence_density_memory_id": "content_evidence_density_2_49_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "required_readability_memory_id": "readability_memory_2_49_climax",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_climax",
+      "source_run2_24_content_memory_id": "content_2_24_climax",
+      "min_specific_business_evidence_objects": 3,
+      "min_inspectable_visual_proof_objects": 2,
+      "min_role_specific_claims": 3,
+      "business_proof_points": [
+        "The viewer needs one large visible result that demonstrates the platform can structure a real launch deck.",
+        "The hero object must carry business content, product surface, and QA boundary in one composition.",
+        "The slide stays public-blocked until native render, source-boundary, and human visual review pass."
+      ],
+      "evidence_object_contract": [
+        "single generated deck result object",
+        "before-to-memory transformation rail",
+        "release boundary marker"
+      ],
+      "inspectable_visual_proof_object_contract": [
+        "large final deck preview",
+        "small memory/proof rail"
+      ],
+      "forbidden_evidence_substitutes": [
+        "generic abstract proof",
+        "empty square grid",
+        "trace-only badge as business evidence",
+        "decorative icon standing in for a product state",
+        "brand-like copied source screenshot"
+      ],
+      "content_density_checks": [
+        "at least three role-specific evidence objects are visible",
+        "at least two proof objects can be inspected without reading notes",
+        "business proof points are paraphrased into native editable text",
+        "evidence objects support the commercial decision rather than internal process reporting"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    },
+    {
+      "content_evidence_density_memory_id": "content_evidence_density_2_49_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "required_readability_memory_id": "readability_memory_2_49_close",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_close",
+      "source_run2_24_content_memory_id": "content_2_24_close",
+      "min_specific_business_evidence_objects": 3,
+      "min_inspectable_visual_proof_objects": 2,
+      "min_role_specific_claims": 3,
+      "business_proof_points": [
+        "The product is credible only if the generated deck can explain what data, memory, and visual evidence it used.",
+        "The next generated rerun must prove this single-usecase pack changes visible slide content, not only trace fields.",
+        "The public gate remains blocked until the deck passes native render and human release review."
+      ],
+      "evidence_object_contract": [
+        "decision handoff surface",
+        "release readiness wall",
+        "next-run action route"
+      ],
+      "inspectable_visual_proof_object_contract": [
+        "handoff board with visible state",
+        "next action path"
+      ],
+      "forbidden_evidence_substitutes": [
+        "generic abstract proof",
+        "empty square grid",
+        "trace-only badge as business evidence",
+        "decorative icon standing in for a product state",
+        "brand-like copied source screenshot"
+      ],
+      "content_density_checks": [
+        "at least three role-specific evidence objects are visible",
+        "at least two proof objects can be inspected without reading notes",
+        "business proof points are paraphrased into native editable text",
+        "evidence objects support the commercial decision rather than internal process reporting"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    }
+  ]
+}

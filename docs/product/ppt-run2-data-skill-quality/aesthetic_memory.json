@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "moves": [
+    {
+      "id": "aesthetic_cinematic_cover",
+      "source_card_ids": ["card_cinematic_cover", "video_keynote_rhythm"],
+      "aesthetic_move": "cinematic_cover",
+      "trigger": "Use when the deck needs an opening promise before any mechanism or proof detail appears.",
+      "composition_rule": "One focal native-shape or simple-SVG object must occupy at least 35 percent of the slide and anchor the product decision.",
+      "typography_rule": "Use one decisive headline plus no more than two subordinate labels; keep the support copy visibly smaller than the headline.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 1,
+        "max_words": 32
+      },
+      "rhythm_role": "cover",
+      "ppt_primitive": "native focal object with editable headline text",
+      "negative_rules": [
+        "Do not use a dashboard grid on the cover.",
+        "Do not use an abstract promise without a concrete product-decision object.",
+        "Do not flatten the headline into a bitmap."
+      ],
+      "qa_signal": "The audience can name the product promise before reading any explanatory body text."
+    },
+    {
+      "id": "aesthetic_low_density_claim",
+      "source_card_ids": ["card_low_density_claim", "video_transition_pacing"],
+      "aesthetic_move": "low_density_claim",
+      "trigger": "Use when the story needs a selected problem or setup claim with a proof hook.",
+      "composition_rule": "Place one main claim in generous whitespace with one small proof hook and an object or divider that signals the next beat.",
+      "typography_rule": "Keep all claim text editable; build a clear size hierarchy between headline, proof hook, and labels.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 1,
+        "max_words": 45
+      },
+      "rhythm_role": "setup",
+      "ppt_primitive": "editable text hierarchy with native spacer shapes",
+      "negative_rules": [
+        "Do not add multiple equal-weight claims.",
+        "Do not let whitespace become empty positioning without proof.",
+        "Do not repeat the cover scale unchanged."
+      ],
+      "qa_signal": "The slide reads as one chosen claim with a visible proof hook, not a sparse title card."
+    },
+    {
+      "id": "aesthetic_big_object_layout",
+      "source_card_ids": ["card_big_object_layout"],
+      "aesthetic_move": "big_object_layout",
+      "trigger": "Use when a repeatable system identity or mechanism object must carry the story across slides.",
+      "composition_rule": "A dominant editable object must occupy the primary visual field, change state across the sequence, and encode outcome or mechanism.",
+      "typography_rule": "Use labels only where they clarify the object's state change; keep labels secondary to the object.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 2,
+        "max_words": 48
+      },
+      "rhythm_role": "climax",
+      "ppt_primitive": "native shape or editable SVG system object",
+      "negative_rules": [
+        "Do not use the object as decoration.",
+        "Do not replace evidence with a static emblem.",
+        "Do not overdesign the object with uneditable texture."
+      ],
+      "qa_signal": "The object visibly changes state and explains a mechanism or result without becoming a logo."
+    },
+    {
+      "id": "aesthetic_editorial_comparison",
+      "source_card_ids": ["card_editorial_comparison", "video_transition_pacing"],
+      "aesthetic_move": "editorial_comparison",
+      "trigger": "Use when the audience must see why Run 2.0 data changes the deck relative to a weaker state.",
+      "composition_rule": "Show two named states and one highlighted delta; the implication line must be shorter than the state labels combined.",
+      "typography_rule": "Use editable PowerPoint text for state names, delta label, and implication; avoid table-like equal weighting.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 2,
+        "max_words": 60
+      },
+      "rhythm_role": "contrast",
+      "ppt_primitive": "native split layout or editable comparison chart",
+      "negative_rules": [
+        "Do not create a dashboard of metrics.",
+        "Do not add badges or rows that compete with the delta.",
+        "Do not leave the business implication implicit."
+      ],
+      "qa_signal": "A reviewer can identify both states and the single delta in under five seconds."
+    },
+    {
+      "id": "aesthetic_proof_reveal",
+      "source_card_ids": ["card_proof_reveal", "video_keynote_rhythm"],
+      "aesthetic_move": "proof_reveal",
+      "trigger": "Use when the skill mechanism needs to be shown as choices forming over time.",
+      "composition_rule": "Stage source data, compiled memory, generation, QA, and release gate as unequal weighted surfaces rather than equal process boxes.",
+      "typography_rule": "Use short editable labels on each stage; reduce explanatory text as the proof object becomes larger.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 5,
+        "max_words": 68
+      },
+      "rhythm_role": "proof",
+      "ppt_primitive": "editable staged diagram or shape sequence",
+      "negative_rules": [
+        "Do not give every stage equal visual weight.",
+        "Do not turn the reveal into a report grid.",
+        "Do not explain all layers before the sequence appears."
+      ],
+      "qa_signal": "The viewer can see what changed from source cards to gated output before reading the notes."
+    },
+    {
+      "id": "aesthetic_visual_climax",
+      "source_card_ids": ["card_visual_climax", "video_keynote_rhythm"],
+      "aesthetic_move": "visual_climax",
+      "trigger": "Use for the strongest outcome beat after setup, contrast, and proof have established the stakes.",
+      "composition_rule": "Break the prior grid and give the measured outcome with the largest justified delta the largest field, object, or chart area on the slide.",
+      "typography_rule": "Pair the dominant outcome object with one editable verdict line and sparse labels.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 3,
+        "max_words": 52
+      },
+      "rhythm_role": "climax",
+      "ppt_primitive": "editable big-number, chart, or dominant outcome object",
+      "negative_rules": [
+        "Do not repeat the same density as the proof slide.",
+        "Do not make all comparison arms equal size.",
+        "Do not omit the before-and-after proof object."
+      ],
+      "qa_signal": "The slide feels like the deck's peak and makes the strongest measured delta visually largest without pre-claiming the winner."
+    },
+    {
+      "id": "aesthetic_premium_closing",
+      "source_card_ids": ["card_premium_closing", "video_transition_pacing"],
+      "aesthetic_move": "premium_closing",
+      "trigger": "Use when the deck must close on governance, release status, and next action rather than more proof.",
+      "composition_rule": "Use a restrained gate layout with a small native SVG mark, one release status, and one approval or next-action line.",
+      "typography_rule": "Keep closing text editable and calm; support labels must stay secondary to the release gate.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 1,
+        "max_words": 40
+      },
+      "rhythm_role": "close",
+      "ppt_primitive": "editable gate statement with small native SVG mark",
+      "negative_rules": [
+        "Do not end with broad vision copy.",
+        "Do not add another dense proof panel.",
+        "Do not hide the public-release gate."
+      ],
+      "qa_signal": "The final slide leaves a clear approval gate and next action, not another argument."
+    },
+    {
+      "id": "aesthetic_appendix_absorption",
+      "source_card_ids": ["card_appendix_absorption"],
+      "aesthetic_move": "appendix_absorption",
+      "trigger": "Use when proof detail threatens to crowd a main-story slide.",
+      "composition_rule": "Move dense evidence into editable appendix slides, speaker notes, or linked native tables while keeping the six-slide path low-density.",
+      "typography_rule": "Main-slide text stays short; detailed evidence text remains editable in notes or appendix material.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 2,
+        "max_words": 55
+      },
+      "rhythm_role": "relief",
+      "ppt_primitive": "appendix route, speaker notes, or linked native table",
+      "negative_rules": [
+        "Do not compress appendix detail into smaller visible text.",
+        "Do not promote every proof note into the main body.",
+        "Do not break the six-slide rhythm to show audit detail."
+      ],
+      "qa_signal": "Main slides remain scan-friendly while audit detail is still findable and editable."
+    }
+  ]
+}

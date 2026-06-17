@@ -1,0 +1,349 @@
+{
+  "schema_version": "ppt_run2_content_visual_asset_quality_audit.v1",
+  "run_id": "2.42",
+  "status": "run2_42_content_visual_asset_quality_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.41",
+  "source_prior_generated_run": "2.40",
+  "source_data_workflow_run": "2.38",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "issue_categories": [
+    "content_visual_asset_thickness_closure",
+    "visual_asset_semantic_realism",
+    "editorial_composition_strength",
+    "typography_hierarchy",
+    "public_video_readiness"
+  ],
+  "input_chain": {
+    "run2_41_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-41-full-vulca/trace_manifest.json",
+    "run2_41_bad_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-41-bad-thin-content-visual-asset-compiler/trace_manifest.json",
+    "run2_41_rerun_result": "docs/product/ppt-run2-data-skill-quality/results/run2_41_content_visual_asset_compiler_rerun_result.json",
+    "run2_40_rerun_result": "docs/product/ppt-run2-data-skill-quality/results/run2_40_visual_compiler_rerun_result.json",
+    "run2_41_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-41-full-vulca/preview/contact-sheet.png",
+    "run2_41_four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-41-four-arm-contact-sheet.png",
+    "run2_full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "source_rerun_verdict": "content_visual_asset_compiler_thickens_public_surface_without_database_or_workflow_expansion",
+    "source_prior_rerun_status": "run2_40_visual_compiler_rerun_public_blocked"
+  },
+  "no_new_deck_proof": {
+    "presentations_dir": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations",
+    "forbidden_run2_42_output_glob": "*2-42*",
+    "matched_run2_42_outputs": [],
+    "new_pptx_created": false,
+    "status": "pass"
+  },
+  "trace_closure": {
+    "full_arm": {
+      "arm_id": "run2_41_full_content_visual_asset_compiler",
+      "slide_count": 6,
+      "content_visual_asset_compiler_applied_slides": 6,
+      "visible_business_detail_min5_slides": 6,
+      "visual_asset_surface_min3_slides": 6,
+      "editorial_scene_depth_min07_slides": 6,
+      "machinery_hidden_slides": 6
+    },
+    "bad_control": {
+      "arm_id": "bad_thin_content_visual_asset_compiler",
+      "slide_count": 6,
+      "thin_content_control_slides": 6,
+      "machinery_leak_slides": 0
+    }
+  },
+  "visual_quality_assessment": {
+    "content_visual_asset_gate": "pass_internal_only",
+    "same_database_control_gate": "pass_internal_only",
+    "design_quality_gate": "blocked",
+    "public_video_readiness": "blocked",
+    "content_visual_asset_thickness_delta_from_bad_control": "proven",
+    "root_cause_primary": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+    "root_cause_secondary": [
+      "Run 2.41 added visible business details and named visual asset surfaces, but the surfaces are still native schematic representations.",
+      "The full arm proves data-to-content compilation, not real product imagery, cinematic scene construction, or mature typography hierarchy.",
+      "The contact sheet reads richer than bad control, but still lacks the public-video-grade visual specificity expected from high-end presentation references."
+    ],
+    "top_next_layer_to_thicken": "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy",
+    "why_user_still_sees_simple_design": "Run 2.41 increases information density and hides machinery, but most visual assets remain abstract native shapes. The next layer must turn each named asset surface into a usecase-specific semantic object with stronger editorial composition and typography hierarchy."
+  },
+  "role_records": [
+    {
+      "slide_id": "slide_01",
+      "role": "cover",
+      "title": "A launch deck should feel like a market scene.",
+      "run2_41_code_module_ids": [
+        "drawRun241MarketScenePoster"
+      ],
+      "run2_41_data_consumed": true,
+      "content_visual_asset_thickness_passed": true,
+      "bad_control_boundary_passed": true,
+      "public_video_grade": false,
+      "full_arm_metrics": {
+        "visible_business_detail_count": 5,
+        "visual_asset_surface_count": 3,
+        "editorial_scene_depth_score": 0.78,
+        "text_density_tier": "rich",
+        "presentation_surface_weight": 0.72,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "market poster",
+          "generated deck object",
+          "source-safe benchmark cue"
+        ]
+      },
+      "bad_control_metrics": {
+        "visible_business_detail_count": 2,
+        "visual_asset_surface_count": 1,
+        "editorial_scene_depth_score": 0.34,
+        "text_density_tier": "thin",
+        "presentation_surface_weight": 0.38,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "generic placeholder"
+        ]
+      },
+      "aesthetic_failure_reasons": [
+        "visual_asset_surface_is_named_but_not_semantically_rendered_enough",
+        "native_shapes_represent_assets_but_do_not_yet_feel_like_real_product_or_scene_evidence",
+        "typography_hierarchy_is_functional_but_not_public_video_grade",
+        "editorial_composition_has_more_content_but_still_reads_as_a_proof_board"
+      ],
+      "recommended_next_action": "convert named surfaces into usecase-specific semantic visual assets, then bind them to editorial composition and typography hierarchy gates"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "setup",
+      "title": "The failure is thin context, not missing workflow.",
+      "run2_41_code_module_ids": [
+        "drawRun241FailureStoryboard"
+      ],
+      "run2_41_data_consumed": true,
+      "content_visual_asset_thickness_passed": true,
+      "bad_control_boundary_passed": true,
+      "public_video_grade": false,
+      "full_arm_metrics": {
+        "visible_business_detail_count": 5,
+        "visual_asset_surface_count": 3,
+        "editorial_scene_depth_score": 0.78,
+        "text_density_tier": "rich",
+        "presentation_surface_weight": 0.72,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "failure storyboard",
+          "collapsed prompt output",
+          "selected route scene"
+        ]
+      },
+      "bad_control_metrics": {
+        "visible_business_detail_count": 2,
+        "visual_asset_surface_count": 1,
+        "editorial_scene_depth_score": 0.34,
+        "text_density_tier": "thin",
+        "presentation_surface_weight": 0.38,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "generic placeholder"
+        ]
+      },
+      "aesthetic_failure_reasons": [
+        "visual_asset_surface_is_named_but_not_semantically_rendered_enough",
+        "native_shapes_represent_assets_but_do_not_yet_feel_like_real_product_or_scene_evidence",
+        "typography_hierarchy_is_functional_but_not_public_video_grade",
+        "editorial_composition_has_more_content_but_still_reads_as_a_proof_board"
+      ],
+      "recommended_next_action": "convert named surfaces into usecase-specific semantic visual assets, then bind them to editorial composition and typography hierarchy gates"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "contrast",
+      "title": "Same data, thicker surface.",
+      "run2_41_code_module_ids": [
+        "drawRun241BeforeAfterBusinessCase"
+      ],
+      "run2_41_data_consumed": true,
+      "content_visual_asset_thickness_passed": true,
+      "bad_control_boundary_passed": true,
+      "public_video_grade": false,
+      "full_arm_metrics": {
+        "visible_business_detail_count": 5,
+        "visual_asset_surface_count": 3,
+        "editorial_scene_depth_score": 0.78,
+        "text_density_tier": "rich",
+        "presentation_surface_weight": 0.74,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "before thumbnail",
+          "after launch surface",
+          "business delta strip"
+        ]
+      },
+      "bad_control_metrics": {
+        "visible_business_detail_count": 2,
+        "visual_asset_surface_count": 1,
+        "editorial_scene_depth_score": 0.34,
+        "text_density_tier": "thin",
+        "presentation_surface_weight": 0.38,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "generic placeholder"
+        ]
+      },
+      "aesthetic_failure_reasons": [
+        "visual_asset_surface_is_named_but_not_semantically_rendered_enough",
+        "native_shapes_represent_assets_but_do_not_yet_feel_like_real_product_or_scene_evidence",
+        "typography_hierarchy_is_functional_but_not_public_video_grade",
+        "editorial_composition_has_more_content_but_still_reads_as_a_proof_board"
+      ],
+      "recommended_next_action": "convert named surfaces into usecase-specific semantic visual assets, then bind them to editorial composition and typography hierarchy gates"
+    },
+    {
+      "slide_id": "slide_04",
+      "role": "proof",
+      "title": "The proof should look like product evidence.",
+      "run2_41_code_module_ids": [
+        "drawRun241ProductUiEvidenceScene"
+      ],
+      "run2_41_data_consumed": true,
+      "content_visual_asset_thickness_passed": true,
+      "bad_control_boundary_passed": true,
+      "public_video_grade": false,
+      "full_arm_metrics": {
+        "visible_business_detail_count": 5,
+        "visual_asset_surface_count": 3,
+        "editorial_scene_depth_score": 0.78,
+        "text_density_tier": "rich",
+        "presentation_surface_weight": 0.72,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "product UI evidence",
+          "editable deck preview",
+          "review status badge"
+        ]
+      },
+      "bad_control_metrics": {
+        "visible_business_detail_count": 2,
+        "visual_asset_surface_count": 1,
+        "editorial_scene_depth_score": 0.34,
+        "text_density_tier": "thin",
+        "presentation_surface_weight": 0.38,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "generic placeholder"
+        ]
+      },
+      "aesthetic_failure_reasons": [
+        "visual_asset_surface_is_named_but_not_semantically_rendered_enough",
+        "native_shapes_represent_assets_but_do_not_yet_feel_like_real_product_or_scene_evidence",
+        "typography_hierarchy_is_functional_but_not_public_video_grade",
+        "editorial_composition_has_more_content_but_still_reads_as_a_proof_board"
+      ],
+      "recommended_next_action": "convert named surfaces into usecase-specific semantic visual assets, then bind them to editorial composition and typography hierarchy gates"
+    },
+    {
+      "slide_id": "slide_05",
+      "role": "climax",
+      "title": "The climax is an output moment.",
+      "run2_41_code_module_ids": [
+        "drawRun241CinematicLaunchMoment"
+      ],
+      "run2_41_data_consumed": true,
+      "content_visual_asset_thickness_passed": true,
+      "bad_control_boundary_passed": true,
+      "public_video_grade": false,
+      "full_arm_metrics": {
+        "visible_business_detail_count": 5,
+        "visual_asset_surface_count": 3,
+        "editorial_scene_depth_score": 0.78,
+        "text_density_tier": "rich",
+        "presentation_surface_weight": 0.834,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "cinematic output stage",
+          "launch asset surface",
+          "audience proof rail"
+        ]
+      },
+      "bad_control_metrics": {
+        "visible_business_detail_count": 2,
+        "visual_asset_surface_count": 1,
+        "editorial_scene_depth_score": 0.34,
+        "text_density_tier": "thin",
+        "presentation_surface_weight": 0.38,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "generic placeholder"
+        ]
+      },
+      "aesthetic_failure_reasons": [
+        "visual_asset_surface_is_named_but_not_semantically_rendered_enough",
+        "native_shapes_represent_assets_but_do_not_yet_feel_like_real_product_or_scene_evidence",
+        "typography_hierarchy_is_functional_but_not_public_video_grade",
+        "editorial_composition_has_more_content_but_still_reads_as_a_proof_board",
+        "climax_object_is_clear_but_not_cinematic_enough_for_public_video"
+      ],
+      "recommended_next_action": "convert named surfaces into usecase-specific semantic visual assets, then bind them to editorial composition and typography hierarchy gates"
+    },
+    {
+      "slide_id": "slide_06",
+      "role": "close",
+      "title": "The review room judges launch usefulness.",
+      "run2_41_code_module_ids": [
+        "drawRun241ReviewDecisionRoom"
+      ],
+      "run2_41_data_consumed": true,
+      "content_visual_asset_thickness_passed": true,
+      "bad_control_boundary_passed": true,
+      "public_video_grade": false,
+      "full_arm_metrics": {
+        "visible_business_detail_count": 5,
+        "visual_asset_surface_count": 3,
+        "editorial_scene_depth_score": 0.78,
+        "text_density_tier": "rich",
+        "presentation_surface_weight": 0.72,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "review decision table",
+          "release readiness wall",
+          "next-run action surface"
+        ]
+      },
+      "bad_control_metrics": {
+        "visible_business_detail_count": 2,
+        "visual_asset_surface_count": 1,
+        "editorial_scene_depth_score": 0.34,
+        "text_density_tier": "thin",
+        "presentation_surface_weight": 0.38,
+        "trace_panel_visible": false,
+        "gate_ribbon_visible": false,
+        "visual_asset_surface_types": [
+          "generic placeholder"
+        ]
+      },
+      "aesthetic_failure_reasons": [
+        "visual_asset_surface_is_named_but_not_semantically_rendered_enough",
+        "native_shapes_represent_assets_but_do_not_yet_feel_like_real_product_or_scene_evidence",
+        "typography_hierarchy_is_functional_but_not_public_video_grade",
+        "editorial_composition_has_more_content_but_still_reads_as_a_proof_board"
+      ],
+      "recommended_next_action": "convert named surfaces into usecase-specific semantic visual assets, then bind them to editorial composition and typography hierarchy gates"
+    }
+  ],
+  "audit_method": {
+    "same_database_rule": "Run 2.42 only reads Run 2.41, Run 2.40, and trace artifacts; it does not create a new database or workflow pack.",
+    "thickness_rule": "full slides pass when visible business details >=5, visual asset surfaces >=3, scene depth >=0.7, and machinery is hidden",
+    "bad_control_rule": "bad control must use the same database boundary, hide machinery, and remain thin with <=2 business details and <=1 visual asset surface",
+    "public_quality_boundary": "content thickness passing does not imply public-video-grade design quality"
+  },
+  "next_required_action": "build_run2_43_visual_asset_semantics_editorial_composition_workflow",
+  "release_boundary": "public_blocked_until_run2_43_data_workflow_then_generated_rerun_human_visual_review_native_render_review_and_motion_review"
+}

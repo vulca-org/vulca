@@ -1,0 +1,164 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2.59",
+  "status": "run2_59_content_to_layout_selector_ready_public_blocked",
+  "selection_policy": "role + content burden + proof object type + rhythm position selects layout module before native PPT drawing",
+  "content_to_layout_selection_records": [
+    {
+      "role": "cover",
+      "content_contract_id": "content_contract_2_59_cover",
+      "selected_layout_module_id": "module_2_15_editorial_cover_field",
+      "content_burden_level": "medium",
+      "proof_object_type": "input_to_output_product_surface",
+      "public_visible_word_budget": 54,
+      "capacity_fit_status": "pass_after_trace_separation",
+      "selection_reason": "Cover needs one memorable product claim and one asymmetric proof object; raw trace details move to viewer.",
+      "fallback_route": "dense_evidence_compression_if_public_claim_exceeds_two_title_lines",
+      "over_capacity_behavior": {
+        "trigger": "public_visible_word_budget_exceeds_selected_layout_capacity",
+        "required_action": "switch_to_dense_evidence_compression",
+        "run2_60_trace_must_record_fallback": true
+      },
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    },
+    {
+      "role": "setup",
+      "content_contract_id": "content_contract_2_59_setup",
+      "selected_layout_module_id": "module_2_15_product_theater_stage",
+      "content_burden_level": "high",
+      "proof_object_type": "source_to_memory_pipeline",
+      "public_visible_word_budget": 68,
+      "capacity_fit_status": "pass_after_trace_separation",
+      "selection_reason": "The setup slide should stage the transformation pipeline, not enumerate source and gate records.",
+      "fallback_route": "move_source_inventory_to_viewer_before_native_rendering",
+      "over_capacity_behavior": {
+        "trigger": "public_visible_word_budget_exceeds_selected_layout_capacity",
+        "required_action": "move_trace_only_details_to_viewer",
+        "run2_60_trace_must_record_fallback": true
+      },
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    },
+    {
+      "role": "contrast",
+      "content_contract_id": "content_contract_2_59_contrast",
+      "selected_layout_module_id": "module_2_15_before_after_route",
+      "content_burden_level": "high",
+      "proof_object_type": "bad_control_route_turn_point",
+      "public_visible_word_budget": 70,
+      "capacity_fit_status": "pass_after_trace_separation",
+      "selection_reason": "The comparison should become a route with a visible missing-data turn point, not another competitor table.",
+      "fallback_route": "show_three_evidence_chips_and_move_competitor_matrix_to_viewer",
+      "over_capacity_behavior": {
+        "trigger": "public_visible_word_budget_exceeds_selected_layout_capacity",
+        "required_action": "move_trace_only_details_to_viewer",
+        "run2_60_trace_must_record_fallback": true
+      },
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    },
+    {
+      "role": "proof",
+      "content_contract_id": "content_contract_2_59_proof",
+      "selected_layout_module_id": "module_2_15_dense_evidence_compression",
+      "content_burden_level": "high",
+      "proof_object_type": "trace_inspection_board",
+      "public_visible_word_budget": 72,
+      "capacity_fit_status": "requires_dense_evidence_compression",
+      "selection_reason": "Proof needs more density than the public slides, but raw trace enumeration must still be compressed into grouped proof chips.",
+      "fallback_route": "split_trace_detail_to_viewer_if_more_than_four_evidence_chips",
+      "over_capacity_behavior": {
+        "trigger": "public_visible_word_budget_exceeds_selected_layout_capacity",
+        "required_action": "split_content_before_generation",
+        "run2_60_trace_must_record_fallback": true
+      },
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    },
+    {
+      "role": "climax",
+      "content_contract_id": "content_contract_2_59_climax",
+      "selected_layout_module_id": "module_2_15_metric_reveal_stage",
+      "content_burden_level": "climax",
+      "proof_object_type": "operating_loop_hero_object",
+      "public_visible_word_budget": 50,
+      "capacity_fit_status": "pass_after_trace_separation",
+      "selection_reason": "The climax must lower text density and let the product operating loop become the hero object.",
+      "fallback_route": "remove_raw_loop_node_descriptions_from_public_surface",
+      "over_capacity_behavior": {
+        "trigger": "public_visible_word_budget_exceeds_selected_layout_capacity",
+        "required_action": "move_trace_only_details_to_viewer",
+        "run2_60_trace_must_record_fallback": true
+      },
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    },
+    {
+      "role": "close",
+      "content_contract_id": "content_contract_2_59_close",
+      "selected_layout_module_id": "module_2_15_quiet_release_handoff",
+      "content_burden_level": "medium",
+      "proof_object_type": "release_handoff_marker",
+      "public_visible_word_budget": 48,
+      "capacity_fit_status": "pass_after_trace_separation",
+      "selection_reason": "The close should not become a release checklist; it should calmly hand off to Run 2.60 and public gates.",
+      "fallback_route": "externalize_release_gate_details_to_viewer",
+      "over_capacity_behavior": {
+        "trigger": "public_visible_word_budget_exceeds_selected_layout_capacity",
+        "required_action": "move_trace_only_details_to_viewer",
+        "run2_60_trace_must_record_fallback": true
+      },
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    }
+  ]
+}

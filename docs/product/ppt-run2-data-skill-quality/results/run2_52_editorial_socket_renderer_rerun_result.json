@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "run_id": "2.52",
+  "status": "run2_52_editorial_socket_renderer_rerun_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_repair_run_id": "2.51",
+  "source_generated_run_id": "2.50",
+  "database_expansion": false,
+  "workflow_expansion": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "input_chain": {
+    "run2_51_result": "docs/product/ppt-run2-data-skill-quality/results/run2_51_editorial_shape_text_repair_result.json",
+    "run2_51_editorial_copy_memory": "docs/product/ppt-run2-data-skill-quality/run2_51_editorial_copy_memory.json",
+    "run2_51_shape_text_socket_memory": "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+    "run2_51_renderer_archetype_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_51_renderer_archetype_workflow_gates.json",
+    "run2_50_result": "docs/product/ppt-run2-data-skill-quality/results/run2_50_readability_density_renderer_rerun_result.json",
+    "run2_50_full_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-50-full-vulca/trace_manifest.json",
+    "run2_50_bad_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-50-bad-missing-run2-49-repair-pack/trace_manifest.json",
+    "commercial_usecase_bank": "docs/product/ppt-run2-data-skill-quality/commercial_usecase_bank.json",
+    "sources": "docs/product/ppt-run2-data-skill-quality/sources.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_52_editorial_socket_renderer_arms.mjs",
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_52_full_editorial_socket_renderer",
+      "bad_run2_51_missing_editorial_socket_pack"
+    ],
+    "best_internal_arm": "run2_52_full_editorial_socket_renderer",
+    "best_internal_arm_verdict": "Run 2.51 editorial copy, shape text sockets, and renderer archetype workflow gates drive native PPT drawing",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-52-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "quality_delta": {
+    "target_layer": "editorial_copy_shape_text_socket_and_renderer_archetype_binding",
+    "source_data_status": "run2_51_editorial_socket_pack_consumed_before_native_ppt_drawing",
+    "full_slides_with_run2_51_editorial_copy_memory_id": 6,
+    "full_slides_with_run2_51_shape_text_socket_memory_id": 6,
+    "full_slides_with_run2_51_renderer_archetype_gate_id": 6,
+    "full_slides_with_socket_bound_public_text": 6,
+    "full_slides_without_forbidden_surface_terms": 6,
+    "bad_control_slides_without_run2_51_pack": 6,
+    "repair_modules": [
+      "drawRun252EditorialSocketScene"
+    ]
+  },
+  "control_boundary": {
+    "bad_run2_51_missing_editorial_socket_pack": "may see Run 2.50 generated result and traces, but must not bind Run 2.51 editorial copy, shape text socket, or renderer archetype gate ids",
+    "prompt_only": "commercial_case_only_no_run2_51_editorial_socket_pack",
+    "run1_5_skill": "prior_baseline_no_run2_51_editorial_socket_pack"
+  },
+  "visual_quality_boundary": "Run 2.51 editorial socket consumption proof only; public video-grade aesthetics, native motion, and human release approval remain blocked",
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "release_boundary": "public_blocked_until_visual_human_review_native_render_review_motion_review_source_boundary_review_and_human_approval",
+  "next_required_action": "audit_run2_52_editorial_socket_renderer_against_visible_content_quality_then_continue_same_five_layers"
+}

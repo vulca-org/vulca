@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "rerun": {
+    "status": "completed",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-2-four-arm-contact-sheet.png",
+    "delivery_gate": "internal-demo-ok-public-blocked",
+    "best_internal_arm": "run2_2_full_skill",
+    "best_internal_arm_verdict": "visible_learning_targets_present_but_not_public_video_grade"
+  },
+  "visible_learning": {
+    "before_after_delta": "schematic_visible_not_high_fidelity",
+    "slide_mini_preview": "schematic_visible_not_high_fidelity",
+    "audio_rhythm_budget": "traceable_conceptually_not_render_verified",
+    "transcript_headline_compression": "traceable_conceptually_not_render_verified",
+    "public_demo_climax": "target_present_but_placeholder_like"
+  },
+  "next_required_action": "turn_visual_targets_into_real_native_slide_thumbnails_and_rerun",
+  "release_gate": "public_blocked_until_native_render_human_approval_and_public_demo_visual_pass"
+}

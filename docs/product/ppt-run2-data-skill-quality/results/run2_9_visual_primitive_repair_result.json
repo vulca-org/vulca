@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "run2_9_visual_primitive_repair_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "result_type": "data_memory_workflow_repair_before_rerun",
+  "created_on": "2026-06-02",
+  "reason": "Run 2.8 proved executable design memory and trace truthfulness, but the visual output still read as boxes, cards, equal panels, and engineering-report composition.",
+  "new_artifacts": [
+    "run2_9_visual_primitive_repair.json",
+    "run2_9_executable_visual_modules.json",
+    "run2_9_visual_gate_matrix.json"
+  ],
+  "visual_primitive_repairs": [
+    "primitive_2_9_editorial_spread_composition",
+    "primitive_2_9_product_surface_depth",
+    "primitive_2_9_motion_storyboard_sequence",
+    "primitive_2_9_climax_stage_composition",
+    "primitive_2_9_typographic_field_composition"
+  ],
+  "executable_visual_modules": [
+    "module_2_9_editorial_spread",
+    "module_2_9_layered_product_surface",
+    "module_2_9_motion_storyboard",
+    "module_2_9_climax_stage",
+    "module_2_9_typographic_field"
+  ],
+  "trace_fields_added": [
+    "run2_9_visual_primitive_ids",
+    "run2_9_visual_module_ids",
+    "run2_9_gate_matrix_ids",
+    "run2_9_code_module_ids",
+    "run2_9_boxiness_failure_probe",
+    "run2_9_visual_delta_from_run2_8"
+  ],
+  "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+  "verification": {
+    "focused_run2_9_tests": "passed",
+    "full_relevant_pytest": "120 passed",
+    "case_pack_validator": "passed",
+    "html_static_check": "passed",
+    "browser_data_skill_check": "passed",
+    "browser_console_errors": 0,
+    "gemini_diff_review": "pass"
+  },
+  "release_boundary": "public_blocked_until_native_generator_rerun_render_trace_and_human_review",
+  "next_step": "Implement a Run 2.9 generator rerun that calls the drawRun29 visual modules and compares four arms against Run 2.8 boxiness probes."
+}

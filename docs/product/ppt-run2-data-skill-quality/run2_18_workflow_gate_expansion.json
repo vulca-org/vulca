@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "status": "run2_18_workflow_gate_expansion_ready",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "derived_from": [
+    "run2_18_multimodal_evidence_expansion.json",
+    "run2_18_design_memory_expansion.json"
+  ],
+  "gate_policy": "required_before_next_four_arm_rerun",
+  "run_scope": {
+    "run_id": "2.18",
+    "primary_quality_target": "workflow_selection_thickness",
+    "next_rerun_policy": "next rerun must record selected evidence, memory, gates, and bad-control boundaries before native PPT code"
+  },
+  "gates": [
+    {
+      "gate_id": "gate_2_18_usecase_source_selection",
+      "required_before_next_rerun": true,
+      "evidence_record_ids": [
+        "thick_2_18_figma_launch_identity_system",
+        "thick_2_18_stripe_keynote_business_demo",
+        "thick_2_18_duarte_slide_design_method"
+      ],
+      "memory_ids": [
+        "memory_2_18_launch_identity_field",
+        "memory_2_18_demo_sequence_route",
+        "memory_2_18_typographic_whitespace_system"
+      ],
+      "selection_rules": [
+        "Choose exactly one primary commercial usecase before generating any arm.",
+        "Bind each selected slide role to at least one evidence record and one memory id.",
+        "Record why non-selected evidence was held back."
+      ],
+      "rejection_rules": [
+        "Reject generation when the prompt names a usecase but no source-backed evidence record is selected.",
+        "Reject a rerun that advances to visual polish before data, memory, and gate ids are recorded."
+      ],
+      "trace_fields": [
+        "run2_18_commercial_usecase_id",
+        "run2_18_selected_evidence_ids",
+        "run2_18_selected_memory_ids",
+        "run2_18_source_holdback_reason"
+      ],
+      "qa_probe": "Trace manifest must show source-to-memory-to-slide binding for every slide role.",
+      "bad_control_probe": "bad control should fail when it receives the same broad usecase but cannot name selected evidence and memory ids.",
+      "release_boundary": "public_blocked until source selection is human-reviewed"
+    },
+    {
+      "gate_id": "gate_2_18_identity_field_selection",
+      "required_before_next_rerun": true,
+      "evidence_record_ids": [
+        "thick_2_18_figma_launch_identity_system",
+        "thick_2_18_duarte_slide_design_method"
+      ],
+      "memory_ids": [
+        "memory_2_18_launch_identity_field",
+        "memory_2_18_typographic_whitespace_system"
+      ],
+      "selection_rules": [
+        "Select this gate for cover and setup slides with broad launch claims.",
+        "Require one primary sentence, one generated motif, and one source-boundary note.",
+        "Hide trace details from the public surface unless required by QA."
+      ],
+      "rejection_rules": [
+        "Reject equal feature grids on cover slides.",
+        "Reject copied brand signals or visible workflow debug labels as the main composition."
+      ],
+      "trace_fields": [
+        "run2_18_identity_field_gate_id",
+        "run2_18_cover_claim",
+        "run2_18_generated_motif_description",
+        "run2_18_source_brand_sanitization"
+      ],
+      "qa_probe": "Thumbnail must read one launch promise before any secondary label.",
+      "bad_control_probe": "bad control must fail when it recolors boxes or increases text size without a single identity field.",
+      "release_boundary": "public_blocked until cover thumbnail and brand-boundary review pass"
+    },
+    {
+      "gate_id": "gate_2_18_product_surface_theater_selection",
+      "required_before_next_rerun": true,
+      "evidence_record_ids": [
+        "thick_2_18_figma_design_to_production_surface",
+        "thick_2_18_apple_liquid_glass_motion_surface"
+      ],
+      "memory_ids": [
+        "memory_2_18_product_surface_theater",
+        "memory_2_18_material_depth_motion"
+      ],
+      "selection_rules": [
+        "Select this gate for proof slides where product reality must be visible.",
+        "Require editable native surface states, not raster surfaces.",
+        "Route method and trace labels to a secondary rail."
+      ],
+      "rejection_rules": [
+        "Reject full-slide raster proofs.",
+        "Reject decorative depth effects when the product state is not inspectable."
+      ],
+      "trace_fields": [
+        "run2_18_product_surface_gate_id",
+        "run2_18_editable_surface_state_ids",
+        "run2_18_surface_originality_probe",
+        "run2_18_secondary_rail_policy"
+      ],
+      "qa_probe": "Object inventory must show native editable product-surface primitives and a readable proof object.",
+      "bad_control_probe": "bad control should fail if it uses copied UI, a generic dashboard, or decorative layers without proof.",
+      "release_boundary": "public_blocked until editable-object and source-boundary QA pass"
+    },
+    {
+      "gate_id": "gate_2_18_demo_sequence_selection",
+      "required_before_next_rerun": true,
+      "evidence_record_ids": [
+        "thick_2_18_stripe_keynote_business_demo",
+        "thick_2_18_google_cloud_ai_platform_climax",
+        "thick_2_18_apple_liquid_glass_motion_surface"
+      ],
+      "memory_ids": [
+        "memory_2_18_demo_sequence_route",
+        "memory_2_18_material_depth_motion"
+      ],
+      "selection_rules": [
+        "Select this gate when a slide needs command, route, progress, and resolved state.",
+        "Require ordered reveal metadata even if the editable PPT is static.",
+        "Require reduced-motion fallback when a motion renderer is used later."
+      ],
+      "rejection_rules": [
+        "Reject unordered feature lists.",
+        "Reject equal demo cards without a resolved state.",
+        "Reject motion claims without fallback and trace."
+      ],
+      "trace_fields": [
+        "run2_18_demo_sequence_gate_id",
+        "run2_18_sequence_state_ids",
+        "run2_18_reveal_order",
+        "run2_18_reduced_motion_fallback"
+      ],
+      "qa_probe": "Rendered slide or motion proof must show ordered state progression and a dominant resolved state.",
+      "bad_control_probe": "bad control should fail when it describes demo content but cannot produce a sequence route.",
+      "release_boundary": "public_blocked until motion proof, source mapping, and human review pass"
+    },
+    {
+      "gate_id": "gate_2_18_metric_climax_selection",
+      "required_before_next_rerun": true,
+      "evidence_record_ids": [
+        "thick_2_18_stripe_metric_climax",
+        "thick_2_18_google_cloud_ai_platform_climax"
+      ],
+      "memory_ids": [
+        "memory_2_18_metric_climax_object"
+      ],
+      "selection_rules": [
+        "Select this gate for the climax slide only.",
+        "Require exactly one primary outcome object.",
+        "Route caveats and secondary evidence to trace, notes, or a quiet rail."
+      ],
+      "rejection_rules": [
+        "Reject unverified metrics.",
+        "Reject several equal primary numbers.",
+        "Reject climax slides that repeat setup/proof grid structure."
+      ],
+      "trace_fields": [
+        "run2_18_metric_climax_gate_id",
+        "run2_18_metric_verification_status",
+        "run2_18_primary_outcome_object",
+        "run2_18_routed_caveat_ids"
+      ],
+      "qa_probe": "Climax first read must be one outcome object and no unverified numeric claim.",
+      "bad_control_probe": "bad control should fail when it makes the climax a dense metrics table or invents source numbers.",
+      "release_boundary": "public_blocked until metric verification and human approval pass"
+    },
+    {
+      "gate_id": "gate_2_18_density_and_anti_copy_selection",
+      "required_before_next_rerun": true,
+      "evidence_record_ids": [
+        "thick_2_18_duarte_slide_design_method",
+        "thick_2_18_whitespace_powerpoint_method",
+        "thick_2_18_figma_launch_identity_system"
+      ],
+      "memory_ids": [
+        "memory_2_18_typographic_whitespace_system",
+        "memory_2_18_launch_identity_field"
+      ],
+      "selection_rules": [
+        "Run this gate for every slide after role-specific selection.",
+        "Require macro zone, margin, gutter, and visible-word budget before drawing.",
+        "Require anti-copy boundary text for every evidence-derived slide."
+      ],
+      "rejection_rules": [
+        "Reject slides that exceed visible-word budget without routing detail.",
+        "Reject copied tutorial/example phrasing, raw transcripts, frames, or source layouts.",
+        "Reject color-only aesthetic changes without spacing tokens."
+      ],
+      "trace_fields": [
+        "run2_18_density_gate_id",
+        "run2_18_spacing_token_set",
+        "run2_18_visible_word_count",
+        "run2_18_anti_copy_boundary"
+      ],
+      "qa_probe": "Layout JSON and thumbnail review must show protected whitespace and no raw source material.",
+      "bad_control_probe": "bad control should fail if it can cite tutorials but cannot satisfy spacing tokens, word budgets, and anti-copy checks.",
+      "release_boundary": "public_blocked until layout geometry QA and anti-copy review pass"
+    }
+  ]
+}

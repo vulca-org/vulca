@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "status": "run2_6r_visual_repair_policy_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "default_visual_direction": "light_first_editorial_graphite_with_vivid_proof_color",
+  "repairs": [
+    {
+      "id": "repair_editorial_typography_system",
+      "target_slide_roles": ["cover", "setup", "contrast", "proof", "climax", "close"],
+      "source_policy_ids": ["type_system_editorial_product_sans", "workflow_decision_policy.json"],
+      "typography_delta": "Replace the inherited Run 2.5 title/body scale with stronger editorial contrast, shorter subtitles, and marginal trace notes.",
+      "spacing_delta": "Use Run 2.5 as the negative baseline: remove repeated same-position headings and give each slide role a distinct focal/support/provenance zone.",
+      "composition_delta": "Keep all major text and proof objects native editable PPT shapes while reducing report-like label density.",
+      "theme_delta": "Pair graphite text with light editorial canvas and one vivid proof color; avoid forest-green and source-brand color mimicry.",
+      "must_differ_from": ["ppt-run2-5-full-vulca", "ppt-run2-6-full-vulca"],
+      "native_ppt_requirements": ["native editable text hierarchy", "native shape labels", "no full-slide rasterized text"],
+      "qa_probe": "In the contact sheet, headline hierarchy must be visibly different from Run 2.5 before zooming.",
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_visual_delta_review"
+    },
+    {
+      "id": "repair_spacing_token_visibility",
+      "target_slide_roles": ["setup", "contrast", "proof", "climax"],
+      "source_policy_ids": ["spacing_tokens_precision_grid_12", "workflow_decision_policy.json"],
+      "typography_delta": "Use smaller support labels than Run 2.5 and move implementation detail into side rails or trace strips.",
+      "spacing_delta": "Make spacing tokens visible: large outer editorial margins, wider gutters around focal proof objects, and tighter internal mini-preview spacing.",
+      "composition_delta": "Use native focal/support/provenance zones instead of repeated Run 2.5 panel placement.",
+      "theme_delta": "Let whitespace carry the premium feel; do not use dark forest-green panels or source-brand color mimicry as the primary visual rhythm.",
+      "must_differ_from": ["ppt-run2-5-full-vulca", "ppt-run2-6-full-vulca"],
+      "native_ppt_requirements": ["native grouped zones", "editable gutters and proof rails", "layout geometry checks remain zero"],
+      "qa_probe": "The contact sheet should show distinct slide-role spacing rhythms rather than repeated templates.",
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_visual_delta_review"
+    },
+    {
+      "id": "repair_climax_editorial_spread",
+      "target_slide_roles": ["climax"],
+      "source_policy_ids": ["theme_original_high_contrast_product_system", "spacing_tokens_precision_grid_12", "workflow_decision_policy.json"],
+      "typography_delta": "Give the climax the largest and shortest headline, with secondary detail pushed into a small proof strip.",
+      "spacing_delta": "Allocate the largest visual field to one native editorial proof spread, not to repeated Run 2.5 hero-object blocks.",
+      "composition_delta": "Rebuild slide 05 as a before/after or workflow-to-output editorial spread using native PPT shapes; do not reuse the Run 2.5/2.6 dark hero-object layout.",
+      "theme_delta": "Use light canvas plus graphite and vivid proof color; avoid the inherited forest-green climax and source-brand mimicry.",
+      "must_differ_from": ["ppt-run2-5-full-vulca", "ppt-run2-6-full-vulca"],
+      "native_ppt_requirements": ["native before/after spread", "editable proof object", "secondary details in native side rail"],
+      "qa_probe": "Slide 05 must be the most visibly changed full-arm slide in the contact sheet and full-skill-series image.",
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_visual_delta_review"
+    },
+    {
+      "id": "repair_theme_differentiation_from_run2_5",
+      "target_slide_roles": ["cover", "setup", "contrast", "proof", "climax", "close"],
+      "source_policy_ids": ["theme_original_high_contrast_product_system", "workflow_decision_policy.json"],
+      "typography_delta": "Use editorial type contrast to carry theme change instead of relying on dark slide backgrounds.",
+      "spacing_delta": "Use whitespace and graphite rails as the main system, not Run 2.5 dark/light alternation.",
+      "composition_delta": "Build a light-first product editorial surface with native material panels for mini-previews and proof objects.",
+      "theme_delta": "Replace Run 2.5 forest-green/off-white dominance with light editorial canvas, graphite structure, cool material surfaces, and one vivid proof color; forbid source-brand mimicry.",
+      "must_differ_from": ["ppt-run2-5-full-vulca", "ppt-run2-6-full-vulca"],
+      "native_ppt_requirements": ["native theme-color shapes", "native editable material panels", "no copied source visual identity"],
+      "qa_probe": "The contact sheet and full-skill-series image must show Run 2.6R as a different visual system after Run 2.6.",
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_visual_delta_review"
+    },
+    {
+      "id": "repair_mini_preview_fidelity",
+      "target_slide_roles": ["setup", "proof", "close"],
+      "source_policy_ids": ["benchmark_visual_fidelity_interactive_slide_surface", "workflow_decision_policy.json"],
+      "typography_delta": "Use preview labels as small native captions, not explanatory paragraphs.",
+      "spacing_delta": "Use tight internal preview spacing and generous external whitespace to make previews feel intentional.",
+      "composition_delta": "Replace placeholder screens with editable native slide-surface modules that show selected states, proof routes, and handoff gates.",
+      "theme_delta": "Use cool material preview surfaces without reverting to forest-green rhythm or copying Figma, Apple, Google, Stripe, Duarte, SlideModel, or other source-brand identity.",
+      "must_differ_from": ["ppt-run2-5-full-vulca", "ppt-run2-6-full-vulca"],
+      "native_ppt_requirements": ["native mini-preview frames", "editable selected-state indicators", "no screenshots"],
+      "qa_probe": "Mini-previews should read as product surfaces in the contact sheet, not placeholder rectangles.",
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_visual_delta_review"
+    }
+  ]
+}

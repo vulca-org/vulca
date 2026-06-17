@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2.59",
+  "status": "run2_59_content_composition_contracts_ready_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_runs": ["2.15", "2.57", "2.58"],
+  "content_composition_contracts": [
+    {
+      "role": "cover",
+      "content_contract_id": "content_contract_2_59_cover",
+      "source_message_contract_id": "message_contract_2_57_cover",
+      "public_claim": "A real brief becomes editable PPT proof.",
+      "primary_proof_object": "input-to-output product surface with brief, source pack, deck preview, trace manifest, and release gate",
+      "evidence_chips": ["real commercial brief", "multimodal source database"],
+      "trace_only_details": ["full source-boundary record list", "all product capability ids", "all trace manifest fields"],
+      "speaker_note": "Say that the slide is not an image-generation demo; the product output is code-generated editable PPT with traceable inputs.",
+      "max_public_visible_words": 58,
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    },
+    {
+      "role": "setup",
+      "content_contract_id": "content_contract_2_59_setup",
+      "source_message_contract_id": "message_contract_2_57_setup",
+      "public_claim": "Sources are compiled into design memory before drawing.",
+      "primary_proof_object": "source-to-memory pipeline with usecase selector, allowed source pack, capability memory, slide contract, and workflow gate",
+      "evidence_chips": ["allowed source pack", "product capability memory", "slide message contract"],
+      "trace_only_details": ["raw gate pass/fail checklist", "full source record inventory", "per-slide contract field list"],
+      "speaker_note": "Keep the public slide as a pipeline story. Move raw audit detail to the viewer so the slide does not become a compliance checklist.",
+      "max_public_visible_words": 70,
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    },
+    {
+      "role": "contrast",
+      "content_contract_id": "content_contract_2_59_contrast",
+      "source_message_contract_id": "message_contract_2_57_contrast",
+      "public_claim": "The difference is mechanism, not taste.",
+      "primary_proof_object": "before/after route from prompt-only output to Vulca code-generated editable PPT with a visible bad-control turn point",
+      "evidence_chips": ["bad control", "competitor boundary", "trace manifest"],
+      "trace_only_details": ["five-row competitor matrix prose", "raw negative-control failure fields", "all competitor boundary ids"],
+      "speaker_note": "Do not render another table. Show the competitor path breaking at the missing data/workflow point, then route to Vulca's editable PPT proof.",
+      "max_public_visible_words": 72,
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    },
+    {
+      "role": "proof",
+      "content_contract_id": "content_contract_2_59_proof",
+      "source_message_contract_id": "message_contract_2_57_proof",
+      "public_claim": "Trace proves the data path was used.",
+      "primary_proof_object": "inspection board with a small pass/fail map and one highlighted trace field group",
+      "evidence_chips": ["capability ids", "message contract id", "workflow gate id"],
+      "trace_only_details": ["complete trace field list", "bad-control trace comparison", "content specificity status detail", "generic claim count audit"],
+      "speaker_note": "Show enough proof for trust, but keep raw field enumeration in the viewer where reviewers can inspect it.",
+      "max_public_visible_words": 74,
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    },
+    {
+      "role": "climax",
+      "content_contract_id": "content_contract_2_59_climax",
+      "source_message_contract_id": "message_contract_2_57_climax",
+      "public_claim": "The product moment is the operating loop.",
+      "primary_proof_object": "large product operating-loop stage centered on editable PPT preview and code renderer",
+      "evidence_chips": ["design memory", "code renderer"],
+      "trace_only_details": ["all loop node descriptions", "QA gate internal criteria", "full product term list"],
+      "speaker_note": "This slide should be the least report-like: one product loop, one remembered claim, no raw trace checklist on the public surface.",
+      "max_public_visible_words": 52,
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    },
+    {
+      "role": "close",
+      "content_contract_id": "content_contract_2_59_close",
+      "source_message_contract_id": "message_contract_2_57_close",
+      "public_claim": "2.59 prepares the next proof, not public release.",
+      "primary_proof_object": "quiet release handoff marker showing latest generated run, current compiler layer, next rerun, and blocked approval gate",
+      "evidence_chips": ["Run 2.58 latest proof", "Run 2.59 compiler", "Run 2.60 next rerun"],
+      "trace_only_details": ["complete remaining public release gates", "source-boundary review checklist", "human approval notes"],
+      "speaker_note": "Close calmly: the next action is a generated rerun that consumes the compiler, not a claim of public readiness.",
+      "max_public_visible_words": 56,
+      "required_trace_fields_for_run2_60": [
+        "run2_59_content_contract_id",
+        "run2_59_layout_module_id",
+        "run2_59_content_burden_level",
+        "run2_59_capacity_fit_status",
+        "run2_59_public_visible_word_budget",
+        "run2_59_trace_only_detail_count",
+        "run2_59_public_surface_trace_policy_id",
+        "run2_59_composition_gate_id"
+      ]
+    }
+  ]
+}

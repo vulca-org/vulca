@@ -1,0 +1,324 @@
+{
+  "schema_version": "ppt_run2_visual_quality_audit.v1",
+  "run_id": "2.37",
+  "status": "run2_37_visual_quality_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.36",
+  "source_data_workflow_run": "2.35",
+  "user_feedback": "Run 2.36 effect feels visually average",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "issue_categories": [
+    "content_specificity",
+    "visual_asset_realism_depth",
+    "typography_hierarchy",
+    "spacing_rhythm",
+    "editorial_composition",
+    "climax_composition",
+    "public_video_readiness"
+  ],
+  "input_chain": {
+    "run2_36_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-36-full-vulca/trace_manifest.json",
+    "run2_36_bad_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-36-bad-visual-evidence-realism-memory/trace_manifest.json",
+    "run2_36_rerun_result": "docs/product/ppt-run2-data-skill-quality/results/run2_36_visual_evidence_realism_rerun_result.json",
+    "run2_35_visual_evidence_realism_workflow_result": "docs/product/ppt-run2-data-skill-quality/results/run2_35_visual_evidence_realism_workflow_result.json",
+    "run2_36_full_layout_dir": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-36-full-vulca/layout/final",
+    "run2_36_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-36-full-vulca/preview/contact-sheet.png",
+    "run2_36_four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-36-four-arm-contact-sheet.png",
+    "run2_full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "source_data_workflow_status": "run2_35_visual_evidence_realism_workflow_ready_public_blocked",
+    "source_rerun_verdict": "usecase_specific_visual_evidence_asset_realism_and_editorial_composition_consumed_before_native_ppt_generation"
+  },
+  "no_new_deck_proof": {
+    "presentations_dir": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations",
+    "forbidden_run2_37_output_glob": "*2-37*",
+    "matched_run2_37_outputs": [],
+    "new_pptx_created": false,
+    "status": "pass"
+  },
+  "trace_closure": {
+    "full_arm": {
+      "arm_id": "run2_36_full_visual_evidence_realism",
+      "slide_count": 6,
+      "run2_35_workflow_consumed_slides": 6,
+      "realism_ids_bound_slides": 6,
+      "required_run236_modules_called_slides": 6
+    },
+    "bad_control": {
+      "arm_id": "bad_visual_evidence_realism_memory",
+      "slide_count": 6,
+      "visual_evidence_realism_fields_leaked": 0
+    }
+  },
+  "visual_quality_assessment": {
+    "data_consumption_gate": "pass_internal_only",
+    "workflow_proof_gate": "pass_internal_only",
+    "design_quality_gate": "blocked",
+    "public_video_readiness": "blocked",
+    "root_cause_primary": "visual_module_language_too_repetitive_and_card_like",
+    "root_cause_secondary": [
+      "data_memory_was_consumed_as_ids_and_cards_not_as_per_slide_art_direction",
+      "workflow_gates_prioritized_traceability_over_thumbnail_scale_aesthetic_judgment",
+      "content_is_still_system_language_more_than_concrete_commercial_story",
+      "native_ppt_has_no_motion_media_or_public_video_delivery_proof"
+    ],
+    "repeated_layout_signature_count": 6,
+    "unique_layout_signature_count": 1,
+    "dominant_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+    "roles_with_repetitive_card_layout": [
+      "cover",
+      "setup",
+      "contrast",
+      "proof",
+      "climax",
+      "close"
+    ],
+    "roles_with_insufficient_public_aesthetic": [
+      "cover",
+      "setup",
+      "contrast",
+      "proof",
+      "climax",
+      "close"
+    ],
+    "top_next_layer_to_thicken": "public_video_grade_slide_direction_and_per_slide_visual_recipe",
+    "why_user_sees_general_quality": "Run 2.36 proves Run 2.35 data consumption, but every role is rendered with the same visible recipe: an editorial anchor object, two dark product-state cards, and a gate ribbon. The viewer therefore reads as a traceable engineering report rather than a public-video-grade commercial presentation."
+  },
+  "role_records": [
+    {
+      "slide_id": "slide_01",
+      "role": "cover",
+      "title": "Design memory becomes a launch system.",
+      "run2_36_code_module_ids": [
+        "drawRun236EditorialAnchorObject",
+        "drawRun236RealisticProductState",
+        "drawRun236RealismGateRibbon"
+      ],
+      "layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "run2_36_data_consumed": true,
+      "workflow_gate_exposed": true,
+      "public_video_grade": false,
+      "hero_object_canvas_share": 0.434,
+      "realistic_visual_evidence_objects": 2,
+      "visible_words": 88,
+      "content_cards": 2,
+      "workflow_objects": 4,
+      "bad_control_leaked_field_count": 0,
+      "aesthetic_failure_reasons": [
+        "repetitive_card_grid_language",
+        "same_visual_module_signature_across_all_roles",
+        "product_state_cards_are_native_schematic_not_real_public_demo_surfaces",
+        "workflow_gate_visible_as_audit_ribbon_instead_of_reader_invisible_composition_logic",
+        "no_media_or_motion_evidence_in_editable_pptx"
+      ],
+      "recommended_next_action": "replace generic Run 2.36 module recipe with per-slide public-video-grade visual direction in Run 2.38 data/workflow"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "setup",
+      "title": "Prompt-only decks lose the product thread.",
+      "run2_36_code_module_ids": [
+        "drawRun236EditorialAnchorObject",
+        "drawRun236RealisticProductState",
+        "drawRun236RealismGateRibbon"
+      ],
+      "layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "run2_36_data_consumed": true,
+      "workflow_gate_exposed": true,
+      "public_video_grade": false,
+      "hero_object_canvas_share": 0.394,
+      "realistic_visual_evidence_objects": 2,
+      "visible_words": 76,
+      "content_cards": 2,
+      "workflow_objects": 4,
+      "bad_control_leaked_field_count": 0,
+      "aesthetic_failure_reasons": [
+        "repetitive_card_grid_language",
+        "same_visual_module_signature_across_all_roles",
+        "product_state_cards_are_native_schematic_not_real_public_demo_surfaces",
+        "workflow_gate_visible_as_audit_ribbon_instead_of_reader_invisible_composition_logic",
+        "no_media_or_motion_evidence_in_editable_pptx"
+      ],
+      "recommended_next_action": "replace generic Run 2.36 module recipe with per-slide public-video-grade visual direction in Run 2.38 data/workflow"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "contrast",
+      "title": "The same brief changes when evidence is selected first.",
+      "run2_36_code_module_ids": [
+        "drawRun236EditorialAnchorObject",
+        "drawRun236RealisticProductState",
+        "drawRun236RealismGateRibbon"
+      ],
+      "layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "run2_36_data_consumed": true,
+      "workflow_gate_exposed": true,
+      "public_video_grade": false,
+      "hero_object_canvas_share": 0.414,
+      "realistic_visual_evidence_objects": 2,
+      "visible_words": 73,
+      "content_cards": 2,
+      "workflow_objects": 4,
+      "bad_control_leaked_field_count": 0,
+      "aesthetic_failure_reasons": [
+        "repetitive_card_grid_language",
+        "same_visual_module_signature_across_all_roles",
+        "product_state_cards_are_native_schematic_not_real_public_demo_surfaces",
+        "workflow_gate_visible_as_audit_ribbon_instead_of_reader_invisible_composition_logic",
+        "no_media_or_motion_evidence_in_editable_pptx"
+      ],
+      "recommended_next_action": "replace generic Run 2.36 module recipe with per-slide public-video-grade visual direction in Run 2.38 data/workflow"
+    },
+    {
+      "slide_id": "slide_04",
+      "role": "proof",
+      "title": "Content memory gives every slide a job.",
+      "run2_36_code_module_ids": [
+        "drawRun236EditorialAnchorObject",
+        "drawRun236RealisticProductState",
+        "drawRun236RealismGateRibbon"
+      ],
+      "layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "run2_36_data_consumed": true,
+      "workflow_gate_exposed": true,
+      "public_video_grade": false,
+      "hero_object_canvas_share": 0.475,
+      "realistic_visual_evidence_objects": 2,
+      "visible_words": 79,
+      "content_cards": 2,
+      "workflow_objects": 4,
+      "bad_control_leaked_field_count": 0,
+      "aesthetic_failure_reasons": [
+        "repetitive_card_grid_language",
+        "same_visual_module_signature_across_all_roles",
+        "product_state_cards_are_native_schematic_not_real_public_demo_surfaces",
+        "workflow_gate_visible_as_audit_ribbon_instead_of_reader_invisible_composition_logic",
+        "no_media_or_motion_evidence_in_editable_pptx"
+      ],
+      "recommended_next_action": "replace generic Run 2.36 module recipe with per-slide public-video-grade visual direction in Run 2.38 data/workflow"
+    },
+    {
+      "slide_id": "slide_05",
+      "role": "climax",
+      "title": "One generated proof object owns the room.",
+      "run2_36_code_module_ids": [
+        "drawRun236EditorialAnchorObject",
+        "drawRun236RealisticProductState",
+        "drawRun236RealismGateRibbon"
+      ],
+      "layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "run2_36_data_consumed": true,
+      "workflow_gate_exposed": true,
+      "public_video_grade": false,
+      "hero_object_canvas_share": 0.698,
+      "realistic_visual_evidence_objects": 2,
+      "visible_words": 90,
+      "content_cards": 2,
+      "workflow_objects": 4,
+      "bad_control_leaked_field_count": 0,
+      "aesthetic_failure_reasons": [
+        "repetitive_card_grid_language",
+        "same_visual_module_signature_across_all_roles",
+        "product_state_cards_are_native_schematic_not_real_public_demo_surfaces",
+        "workflow_gate_visible_as_audit_ribbon_instead_of_reader_invisible_composition_logic",
+        "climax_is_large_but_not_editorial_or_cinematic_enough",
+        "no_media_or_motion_evidence_in_editable_pptx"
+      ],
+      "recommended_next_action": "replace generic Run 2.36 module recipe with per-slide public-video-grade visual direction in Run 2.38 data/workflow"
+    },
+    {
+      "slide_id": "slide_06",
+      "role": "close",
+      "title": "The handoff is blocked until the proof survives review.",
+      "run2_36_code_module_ids": [
+        "drawRun236EditorialAnchorObject",
+        "drawRun236RealisticProductState",
+        "drawRun236RealismGateRibbon"
+      ],
+      "layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "run2_36_data_consumed": true,
+      "workflow_gate_exposed": true,
+      "public_video_grade": false,
+      "hero_object_canvas_share": 0.374,
+      "realistic_visual_evidence_objects": 2,
+      "visible_words": 82,
+      "content_cards": 2,
+      "workflow_objects": 4,
+      "bad_control_leaked_field_count": 0,
+      "aesthetic_failure_reasons": [
+        "repetitive_card_grid_language",
+        "same_visual_module_signature_across_all_roles",
+        "product_state_cards_are_native_schematic_not_real_public_demo_surfaces",
+        "workflow_gate_visible_as_audit_ribbon_instead_of_reader_invisible_composition_logic",
+        "no_media_or_motion_evidence_in_editable_pptx"
+      ],
+      "recommended_next_action": "replace generic Run 2.36 module recipe with per-slide public-video-grade visual direction in Run 2.38 data/workflow"
+    }
+  ],
+  "audit_method": {
+    "layout_repetition_rule": "same_required_run236_module_signature_and_same_layout_signature_across_all_six_roles",
+    "data_consumption_rule": "each_full_slide_has_two_or_more_run2_35_realism_ids_composition_id_gate_id_and_run2_35_consumption_status",
+    "bad_control_rule": "bad_visual_evidence_realism_memory_must_have_zero_run2_35_trace_fields",
+    "public_quality_boundary": "audit_does_not_claim_high_aesthetic_public_video_grade_output_even_when_data_and_workflow_gates_pass",
+    "delivery_boundary": "editable_pptx_static_no_motion_video_or_native_keynote_animation_review"
+  },
+  "module_recommendations": [
+    {
+      "target": "public_video_grade_slide_direction_and_per_slide_visual_recipe",
+      "priority": 1,
+      "issue": "Run 2.36 uses one repeated visual module recipe for all six roles",
+      "affected_roles": [
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close"
+      ],
+      "required_next_delta": "Run 2.38 data/workflow must define a different per-slide visual recipe: cover as launch poster, setup as real pain scene, contrast as before/after state, proof as product workflow, climax as one large editorial object, close as decision handoff."
+    },
+    {
+      "target": "public_video_grade_slide_direction_and_per_slide_visual_recipe",
+      "priority": 2,
+      "issue": "visual evidence records are rendered as cards, not as believable product or business surfaces",
+      "affected_roles": [
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close"
+      ],
+      "required_next_delta": "upgrade realism memory from ids/captions into drawable product states, data snippets, UI surfaces, and concrete commercial proof objects."
+    },
+    {
+      "target": "public_video_readiness",
+      "priority": 3,
+      "issue": "delivery remains static editable PPT with no motion/video proof",
+      "affected_roles": [
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close"
+      ],
+      "required_next_delta": "keep release blocked until visual direction, native render inspection, and motion/video review are complete."
+    }
+  ],
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "single_slide_high_resolution_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "delivery_check": {
+    "delivery_gate": "internal-demo-ok-public-blocked",
+    "static_no_animation": true,
+    "human_review_required": true,
+    "media_entry_count": 0
+  },
+  "next_required_action": "build_run2_38_public_video_grade_visual_direction_memory_and_workflow_gates"
+}

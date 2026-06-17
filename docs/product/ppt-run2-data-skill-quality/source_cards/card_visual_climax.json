@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "card_id": "card_visual_climax",
+  "source_id": "google_cloud_next_keynote",
+  "source_type": "reference_deck",
+  "allowed_use": "visual_inspiration",
+  "do_not_copy": "Do not copy source visuals, layouts, screenshots, brand marks, event assets, staging imagery, or proprietary presentation materials.",
+  "observed_move": "Reserve a peak slide for the strongest outcome so the story has a visible moment of arrival.",
+  "why_it_works": "Large-scale keynote pacing needs a crest. If every slide has the same intensity, the audience cannot feel the product argument land.",
+  "ppt_translation": "Create an editable big-number, chart, or dominant object climax that compares generated deck quality states, breaks the prior grid, and makes the largest object encode the outcome.",
+  "quality_risk": "The climax is weak if it repeats an earlier layout, uses the same density, or lacks a clear before-and-after proof object.",
+  "extraction_units": [
+    {
+      "unit_id": "climax_largest_justified_delta",
+      "source_anchor": "large-scale keynote pacing pattern: outcome crest",
+      "derived_rule": "Give the strongest justified measured result the largest visual field in the deck.",
+      "slide_role": "climax",
+      "execution_guard": "Do not make all comparison arms equal size on the outcome slide.",
+      "qa_probe": "The strongest supported delta is visually largest and traceable to the score table."
+    },
+    {
+      "unit_id": "climax_break_prior_grid",
+      "source_anchor": "large-scale keynote pacing pattern: visible arrival moment",
+      "derived_rule": "Break the prior proof-grid rhythm so the audience feels a moment of arrival.",
+      "slide_role": "climax",
+      "execution_guard": "Do not reuse the same card grid or status strip from proof slides.",
+      "qa_probe": "The climax slide has a distinct composition from the preceding proof slide."
+    }
+  ]
+}

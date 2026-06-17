@@ -1,0 +1,210 @@
+{
+  "schema_version": "ppt_run2_visual_asset_semantics_workflow_gates.v1",
+  "status": "run2_43_visual_asset_semantics_workflow_gates_ready_public_blocked",
+  "run_id": "2.43",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "next_rerun_contract": "must_be_consumed_before_run2_44_four_arm_rerun",
+  "visual_asset_semantics_workflow_gates": [
+    {
+      "gate_id": "gate_2_43_cover_visual_asset_semantics",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_cover_1",
+        "semantic_asset_2_43_cover_2",
+        "semantic_asset_2_43_cover_3"
+      ],
+      "required_editorial_typography_memory_id": "editorial_typography_2_43_cover",
+      "min_semantic_visual_assets": 3,
+      "forbid_generic_placeholder_assets": true,
+      "forbid_schematic_native_shape_only_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_44_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_visual_asset_semantics_gate_id",
+        "run2_43_visual_asset_semantics_execution_status",
+        "run2_43_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds three Run 2.43 semantic visual asset ids before native PPT drawing.",
+        "The generated slide binds one Run 2.43 editorial typography memory id before native PPT drawing.",
+        "The public surface must not use generic placeholders or equal schematic cards as the main visual.",
+        "The public surface must make at least one semantic asset the first-read object.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the same usecase and Run 2.41 surface names, but fails if it lacks Run 2.43 semantic asset ids, editorial typography memory, or gate id.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_43_setup_visual_asset_semantics",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_setup_1",
+        "semantic_asset_2_43_setup_2",
+        "semantic_asset_2_43_setup_3"
+      ],
+      "required_editorial_typography_memory_id": "editorial_typography_2_43_setup",
+      "min_semantic_visual_assets": 3,
+      "forbid_generic_placeholder_assets": true,
+      "forbid_schematic_native_shape_only_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_44_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_visual_asset_semantics_gate_id",
+        "run2_43_visual_asset_semantics_execution_status",
+        "run2_43_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds three Run 2.43 semantic visual asset ids before native PPT drawing.",
+        "The generated slide binds one Run 2.43 editorial typography memory id before native PPT drawing.",
+        "The public surface must not use generic placeholders or equal schematic cards as the main visual.",
+        "The public surface must make at least one semantic asset the first-read object.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the same usecase and Run 2.41 surface names, but fails if it lacks Run 2.43 semantic asset ids, editorial typography memory, or gate id.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_43_contrast_visual_asset_semantics",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_contrast_1",
+        "semantic_asset_2_43_contrast_2",
+        "semantic_asset_2_43_contrast_3"
+      ],
+      "required_editorial_typography_memory_id": "editorial_typography_2_43_contrast",
+      "min_semantic_visual_assets": 3,
+      "forbid_generic_placeholder_assets": true,
+      "forbid_schematic_native_shape_only_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_44_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_visual_asset_semantics_gate_id",
+        "run2_43_visual_asset_semantics_execution_status",
+        "run2_43_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds three Run 2.43 semantic visual asset ids before native PPT drawing.",
+        "The generated slide binds one Run 2.43 editorial typography memory id before native PPT drawing.",
+        "The public surface must not use generic placeholders or equal schematic cards as the main visual.",
+        "The public surface must make at least one semantic asset the first-read object.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the same usecase and Run 2.41 surface names, but fails if it lacks Run 2.43 semantic asset ids, editorial typography memory, or gate id.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_43_proof_visual_asset_semantics",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_proof_1",
+        "semantic_asset_2_43_proof_2",
+        "semantic_asset_2_43_proof_3"
+      ],
+      "required_editorial_typography_memory_id": "editorial_typography_2_43_proof",
+      "min_semantic_visual_assets": 3,
+      "forbid_generic_placeholder_assets": true,
+      "forbid_schematic_native_shape_only_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_44_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_visual_asset_semantics_gate_id",
+        "run2_43_visual_asset_semantics_execution_status",
+        "run2_43_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds three Run 2.43 semantic visual asset ids before native PPT drawing.",
+        "The generated slide binds one Run 2.43 editorial typography memory id before native PPT drawing.",
+        "The public surface must not use generic placeholders or equal schematic cards as the main visual.",
+        "The public surface must make at least one semantic asset the first-read object.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the same usecase and Run 2.41 surface names, but fails if it lacks Run 2.43 semantic asset ids, editorial typography memory, or gate id.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_43_climax_visual_asset_semantics",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_climax_1",
+        "semantic_asset_2_43_climax_2",
+        "semantic_asset_2_43_climax_3"
+      ],
+      "required_editorial_typography_memory_id": "editorial_typography_2_43_climax",
+      "min_semantic_visual_assets": 3,
+      "forbid_generic_placeholder_assets": true,
+      "forbid_schematic_native_shape_only_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_44_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_visual_asset_semantics_gate_id",
+        "run2_43_visual_asset_semantics_execution_status",
+        "run2_43_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds three Run 2.43 semantic visual asset ids before native PPT drawing.",
+        "The generated slide binds one Run 2.43 editorial typography memory id before native PPT drawing.",
+        "The public surface must not use generic placeholders or equal schematic cards as the main visual.",
+        "The public surface must make at least one semantic asset the first-read object.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the same usecase and Run 2.41 surface names, but fails if it lacks Run 2.43 semantic asset ids, editorial typography memory, or gate id.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_43_close_visual_asset_semantics",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_close_1",
+        "semantic_asset_2_43_close_2",
+        "semantic_asset_2_43_close_3"
+      ],
+      "required_editorial_typography_memory_id": "editorial_typography_2_43_close",
+      "min_semantic_visual_assets": 3,
+      "forbid_generic_placeholder_assets": true,
+      "forbid_schematic_native_shape_only_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_44_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_visual_asset_semantics_gate_id",
+        "run2_43_visual_asset_semantics_execution_status",
+        "run2_43_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds three Run 2.43 semantic visual asset ids before native PPT drawing.",
+        "The generated slide binds one Run 2.43 editorial typography memory id before native PPT drawing.",
+        "The public surface must not use generic placeholders or equal schematic cards as the main visual.",
+        "The public surface must make at least one semantic asset the first-read object.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the same usecase and Run 2.41 surface names, but fails if it lacks Run 2.43 semantic asset ids, editorial typography memory, or gate id.",
+      "public_release_gate": "blocked"
+    }
+  ]
+}

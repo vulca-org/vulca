@@ -1,0 +1,275 @@
+{
+  "schema_version": "ppt_run2_single_usecase_content_memory.v1",
+  "status": "run2_24_single_usecase_content_memory_ready_public_blocked",
+  "run_id": "2.24",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase": {
+    "id": "usecase_design_to_production_platform_launch",
+    "audience": "AI product builders and design-led founders evaluating whether Vulca can turn design memory into production-grade code-generated PPT.",
+    "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+    "deck_mission": "Show that the product selects data, memory, modules, and QA gates before writing slide code.",
+    "source_ids": [
+      "figma_config_2025_platform_launch",
+      "figma_config_2025_recap",
+      "figma_slides_product",
+      "figma_slides_help"
+    ],
+    "qa_probe": "From the contact sheet, the full arm should read as a designed workflow product, not a source-brand imitation or report."
+  },
+  "story_policy": {
+    "single_primary_usecase": true,
+    "supporting_references_only": true,
+    "forbid_cross_case_primary_story": true,
+    "reason": "Run 2.22 proved selector trace but mixed reference families across slide roles; Run 2.24 locks one commercial story before the next rerun."
+  },
+  "derived_from": [
+    "commercial_usecase_bank.json",
+    "run2_7_commercial_usecase.json",
+    "run2_7_multimodal_source_records.json",
+    "results/run2_23_selector_effectiveness_audit.json"
+  ],
+  "slide_content_memory": [
+    {
+      "content_memory_id": "content_2_24_cover",
+      "role": "cover",
+      "slide_index": 1,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "headline": "Design memory becomes a launch system.",
+      "support_line": "The deck opens on one product promise: editable PPT output controlled by selected design knowledge.",
+      "business_proof_points": [
+        "The user is evaluating Vulca as a design-to-production presentation workflow, not a prompt-only slide generator.",
+        "The first read must show a product-system promise before any trace detail appears.",
+        "The launch story must avoid source-brand imitation while still feeling like a real commercial product reveal."
+      ],
+      "visual_evidence_slot_ids": [
+        "slot_2_24_cover_launch_field",
+        "slot_2_24_cover_case_badge"
+      ],
+      "content_density_contract": {
+        "min_business_proof_points": 2,
+        "min_visual_evidence_slots": 2,
+        "max_first_read_words": 18,
+        "body_copy_policy": "supporting_copy_must_be_short_and_editable"
+      },
+      "trace_fields_required": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "forbidden_source_materials": [
+        "screenshots",
+        "video frames",
+        "audio",
+        "full transcripts",
+        "copied layouts",
+        "brand marks",
+        "source prose"
+      ],
+      "public_surface_policy": "show_business_content_and_original_native_visuals_hide_trace_ids_from_first_read",
+      "release_boundary": "public_blocked_until_run2_24_pack_is_consumed_by_generated_rerun_and_human_review_passes"
+    },
+    {
+      "content_memory_id": "content_2_24_setup",
+      "role": "setup",
+      "slide_index": 2,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "headline": "Prompt-only decks lose the product thread.",
+      "support_line": "The setup slide names the business failure: each one-off prompt forgets the case, source boundaries, and design rules.",
+      "business_proof_points": [
+        "The buyer needs repeatable launch-deck quality for public demos, customer briefings, and investor narratives.",
+        "One-shot prompting cannot show which source records, memory, and gates shaped the output.",
+        "The visual surface should show a thin prompt-only path collapsing before the selected product route appears."
+      ],
+      "visual_evidence_slot_ids": [
+        "slot_2_24_setup_prompt_loss",
+        "slot_2_24_setup_selected_route"
+      ],
+      "content_density_contract": {
+        "min_business_proof_points": 2,
+        "min_visual_evidence_slots": 2,
+        "max_first_read_words": 18,
+        "body_copy_policy": "supporting_copy_must_be_short_and_editable"
+      },
+      "trace_fields_required": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "forbidden_source_materials": [
+        "screenshots",
+        "video frames",
+        "audio",
+        "full transcripts",
+        "copied layouts",
+        "brand marks",
+        "source prose"
+      ],
+      "public_surface_policy": "show_business_content_and_original_native_visuals_hide_trace_ids_from_first_read",
+      "release_boundary": "public_blocked_until_run2_24_pack_is_consumed_by_generated_rerun_and_human_review_passes"
+    },
+    {
+      "content_memory_id": "content_2_24_contrast",
+      "role": "contrast",
+      "slide_index": 3,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "headline": "The same brief changes when evidence is selected first.",
+      "support_line": "The contrast slide makes the product claim visible: prompt-only output versus source-bound design generation.",
+      "business_proof_points": [
+        "The selected usecase creates a concrete commercial decision instead of a generic AI capability claim.",
+        "The deck must show what changed from prompt-only: more case specificity, visible product surface, and explicit release boundary.",
+        "The visual comparison should be asymmetric: weak prompt output stays small while selected workflow output owns the frame."
+      ],
+      "visual_evidence_slot_ids": [
+        "slot_2_24_contrast_prompt_thumbnail",
+        "slot_2_24_contrast_selected_thumbnail"
+      ],
+      "content_density_contract": {
+        "min_business_proof_points": 2,
+        "min_visual_evidence_slots": 2,
+        "max_first_read_words": 18,
+        "body_copy_policy": "supporting_copy_must_be_short_and_editable"
+      },
+      "trace_fields_required": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "forbidden_source_materials": [
+        "screenshots",
+        "video frames",
+        "audio",
+        "full transcripts",
+        "copied layouts",
+        "brand marks",
+        "source prose"
+      ],
+      "public_surface_policy": "show_business_content_and_original_native_visuals_hide_trace_ids_from_first_read",
+      "release_boundary": "public_blocked_until_run2_24_pack_is_consumed_by_generated_rerun_and_human_review_passes"
+    },
+    {
+      "content_memory_id": "content_2_24_proof",
+      "role": "proof",
+      "slide_index": 4,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "headline": "Content memory gives every slide a job.",
+      "support_line": "The proof slide turns the six-slide arc into concrete content obligations before code writes the deck.",
+      "business_proof_points": [
+        "Each slide role receives a headline, support line, business proof points, and visual evidence slots.",
+        "The product surface must show content memory and visual evidence as inspectable inputs, not hidden prompt text.",
+        "The largest area should be an original native product surface that can later be opened and edited in PPT."
+      ],
+      "visual_evidence_slot_ids": [
+        "slot_2_24_proof_content_memory_surface",
+        "slot_2_24_proof_visual_asset_rail"
+      ],
+      "content_density_contract": {
+        "min_business_proof_points": 2,
+        "min_visual_evidence_slots": 2,
+        "max_first_read_words": 18,
+        "body_copy_policy": "supporting_copy_must_be_short_and_editable"
+      },
+      "trace_fields_required": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "forbidden_source_materials": [
+        "screenshots",
+        "video frames",
+        "audio",
+        "full transcripts",
+        "copied layouts",
+        "brand marks",
+        "source prose"
+      ],
+      "public_surface_policy": "show_business_content_and_original_native_visuals_hide_trace_ids_from_first_read",
+      "release_boundary": "public_blocked_until_run2_24_pack_is_consumed_by_generated_rerun_and_human_review_passes"
+    },
+    {
+      "content_memory_id": "content_2_24_climax",
+      "role": "climax",
+      "slide_index": 5,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "headline": "One generated proof object owns the room.",
+      "support_line": "The climax slide should show a concrete editable result object, not another abstract selector diagram.",
+      "business_proof_points": [
+        "The viewer needs one large visible result that demonstrates the platform can structure a real launch deck.",
+        "The hero object must carry business content, product surface, and QA boundary in one composition.",
+        "The slide stays public-blocked until native render, source-boundary, and human visual review pass."
+      ],
+      "visual_evidence_slot_ids": [
+        "slot_2_24_climax_hero_result",
+        "slot_2_24_climax_density_annotation"
+      ],
+      "content_density_contract": {
+        "min_business_proof_points": 2,
+        "min_visual_evidence_slots": 2,
+        "max_first_read_words": 18,
+        "body_copy_policy": "supporting_copy_must_be_short_and_editable"
+      },
+      "trace_fields_required": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "forbidden_source_materials": [
+        "screenshots",
+        "video frames",
+        "audio",
+        "full transcripts",
+        "copied layouts",
+        "brand marks",
+        "source prose"
+      ],
+      "public_surface_policy": "show_business_content_and_original_native_visuals_hide_trace_ids_from_first_read",
+      "release_boundary": "public_blocked_until_run2_24_pack_is_consumed_by_generated_rerun_and_human_review_passes"
+    },
+    {
+      "content_memory_id": "content_2_24_close",
+      "role": "close",
+      "slide_index": 6,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "headline": "The gate closes on an inspectable launch path.",
+      "support_line": "The close slide turns the case into a next-run contract: consume the pack, rerun, review, then decide release.",
+      "business_proof_points": [
+        "The product is credible only if the generated deck can explain what data, memory, and visual evidence it used.",
+        "The next generated rerun must prove this single-usecase pack changes visible slide content, not only trace fields.",
+        "The public gate remains blocked until the deck passes native render and human release review."
+      ],
+      "visual_evidence_slot_ids": [
+        "slot_2_24_close_release_gate",
+        "slot_2_24_close_trace_handoff"
+      ],
+      "content_density_contract": {
+        "min_business_proof_points": 2,
+        "min_visual_evidence_slots": 2,
+        "max_first_read_words": 18,
+        "body_copy_policy": "supporting_copy_must_be_short_and_editable"
+      },
+      "trace_fields_required": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "forbidden_source_materials": [
+        "screenshots",
+        "video frames",
+        "audio",
+        "full transcripts",
+        "copied layouts",
+        "brand marks",
+        "source prose"
+      ],
+      "public_surface_policy": "show_business_content_and_original_native_visuals_hide_trace_ids_from_first_read",
+      "release_boundary": "public_blocked_until_run2_24_pack_is_consumed_by_generated_rerun_and_human_review_passes"
+    }
+  ]
+}

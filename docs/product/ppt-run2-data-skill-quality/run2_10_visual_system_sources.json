@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "status": "run2_10_visual_system_sources_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "storage_policy": {
+    "default": "derived_observations_only",
+    "raw_media": "forbidden",
+    "copyright_boundary": "Store derived observations, visual-system decisions, and native PPT implications only; do not store copied screenshots, source layouts, frames, audio, transcripts, logos, or brand marks."
+  },
+  "sources": [
+    {
+      "id": "vs_source_2_10_editorial_keynote_system",
+      "source_ids": ["duarte_slide_design_course", "stripe_sessions_2025_product_keynote"],
+      "reference_type": "commercial_keynote_plus_tutorial",
+      "allowed_use": "derived_observations_only",
+      "visual_system_direction": "editorial_cinema",
+      "typography_observation": "Use one large decisive phrase and subordinate evidence labels rather than stacked explanatory cards.",
+      "spatial_composition_observation": "Use full-bleed fields, off-grid proof rails, and one dominant object path to avoid uniform report panels.",
+      "asset_strategy_observation": "Use generated or native abstract stage fields and original product objects; do not copy source UI or event graphics.",
+      "motion_or_sequence_observation": "Reveal the field first, then the proof object, then the evidence rail.",
+      "climax_grammar_observation": "The peak slide should break from the normal light-card system through stage scale, contrast, and pause.",
+      "native_ppt_implication": "Implement as editable native headline text, stage fields, connector paths, and original proof objects.",
+      "anti_copy_boundary": "No copied screenshot, source layout, brand mark, frame, transcript, or event graphic.",
+      "public_demo_probe": "At thumbnail scale, the slide should read as a keynote moment before any label is readable.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "vs_source_2_10_product_theater_demo",
+      "source_ids": ["figma_config_2025_platform_launch", "figma_slides_product"],
+      "reference_type": "commercial_product_demo_reference",
+      "allowed_use": "derived_observations_only",
+      "visual_system_direction": "product_theater",
+      "typography_observation": "Pair a compact command headline with sparse annotations that orbit the product surface instead of filling panels.",
+      "spatial_composition_observation": "Treat the product proof as a stage object with depth, crop, shadow, and offset annotation routes.",
+      "asset_strategy_observation": "Draw an original native product surface from shapes and text, with no borrowed UI chrome or source brand marks.",
+      "motion_or_sequence_observation": "Use a three-beat route: product appears, evidence attaches, decision state resolves.",
+      "climax_grammar_observation": "A product proof earns scale only after the preceding slide has shown the workflow path.",
+      "native_ppt_implication": "Implement as editable native panels, device-like shells, labels, connectors, and proof chips.",
+      "anti_copy_boundary": "No copied product screenshot, source layout, brand mark, frame, transcript, or event graphic.",
+      "public_demo_probe": "A viewer should understand that a product system is being demonstrated without reading small UI labels.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "vs_source_2_10_typographic_launch_field",
+      "source_ids": ["duarte_visual_storytelling", "present_partners_whitespace"],
+      "reference_type": "tutorial_plus_design_principle",
+      "allowed_use": "derived_observations_only",
+      "visual_system_direction": "typographic_launch_field",
+      "typography_observation": "Use a launch-scale phrase with deliberate line breaks, not a normal title plus body-copy block.",
+      "spatial_composition_observation": "Let white space become part of the argument by leaving an intentional quiet side or lower field.",
+      "asset_strategy_observation": "Use original native type fields, rules, and simple proof glyphs instead of decorative image filler.",
+      "motion_or_sequence_observation": "Sequence the phrase as a route from problem to proof to gate, not as an all-at-once paragraph.",
+      "climax_grammar_observation": "The final phrase should feel like a decision, with supporting proof visually secondary.",
+      "native_ppt_implication": "Implement as editable native text with controlled line breaks, field rules, and minimal proof marks.",
+      "anti_copy_boundary": "No copied screenshot, source layout, brand mark, frame, transcript, or event graphic.",
+      "public_demo_probe": "The headline composition should be recognizable and premium at contact-sheet scale.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "vs_source_2_10_kinetic_climax_sequence",
+      "source_ids": ["schema_2025_keynote_video", "run2_7_product_demo_video_reference"],
+      "reference_type": "video_demo_sequence_observation",
+      "allowed_use": "derived_observations_only",
+      "visual_system_direction": "kinetic_climax_sequence",
+      "typography_observation": "Keep kinetic slides low-word and let scale, order, and pause carry the transformation.",
+      "spatial_composition_observation": "Use a diagonal or radial sequence path so the climax does not collapse into a horizontal strip.",
+      "asset_strategy_observation": "Use native motion placeholders and sequence objects, not extracted frames or copied video content.",
+      "motion_or_sequence_observation": "Represent anticipation, scale-up, lock-in, and release as distinct native objects and trace steps.",
+      "climax_grammar_observation": "The climax should have a visible pause object and a single final proof state.",
+      "native_ppt_implication": "Implement as editable native sequence nodes, scale fields, arrows, pause markers, and proof states.",
+      "anti_copy_boundary": "No copied screenshot, source layout, brand mark, frame, transcript, or event graphic.",
+      "public_demo_probe": "The viewer should see a build toward a reveal, not a row of equal storyboard boxes.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "vs_source_2_10_non_rectangular_proof_path",
+      "source_ids": ["slidemodel_visual_hierarchy", "udel_design_principles_video"],
+      "reference_type": "tutorial_proof_path_reference",
+      "allowed_use": "derived_observations_only",
+      "visual_system_direction": "non_rectangular_proof_path",
+      "typography_observation": "Use short labels on the path and reserve explanatory copy for notes or result docs.",
+      "spatial_composition_observation": "Use arcs, diagonals, circles, wedges, and negative-space corridors instead of equal rectangular containers.",
+      "asset_strategy_observation": "Use native editable shapes and connector routes; no source diagrams or copied layout frames.",
+      "motion_or_sequence_observation": "Route evidence through a visible path that can later become animated reveal steps.",
+      "climax_grammar_observation": "The proof path should converge into the climax object, not sit beside it as an appendix chart.",
+      "native_ppt_implication": "Implement as editable native arcs, wedges, connectors, labels, and proof-object groups.",
+      "anti_copy_boundary": "No copied screenshot, source layout, brand mark, frame, transcript, or event graphic.",
+      "public_demo_probe": "At thumbnail scale, the proof should read as a designed path rather than a table or dashboard.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    }
+  ]
+}

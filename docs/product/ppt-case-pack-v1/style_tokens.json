@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "palette": {
+    "ink": "#171717",
+    "paper": "#F7F4EE",
+    "warm_gray": "#D8D1C5",
+    "signal": "#E24A2A",
+    "teal": "#147C72",
+    "violet": "#6B5CFF",
+    "dark_panel": "#22201D"
+  },
+  "font_stack": ["Aptos", "Arial", "sans-serif"],
+  "spacing": {
+    "xs": 8,
+    "sm": 16,
+    "md": 24,
+    "lg": 40,
+    "xl": 64
+  },
+  "corner_radius": {
+    "small": 4,
+    "medium": 8,
+    "large": 12
+  },
+  "stroke_widths": {
+    "hairline": 1,
+    "regular": 1.5,
+    "strong": 2
+  },
+  "usage_rules": {
+    "background": "paper or dark_panel",
+    "body_text": "ink on paper or paper on dark_panel",
+    "signal_color": "Use for emphasis, transitions, proof objects, and review status only."
+  }
+}

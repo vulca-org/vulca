@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "patterns": [
+    {
+      "id": "cover",
+      "role": "cover",
+      "content_density": "low",
+      "layout_shape": "hero_claim_with_system_mark",
+      "visual_asset_type": "editable_svg",
+      "editability_requirements": ["title_text_is_editable", "subtitle_text_is_editable", "system_mark_is_editable"]
+    },
+    {
+      "id": "problem",
+      "role": "problem",
+      "content_density": "medium",
+      "layout_shape": "claim_plus_three_failures",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["failure_labels_are_editable", "body_text_is_editable", "no_rasterized_copy"]
+    },
+    {
+      "id": "market_shift",
+      "role": "market_shift",
+      "content_density": "medium",
+      "layout_shape": "before_after_system_shift",
+      "visual_asset_type": "editable_svg",
+      "editability_requirements": ["axis_labels_are_editable", "transition_copy_is_editable", "comparison_labels_are_editable"]
+    },
+    {
+      "id": "workflow",
+      "role": "workflow_diagram",
+      "content_density": "medium",
+      "layout_shape": "left_to_right_process",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["nodes_are_editable", "connectors_are_attached", "step_labels_are_editable"]
+    },
+    {
+      "id": "product_pillars",
+      "role": "product_pillars",
+      "content_density": "medium",
+      "layout_shape": "five_pillars_with_proof_labels",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["pillar_titles_are_editable", "proof_labels_are_editable", "icons_are_editable"]
+    },
+    {
+      "id": "case_pack_method",
+      "role": "case_pack_method",
+      "content_density": "medium_high",
+      "layout_shape": "source_to_rules_to_deck_pipeline",
+      "visual_asset_type": "editable_svg",
+      "editability_requirements": ["pipeline_stages_are_editable", "source_names_are_editable", "rule_labels_are_editable"]
+    },
+    {
+      "id": "proof",
+      "role": "generated_output_proof",
+      "content_density": "medium",
+      "layout_shape": "artifact_grid_with_quality_checks",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["artifact_labels_are_editable", "status_labels_are_editable", "evidence_notes_are_editable"]
+    },
+    {
+      "id": "comparison",
+      "role": "benchmark_comparison",
+      "content_density": "medium_high",
+      "layout_shape": "baseline_vs_vulca_matrix",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["matrix_cells_are_editable", "scores_are_editable", "dimension_labels_are_editable"]
+    },
+    {
+      "id": "roadmap",
+      "role": "roadmap",
+      "content_density": "medium",
+      "layout_shape": "three_stage_product_path",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["stage_labels_are_editable", "timing_copy_is_editable", "milestone_markers_are_editable"]
+    },
+    {
+      "id": "closing",
+      "role": "closing",
+      "content_density": "low",
+      "layout_shape": "final_claim_and_next_action",
+      "visual_asset_type": "editable_svg",
+      "editability_requirements": ["claim_text_is_editable", "call_to_action_is_editable", "system_mark_is_editable"]
+    }
+  ]
+}

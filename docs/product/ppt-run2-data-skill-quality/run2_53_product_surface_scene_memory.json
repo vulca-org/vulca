@@ -1,0 +1,278 @@
+{
+  "schema_version": "ppt_run2_product_surface_scene_memory.v1",
+  "status": "run2_53_product_surface_scene_memory_ready_public_blocked",
+  "run_id": "2.53",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_repair_run_id": "2.51",
+  "source_generated_run_id": "2.52",
+  "target_layer": "product_surface_scene_and_business_visual_evidence_repair",
+  "product_surface_scene_records": [
+    {
+      "id": "product_surface_scene_2_53_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_run2_51_shape_text_socket_memory_id": "shape_text_socket_2_51_cover",
+      "required_run2_52_slide_role": "cover",
+      "required_run2_52_primary_surface_kind": "poster_stage",
+      "scene_object_kind": "launch_deck_product_surface",
+      "primary_product_or_business_object": "editable launch deck preview on a presentation workbench",
+      "must_render_product_or_business_object": true,
+      "observable_scene_summary": "A real deck surface is the hero object, with small proof badges attached to the canvas.",
+      "surface_slots": [
+        "editable deck preview frame",
+        "selected usecase badge attached to frame",
+        "evidence-to-code route marker",
+        "public-demo release boundary tag"
+      ],
+      "minimum_scene_requirements": [
+        "one visible product or business object owns the primary surface",
+        "public copy is attached to the object or its inspection surfaces",
+        "proof markers point to a visible region, lane, or preview",
+        "the slide can be understood without trace terminology"
+      ],
+      "reader_question_answered": "What product is being launched, and why should a buyer believe it is more than prompt-only slides?",
+      "forbidden_patterns": [
+        "generic geometric diagram",
+        "evidence card only",
+        "floating annotation card",
+        "square block grid",
+        "decorative abstract shapes without product surface"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    },
+    {
+      "id": "product_surface_scene_2_53_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_run2_51_shape_text_socket_memory_id": "shape_text_socket_2_51_setup",
+      "required_run2_52_slide_role": "setup",
+      "required_run2_52_primary_surface_kind": "route_map",
+      "scene_object_kind": "workflow_route_product_surface",
+      "primary_product_or_business_object": "prompt-to-production route board with broken prompt-only path",
+      "must_render_product_or_business_object": true,
+      "observable_scene_summary": "The slide shows a collapsed generic prompt path beside the selected product workflow route.",
+      "surface_slots": [
+        "failed prompt-only path object",
+        "selected workflow route board",
+        "data memory gate checkpoint",
+        "rerun decision marker"
+      ],
+      "minimum_scene_requirements": [
+        "one visible product or business object owns the primary surface",
+        "public copy is attached to the object or its inspection surfaces",
+        "proof markers point to a visible region, lane, or preview",
+        "the slide can be understood without trace terminology"
+      ],
+      "reader_question_answered": "Where does the old path fail, and what concrete route replaces it?",
+      "forbidden_patterns": [
+        "generic geometric diagram",
+        "evidence card only",
+        "floating annotation card",
+        "square block grid",
+        "decorative abstract shapes without product surface"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    },
+    {
+      "id": "product_surface_scene_2_53_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_run2_51_shape_text_socket_memory_id": "shape_text_socket_2_51_contrast",
+      "required_run2_52_slide_role": "contrast",
+      "required_run2_52_primary_surface_kind": "before_after_lens",
+      "scene_object_kind": "before_after_deck_surface",
+      "primary_product_or_business_object": "before and after deck previews with a visible business delta",
+      "must_render_product_or_business_object": true,
+      "observable_scene_summary": "Two unequal deck previews show the before/after difference as an inspectable product result.",
+      "surface_slots": [
+        "before deck preview",
+        "after deck preview",
+        "delta lens over changed region",
+        "business outcome annotation socket"
+      ],
+      "minimum_scene_requirements": [
+        "one visible product or business object owns the primary surface",
+        "public copy is attached to the object or its inspection surfaces",
+        "proof markers point to a visible region, lane, or preview",
+        "the slide can be understood without trace terminology"
+      ],
+      "reader_question_answered": "What changed on the actual presentation surface, and what business consequence does it create?",
+      "forbidden_patterns": [
+        "generic geometric diagram",
+        "evidence card only",
+        "floating annotation card",
+        "square block grid",
+        "decorative abstract shapes without product surface"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    },
+    {
+      "id": "product_surface_scene_2_53_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_run2_51_shape_text_socket_memory_id": "shape_text_socket_2_51_proof",
+      "required_run2_52_slide_role": "proof",
+      "required_run2_52_primary_surface_kind": "workspace_surface",
+      "scene_object_kind": "inspection_workspace_surface",
+      "primary_product_or_business_object": "editable proof workspace with scene, copy, and renderer lanes",
+      "must_render_product_or_business_object": true,
+      "observable_scene_summary": "A workspace surface shows evidence becoming copy, surface slots, and renderer constraints.",
+      "surface_slots": [
+        "copy lane with selected headline",
+        "surface scene lane with product object",
+        "renderer gate lane with pass/fail chips",
+        "inspectable preview tile"
+      ],
+      "minimum_scene_requirements": [
+        "one visible product or business object owns the primary surface",
+        "public copy is attached to the object or its inspection surfaces",
+        "proof markers point to a visible region, lane, or preview",
+        "the slide can be understood without trace terminology"
+      ],
+      "reader_question_answered": "Can the viewer inspect how evidence becomes an editable presentation object?",
+      "forbidden_patterns": [
+        "generic geometric diagram",
+        "evidence card only",
+        "floating annotation card",
+        "square block grid",
+        "decorative abstract shapes without product surface"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    },
+    {
+      "id": "product_surface_scene_2_53_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_run2_51_shape_text_socket_memory_id": "shape_text_socket_2_51_climax",
+      "required_run2_52_slide_role": "climax",
+      "required_run2_52_primary_surface_kind": "exploded_hero_object",
+      "scene_object_kind": "dominant_generated_result_surface",
+      "primary_product_or_business_object": "large generated deck result object with attached proof tags",
+      "must_render_product_or_business_object": true,
+      "observable_scene_summary": "One generated result dominates the frame, with proof tags anchored to visible regions.",
+      "surface_slots": [
+        "dominant generated result frame",
+        "attached typography proof tag",
+        "attached spacing proof tag",
+        "attached source-boundary proof tag"
+      ],
+      "minimum_scene_requirements": [
+        "one visible product or business object owns the primary surface",
+        "public copy is attached to the object or its inspection surfaces",
+        "proof markers point to a visible region, lane, or preview",
+        "the slide can be understood without trace terminology"
+      ],
+      "reader_question_answered": "What is the strongest generated result, and which visible evidence makes it credible?",
+      "forbidden_patterns": [
+        "generic geometric diagram",
+        "evidence card only",
+        "floating annotation card",
+        "square block grid",
+        "decorative abstract shapes without product surface"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    },
+    {
+      "id": "product_surface_scene_2_53_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_run2_51_shape_text_socket_memory_id": "shape_text_socket_2_51_close",
+      "required_run2_52_slide_role": "close",
+      "required_run2_52_primary_surface_kind": "decision_room",
+      "scene_object_kind": "release_decision_business_surface",
+      "primary_product_or_business_object": "release gate decision wall with next rerun handoff",
+      "must_render_product_or_business_object": true,
+      "observable_scene_summary": "The final surface is a decision room that makes release blocked and next rerun explicit.",
+      "surface_slots": [
+        "release gate wall",
+        "next rerun handoff strip",
+        "human review blocker note",
+        "source boundary check tile"
+      ],
+      "minimum_scene_requirements": [
+        "one visible product or business object owns the primary surface",
+        "public copy is attached to the object or its inspection surfaces",
+        "proof markers point to a visible region, lane, or preview",
+        "the slide can be understood without trace terminology"
+      ],
+      "reader_question_answered": "What can ship later, what remains blocked, and what must Run 2.54 consume?",
+      "forbidden_patterns": [
+        "generic geometric diagram",
+        "evidence card only",
+        "floating annotation card",
+        "square block grid",
+        "decorative abstract shapes without product surface"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    }
+  ]
+}

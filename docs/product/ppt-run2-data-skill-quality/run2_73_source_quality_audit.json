@@ -1,0 +1,1143 @@
+{
+  "schema_version": 1,
+  "status": "run2_73_source_quality_audit_public_blocked",
+  "stage_policy": "part_a_source_tutorial_audit_only",
+  "audit_scope": {
+    "goal": "Confirm whether tutorial, video, keynote, and commercial case sources contain enough design information for native PPT generation.",
+    "focused_inputs": [
+      "sources.json",
+      "multimodal_database.json",
+      "run2_7_multimodal_source_records.json"
+    ],
+    "required_per_source_fields": [
+      "source_type",
+      "modality",
+      "extracted_design_signal",
+      "generator_obligation",
+      "anti_copy_boundary"
+    ]
+  },
+  "storage_policy": {
+    "default": "derived_rules_only",
+    "raw_media": "forbidden",
+    "copyright_boundary": "Audit stores only source metadata, paraphrased extracted signals, generator obligations, and anti-copy boundaries; no source media, screenshots, transcripts, layouts, or brand assets are stored."
+  },
+  "summary": {
+    "total_sources": 27,
+    "full_source_count": 27,
+    "source_type_counts": {
+      "brand_case": 2,
+      "design_language_reference": 2,
+      "general_design_tutorial": 3,
+      "product_keynote": 10,
+      "product_reference": 3,
+      "true_ppt_tutorial": 7
+    },
+    "sources_with_extracted_design_signal": 12,
+    "sources_missing_extracted_design_signal": 15,
+    "sources_with_run2_7_native_obligation": 4,
+    "sources_missing_screenshot_or_shot_or_layout_decomposition": 27,
+    "audit_findings": [
+      "Only 12 of 27 registered sources have extracted design signals in the focused inputs; the rest are source inventory only and should not drive generation yet.",
+      "True PPT/tutorial coverage exists, but most tutorial entries still lack screenshot-level derived breakdowns with concrete component, hierarchy, or layout observations.",
+      "Product keynote coverage is useful for rhythm, climax, and handoff obligations, but shot-level decomposition is only partial and should be deepened before renderer binding.",
+      "Brand/design-language cases are mostly weak as direct generator evidence unless converted into original layout primitives and source-brand sanitization rules."
+    ],
+    "generator_ready_native_rule_sources": 3,
+    "sources_with_partial_signal_but_decomposition_gap": 9
+  },
+  "source_groups": {
+    "brand_case": [
+      "figma_config_2025_identity",
+      "launch_lab_sales_deck"
+    ],
+    "design_language_reference": [
+      "apple_liquid_glass_newsroom",
+      "apple_liquid_glass_developer"
+    ],
+    "general_design_tutorial": [
+      "duarte_persuasive_visual_storytelling",
+      "udel_design_principles_video",
+      "duarte_visual_storytelling"
+    ],
+    "product_keynote": [
+      "supervity_ai_keynote",
+      "google_cloud_next_keynote",
+      "schema_2025_keynote_video",
+      "figma_config_2025_platform_launch",
+      "figma_config_2025_recap",
+      "stripe_sessions_2025_product_keynote",
+      "google_cloud_next_2025_wrap",
+      "google_cloud_next_2025_sundar",
+      "run2_7_figma_design_system_launch_reference",
+      "run2_7_product_demo_video_reference"
+    ],
+    "product_reference": [
+      "geo_figma_slides",
+      "figma_slides_product",
+      "figma_slides_help"
+    ],
+    "true_ppt_tutorial": [
+      "slidemodel_visual_hierarchy",
+      "present_partners_whitespace",
+      "slidecow_whitespace_powerpoint_tutorial",
+      "duarte_slide_design_course",
+      "duarte_slide_design",
+      "run2_7_slide_design_tutorial_reference",
+      "run2_7_presentation_hierarchy_reference"
+    ],
+    "missing_screenshot_level_or_shot_level_decomposition": [
+      "geo_figma_slides",
+      "figma_config_2025_identity",
+      "supervity_ai_keynote",
+      "launch_lab_sales_deck",
+      "google_cloud_next_keynote",
+      "slidemodel_visual_hierarchy",
+      "present_partners_whitespace",
+      "slidecow_whitespace_powerpoint_tutorial",
+      "schema_2025_keynote_video",
+      "duarte_persuasive_visual_storytelling",
+      "duarte_slide_design_course",
+      "udel_design_principles_video",
+      "figma_config_2025_platform_launch",
+      "figma_config_2025_recap",
+      "figma_slides_product",
+      "figma_slides_help",
+      "stripe_sessions_2025_product_keynote",
+      "google_cloud_next_2025_wrap",
+      "google_cloud_next_2025_sundar",
+      "apple_liquid_glass_newsroom",
+      "apple_liquid_glass_developer",
+      "duarte_slide_design",
+      "duarte_visual_storytelling",
+      "run2_7_figma_design_system_launch_reference",
+      "run2_7_slide_design_tutorial_reference",
+      "run2_7_product_demo_video_reference",
+      "run2_7_presentation_hierarchy_reference"
+    ],
+    "missing_extracted_design_signal": [
+      "figma_config_2025_identity",
+      "supervity_ai_keynote",
+      "launch_lab_sales_deck",
+      "slidecow_whitespace_powerpoint_tutorial",
+      "figma_config_2025_platform_launch",
+      "figma_config_2025_recap",
+      "figma_slides_product",
+      "figma_slides_help",
+      "stripe_sessions_2025_product_keynote",
+      "google_cloud_next_2025_wrap",
+      "google_cloud_next_2025_sundar",
+      "apple_liquid_glass_newsroom",
+      "apple_liquid_glass_developer",
+      "duarte_slide_design",
+      "duarte_visual_storytelling"
+    ],
+    "sources_with_extracted_design_signal": [
+      "geo_figma_slides",
+      "google_cloud_next_keynote",
+      "slidemodel_visual_hierarchy",
+      "present_partners_whitespace",
+      "schema_2025_keynote_video",
+      "duarte_persuasive_visual_storytelling",
+      "duarte_slide_design_course",
+      "udel_design_principles_video",
+      "run2_7_figma_design_system_launch_reference",
+      "run2_7_slide_design_tutorial_reference",
+      "run2_7_product_demo_video_reference",
+      "run2_7_presentation_hierarchy_reference"
+    ],
+    "generator_ready_native_rule_sources": [
+      "run2_7_slide_design_tutorial_reference",
+      "run2_7_product_demo_video_reference",
+      "run2_7_presentation_hierarchy_reference"
+    ]
+  },
+  "source_audit": [
+    {
+      "source_id": "geo_figma_slides",
+      "title": "Figma Slides",
+      "url": "https://geo-nyc.com/projects/figma-slides/",
+      "role": "presentation_product_reference",
+      "source_type": "product_reference",
+      "modality": [
+        "image_reference",
+        "interaction",
+        "text"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "Expose slide-generation controls as inspectable state: selected memory ids, density budget, asset policy, and release gate.",
+        "Use original UI-like panels only when they explain product behavior, not as decorative dashboard filler."
+      ],
+      "generator_obligation": [
+        "Translate the extracted design signal into native editable PPT shapes, text, spacing, hierarchy, or reveal metadata only."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets. Do not store: screenshots, UI copies, brand marks, template files.",
+      "evidence_record_ids": [
+        "mm_interaction_presentation_product_reference"
+      ],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "partial",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "partial"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "partial_signal_needs_deeper_visual_decomposition",
+      "generator_ready": false,
+      "generator_use_status": "candidate_rule_only_needs_deeper_decomposition"
+    },
+    {
+      "source_id": "figma_config_2025_identity",
+      "title": "How We Shaped the Visual Identity for Config 2025",
+      "url": "https://www.figma.com/blog/how-we-shaped-the-visual-identity-for-config-2025/",
+      "role": "identity_system_reference",
+      "source_type": "brand_case",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "supervity_ai_keynote",
+      "title": "Visual Presentation for AI Thought Leadership",
+      "url": "https://musecreatives.org/case-studies/visual-presentation-for-ai-thought-leadership/",
+      "role": "commercial_ai_keynote_reference",
+      "source_type": "product_keynote",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "launch_lab_sales_deck",
+      "title": "Launch Lab Sales Deck",
+      "url": "https://www.whitepage.studio/portfolio/launch-lab",
+      "role": "sales_deck_reference",
+      "source_type": "brand_case",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "google_cloud_next_keynote",
+      "title": "Google Cloud Next",
+      "url": "https://www.wearesparks.com/our-work/google-cloud-next/",
+      "role": "large_scale_keynote_reference",
+      "source_type": "product_keynote",
+      "modality": [
+        "image_reference",
+        "interaction",
+        "text"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "Reserve one slide for the largest supported outcome object and ensure it breaks from setup/proof density.",
+        "The close slide must include one decision handoff and one release gate, not an appendix-like status grid."
+      ],
+      "generator_obligation": [
+        "Translate the extracted design signal into native editable PPT shapes, text, spacing, hierarchy, or reveal metadata only."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets. Do not store: event graphics, photos, brand marks, source layouts.",
+      "evidence_record_ids": [
+        "mm_case_public_keynote_reference"
+      ],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "partial",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "partial"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "partial_signal_needs_deeper_visual_decomposition",
+      "generator_ready": false,
+      "generator_use_status": "candidate_rule_only_needs_deeper_decomposition"
+    },
+    {
+      "source_id": "slidemodel_visual_hierarchy",
+      "title": "Visual Hierarchy for Presentations",
+      "url": "https://slidemodel.com/visual-hierarchy-for-presentations/",
+      "role": "tutorial_reference",
+      "source_type": "true_ppt_tutorial",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "Reject slides where all panels have equal visual weight or the main claim competes with multiple same-size proof objects.",
+        "Generate original editable PPT compositions that express focal hierarchy without copying source layouts or screenshots."
+      ],
+      "generator_obligation": [
+        "Translate the extracted design signal into native editable PPT shapes, text, spacing, hierarchy, or reveal metadata only."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets. Do not store: full prose, screenshots, logos, source layouts.",
+      "evidence_record_ids": [
+        "mm_text_visual_hierarchy_tutorial"
+      ],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "partial",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "partial"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "partial_signal_needs_deeper_visual_decomposition",
+      "generator_ready": false,
+      "generator_use_status": "candidate_rule_only_needs_deeper_decomposition"
+    },
+    {
+      "source_id": "present_partners_whitespace",
+      "title": "White Space and Visual Hierarchy in Slides",
+      "url": "https://present.partners/resources/white-space-visual-hierarchy-slides",
+      "role": "tutorial_reference",
+      "source_type": "true_ppt_tutorial",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "Every main-story slide must choose max words, max panels, max proof objects, and an explicit route for excess proof.",
+        "The generator must reserve a dominant field on cover, climax, and close slides rather than filling the canvas with equal cards."
+      ],
+      "generator_obligation": [
+        "Translate the extracted design signal into native editable PPT shapes, text, spacing, hierarchy, or reveal metadata only."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets. Do not store: full prose, screenshots, logos, source layouts.",
+      "evidence_record_ids": [
+        "mm_text_whitespace_tutorial"
+      ],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "partial",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "partial"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "partial_signal_needs_deeper_visual_decomposition",
+      "generator_ready": false,
+      "generator_use_status": "candidate_rule_only_needs_deeper_decomposition"
+    },
+    {
+      "source_id": "slidecow_whitespace_powerpoint_tutorial",
+      "title": "How to Use White Space in PowerPoint Design",
+      "url": "https://www.slidecow.com/powerpoint-tutorials/white-space-powerpoint-design/",
+      "role": "powerpoint_whitespace_tutorial_reference",
+      "source_type": "true_ppt_tutorial",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy video, screenshots, layouts, diagrams, source prose, exercise material, or brand marks.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "schema_2025_keynote_video",
+      "title": "Schema 2025 Keynote Video",
+      "url": "https://www.youtube.com/watch?v=QFjIaN_wlWg",
+      "role": "video_reference",
+      "source_type": "product_keynote",
+      "modality": [
+        "audio",
+        "transcript",
+        "video"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "The cover slide must begin with a dominant visual object or field and fewer panels than later proof slides.",
+        "Reduce visible words on orientation beats and avoid dense labels before the mechanism has been introduced.",
+        "Convert long explanation into one native headline, one short support line, and optional speaker notes; do not place full transcript text on slide."
+      ],
+      "generator_obligation": [
+        "Route spoken or temporal detail into reveal order, density budget, or speaker notes; do not render transcript blocks.",
+        "Translate the extracted design signal into native editable PPT shapes, text, spacing, hierarchy, or reveal metadata only."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, transcripts, audio, or video frames. Do not store: video frames, audio files, full transcripts, speaker language, source screenshots.",
+      "evidence_record_ids": [
+        "mm_video_audio_keynote_rhythm"
+      ],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "partial",
+        "layout_level": "partial"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "shot_or_timestamp_level_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "partial_signal_needs_deeper_visual_decomposition",
+      "generator_ready": false,
+      "generator_use_status": "candidate_rule_only_needs_deeper_decomposition"
+    },
+    {
+      "source_id": "duarte_persuasive_visual_storytelling",
+      "title": "Persuasive Visual Storytelling",
+      "url": "https://www.duarte.com/resources/webinars-videos/persuasive-visual-storytelling/",
+      "role": "webinar_video_reference",
+      "source_type": "general_design_tutorial",
+      "modality": [
+        "audio",
+        "text",
+        "video"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "Generate a before/after delta where the after state enlarges one data object and routes nonessential explanation to notes or trace detail.",
+        "The close slide must preserve one decision handoff and one reason to act, with no appendix-like status grid.",
+        "Use a rhythm ladder: orientation slide under 30 visible words, proof slide under 55 words, climax slide with the largest proof object.",
+        "When a slide represents a narrated explanation, compress the visible slide to headline plus proof object and route extra explanation to speaker notes."
+      ],
+      "generator_obligation": [
+        "Route spoken or temporal detail into reveal order, density budget, or speaker notes; do not render transcript blocks.",
+        "Translate the extracted design signal into native editable PPT shapes, text, spacing, hierarchy, or reveal metadata only."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, transcripts, audio, video frames, webinar materials, or gated content. Do not store: webinar video, webinar audio, transcripts, screenshots, slides, gated materials.",
+      "evidence_record_ids": [
+        "mm_duarte_visual_storytelling_webinar"
+      ],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "partial",
+        "layout_level": "partial"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "shot_or_timestamp_level_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "partial_signal_needs_deeper_visual_decomposition",
+      "generator_ready": false,
+      "generator_use_status": "candidate_rule_only_needs_deeper_decomposition"
+    },
+    {
+      "source_id": "duarte_slide_design_course",
+      "title": "Presentation Design Training",
+      "url": "https://www.duarte.com/training/slide-document-design/slide-design/",
+      "role": "slide_design_course_reference",
+      "source_type": "true_ppt_tutorial",
+      "modality": [
+        "image_reference",
+        "interaction",
+        "text",
+        "video"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "Every generated slide must name its focal object and prove that no other same-scale object competes with it.",
+        "Prefer native PowerPoint shapes, alignment guides, selection-pane-friendly groups, editable text, and transitions recorded as metadata instead of flattened slide images.",
+        "Generate original mini-previews with restrained spacing, strong focal scale, and native labels; do not copy course visuals.",
+        "At least one slide must show an original before/after mini-preview pair where a report-like input becomes a designed output."
+      ],
+      "generator_obligation": [
+        "Route spoken or temporal detail into reveal order, density budget, or speaker notes; do not render transcript blocks.",
+        "Translate the extracted design signal into native editable PPT shapes, text, spacing, hierarchy, or reveal metadata only."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy course lessons, visuals, layouts, screenshots, brand marks, exercise files, full prose, transcripts, audio, or video frames. Do not store: course lessons, exercise files, screenshots, course videos, audio, transcripts, brand marks.",
+      "evidence_record_ids": [
+        "mm_duarte_slide_design_course"
+      ],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "partial",
+        "shot_or_timestamp_level": "partial",
+        "layout_level": "partial"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "shot_or_timestamp_level_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "partial_signal_needs_deeper_visual_decomposition",
+      "generator_ready": false,
+      "generator_use_status": "candidate_rule_only_needs_deeper_decomposition"
+    },
+    {
+      "source_id": "udel_design_principles_video",
+      "title": "Design Principles",
+      "url": "https://library.udel.edu/teaching-and-learning/tutorials/design-principles/",
+      "role": "design_principles_video_reference",
+      "source_type": "general_design_tutorial",
+      "modality": [
+        "audio",
+        "image_reference",
+        "text",
+        "transcript",
+        "video"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "Each generated target must include proximity grouping, repeated style tokens, alignment constraints, and one contrast mechanism.",
+        "Generate a native before/after slide pair that demonstrates alignment and contrast changes without copying tutorial frames.",
+        "Use staged native slide groups with a recorded reveal order and no more than three visible stages at once.",
+        "Use transcript only as locator metadata; convert principle explanation into short editable labels and speaker notes, not copied transcript text.",
+        "Use internal-only release labels on any slide target using this source until provenance and human approval explicitly clear public packaging."
+      ],
+      "generator_obligation": [
+        "Route spoken or temporal detail into reveal order, density budget, or speaker notes; do not render transcript blocks.",
+        "Translate the extracted design signal into native editable PPT shapes, text, spacing, hierarchy, or reveal metadata only."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; license boundary noted as CC BY-NC for the source video content, but this pack stores only derived observations and does not copy video, audio, frames, full transcripts, visuals, or source layouts. Do not store: video, audio, frames, full transcripts, tutorial visuals, source layouts.",
+      "evidence_record_ids": [
+        "mm_udel_design_principles_video"
+      ],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "partial",
+        "shot_or_timestamp_level": "partial",
+        "layout_level": "partial"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "shot_or_timestamp_level_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "partial_signal_needs_deeper_visual_decomposition",
+      "generator_ready": false,
+      "generator_use_status": "candidate_rule_only_needs_deeper_decomposition"
+    },
+    {
+      "source_id": "figma_config_2025_platform_launch",
+      "title": "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+      "url": "https://www.figma.com/blog/config-2025-press-release/",
+      "role": "design_to_production_platform_launch_reference",
+      "source_type": "product_keynote",
+      "modality": [
+        "image_reference",
+        "interaction",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "figma_config_2025_recap",
+      "title": "Config 2025: Pushing Design Further",
+      "url": "https://www.figma.com/blog/config-2025-recap/",
+      "role": "craft_grid_design_to_production_reference",
+      "source_type": "product_keynote",
+      "modality": [
+        "image_reference",
+        "interaction",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "figma_slides_product",
+      "title": "Figma Slides",
+      "url": "https://www.figma.com/slides/",
+      "role": "presentation_product_reference",
+      "source_type": "product_reference",
+      "modality": [
+        "image_reference",
+        "interaction",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "figma_slides_help",
+      "title": "Explore Figma Slides",
+      "url": "https://help.figma.com/hc/en-us/articles/24170630629911-Explore-Figma-Slides",
+      "role": "presentation_workflow_reference",
+      "source_type": "product_reference",
+      "modality": [
+        "image_reference",
+        "interaction",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "stripe_sessions_2025_product_keynote",
+      "title": "Stripe Sessions 2025 Product Keynote",
+      "url": "https://stripe.com/gb/sessions/2025/product-keynote",
+      "role": "fintech_product_keynote_reference",
+      "source_type": "product_keynote",
+      "modality": [
+        "audio",
+        "image_reference",
+        "interaction",
+        "text",
+        "transcript",
+        "video"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, transcript text, event graphics, or proprietary assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "shot_or_timestamp_level_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "google_cloud_next_2025_wrap",
+      "title": "Google Cloud Next 2025 Wrap Up",
+      "url": "https://cloud.google.com/blog/topics/google-cloud-next/google-cloud-next-2025-wrap-up/?hl=en",
+      "role": "large_scale_ai_cloud_keynote_reference",
+      "source_type": "product_keynote",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, transcript text, event graphics, or proprietary assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "google_cloud_next_2025_sundar",
+      "title": "Google Cloud Next 25: New AI capabilities to transform your business",
+      "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/google-cloud-next-2025-sundar-pichai-keynote/",
+      "role": "executive_ai_platform_keynote_reference",
+      "source_type": "product_keynote",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, transcript text, event graphics, or proprietary assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "apple_liquid_glass_newsroom",
+      "title": "Apple introduces a delightful and elegant new software design",
+      "url": "https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/",
+      "role": "design_language_launch_reference",
+      "source_type": "design_language_reference",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, video frames, or proprietary design assets.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "apple_liquid_glass_developer",
+      "title": "Meet Liquid Glass",
+      "url": "https://developer.apple.com/videos/play/wwdc2025/219/",
+      "role": "design_language_principles_video_reference",
+      "source_type": "design_language_reference",
+      "modality": [
+        "audio",
+        "image_reference",
+        "text",
+        "video"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, video frames, audio, or transcripts.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "shot_or_timestamp_level_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "duarte_slide_design",
+      "title": "Presentation Design Training",
+      "url": "https://www.duarte.com/training/slide-document-design/slide-design/",
+      "role": "slide_design_training_reference",
+      "source_type": "true_ppt_tutorial",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy course lessons, visuals, layouts, screenshots, brand marks, exercise files, full prose, transcripts, audio, or video frames.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "duarte_visual_storytelling",
+      "title": "Persuasive Visual Storytelling",
+      "url": "https://www.duarte.com/resources/webinars-videos/persuasive-visual-storytelling/",
+      "role": "visual_storytelling_training_reference",
+      "source_type": "general_design_tutorial",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "inferred_from_source_role",
+      "signal_status": "missing_in_focused_inputs",
+      "extracted_design_signal": [],
+      "generator_obligation": [
+        "blocked_from_generator_until_decomposed",
+        "Do not select this source as a generator control until a derived screenshot, shot, or layout decomposition is added."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original analysis only; do not copy webinar materials, visuals, layouts, screenshots, brand marks, full prose, transcripts, audio, or video frames.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "absent"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "registered_source_only_not_yet_generator_ready",
+      "generator_ready": false,
+      "generator_use_status": "blocked_from_generator_until_decomposed"
+    },
+    {
+      "source_id": "run2_7_figma_design_system_launch_reference",
+      "title": "Config 2025 Launch Reference",
+      "url": "https://www.figma.com/blog/config-2025-press-release/",
+      "role": "run2_7_design_system_launch_reference",
+      "source_type": "product_keynote",
+      "modality": [
+        "image_reference",
+        "interaction",
+        "text"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "For cover and setup roles, show one launch promise and one native system surface before introducing detailed proof.",
+        "For close and proof roles, show the handoff as an original native flow with a release gate and trace fields."
+      ],
+      "generator_obligation": [
+        "Generate native editable headline text, shape groups, and product-surface placeholders rather than copied imagery.",
+        "Represent interaction with native editable PPT steps, connectors, labels, and traceable workflow ids."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original reference analysis only; do not copy media, screenshots, source brand, product marks, raw assets, source layouts, or prose. do not copy source visuals, source brand, screenshots, layouts, icons, or launch article prose. do not copy source UI, source brand, interaction screenshots, product names, icons, or layout patterns.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [
+        "mm_2_7_design_system_launch_case",
+        "mm_2_7_product_surface_interaction_reference"
+      ],
+      "decomposition_depth": {
+        "screenshot_level": "partial",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "partial"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "layout_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "partial_signal_needs_deeper_visual_decomposition",
+      "generator_ready": false,
+      "generator_use_status": "candidate_rule_only_needs_deeper_decomposition"
+    },
+    {
+      "source_id": "run2_7_slide_design_tutorial_reference",
+      "title": "Slide Design Tutorial Reference",
+      "url": "https://www.duarte.com/training/slide-document-design/slide-design/",
+      "role": "run2_7_slide_design_tutorial_reference",
+      "source_type": "true_ppt_tutorial",
+      "modality": [
+        "image_reference",
+        "text"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "For contrast and proof roles, use a grid with large margins, deliberate gutters, and a visibly dominant proof area."
+      ],
+      "generator_obligation": [
+        "Construct spacing with native editable shape coordinates, margins, and guides that remain traceable in PPT."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original reference analysis only; do not copy tutorial media, source brand, course materials, raw assets, exercise files, layouts, or prose. do not copy source layouts, grids, course visuals, source brand, screenshots, or exercise files.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [
+        "mm_2_7_spacing_editorial_grid_tutorial"
+      ],
+      "decomposition_depth": {
+        "screenshot_level": "partial",
+        "shot_or_timestamp_level": "absent",
+        "layout_level": "usable"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "usable_as_derived_generator_rule_with_decomposition_gaps",
+      "generator_ready": true,
+      "generator_use_status": "candidate_native_rule_ready_with_anti_copy_review"
+    },
+    {
+      "source_id": "run2_7_product_demo_video_reference",
+      "title": "Product Demo Video Reference",
+      "url": "https://www.youtube.com/watch?v=QFjIaN_wlWg",
+      "role": "run2_7_product_demo_video_reference",
+      "source_type": "product_keynote",
+      "modality": [
+        "audio",
+        "transcript",
+        "video"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "For the climax role, reserve the largest field for one native proof object and keep supporting explanation secondary.",
+        "Map pacing to the six-slide rhythm so proof density rises only after the audience has a clear orientation beat."
+      ],
+      "generator_obligation": [
+        "Build the climax as native editable PPT shapes, text, and connectors with a traceable focal object.",
+        "Record native editable reveal objects and trace the rhythm decision without embedding raw video or audio.",
+        "Route spoken or temporal detail into reveal order, density budget, or speaker notes; do not render transcript blocks."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original reference analysis only; do not copy video, audio, frames, screenshots, transcripts, source brand, raw assets, or demo UI. do not copy video frames, audio, transcript text, product brand, demo UI, or source camera composition. do not copy source video, audio, transcript, brand, frames, screenshots, or demo sequence.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [
+        "mm_2_7_video_climax_single_object",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "partial",
+        "layout_level": "usable"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "shot_or_timestamp_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "usable_as_derived_generator_rule_with_decomposition_gaps",
+      "generator_ready": true,
+      "generator_use_status": "candidate_native_rule_ready_with_anti_copy_review"
+    },
+    {
+      "source_id": "run2_7_presentation_hierarchy_reference",
+      "title": "Presentation Hierarchy Reference",
+      "url": "https://www.presentationzen.com/",
+      "role": "run2_7_presentation_hierarchy_reference",
+      "source_type": "true_ppt_tutorial",
+      "modality": [
+        "text",
+        "transcript"
+      ],
+      "modality_source": "recorded_in_focused_inputs",
+      "signal_status": "observed_in_focused_inputs",
+      "extracted_design_signal": [
+        "Use a deterministic editorial type ladder so setup, contrast, and proof slides do not collapse into equal-weight prose."
+      ],
+      "generator_obligation": [
+        "Use native editable PPT text boxes with explicit type roles and traceable hierarchy decisions."
+      ],
+      "anti_copy_boundary": "do not copy source media, screenshots, layouts, brand marks, transcripts, proprietary UI, or source prose. Original reference analysis only; do not copy tutorial media, diagrams, screenshots, source brand, raw assets, layouts, or prose. do not copy tutorial examples, source brand, screenshots, diagrams, lesson prose, or type specimens.",
+      "evidence_record_ids": [],
+      "run2_7_source_record_ids": [
+        "mm_2_7_typography_hierarchy_tutorial"
+      ],
+      "decomposition_depth": {
+        "screenshot_level": "absent",
+        "shot_or_timestamp_level": "partial",
+        "layout_level": "usable"
+      },
+      "missing_decomposition": [
+        "screenshot_level_derived_breakdown_missing_or_partial",
+        "shot_or_timestamp_level_breakdown_missing_or_partial"
+      ],
+      "quality_verdict": "usable_as_derived_generator_rule_with_decomposition_gaps",
+      "generator_ready": true,
+      "generator_use_status": "candidate_native_rule_ready_with_anti_copy_review"
+    }
+  ],
+  "next_required_actions": [
+    "For every source with missing_in_focused_inputs, add a derived source record before using it in generation.",
+    "For tutorial and product-keynote sources, add screenshot-level or shot-level observations as derived component/layout/beat records, not copied frames.",
+    "Promote only sources with explicit native PPT obligations into renderer memory or scene compiler inputs.",
+    "Keep public release blocked until native render review confirms no copied source layout, brand, screenshot, transcript, or UI surface remains."
+  ]
+}

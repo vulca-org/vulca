@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "geo_figma_slides",
+      "title": "Figma: Slides",
+      "url": "https://geo-nyc.com/projects/figma-slides/",
+      "role": "reference_deck_template_system",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use only for reference analysis; do not copy visuals, layouts, template designs, screenshots, text, brand marks, or proprietary creative boundaries."
+    },
+    {
+      "id": "figma_config_2024",
+      "title": "Config 2024 in Review",
+      "url": "https://www.figma.com/blog/config-2024-recap/",
+      "role": "product_surface_and_launch_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use only for reference analysis; do not copy visuals, layouts, screenshots, article text, product UI captures, logos, or proprietary creative boundaries."
+    },
+    {
+      "id": "figma_config_2025_identity",
+      "title": "How We Shaped the Visual Identity for Config 2025",
+      "url": "https://www.figma.com/blog/how-we-shaped-the-visual-identity-for-config-2025/",
+      "role": "adaptive_identity_system_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use only for reference analysis; do not copy glyphs, color systems, motion concepts, photos, layouts, article text, brand marks, or proprietary creative boundaries."
+    },
+    {
+      "id": "supervity_ai_keynote",
+      "title": "Visual Presentation for AI Thought Leadership",
+      "url": "https://musecreatives.org/case-studies/visual-presentation-for-ai-thought-leadership/",
+      "role": "commercial_ai_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use only for reference analysis; do not copy deck visuals, layouts, screenshots, narrative copy, AI assets, brand marks, or proprietary creative boundaries."
+    }
+  ]
+}

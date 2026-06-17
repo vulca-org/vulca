@@ -1,0 +1,360 @@
+{
+  "schema_version": "ppt_run2_semantic_geometry_effectiveness_audit.v1",
+  "run_id": "2.45",
+  "status": "run2_45_semantic_geometry_effectiveness_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.44",
+  "source_workflow_run": "2.43",
+  "comparison_prior_generated_run": "2.41",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "input_chain": {
+    "run2_44_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-44-full-vulca/trace_manifest.json",
+    "run2_44_bad_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-44-bad-run2-43-name-only-geometry/trace_manifest.json",
+    "run2_44_rerun_result": "docs/product/ppt-run2-data-skill-quality/results/run2_44_semantic_geometry_rerun_result.json",
+    "run2_43_semantic_visual_asset_memory": "docs/product/ppt-run2-data-skill-quality/run2_43_semantic_visual_asset_memory.json",
+    "run2_43_editorial_composition_typography_memory": "docs/product/ppt-run2-data-skill-quality/run2_43_editorial_composition_typography_memory.json",
+    "run2_43_visual_asset_semantics_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_43_visual_asset_semantics_workflow_gates.json",
+    "run2_41_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-41-full-vulca/trace_manifest.json",
+    "run2_44_four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-44-four-arm-contact-sheet.png",
+    "run2_full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png"
+  },
+  "source_inventory": {
+    "run2_43_semantic_visual_asset_records": 18,
+    "run2_43_editorial_composition_typography_records": 6,
+    "run2_43_visual_asset_semantics_workflow_gates": 6,
+    "run2_44_full_trace_slides": 6,
+    "run2_44_bad_trace_slides": 6
+  },
+  "semantic_geometry_trace_effectiveness": {
+    "dataflow_bug_fixed": true,
+    "full_arm": {
+      "arm_id": "run2_44_full_semantic_geometry_compiler",
+      "slide_count": 6,
+      "slides_with_run2_43_semantic_asset_ids": 6,
+      "slides_with_editorial_typography_memory_id": 6,
+      "slides_with_visual_asset_semantics_gate_id": 6,
+      "slides_with_data_bound_geometry": 6,
+      "all_slides_have_semantic_ids_memory_gate_and_geometry": true,
+      "role_records": [
+        {
+          "slide_id": "slide_01",
+          "role": "cover",
+          "title": "Data-bound visual memory becomes the launch scene.",
+          "run2_43_semantic_visual_asset_ids": [
+            "semantic_asset_2_43_cover_1",
+            "semantic_asset_2_43_cover_2",
+            "semantic_asset_2_43_cover_3"
+          ],
+          "run2_43_editorial_typography_memory_id": "editorial_typography_2_43_cover",
+          "run2_43_visual_asset_semantics_gate_id": "gate_2_43_cover_visual_asset_semantics",
+          "run2_44_layout_signature_target": "poster_scene_with_one_generated_deck_hero",
+          "run2_44_code_module_ids": [
+            "drawRun244CoverSemanticGeometry"
+          ],
+          "geometry_slot_roles": [
+            "generated_deck_hero",
+            "memory_control_field",
+            "benchmark_cue"
+          ],
+          "geometry_slot_count": 3,
+          "main_slot_area_ratio": 0.725,
+          "data_bound_geometry": true,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "delta_from_run2_41": {
+            "prior_code_module_ids": [
+              "drawRun241MarketScenePoster"
+            ],
+            "prior_visual_asset_surface_types": [
+              "market poster",
+              "generated deck object",
+              "source-safe benchmark cue"
+            ],
+            "prior_presentation_surface_weight": 0.72,
+            "run2_44_presentation_surface_weight": 0.66,
+            "interpretation": "Run 2.44 changes the data binding and module path, but still renders semantic objects as explicit geometry slots."
+          },
+          "composition_failure_reasons": [
+            "semantic objects are bound to rectangular or elliptical geometry slots",
+            "workflow gates prove id consumption but do not yet score editorial composition quality",
+            "visual object grammar remains generated from abstract derived instructions rather than tutorial/video composition examples",
+            "public-video-grade typography, motion, and cinematic object realism remain unproven"
+          ],
+          "recommended_next_action": "build_run2_46_multimodal_composition_memory_and_workflow_thickening"
+        },
+        {
+          "slide_id": "slide_02",
+          "role": "setup",
+          "title": "The failure is visible when memory stays name-only.",
+          "run2_43_semantic_visual_asset_ids": [
+            "semantic_asset_2_43_setup_1",
+            "semantic_asset_2_43_setup_2",
+            "semantic_asset_2_43_setup_3"
+          ],
+          "run2_43_editorial_typography_memory_id": "editorial_typography_2_43_setup",
+          "run2_43_visual_asset_semantics_gate_id": "gate_2_43_setup_visual_asset_semantics",
+          "run2_44_layout_signature_target": "failure_storyboard_to_selected_route",
+          "run2_44_code_module_ids": [
+            "drawRun244SetupSemanticGeometry"
+          ],
+          "geometry_slot_roles": [
+            "collapsed_failure_path",
+            "selected_route_scene",
+            "decision_risk_lane"
+          ],
+          "geometry_slot_count": 3,
+          "main_slot_area_ratio": 0.212,
+          "data_bound_geometry": true,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "delta_from_run2_41": {
+            "prior_code_module_ids": [
+              "drawRun241FailureStoryboard"
+            ],
+            "prior_visual_asset_surface_types": [
+              "failure storyboard",
+              "collapsed prompt output",
+              "selected route scene"
+            ],
+            "prior_presentation_surface_weight": 0.72,
+            "run2_44_presentation_surface_weight": 0.58,
+            "interpretation": "Run 2.44 changes the data binding and module path, but still renders semantic objects as explicit geometry slots."
+          },
+          "composition_failure_reasons": [
+            "semantic objects are bound to rectangular or elliptical geometry slots",
+            "workflow gates prove id consumption but do not yet score editorial composition quality",
+            "visual object grammar remains generated from abstract derived instructions rather than tutorial/video composition examples",
+            "public-video-grade typography, motion, and cinematic object realism remain unproven"
+          ],
+          "recommended_next_action": "build_run2_46_multimodal_composition_memory_and_workflow_thickening"
+        },
+        {
+          "slide_id": "slide_03",
+          "role": "contrast",
+          "title": "Before and after need asymmetric semantic weight.",
+          "run2_43_semantic_visual_asset_ids": [
+            "semantic_asset_2_43_contrast_1",
+            "semantic_asset_2_43_contrast_2",
+            "semantic_asset_2_43_contrast_3"
+          ],
+          "run2_43_editorial_typography_memory_id": "editorial_typography_2_43_contrast",
+          "run2_43_visual_asset_semantics_gate_id": "gate_2_43_contrast_visual_asset_semantics",
+          "run2_44_layout_signature_target": "small_before_large_after_semantic_product_state",
+          "run2_44_code_module_ids": [
+            "drawRun244ContrastSemanticGeometry"
+          ],
+          "geometry_slot_roles": [
+            "small_before_state",
+            "large_after_state",
+            "business_delta_strip"
+          ],
+          "geometry_slot_count": 3,
+          "main_slot_area_ratio": 0.107,
+          "data_bound_geometry": true,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "delta_from_run2_41": {
+            "prior_code_module_ids": [
+              "drawRun241BeforeAfterBusinessCase"
+            ],
+            "prior_visual_asset_surface_types": [
+              "before thumbnail",
+              "after launch surface",
+              "business delta strip"
+            ],
+            "prior_presentation_surface_weight": 0.74,
+            "run2_44_presentation_surface_weight": 0.64,
+            "interpretation": "Run 2.44 changes the data binding and module path, but still renders semantic objects as explicit geometry slots."
+          },
+          "composition_failure_reasons": [
+            "semantic objects are bound to rectangular or elliptical geometry slots",
+            "workflow gates prove id consumption but do not yet score editorial composition quality",
+            "visual object grammar remains generated from abstract derived instructions rather than tutorial/video composition examples",
+            "public-video-grade typography, motion, and cinematic object realism remain unproven"
+          ],
+          "recommended_next_action": "build_run2_46_multimodal_composition_memory_and_workflow_thickening"
+        },
+        {
+          "slide_id": "slide_04",
+          "role": "proof",
+          "title": "Proof should look like a working product surface.",
+          "run2_43_semantic_visual_asset_ids": [
+            "semantic_asset_2_43_proof_1",
+            "semantic_asset_2_43_proof_2",
+            "semantic_asset_2_43_proof_3"
+          ],
+          "run2_43_editorial_typography_memory_id": "editorial_typography_2_43_proof",
+          "run2_43_visual_asset_semantics_gate_id": "gate_2_43_proof_visual_asset_semantics",
+          "run2_44_layout_signature_target": "working_product_surface_with_active_decision_lane",
+          "run2_44_code_module_ids": [
+            "drawRun244ProofSemanticGeometry"
+          ],
+          "geometry_slot_roles": [
+            "working_product_surface",
+            "deck_preview_support",
+            "review_state_support"
+          ],
+          "geometry_slot_count": 3,
+          "main_slot_area_ratio": 0.785,
+          "data_bound_geometry": true,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "delta_from_run2_41": {
+            "prior_code_module_ids": [
+              "drawRun241ProductUiEvidenceScene"
+            ],
+            "prior_visual_asset_surface_types": [
+              "product UI evidence",
+              "editable deck preview",
+              "review status badge"
+            ],
+            "prior_presentation_surface_weight": 0.72,
+            "run2_44_presentation_surface_weight": 0.6,
+            "interpretation": "Run 2.44 changes the data binding and module path, but still renders semantic objects as explicit geometry slots."
+          },
+          "composition_failure_reasons": [
+            "semantic objects are bound to rectangular or elliptical geometry slots",
+            "workflow gates prove id consumption but do not yet score editorial composition quality",
+            "visual object grammar remains generated from abstract derived instructions rather than tutorial/video composition examples",
+            "public-video-grade typography, motion, and cinematic object realism remain unproven"
+          ],
+          "recommended_next_action": "build_run2_46_multimodal_composition_memory_and_workflow_thickening"
+        },
+        {
+          "slide_id": "slide_05",
+          "role": "climax",
+          "title": "The result object must carry the slide.",
+          "run2_43_semantic_visual_asset_ids": [
+            "semantic_asset_2_43_climax_1",
+            "semantic_asset_2_43_climax_2",
+            "semantic_asset_2_43_climax_3"
+          ],
+          "run2_43_editorial_typography_memory_id": "editorial_typography_2_43_climax",
+          "run2_43_visual_asset_semantics_gate_id": "gate_2_43_climax_visual_asset_semantics",
+          "run2_44_layout_signature_target": "single_cinematic_result_object_with_supporting_proof_rail",
+          "run2_44_code_module_ids": [
+            "drawRun244ClimaxSemanticGeometry"
+          ],
+          "geometry_slot_roles": [
+            "cinematic_result_object",
+            "before_state_chip",
+            "supporting_proof_rail"
+          ],
+          "geometry_slot_count": 3,
+          "main_slot_area_ratio": 0.832,
+          "data_bound_geometry": true,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "delta_from_run2_41": {
+            "prior_code_module_ids": [
+              "drawRun241CinematicLaunchMoment"
+            ],
+            "prior_visual_asset_surface_types": [
+              "cinematic output stage",
+              "launch asset surface",
+              "audience proof rail"
+            ],
+            "prior_presentation_surface_weight": 0.834,
+            "run2_44_presentation_surface_weight": 0.78,
+            "interpretation": "Run 2.44 changes the data binding and module path, but still renders semantic objects as explicit geometry slots."
+          },
+          "composition_failure_reasons": [
+            "semantic objects are bound to rectangular or elliptical geometry slots",
+            "workflow gates prove id consumption but do not yet score editorial composition quality",
+            "visual object grammar remains generated from abstract derived instructions rather than tutorial/video composition examples",
+            "public-video-grade typography, motion, and cinematic object realism remain unproven"
+          ],
+          "recommended_next_action": "build_run2_46_multimodal_composition_memory_and_workflow_thickening"
+        },
+        {
+          "slide_id": "slide_06",
+          "role": "close",
+          "title": "The release gate becomes an inspectable handoff.",
+          "run2_43_semantic_visual_asset_ids": [
+            "semantic_asset_2_43_close_1",
+            "semantic_asset_2_43_close_2",
+            "semantic_asset_2_43_close_3"
+          ],
+          "run2_43_editorial_typography_memory_id": "editorial_typography_2_43_close",
+          "run2_43_visual_asset_semantics_gate_id": "gate_2_43_close_visual_asset_semantics",
+          "run2_44_layout_signature_target": "decision_room_handoff_with_one_release_boundary",
+          "run2_44_code_module_ids": [
+            "drawRun244CloseSemanticGeometry"
+          ],
+          "geometry_slot_roles": [
+            "review_decision_surface",
+            "release_readiness_wall",
+            "next_run_action_surface"
+          ],
+          "geometry_slot_count": 3,
+          "main_slot_area_ratio": 0.311,
+          "data_bound_geometry": true,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "delta_from_run2_41": {
+            "prior_code_module_ids": [
+              "drawRun241ReviewDecisionRoom"
+            ],
+            "prior_visual_asset_surface_types": [
+              "review decision table",
+              "release readiness wall",
+              "next-run action surface"
+            ],
+            "prior_presentation_surface_weight": 0.72,
+            "run2_44_presentation_surface_weight": 0.56,
+            "interpretation": "Run 2.44 changes the data binding and module path, but still renders semantic objects as explicit geometry slots."
+          },
+          "composition_failure_reasons": [
+            "semantic objects are bound to rectangular or elliptical geometry slots",
+            "workflow gates prove id consumption but do not yet score editorial composition quality",
+            "visual object grammar remains generated from abstract derived instructions rather than tutorial/video composition examples",
+            "public-video-grade typography, motion, and cinematic object realism remain unproven"
+          ],
+          "recommended_next_action": "build_run2_46_multimodal_composition_memory_and_workflow_thickening"
+        }
+      ]
+    },
+    "bad_control": {
+      "arm_id": "bad_run2_43_name_only_geometry",
+      "slide_count": 6,
+      "name_only_boundary_passed": true,
+      "slides_without_semantic_asset_ids": 6,
+      "slides_without_data_bound_geometry": 6,
+      "slides_with_name_only_surface_types": 6
+    }
+  },
+  "visual_effectiveness_assessment": {
+    "composition_compiler_kind": "slot_based_semantic_geometry",
+    "slot_based_geometry_slides": 6,
+    "dataflow_fix_visual_delta_from_bad_control": "proven_internal_only",
+    "public_video_grade_visual_quality": false,
+    "visual_quality_gate": "blocked",
+    "root_cause_primary": "run2_44_dataflow_fixed_but_composition_compiler_still_slot_based",
+    "root_cause_secondary": [
+      "Run 2.44 binds data correctly, but the compiler still renders semantic assets as explicit geometry slots.",
+      "Run 2.43 gates require id, memory, and gate binding, but they do not yet judge composition sophistication, visual object realism, or motion rhythm.",
+      "The semantic memory is derived and source-safe, which is correct for copyright boundaries, but it needs thicker multimodal tutorial decomposition to become a richer composition language.",
+      "The full arm is meaningfully stronger than the name-only control, but it is still not public-video-grade presentation design."
+    ],
+    "top_next_layer_to_thicken": "multimodal_composition_memory_and_visual_object_grammar",
+    "why_user_still_sees_simple_design": "The data path is now real, but the data is compiled into slot geometry. That proves workflow consumption while still feeling like a designed proof board rather than a high-end public presentation."
+  },
+  "delivery_artifacts": {
+    "pptx_paths": [],
+    "rendered_slide_paths": [],
+    "contact_sheet_paths": [
+      "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-44-four-arm-contact-sheet.png",
+      "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png"
+    ]
+  },
+  "gate_summary": {
+    "dataflow_gate": "pass_internal_only",
+    "bad_control_gate": "pass",
+    "composition_quality_gate": "blocked",
+    "public_release_gate": "blocked",
+    "summary": "Run 2.45 confirms the Run 2.44 dataflow fix and preserves the name-only negative control, but blocks visual quality because the composition compiler is still slot-based."
+  },
+  "next_required_action": "build_run2_46_multimodal_composition_memory_and_workflow_thickening",
+  "release_boundary": "public_blocked_until_run2_46_data_workflow_thickening_then_generated_rerun_human_visual_review_native_render_review_and_motion_review"
+}

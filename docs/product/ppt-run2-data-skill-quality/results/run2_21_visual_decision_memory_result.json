@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": "2.21",
+  "status": "run2_21_visual_decision_memory_ready_public_blocked",
+  "source_audit_run": "2.20",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "delivery_artifacts": {
+    "pptx_paths": [],
+    "rendered_slide_paths": [],
+    "contact_sheet_paths": [],
+    "html_motion_renderer_paths": []
+  },
+  "artifact_counts": {
+    "visual_decision_memory": 6,
+    "per_role_selector_gates": 6,
+    "evidence_rejection_records": 6
+  },
+  "input_chain": {
+    "trace_effectiveness_audit": "docs/product/ppt-run2-data-skill-quality/results/run2_20_trace_effectiveness_audit.json",
+    "evidence": "docs/product/ppt-run2-data-skill-quality/run2_18_multimodal_evidence_expansion.json",
+    "memory": "docs/product/ppt-run2-data-skill-quality/run2_18_design_memory_expansion.json",
+    "workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_18_workflow_gate_expansion.json"
+  },
+  "what_changed": [
+    "Run 2.21 turns broad Run 2.19 evidence coverage into role-specific visual-decision memory.",
+    "Each slide role now has exactly one primary evidence id, at most two secondary ids, and explicit rejected-evidence reasons.",
+    "Per-role selector gates define the trace fields that the next generated rerun must record before native PPT drawing."
+  ],
+  "release_boundary": "public_blocked_until_next_generated_rerun_consumes_run2_21_selectors_and_human_visual_review_passes",
+  "next_required_action": "consume_run2_21_visual_decision_memory_before_next_generated_rerun"
+}

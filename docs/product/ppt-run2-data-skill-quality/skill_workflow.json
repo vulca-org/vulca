@@ -1,0 +1,1258 @@
+{
+  "schema_version": 1,
+  "workflow_type": "declarative_skill_director",
+  "status": "run2_53_product_surface_scene_workflow_directed_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "five_layer_loop": [
+    "real_commercial_case",
+    "multimodal_tutorial_case_data",
+    "evidence_aesthetic_asset_memory",
+    "skill_workflow",
+    "rerun_and_evaluation"
+  ],
+  "stages": [
+    {
+      "id": "read_commercial_case",
+      "order": 1,
+      "layer": "real_commercial_case",
+      "inputs": [
+        "commercial_case.md"
+      ],
+      "outputs": [
+        "audience",
+        "decision",
+        "failed_deck_definition",
+        "six_slide_path"
+      ],
+      "gates": [
+        "case is concrete",
+        "public-demo failure mode is named"
+      ]
+    },
+    {
+      "id": "compile_multimodal_database",
+      "order": 2,
+      "layer": "tutorial_case_video_audio_data",
+      "inputs": [
+        "multimodal_database.json",
+        "visual_learning_targets.json",
+        "visual_target_components.json",
+        "video_demo_beat_map.json",
+        "motion_learning_targets.json",
+        "presentation_sequence_components.json",
+        "sources.json"
+      ],
+      "outputs": [
+        "modal anchors",
+        "cross-modal design tasks",
+        "visual learning targets",
+        "native visual components",
+        "motion grammar beats",
+        "selected motion targets",
+        "presentation sequence components",
+        "storage boundaries",
+        "source-to-skill trace"
+      ],
+      "gates": [
+        "all required modalities covered",
+        "no copied source media stored",
+        "anchors become executable design signals",
+        "visual targets reference valid multimodal anchors",
+        "visual components reference valid targets and native PPT primitives",
+        "video beats reference valid multimodal anchors and video cards",
+        "motion grammar stores derived observations only",
+        "sequence components define ordered native reveal steps"
+      ]
+    },
+    {
+      "id": "compile_evidence_memory",
+      "order": 3,
+      "layer": "tutorial_case_video_data",
+      "inputs": [
+        "multimodal_database.json",
+        "source_cards/",
+        "video_cards/",
+        "evidence_memory.json"
+      ],
+      "outputs": [
+        "claim ids",
+        "allowed use rules",
+        "source boundaries",
+        "multimodal anchor references"
+      ],
+      "gates": [
+        "every claim traces to a card",
+        "multimodal anchors are derived observations only",
+        "no copied source assets or long prose"
+      ]
+    },
+    {
+      "id": "compile_aesthetic_memory",
+      "order": 4,
+      "layer": "memory_layer",
+      "inputs": [
+        "multimodal_database.json",
+        "visual_learning_targets.json",
+        "visual_target_components.json",
+        "video_demo_beat_map.json",
+        "motion_learning_targets.json",
+        "presentation_sequence_components.json",
+        "aesthetic_memory.json",
+        "asset_memory.json"
+      ],
+      "outputs": [
+        "rhythm roles",
+        "density budgets",
+        "negative rules",
+        "asset constraints",
+        "before/after visual tasks",
+        "component-level layout contracts",
+        "motion target ids",
+        "sequence component ids"
+      ],
+      "gates": [
+        "every aesthetic move traces to extraction units",
+        "density budget is enforceable",
+        "visual target ids are selected before code generation",
+        "selected motion targets change reveal, build, scale, pause, or handoff behavior",
+        "sequence components remain native editable PPT contracts"
+      ]
+    },
+    {
+      "id": "compile_production_reference_decompositions",
+      "order": 5,
+      "layer": "multimodal_tutorial_case_data",
+      "inputs": [
+        "sources.json",
+        "multimodal_database.json",
+        "visual_target_components.json",
+        "motion_learning_targets.json",
+        "presentation_sequence_components.json",
+        "production_reference_decompositions.json"
+      ],
+      "outputs": [
+        "production reference ids",
+        "composition primitives",
+        "typography primitives",
+        "spacing primitives",
+        "motion or sequence primitives",
+        "copyright-safe extraction notes"
+      ],
+      "gates": [
+        "production reference observations are derived only",
+        "production reference schema validation passes before aesthetic memory v2 compilation",
+        "no automatic frame extraction is treated as evidence",
+        "no copied screenshots, brand marks, source layouts, full transcripts, or source prose",
+        "every production reference maps to known visual components, motion targets, and sequence components"
+      ]
+    },
+    {
+      "id": "compile_aesthetic_memory_v2",
+      "order": 6,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "production_reference_decompositions.json",
+        "aesthetic_memory.json",
+        "aesthetic_memory_v2.json",
+        "visual_target_components.json",
+        "motion_learning_targets.json",
+        "presentation_sequence_components.json"
+      ],
+      "outputs": [
+        "aesthetic memory v2 ids",
+        "hard composition contracts",
+        "typography contracts",
+        "spacing contracts",
+        "native PPT module requirements",
+        "forbidden report patterns",
+        "fallback policy requirements"
+      ],
+      "gates": [
+        "aesthetic memory v2 schema validation passes before module selection",
+        "aesthetic memory constraints define composition, typography, spacing, density, trace fields, and forbidden report patterns",
+        "provenance metadata records copyright boundary before generation",
+        "aesthetic memory v2 references production reference ids",
+        "composition contracts name focal canvas behavior",
+        "typography and spacing contracts are enforceable before code generation",
+        "fallback remains public_blocked when a module cannot be rendered natively"
+      ]
+    },
+    {
+      "id": "select_slide_archetypes",
+      "order": 7,
+      "layer": "skill_workflow",
+      "inputs": [
+        "narrative_spine.json",
+        "slide_archetypes.json",
+        "aesthetic_memory_v2.json"
+      ],
+      "outputs": [
+        "slide role map",
+        "selected aesthetic move ids",
+        "selected aesthetic memory v2 ids",
+        "deletion or routing plan"
+      ],
+      "gates": [
+        "six-slide path preserved",
+        "visual climax and close are distinct",
+        "each main slide has a selected production aesthetic contract"
+      ]
+    },
+    {
+      "id": "select_commercial_usecase",
+      "order": 8,
+      "layer": "skill_workflow",
+      "inputs": [
+        "commercial_case.md",
+        "commercial_usecase_bank.json"
+      ],
+      "outputs": [
+        "commercial_usecase_id",
+        "usecase slide arc",
+        "usecase QA probe"
+      ],
+      "gates": [
+        "selected usecase references valid sources",
+        "selected usecase is concrete",
+        "source-brand imitation remains forbidden"
+      ]
+    },
+    {
+      "id": "select_aesthetic_benchmarks",
+      "order": 9,
+      "layer": "skill_workflow",
+      "inputs": [
+        "aesthetic_benchmark_bank.json",
+        "commercial_usecase_id",
+        "workflow_decision_policy.json"
+      ],
+      "outputs": [
+        "aesthetic_benchmark_ids",
+        "benchmark validation probes",
+        "anti-copy rules"
+      ],
+      "gates": [
+        "selected benchmarks reference valid sources",
+        "benchmark rules are derived observations only",
+        "benchmark selection happens before visual production module selection"
+      ]
+    },
+    {
+      "id": "select_theme_typography_spacing_policy",
+      "order": 10,
+      "layer": "skill_workflow",
+      "inputs": [
+        "workflow_decision_policy.json",
+        "commercial_usecase_id",
+        "aesthetic_benchmark_ids"
+      ],
+      "outputs": [
+        "theme_policy_id",
+        "typography_system_id",
+        "spacing_token_set_id",
+        "workflow decision ids"
+      ],
+      "gates": [
+        "theme policy is original and source-brand sanitized",
+        "typography system defines visible hierarchy before code generation",
+        "spacing token set is selected before layout module generation"
+      ]
+    },
+    {
+      "id": "select_visual_repair_policy",
+      "order": 11,
+      "layer": "skill_workflow",
+      "inputs": [
+        "visual_repair_policy.json",
+        "commercial_usecase_id",
+        "aesthetic_benchmark_ids",
+        "theme_policy_id",
+        "typography_system_id",
+        "spacing_token_set_id"
+      ],
+      "outputs": [
+        "visual_repair_policy_ids",
+        "visual_delta_from_run2_5",
+        "visual_repair_validation_probe"
+      ],
+      "gates": [
+        "Run 2.6R visual repair remains public blocked until review",
+        "visual repair remains same-stage and not Run 3.0",
+        "selected repair ids must differ from Run 2.5 and Run 2.6",
+        "repair policy must preserve native editable PPT output"
+      ]
+    },
+    {
+      "id": "select_run2_7_design_memory",
+      "order": 12,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_7_commercial_usecase.json",
+        "run2_7_multimodal_source_records.json",
+        "run2_7_design_memory.json",
+        "run2_7_workflow_policy.json",
+        "visual_repair_policy.json"
+      ],
+      "outputs": [
+        "selected Run 2.7 usecase id",
+        "selected Run 2.7 source record ids",
+        "selected Run 2.7 design memory ids",
+        "selected Run 2.7 workflow decision ids"
+      ],
+      "gates": [
+        "commercial usecase is real and public_blocked",
+        "multimodal source records store derived observations only",
+        "design memory is deterministic and serializable",
+        "trace memory ids before native PPT generation",
+        "source-brand copying blocked before visual production"
+      ]
+    },
+    {
+      "id": "select_visual_production_modules",
+      "order": 13,
+      "layer": "skill_workflow",
+      "inputs": [
+        "visual_production_modules.json",
+        "aesthetic_memory_v2.json",
+        "production_reference_decompositions.json",
+        "workflow_decision_policy.json",
+        "commercial_usecase_id",
+        "aesthetic_benchmark_ids",
+        "theme_policy_id",
+        "typography_system_id",
+        "spacing_token_set_id",
+        "selected archetypes"
+      ],
+      "outputs": [
+        "selected visual production modules",
+        "module-to-slide mapping",
+        "native fallback plan",
+        "visual validation probes"
+      ],
+      "gates": [
+        "visual production module schema validation passes before generation",
+        "each selected module references aesthetic memory v2",
+        "module provenance metadata records copyright boundary before generation",
+        "module fallback policy is known before generation",
+        "theme, typography, and spacing policy are recorded before generation",
+        "visual validation probe is defined before scoring",
+        "modules remain native editable PPT contracts"
+      ]
+    },
+    {
+      "id": "decompose_run2_8_tutorial_video_units",
+      "order": 14,
+      "layer": "multimodal_tutorial_case_data",
+      "inputs": [
+        "run2_8_tutorial_decomposition.json",
+        "run2_7_multimodal_source_records.json",
+        "sources.json"
+      ],
+      "outputs": [
+        "selected Run 2.8 decomposition unit ids",
+        "derived tutorial and video moves",
+        "native PPT obligations",
+        "anti-copy boundaries"
+      ],
+      "gates": [
+        "every decomposition unit references valid Run 2.7 source records",
+        "raw media remains forbidden",
+        "every derived rule maps to a native code-generation binding"
+      ]
+    },
+    {
+      "id": "select_run2_8_executable_design_memory",
+      "order": 15,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_8_tutorial_decomposition.json",
+        "run2_8_executable_design_memory.json"
+      ],
+      "outputs": [
+        "selected Run 2.8 memory binding ids",
+        "native PPT function names",
+        "parameterized layout budgets",
+        "negative control failure probes"
+      ],
+      "gates": [
+        "every memory binding references valid Run 2.8 decomposition units",
+        "every binding exposes function_name, params, and layout_budget",
+        "typography, spacing, and composition constraints are explicit"
+      ]
+    },
+    {
+      "id": "apply_run2_8_workflow_gate_matrix",
+      "order": 16,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_8_tutorial_decomposition.json",
+        "run2_8_executable_design_memory.json",
+        "run2_8_workflow_gate_matrix.json",
+        "results/trace_manifest_contract.json"
+      ],
+      "outputs": [
+        "selected Run 2.8 gate matrix ids",
+        "required code bindings by slide role",
+        "Run 2.8 trace field obligations",
+        "public release gate checks"
+      ],
+      "gates": [
+        "every gate references valid decomposition units and memory bindings",
+        "required code bindings match executable memory function names",
+        "trace contract contains all Run 2.8 fields before native generation"
+      ]
+    },
+    {
+      "id": "repair_run2_9_visual_primitives",
+      "order": 17,
+      "layer": "multimodal_tutorial_case_data",
+      "inputs": [
+        "run2_9_visual_primitive_repair.json",
+        "run2_8_tutorial_decomposition.json",
+        "sources.json"
+      ],
+      "outputs": [
+        "selected Run 2.9 visual primitive ids",
+        "boxiness failure probes",
+        "native PPT visual repair obligations",
+        "anti-copy boundaries"
+      ],
+      "gates": [
+        "every visual primitive references valid Run 2.8 decomposition units",
+        "raw media remains forbidden",
+        "each primitive names the visual problem and a native PPT translation",
+        "boxiness failure probe is defined before generation"
+      ]
+    },
+    {
+      "id": "select_run2_9_executable_visual_modules",
+      "order": 18,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_9_visual_primitive_repair.json",
+        "run2_9_executable_visual_modules.json"
+      ],
+      "outputs": [
+        "selected Run 2.9 visual module ids",
+        "drawRun29 code module names",
+        "native visual primitive layout budgets",
+        "negative control failure probes"
+      ],
+      "gates": [
+        "every visual module references valid Run 2.9 visual primitives",
+        "every module exposes function_name, params, and layout_budget",
+        "native editable primitives are explicit",
+        "negative control failure mentions boxiness or report-like patterns"
+      ]
+    },
+    {
+      "id": "apply_run2_9_visual_gate_matrix",
+      "order": 19,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_9_visual_primitive_repair.json",
+        "run2_9_executable_visual_modules.json",
+        "run2_9_visual_gate_matrix.json",
+        "results/trace_manifest_contract.json"
+      ],
+      "outputs": [
+        "selected Run 2.9 visual gate matrix ids",
+        "required visual code modules by slide role",
+        "Run 2.9 trace field obligations",
+        "visual delta and boxiness gate checks"
+      ],
+      "gates": [
+        "every gate references valid visual primitives and executable modules",
+        "required code modules match executable visual module function names",
+        "trace contract contains all Run 2.9 fields before native generation",
+        "visual delta from Run 2.8 is checked before claiming aesthetic improvement"
+      ]
+    },
+    {
+      "id": "select_run2_10_visual_system_sources",
+      "order": 20,
+      "layer": "multimodal_tutorial_case_data",
+      "inputs": [
+        "run2_10_visual_system_sources.json",
+        "sources.json",
+        "run2_9_visual_primitive_repair.json"
+      ],
+      "outputs": [
+        "selected Run 2.10 visual system source ids",
+        "derived visual system directions",
+        "anti-copy boundaries",
+        "public demo first-read probes"
+      ],
+      "gates": [
+        "visual system sources store derived observations only",
+        "raw media remains forbidden",
+        "every source names native editable PPT implications",
+        "selection remains same-stage and not Run 3.0"
+      ]
+    },
+    {
+      "id": "compile_run2_10_visual_system_memory",
+      "order": 21,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_10_visual_system_sources.json",
+        "run2_10_visual_system_memory.json"
+      ],
+      "outputs": [
+        "selected Run 2.10 visual system memory ids",
+        "typography contracts",
+        "composition contracts",
+        "asset strategy contracts",
+        "motion sequence contracts",
+        "native PPT module implications"
+      ],
+      "gates": [
+        "every visual system references valid Run 2.10 source records",
+        "memory forbids same visual family, palette-only changes, dashboard grids, and rectangle-led proof",
+        "visual system contracts are executable before native PPT generation"
+      ]
+    },
+    {
+      "id": "apply_run2_10_visual_system_gate_matrix",
+      "order": 22,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_10_visual_system_sources.json",
+        "run2_10_visual_system_memory.json",
+        "run2_10_visual_system_gate_matrix.json",
+        "results/trace_manifest_contract.json"
+      ],
+      "outputs": [
+        "selected Run 2.10 visual system gate matrix ids",
+        "required visual system code modules by slide role",
+        "Run 2.10 trace field obligations",
+        "sameness failure probes",
+        "shape count budgets",
+        "asymmetry and whitespace rules"
+      ],
+      "gates": [
+        "every gate references valid visual system sources and memory ids",
+        "required code modules match native Run 2.10 module function names",
+        "trace contract contains all Run 2.10 fields before native generation",
+        "sameness failure gate checks whether Run 2.10 is structurally distinct from Run 2.9"
+      ]
+    },
+    {
+      "id": "apply_run2_15_layout_selector_gate_matrix",
+      "order": 23,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_15_layout_selector_sources.json",
+        "run2_15_layout_module_memory.json",
+        "run2_15_layout_selector_gate_matrix.json",
+        "results/trace_manifest_contract.json"
+      ],
+      "outputs": [
+        "selected Run 2.15 layout selector source ids",
+        "selected Run 2.15 layout module ids",
+        "selected Run 2.15 selector gate ids",
+        "text resilience requirements",
+        "trace visibility policy",
+        "product theater realism probes",
+        "bad selector control boundary"
+      ],
+      "gates": [
+        "layout module selector runs before native PPT generation",
+        "every selected module references valid selector source records",
+        "trace contract contains all Run 2.15 selector fields before the next four-arm rerun",
+        "text resilience gate chooses compression or split instead of shrinking text below readable size",
+        "trace visibility gate keeps workflow proof in manifest/viewer/QA for public slides",
+        "product theater realism gate forbids copied screenshots and flat fake-product rectangles",
+        "bad selector control forbids layout module memory and selector gate matrix inputs"
+      ]
+    },
+    {
+      "id": "generate_code_first_ppt",
+      "order": 24,
+      "layer": "skill_workflow",
+      "inputs": [
+        "generation_briefs/run2_skill.md",
+        "selected archetypes",
+        "commercial_usecase_id",
+        "aesthetic_benchmark_ids",
+        "theme_policy_id",
+        "typography_system_id",
+        "spacing_token_set_id",
+        "selected visual learning targets",
+        "selected visual target components",
+        "selected motion targets",
+        "selected sequence components",
+        "selected aesthetic memory v2 ids",
+        "selected visual production modules",
+        "selected visual repair policy ids",
+        "selected Run 2.8 decomposition units",
+        "selected Run 2.8 executable design memory bindings",
+        "selected Run 2.8 workflow gate matrix",
+        "selected Run 2.9 visual primitive repairs",
+        "selected Run 2.9 executable visual modules",
+        "selected Run 2.9 visual gate matrix",
+        "selected Run 2.10 visual system sources",
+        "selected Run 2.10 visual system memory",
+        "selected Run 2.10 visual system gate matrix",
+        "selected Run 2.15 layout module ids",
+        "selected Run 2.15 selector gate ids",
+        "Run 2.15 text resilience requirements",
+        "Run 2.15 trace visibility policy",
+        "Run 2.15 product theater realism probes",
+        "visual delta from Run 2.5",
+        "visual repair validation probe",
+        "asset memory"
+      ],
+      "outputs": [
+        "editable PPTX",
+        "preview PNGs",
+        "layout JSON",
+        "trace_manifest.json"
+      ],
+      "gates": [
+        "core text is native",
+        "component ids are recorded",
+        "commercial_usecase_id is recorded",
+        "aesthetic_benchmark_ids are recorded",
+        "theme_policy_id, typography_system_id, and spacing_token_set_id are recorded",
+        "aesthetic_memory_v2_ids are recorded",
+        "visual_production_module_ids are recorded",
+        "motion target ids and sequence component ids are recorded",
+        "run2_9_visual_primitive_ids are recorded",
+        "run2_9_visual_module_ids are recorded",
+        "run2_9_code_module_ids are recorded",
+        "run2_9_boxiness_failure_probe is recorded",
+        "run2_10_visual_system_source_ids are recorded",
+        "run2_10_visual_system_memory_ids are recorded",
+        "run2_10_code_module_ids are recorded from actual native module calls",
+        "run2_10_sameness_failure_probe and asymmetry whitespace rule are recorded",
+        "run2_15_selected_layout_module_ids are recorded",
+        "run2_15_selector_gate_ids are recorded",
+        "run2_15_trace_visibility_policy is recorded",
+        "run2_15_text_resilience_result is recorded",
+        "run2_15_product_surface_probe is recorded",
+        "ordered reveal steps use native editable objects",
+        "fallback policy is recorded when selected modules degrade",
+        "no full-slide rasterized output",
+        "runtime isolation recorded"
+      ]
+    },
+    {
+      "id": "run_structural_and_aesthetic_qa",
+      "order": 25,
+      "layer": "rerun_and_evaluation",
+      "inputs": [
+        "PPTX",
+        "layout JSON",
+        "contact sheet",
+        "aesthetic_rubric.md",
+        "trace_manifest.json"
+      ],
+      "outputs": [
+        "delivery report",
+        "layout report",
+        "Gemini artifact review",
+        "score table",
+        "visual validation outcome"
+      ],
+      "gates": [
+        "structural QA passes",
+        "layout errors are zero",
+        "motion grammar sequence is traceable",
+        "benchmark validation checks whether selected benchmarks are visible in the contact sheet",
+        "theme validation checks whether selected theme, typography, and spacing policies are visible",
+        "visual validation checks whether production modules are visible in the contact sheet",
+        "visual repair validation checks whether Run 2.6R differs visibly from Run 2.5 and Run 2.6",
+        "Run 2.9 visual delta gate checks whether boxiness decreased from Run 2.8",
+        "Run 2.10 sameness gate checks whether visual system structure differs from Run 2.9",
+        "Gemini review is recorded"
+      ]
+    },
+    {
+      "id": "recommend_repairs",
+      "order": 26,
+      "layer": "skill_workflow",
+      "inputs": [
+        "delivery report",
+        "layout report",
+        "Gemini review",
+        "visual validation outcome",
+        "human visual notes"
+      ],
+      "outputs": [
+        "repair recommendations",
+        "blocked release reasons"
+      ],
+      "gates": [
+        "repair remains recommendation-only until accepted",
+        "no automated public-ready promotion"
+      ]
+    },
+    {
+      "id": "refresh_trace_qa_outcomes",
+      "order": 27,
+      "layer": "rerun_and_evaluation",
+      "inputs": [
+        "trace_manifest.json",
+        "delivery report",
+        "layout report",
+        "visual validation outcome"
+      ],
+      "outputs": [
+        "post-QA trace manifest",
+        "backup manifest",
+        "dry-run diff"
+      ],
+      "gates": [
+        "refresh is atomic",
+        "backup exists before overwrite",
+        "public gate remains blocked without render and human approval"
+      ]
+    },
+    {
+      "id": "emit_release_decision",
+      "order": 28,
+      "layer": "rerun_and_evaluation",
+      "inputs": [
+        "post-QA trace manifest",
+        "native render result",
+        "human approval record"
+      ],
+      "outputs": [
+        "internal_only or public_blocked decision"
+      ],
+      "gates": [
+        "native render passed before demo candidate",
+        "human approval recorded before public-ready claim"
+      ]
+    },
+    {
+      "id": "expand_run2_18_multimodal_evidence",
+      "order": 29,
+      "layer": "multimodal_data",
+      "inputs": [
+        "sources.json",
+        "run2_12_thick_multimodal_evidence.json",
+        "run2_15_layout_selector_sources.json",
+        "human thickness priority"
+      ],
+      "outputs": [
+        "run2_18_multimodal_evidence_expansion.json"
+      ],
+      "gates": [
+        "derived observations only",
+        "raw media, copied layouts, full transcripts, and brand marks remain forbidden",
+        "each record binds source locator, commercial requirement, generation constraint, memory target, workflow target, bad-control probe, and release boundary"
+      ]
+    },
+    {
+      "id": "expand_run2_18_design_memory",
+      "order": 30,
+      "layer": "design_memory",
+      "inputs": [
+        "run2_18_multimodal_evidence_expansion.json"
+      ],
+      "outputs": [
+        "run2_18_design_memory_expansion.json"
+      ],
+      "gates": [
+        "each memory binds evidence ids to composition, typography, spacing, motion or sequence, proof object, code-generation binding, and required trace fields",
+        "negative-control failure is explicit",
+        "public release remains blocked"
+      ]
+    },
+    {
+      "id": "apply_run2_18_workflow_gate_expansion",
+      "order": 31,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_18_multimodal_evidence_expansion.json",
+        "run2_18_design_memory_expansion.json"
+      ],
+      "outputs": [
+        "run2_18_workflow_gate_expansion.json",
+        "results/run2_18_thickness_result.json"
+      ],
+      "gates": [
+        "next four-arm rerun must select Run 2.18 evidence, memory, and gates before native PPT code generation",
+        "negative control may read evidence but not design memory or workflow gates",
+        "Run 2.18 is not a new PPT output and does not advance to Run 3.0"
+      ]
+    },
+    {
+      "id": "lock_run2_24_single_usecase_content_memory",
+      "order": 32,
+      "layer": "real_commercial_case",
+      "inputs": [
+        "commercial_usecase_bank.json",
+        "run2_7_commercial_usecase.json",
+        "results/run2_23_selector_effectiveness_audit.json"
+      ],
+      "outputs": [
+        "run2_24_single_usecase_content_memory.json"
+      ],
+      "gates": [
+        "one primary commercial usecase is selected before the next rerun",
+        "each slide role has headline, support line, business proof points, and visual evidence slot ids",
+        "cross-case primary story mixing is forbidden"
+      ]
+    },
+    {
+      "id": "compile_run2_24_visual_evidence_asset_memory",
+      "order": 33,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_24_single_usecase_content_memory.json"
+      ],
+      "outputs": [
+        "run2_24_visual_evidence_asset_memory.json"
+      ],
+      "gates": [
+        "at least two native-PPT visual evidence assets exist for each slide role",
+        "raw screenshots, video frames, copied layouts, brand marks, audio, and transcript text remain forbidden",
+        "visual evidence assets carry business content, not only workflow symbols"
+      ]
+    },
+    {
+      "id": "apply_run2_24_content_visual_workflow_gates",
+      "order": 34,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_24_single_usecase_content_memory.json",
+        "run2_24_visual_evidence_asset_memory.json"
+      ],
+      "outputs": [
+        "run2_24_content_visual_workflow_gates.json",
+        "results/run2_24_single_usecase_thickening_result.json"
+      ],
+      "gates": [
+        "next generated rerun must record run2_24_selected_usecase_id, content memory id, visual evidence slot ids, and density gate id",
+        "negative control may receive the usecase label but not content memory, visual evidence assets, or density gates",
+        "Run 2.24 is not a new PPT output and does not advance to Run 3.0"
+      ]
+    },
+    {
+      "id": "compile_run2_35_visual_evidence_asset_realism_memory",
+      "order": 35,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "results/run2_34_main_surface_visual_evidence_audit.json",
+        "run2_24_visual_evidence_asset_memory.json",
+        "run2_24_single_usecase_content_memory.json",
+        "sources.json"
+      ],
+      "outputs": [
+        "run2_35_visual_evidence_asset_realism_memory.json"
+      ],
+      "gates": [
+        "each Run 2.24 visual evidence asset becomes a usecase-specific product or business state",
+        "generic block diagrams and equal-weight placeholder rectangles are forbidden",
+        "raw media, copied screenshots, source layouts, brand marks, audio, and transcript text remain forbidden"
+      ]
+    },
+    {
+      "id": "compile_run2_35_editorial_composition_memory",
+      "order": 36,
+      "layer": "design_memory",
+      "inputs": [
+        "results/run2_34_main_surface_visual_evidence_audit.json",
+        "run2_35_visual_evidence_asset_realism_memory.json"
+      ],
+      "outputs": [
+        "run2_35_editorial_composition_memory.json"
+      ],
+      "gates": [
+        "cover, setup, contrast, and close repair weak editorial anchors",
+        "each role defines a first-read anchor object and hero canvas share target",
+        "right-side evidence spine remains reviewer context, not the main public surface"
+      ]
+    },
+    {
+      "id": "apply_run2_35_visual_evidence_workflow_gates",
+      "order": 37,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_35_visual_evidence_asset_realism_memory.json",
+        "run2_35_editorial_composition_memory.json"
+      ],
+      "outputs": [
+        "run2_35_visual_evidence_workflow_gates.json",
+        "results/run2_35_visual_evidence_realism_workflow_result.json"
+      ],
+      "gates": [
+        "Run 2.36 must consume Run 2.35 realism memory, editorial composition memory, and gates before native PPT generation",
+        "negative control may receive the usecase label but not Run 2.35 memory or gate ids",
+        "Run 2.35 is not a new PPT output and does not advance to Run 3.0"
+      ]
+    },
+    {
+      "id": "compile_run2_38_public_video_slide_direction_memory",
+      "order": 38,
+      "layer": "public_video_visual_direction_memory",
+      "inputs": [
+        "results/run2_37_visual_quality_audit.json",
+        "results/run2_36_visual_evidence_realism_rerun_result.json",
+        "commercial_usecase_bank.json",
+        "sources.json"
+      ],
+      "outputs": [
+        "run2_38_public_video_slide_direction_memory.json"
+      ],
+      "gates": [
+        "each slide role receives a unique public-video visual rhythm",
+        "Run 2.36 dominant card layout is explicitly rejected",
+        "product-platform proof objects replace generic cards and audit ribbons"
+      ]
+    },
+    {
+      "id": "compile_run2_38_per_slide_visual_recipe_memory",
+      "order": 39,
+      "layer": "per_slide_visual_recipe_memory",
+      "inputs": [
+        "run2_38_public_video_slide_direction_memory.json"
+      ],
+      "outputs": [
+        "run2_38_per_slide_visual_recipe_memory.json"
+      ],
+      "gates": [
+        "each role defines layout signature, typography, spacing, visual evidence, and motion beat obligations",
+        "workflow gates are stored in trace, not shown as public ribbon composition",
+        "all six layout signatures must be unique before the next rerun"
+      ]
+    },
+    {
+      "id": "apply_run2_38_public_video_workflow_gates",
+      "order": 40,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_38_public_video_slide_direction_memory.json",
+        "run2_38_per_slide_visual_recipe_memory.json"
+      ],
+      "outputs": [
+        "run2_38_public_video_workflow_gates.json",
+        "results/run2_38_public_video_visual_direction_workflow_result.json"
+      ],
+      "gates": [
+        "Run 2.39 must consume Run 2.38 visual direction memory, visual recipe memory, and gates before native PPT generation",
+        "negative control may receive the usecase label but not Run 2.38 direction or recipe ids",
+        "Run 2.38 is not a new PPT output and does not advance to Run 3.0"
+      ]
+    },
+    {
+      "id": "compile_run2_43_semantic_visual_asset_memory",
+      "order": 41,
+      "layer": "semantic_visual_asset_memory",
+      "inputs": [
+        "results/run2_42_content_visual_asset_quality_audit.json",
+        "results/run2_41_content_visual_asset_compiler_rerun_result.json",
+        "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-41-full-vulca/trace_manifest.json",
+        "commercial_usecase_bank.json"
+      ],
+      "outputs": [
+        "run2_43_semantic_visual_asset_memory.json"
+      ],
+      "gates": [
+        "each Run 2.41 named visual asset surface becomes a usecase-specific semantic visual asset",
+        "generic placeholders, equal rectangles, and schematic native shape-only surfaces are forbidden",
+        "raw tutorial media, copied screenshots, source layouts, brand marks, audio, and transcript text remain forbidden"
+      ]
+    },
+    {
+      "id": "compile_run2_43_editorial_composition_typography_memory",
+      "order": 42,
+      "layer": "editorial_composition_typography_memory",
+      "inputs": [
+        "run2_43_semantic_visual_asset_memory.json"
+      ],
+      "outputs": [
+        "run2_43_editorial_composition_typography_memory.json"
+      ],
+      "gates": [
+        "each role defines a first-read semantic object, typography hierarchy, layout signature, and depth rule",
+        "three semantic assets must not become equal cards",
+        "public first read excludes trace ids, run ids, gate names, and database terms"
+      ]
+    },
+    {
+      "id": "apply_run2_43_visual_asset_semantics_workflow_gates",
+      "order": 43,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_43_semantic_visual_asset_memory.json",
+        "run2_43_editorial_composition_typography_memory.json"
+      ],
+      "outputs": [
+        "run2_43_visual_asset_semantics_workflow_gates.json",
+        "results/run2_43_visual_asset_semantics_workflow_result.json"
+      ],
+      "gates": [
+        "Run 2.44 must consume Run 2.43 semantic visual assets, editorial typography memory, and gates before native PPT generation",
+        "negative control may receive Run 2.41 surface names but not Run 2.43 semantic asset ids or gate ids",
+        "Run 2.43 is not a new PPT output and does not advance to Run 3.0"
+      ]
+    },
+    {
+      "id": "compile_run2_49_readability_memory",
+      "order": 44,
+      "layer": "readability_memory",
+      "inputs": [
+        "results/run2_48_composition_grammar_effectiveness_audit.json",
+        "run2_46_visual_object_grammar_memory.json",
+        "run2_24_single_usecase_content_memory.json"
+      ],
+      "outputs": [
+        "run2_49_readability_memory.json"
+      ],
+      "gates": [
+        "each slide role defines a contact-sheet-scale readability gate before Run 2.50 generation",
+        "title text must not clip and must stay readable at contact-sheet scale",
+        "public slide text must hide run ids, memory ids, gate ids, and database terms"
+      ]
+    },
+    {
+      "id": "compile_run2_49_content_evidence_density_memory",
+      "order": 45,
+      "layer": "content_evidence_density_memory",
+      "inputs": [
+        "run2_49_readability_memory.json",
+        "run2_46_visual_object_grammar_memory.json",
+        "run2_24_single_usecase_content_memory.json"
+      ],
+      "outputs": [
+        "run2_49_content_evidence_density_memory.json"
+      ],
+      "gates": [
+        "each role requires at least three specific business evidence objects",
+        "each role requires at least two inspectable visual proof objects",
+        "generic abstract proof, empty square grids, and trace-only badges cannot count as business evidence"
+      ]
+    },
+    {
+      "id": "apply_run2_49_editorial_renderer_workflow_gates",
+      "order": 46,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_49_readability_memory.json",
+        "run2_49_content_evidence_density_memory.json",
+        "run2_46_composition_workflow_gates.json"
+      ],
+      "outputs": [
+        "run2_49_editorial_renderer_workflow_gates.json",
+        "results/run2_49_readability_content_density_renderer_repair_result.json"
+      ],
+      "gates": [
+        "Run 2.50 must consume Run 2.49 readability memory, content evidence density memory, and renderer gates before native PPT generation",
+        "negative control may receive Run 2.46 composition grammar but not Run 2.49 readability, density, or renderer ids",
+        "Run 2.49 is not a new PPT output and does not advance to Run 3.0"
+      ]
+    },
+    {
+      "id": "compile_run2_51_editorial_copy_memory",
+      "order": 47,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_49_readability_memory.json",
+        "run2_49_content_evidence_density_memory.json",
+        "results/run2_50_readability_density_renderer_rerun_result.json"
+      ],
+      "outputs": [
+        "run2_51_editorial_copy_memory.json"
+      ],
+      "gates": [
+        "public copy respects word and character budgets",
+        "raw workflow terms are absent from public copy",
+        "raw evidence remains available in trace-only fields",
+        "visual validation is deferred to generated rerun"
+      ]
+    },
+    {
+      "id": "compile_run2_51_shape_text_socket_memory",
+      "order": 48,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_51_editorial_copy_memory.json",
+        "run2_49_editorial_renderer_workflow_gates.json"
+      ],
+      "outputs": [
+        "run2_51_shape_text_socket_memory.json"
+      ],
+      "gates": [
+        "each role has one primary archetype",
+        "each role has at least four socket contracts",
+        "each socket owns a shape id and character budget",
+        "semantic primitives include explicit geometry constraints"
+      ]
+    },
+    {
+      "id": "apply_run2_51_renderer_archetype_workflow_gates",
+      "order": 49,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_51_editorial_copy_memory.json",
+        "run2_51_shape_text_socket_memory.json"
+      ],
+      "outputs": [
+        "run2_51_renderer_archetype_workflow_gates.json"
+      ],
+      "gates": [
+        "next generated full arm must bind Run 2.51 copy ids",
+        "next generated full arm must bind Run 2.51 socket ids",
+        "bad control must fail without Run 2.51 ids",
+        "visual validation remains deferred until generated rerun"
+      ]
+    },
+    {
+      "id": "compile_run2_53_product_surface_scene_memory",
+      "order": 50,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_52_editorial_socket_renderer_rerun_result.json",
+        "ppt-run2-52-full-vulca/trace_manifest.json",
+        "run2_51_shape_text_socket_memory.json"
+      ],
+      "outputs": [
+        "product surface scene ids",
+        "role-specific product or business objects",
+        "surface slot obligations",
+        "generic geometry negative rules"
+      ],
+      "gates": [
+        "every role names one primary product or business object",
+        "every role has at least three surface slots",
+        "generic geometric diagram is forbidden as the primary answer"
+      ],
+      "visual_validation_deferred_to_generated_rerun": true,
+      "creates_new_ppt_deck": false
+    },
+    {
+      "id": "compile_run2_53_business_visual_evidence_memory",
+      "order": 51,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_53_product_surface_scene_memory.json",
+        "run2_51_editorial_copy_memory.json"
+      ],
+      "outputs": [
+        "business visual evidence ids",
+        "reader question contracts",
+        "minimum visual specificity checks",
+        "source boundary checks"
+      ],
+      "gates": [
+        "every evidence record binds a product surface scene",
+        "every evidence record binds Run 2.51 editorial copy",
+        "raw media and source layout copying remain false"
+      ],
+      "visual_validation_deferred_to_generated_rerun": true,
+      "creates_new_ppt_deck": false
+    },
+    {
+      "id": "apply_run2_53_scene_renderer_workflow_gates",
+      "order": 52,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_53_product_surface_scene_memory.json",
+        "run2_53_business_visual_evidence_memory.json",
+        "run2_51_renderer_archetype_workflow_gates.json"
+      ],
+      "outputs": [
+        "scene renderer gate ids",
+        "Run 2.54 trace field requirements",
+        "native drawing binding contract",
+        "bad-control failure probe"
+      ],
+      "gates": [
+        "Run 2.54 must bind scene/evidence/gate ids before native drawing",
+        "primary product or business object must be trace-reported",
+        "forbidden generic geometry count must be zero"
+      ],
+      "visual_validation_deferred_to_generated_rerun": true,
+      "creates_new_ppt_deck": false
+    }
+  ],
+  "repair_triggers": [
+    {
+      "id": "run2_24_single_usecase_pack_required_before_next_rerun",
+      "trigger": "Run 2.23 proved selector execution but Run 2.22 still reads as sparse workflow symbols instead of one thick commercial case",
+      "recommendation": "require run2_24_single_usecase_content_memory.json, run2_24_visual_evidence_asset_memory.json, and run2_24_content_visual_workflow_gates.json before the next generated rerun",
+      "human_gate": "required before next generated rerun"
+    },
+    {
+      "id": "run2_18_thickness_pack_required_before_next_rerun",
+      "trigger": "The latest generated output still depends on thin source-to-memory selection or the next quality target is data/workflow thickness rather than visual polish",
+      "recommendation": "require run2_18_multimodal_evidence_expansion.json, run2_18_design_memory_expansion.json, and run2_18_workflow_gate_expansion.json before the next four-arm rerun",
+      "human_gate": "required before next four-arm rerun"
+    },
+    {
+      "id": "run2_12_thick_data_required_before_next_rerun",
+      "trigger": "Run 2.11 data_workflow_chain_gate is weak_pass_internal_only or the multimodal tutorial/video database is too compact for a learning-quality claim",
+      "recommendation": "require run2_12_thick_multimodal_evidence.json, run2_12_design_memory_seed.json, and run2_12_workflow_gate_seed.json before next four-arm rerun",
+      "human_gate": "required before next four-arm rerun"
+    },
+    {
+      "id": "trace_qa_pending",
+      "trigger": "per-slide structural_qa or aesthetic_qa remains pending after validation",
+      "recommendation": "run the trace QA refresh step before scoring or winner claims",
+      "human_gate": "required before public release"
+    },
+    {
+      "id": "production_module_not_visible",
+      "trigger": "selected visual production modules are recorded in trace but not visible in the contact sheet",
+      "recommendation": "repair the slide module or keep the rerun as data-only evidence, not visual-quality evidence",
+      "human_gate": "required before visual-quality claims"
+    },
+    {
+      "id": "native_fallback_used",
+      "trigger": "selected visual production module falls back to a simpler native representation",
+      "recommendation": "keep release decision public_blocked and record the fallback policy in trace",
+      "human_gate": "required before demo candidate"
+    },
+    {
+      "id": "density_budget_exceeded",
+      "trigger": "visible words, panels, or proof objects exceed the selected aesthetic move budget",
+      "recommendation": "route proof detail to notes/results or select a lower-density archetype",
+      "human_gate": "required before repair changes are treated as accepted"
+    },
+    {
+      "id": "native_render_missing",
+      "trigger": "PowerPoint, Keynote, or cross-platform render inspection has not passed",
+      "recommendation": "keep release decision public_blocked and perform manual export if automation fails",
+      "human_gate": "required before demo candidate"
+    },
+    {
+      "id": "visual_climax_not_distinct",
+      "trigger": "outcome slide repeats setup or proof grid without a larger justified object",
+      "recommendation": "revise the climax archetype so the strongest supported delta gets the largest field",
+      "human_gate": "required before public-facing polish"
+    },
+    {
+      "id": "run2_35_visual_evidence_realism_required_before_run2_36_rerun",
+      "trigger": "Run 2.34 found that Run 2.33 passes contract-only visual evidence counts but still uses schematic evidence and weak editorial anchors",
+      "recommendation": "require run2_35_visual_evidence_asset_realism_memory.json, run2_35_editorial_composition_memory.json, and run2_35_visual_evidence_workflow_gates.json before Run 2.36 four-arm rerun",
+      "human_gate": "required before Run 2.36 generated rerun"
+    },
+    {
+      "id": "run2_38_public_video_direction_required_before_run2_39_rerun",
+      "trigger": "Run 2.37 found that Run 2.36 proves data consumption but stays visually average because all six slides share one card-like layout signature",
+      "recommendation": "require run2_38_public_video_slide_direction_memory.json, run2_38_per_slide_visual_recipe_memory.json, and run2_38_public_video_workflow_gates.json before Run 2.39 four-arm rerun",
+      "human_gate": "required before Run 2.39 generated rerun"
+    },
+    {
+      "id": "run2_43_visual_asset_semantics_required_before_run2_44_rerun",
+      "trigger": "Run 2.42 found that Run 2.41 proves content and visual asset thickness but still feels simple because the named surfaces are schematic native shapes rather than semantic product or scene assets",
+      "recommendation": "require run2_43_semantic_visual_asset_memory.json, run2_43_editorial_composition_typography_memory.json, and run2_43_visual_asset_semantics_workflow_gates.json before Run 2.44 four-arm rerun",
+      "human_gate": "required before Run 2.44 generated rerun"
+    },
+    {
+      "id": "run2_49_readability_density_renderer_required_before_run2_50_rerun",
+      "trigger": "Run 2.48 found that Run 2.47 consumes composition grammar but still lacks contact-sheet readability, concrete content evidence density, and public-grade editorial renderer quality",
+      "recommendation": "require run2_49_readability_memory.json, run2_49_content_evidence_density_memory.json, and run2_49_editorial_renderer_workflow_gates.json before Run 2.50 four-arm rerun",
+      "human_gate": "required before Run 2.50 generated rerun"
+    }
+  ],
+  "release_decisions": [
+    "internal_only",
+    "demo_candidate_blocked",
+    "public_blocked"
+  ]
+}

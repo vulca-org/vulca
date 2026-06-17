@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "card_id": "card_low_density_claim",
+  "source_id": "present_partners_whitespace",
+  "source_type": "tutorial",
+  "allowed_use": "derived_rules_only",
+  "do_not_copy": "Do not copy source visuals, layouts, screenshots, brand marks, article prose, or tutorial assets.",
+  "observed_move": "Use whitespace and hierarchy to make one claim feel selected rather than merely enlarged.",
+  "why_it_works": "Whitespace creates a decision surface: the viewer can tell which message matters, which details are subordinate, and where the next proof object should enter.",
+  "ppt_translation": "Create an editable text hierarchy with one main claim, one short proof hook, and generous margins. Keep the slide as native PPT text and shapes rather than flattening the claim into an image.",
+  "quality_risk": "Low density becomes weak or thin when the slide has no proof hook, leaving the claim to read like empty positioning.",
+  "extraction_units": [
+    {
+      "unit_id": "low_density_selected_claim",
+      "source_anchor": "whitespace tutorial: hierarchy through space",
+      "derived_rule": "Use whitespace to select one claim and make all support text visibly subordinate.",
+      "slide_role": "setup",
+      "execution_guard": "Do not fill open space with extra labels, badges, or secondary claims.",
+      "qa_probe": "The main claim is visibly dominant at contact-sheet scale."
+    },
+    {
+      "unit_id": "low_density_proof_hook",
+      "source_anchor": "whitespace tutorial: support without crowding",
+      "derived_rule": "Pair the low-density claim with one small proof hook so the slide does not become empty positioning.",
+      "slide_role": "setup",
+      "execution_guard": "Do not use low density when the proof hook is absent or unrelated.",
+      "qa_probe": "The proof hook is present, editable, and secondary to the claim."
+    }
+  ]
+}

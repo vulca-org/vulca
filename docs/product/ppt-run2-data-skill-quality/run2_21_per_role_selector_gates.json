@@ -1,0 +1,174 @@
+{
+  "schema_version": "ppt_run2_per_role_selector_gates.v1",
+  "status": "run2_21_per_role_selector_gates_ready_public_blocked",
+  "run_id": "2.21",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "gates": [
+    {
+      "gate_id": "gate_2_21_cover_selector",
+      "role": "cover",
+      "required_visual_decision_memory_id": "vdm_2_21_cover",
+      "required_primary_evidence_count": 1,
+      "max_secondary_evidence_count": 2,
+      "required_rejection_policy": "Every non-selected Run 2.18 evidence id must have a role-specific rejection reason.",
+      "required_code_module_ids": [
+        "drawRun219LaunchIdentityField"
+      ],
+      "required_trace_fields": [
+        "run2_21_visual_decision_memory_id",
+        "run2_21_primary_evidence_id",
+        "run2_21_secondary_evidence_ids",
+        "run2_21_rejected_evidence_reasons",
+        "run2_21_selector_gate_id",
+        "run2_21_visual_decision_delta"
+      ],
+      "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+      "pass_fail_checks": [
+        "Exactly one primary evidence id is selected before native PPT drawing.",
+        "At most two secondary evidence ids are selected before native PPT drawing.",
+        "All rejected evidence ids have reasons and are kept out of public slide labels.",
+        "The required code module ids are recorded in the trace manifest."
+      ],
+      "release_boundary": "public_blocked_until_run2_21_selector_is_consumed_by_next_generated_rerun_and_human_review_passes"
+    },
+    {
+      "gate_id": "gate_2_21_setup_selector",
+      "role": "setup",
+      "required_visual_decision_memory_id": "vdm_2_21_setup",
+      "required_primary_evidence_count": 1,
+      "max_secondary_evidence_count": 2,
+      "required_rejection_policy": "Every non-selected Run 2.18 evidence id must have a role-specific rejection reason.",
+      "required_code_module_ids": [
+        "drawRun219ProductSurfaceTheater",
+        "drawRun219DemoSequenceRoute"
+      ],
+      "required_trace_fields": [
+        "run2_21_visual_decision_memory_id",
+        "run2_21_primary_evidence_id",
+        "run2_21_secondary_evidence_ids",
+        "run2_21_rejected_evidence_reasons",
+        "run2_21_selector_gate_id",
+        "run2_21_visual_decision_delta"
+      ],
+      "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+      "pass_fail_checks": [
+        "Exactly one primary evidence id is selected before native PPT drawing.",
+        "At most two secondary evidence ids are selected before native PPT drawing.",
+        "All rejected evidence ids have reasons and are kept out of public slide labels.",
+        "The required code module ids are recorded in the trace manifest."
+      ],
+      "release_boundary": "public_blocked_until_run2_21_selector_is_consumed_by_next_generated_rerun_and_human_review_passes"
+    },
+    {
+      "gate_id": "gate_2_21_contrast_selector",
+      "role": "contrast",
+      "required_visual_decision_memory_id": "vdm_2_21_contrast",
+      "required_primary_evidence_count": 1,
+      "max_secondary_evidence_count": 2,
+      "required_rejection_policy": "Every non-selected Run 2.18 evidence id must have a role-specific rejection reason.",
+      "required_code_module_ids": [
+        "drawRun219DemoSequenceRoute"
+      ],
+      "required_trace_fields": [
+        "run2_21_visual_decision_memory_id",
+        "run2_21_primary_evidence_id",
+        "run2_21_secondary_evidence_ids",
+        "run2_21_rejected_evidence_reasons",
+        "run2_21_selector_gate_id",
+        "run2_21_visual_decision_delta"
+      ],
+      "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+      "pass_fail_checks": [
+        "Exactly one primary evidence id is selected before native PPT drawing.",
+        "At most two secondary evidence ids are selected before native PPT drawing.",
+        "All rejected evidence ids have reasons and are kept out of public slide labels.",
+        "The required code module ids are recorded in the trace manifest."
+      ],
+      "release_boundary": "public_blocked_until_run2_21_selector_is_consumed_by_next_generated_rerun_and_human_review_passes"
+    },
+    {
+      "gate_id": "gate_2_21_proof_selector",
+      "role": "proof",
+      "required_visual_decision_memory_id": "vdm_2_21_proof",
+      "required_primary_evidence_count": 1,
+      "max_secondary_evidence_count": 2,
+      "required_rejection_policy": "Every non-selected Run 2.18 evidence id must have a role-specific rejection reason.",
+      "required_code_module_ids": [
+        "drawRun219ProductSurfaceTheater",
+        "drawRun219DensityGate"
+      ],
+      "required_trace_fields": [
+        "run2_21_visual_decision_memory_id",
+        "run2_21_primary_evidence_id",
+        "run2_21_secondary_evidence_ids",
+        "run2_21_rejected_evidence_reasons",
+        "run2_21_selector_gate_id",
+        "run2_21_visual_decision_delta"
+      ],
+      "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+      "pass_fail_checks": [
+        "Exactly one primary evidence id is selected before native PPT drawing.",
+        "At most two secondary evidence ids are selected before native PPT drawing.",
+        "All rejected evidence ids have reasons and are kept out of public slide labels.",
+        "The required code module ids are recorded in the trace manifest."
+      ],
+      "release_boundary": "public_blocked_until_run2_21_selector_is_consumed_by_next_generated_rerun_and_human_review_passes"
+    },
+    {
+      "gate_id": "gate_2_21_climax_selector",
+      "role": "climax",
+      "required_visual_decision_memory_id": "vdm_2_21_climax",
+      "required_primary_evidence_count": 1,
+      "max_secondary_evidence_count": 2,
+      "required_rejection_policy": "Every non-selected Run 2.18 evidence id must have a role-specific rejection reason.",
+      "required_code_module_ids": [
+        "drawRun219MetricClimaxObject"
+      ],
+      "required_trace_fields": [
+        "run2_21_visual_decision_memory_id",
+        "run2_21_primary_evidence_id",
+        "run2_21_secondary_evidence_ids",
+        "run2_21_rejected_evidence_reasons",
+        "run2_21_selector_gate_id",
+        "run2_21_visual_decision_delta"
+      ],
+      "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+      "pass_fail_checks": [
+        "Exactly one primary evidence id is selected before native PPT drawing.",
+        "At most two secondary evidence ids are selected before native PPT drawing.",
+        "All rejected evidence ids have reasons and are kept out of public slide labels.",
+        "The required code module ids are recorded in the trace manifest."
+      ],
+      "release_boundary": "public_blocked_until_run2_21_selector_is_consumed_by_next_generated_rerun_and_human_review_passes"
+    },
+    {
+      "gate_id": "gate_2_21_close_selector",
+      "role": "close",
+      "required_visual_decision_memory_id": "vdm_2_21_close",
+      "required_primary_evidence_count": 1,
+      "max_secondary_evidence_count": 2,
+      "required_rejection_policy": "Every non-selected Run 2.18 evidence id must have a role-specific rejection reason.",
+      "required_code_module_ids": [
+        "drawRun219QuietReleaseHandoff"
+      ],
+      "required_trace_fields": [
+        "run2_21_visual_decision_memory_id",
+        "run2_21_primary_evidence_id",
+        "run2_21_secondary_evidence_ids",
+        "run2_21_rejected_evidence_reasons",
+        "run2_21_selector_gate_id",
+        "run2_21_visual_decision_delta"
+      ],
+      "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+      "pass_fail_checks": [
+        "Exactly one primary evidence id is selected before native PPT drawing.",
+        "At most two secondary evidence ids are selected before native PPT drawing.",
+        "All rejected evidence ids have reasons and are kept out of public slide labels.",
+        "The required code module ids are recorded in the trace manifest."
+      ],
+      "release_boundary": "public_blocked_until_run2_21_selector_is_consumed_by_next_generated_rerun_and_human_review_passes"
+    }
+  ]
+}

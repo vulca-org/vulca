@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "card_id": "card_appendix_absorption",
+  "source_id": "slidemodel_visual_hierarchy",
+  "source_type": "tutorial",
+  "allowed_use": "derived_rules_only",
+  "do_not_copy": "Do not copy source visuals, layouts, screenshots, brand marks, article prose, example slides, or tutorial assets.",
+  "observed_move": "Move proof detail out of the main story so the primary deck can keep rhythm while still preserving auditability.",
+  "why_it_works": "Hierarchy is partly an information-routing decision. Appendix material can protect credibility without forcing the main audience through every supporting detail.",
+  "ppt_translation": "Route dense evidence into editable appendix slides, speaker notes, or linked native PowerPoint tables while keeping the six-slide main path low-density.",
+  "quality_risk": "The deck becomes a report if too much appendix detail remains on main slides or if every proof note is promoted to visible body text.",
+  "extraction_units": [
+    {
+      "unit_id": "appendix_route_dense_evidence",
+      "source_anchor": "tutorial guidance on hierarchy and supporting detail",
+      "derived_rule": "Route dense proof detail out of the main six-slide path before reducing font size.",
+      "slide_role": "relief",
+      "execution_guard": "Do not compress audit detail into tiny visible labels on main slides.",
+      "qa_probe": "Main slides keep one dominant claim while detailed evidence remains findable in notes or appendix."
+    },
+    {
+      "unit_id": "appendix_preserve_auditability",
+      "source_anchor": "tutorial distinction between primary message and support material",
+      "derived_rule": "Preserve evidence as editable notes, appendix tables, or result reports instead of deleting it silently.",
+      "slide_role": "close",
+      "execution_guard": "Do not remove proof that is required for the release gate.",
+      "qa_probe": "Trace notes identify what was routed away from each crowded slide."
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2.58",
+  "status": "run2_58_open_source_slide_code_research_ready_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "research_question": "Can open-source slide-code and PPT-generation projects teach concrete implementation patterns for Vulca's code-generated editable PPT workflow?",
+  "usage_boundary": {
+    "learning_mode": "runtime_learning_only",
+    "do_not_copy_source_assets": true,
+    "do_not_copy_brand_or_template_layouts": true,
+    "do_not_copy_demo_decks_verbatim": true,
+    "rewrite_as_vulca_native_artifact_tool_modules": true,
+    "reason": "Open-source repositories can teach APIs, abstractions, verification patterns, and export pipelines. Vulca must still generate original case-specific content, geometry, and PPTX source code."
+  },
+  "viewer_obligation": {
+    "html_surface": "Open-source slide-code learning map",
+    "must_show": [
+      "what each project is useful for",
+      "what concrete code patterns are learnable",
+      "how the learning maps to code-generated editable PPT",
+      "what must not be copied",
+      "which Run 2.58 artifact proves current consumption"
+    ]
+  },
+  "open_source_reference_records": [
+    {
+      "id": "pptxgenjs",
+      "label": "PptxGenJS",
+      "source_url": "https://github.com/gitbrent/PptxGenJS",
+      "source_type": "pptx_generation_library",
+      "license_or_usage_note": "Use the public library/API under its repository license; do not copy project demo decks or visual assets as Vulca output.",
+      "what_to_learn": "How a JavaScript PPTX writer models slides, shapes, text runs, charts, images, tables, masters, layout units, and Office-compatible export.",
+      "learnable_code_patterns": [
+        "shape/text/table/chart API boundaries",
+        "coordinate-based PPT layout primitives",
+        "master slide and theme abstractions",
+        "browser and Node export paths",
+        "PPTX compatibility validation surface"
+      ],
+      "integration_boundary": "Vulca can learn object-model and export patterns, but its generator should continue producing original native PPT modules and trace manifests.",
+      "product_relevance": "Closest implementation reference for code-generated editable PPT because it targets actual PPTX output rather than static images.",
+      "do_not_copy_source_assets": true
+    },
+    {
+      "id": "slidev",
+      "label": "Slidev",
+      "source_url": "https://github.com/slidevjs/slidev",
+      "source_type": "slide_as_code_framework",
+      "license_or_usage_note": "Learn framework structure and theme/component patterns; do not copy themes, example talks, or creator-specific visual identity.",
+      "what_to_learn": "How a developer-oriented slide system turns Markdown, Vue components, themes, live code, diagrams, annotations, and export paths into a reusable presentation runtime.",
+      "learnable_code_patterns": [
+        "Markdown plus component deck authoring",
+        "theme package and layout slot conventions",
+        "interactive code and diagram embedding",
+        "presenter/dev-server workflow",
+        "export-oriented separation between source and render"
+      ],
+      "integration_boundary": "Useful for HTML preview/workflow ideas, but Vulca's final product promise is editable PPTX, so Slidev patterns should be translated into PPT-native modules.",
+      "product_relevance": "Good reference for slide-as-code authoring ergonomics and live preview, weaker reference for native PPT editability.",
+      "do_not_copy_source_assets": true
+    },
+    {
+      "id": "marp",
+      "label": "Marp",
+      "source_url": "https://github.com/marp-team/marp",
+      "source_type": "slide_as_code_framework",
+      "license_or_usage_note": "Learn Markdown-to-slide conversion and CSS theme organization; do not reuse demo themes as product output without an explicit license review and redesign.",
+      "what_to_learn": "How a Markdown presentation ecosystem handles slide splitting, directives, CSS theming, built-in themes, CLI conversion, and export to HTML/PDF/PPTX.",
+      "learnable_code_patterns": [
+        "Markdown page delimiter and directive grammar",
+        "theme CSS as a constrained visual system",
+        "CLI conversion pipeline",
+        "HTML/PDF/PPTX export boundary",
+        "small source document to multiple output formats"
+      ],
+      "integration_boundary": "Useful for content-source discipline and export mental model; Vulca should not reduce high-design commercial decks to markdown-theme sameness.",
+      "product_relevance": "Useful baseline for reproducible deck source and theme mechanics; not enough by itself for high-end product-demo composition.",
+      "do_not_copy_source_assets": true
+    },
+    {
+      "id": "revealjs",
+      "label": "reveal.js",
+      "source_url": "https://github.com/hakimel/reveal.js",
+      "source_type": "html_slide_runtime",
+      "license_or_usage_note": "Learn runtime, fragments, plugin boundaries, and navigation patterns; do not treat HTML animation as proof of native Keynote/PPT animation.",
+      "what_to_learn": "How an HTML presentation framework structures decks, fragments, transitions, plugin APIs, keyboard navigation, speaker notes, and theme CSS.",
+      "learnable_code_patterns": [
+        "fragment and transition state model",
+        "plugin architecture",
+        "theme CSS layering",
+        "speaker-view and navigation runtime",
+        "self-contained HTML deck packaging"
+      ],
+      "integration_boundary": "Useful for HTML viewer and motion proof prototypes, but final Vulca PPTX must explicitly prove native animation/editability when that is claimed.",
+      "product_relevance": "Strong reference for preview/runtime and demo-video surfaces, weaker reference for editable PPTX generation.",
+      "do_not_copy_source_assets": true
+    },
+    {
+      "id": "slidecoder",
+      "label": "SlideCoder",
+      "source_url": "https://github.com/vinsontang1/SlideCoder",
+      "source_type": "research_codebase",
+      "license_or_usage_note": "Use as research inspiration only; inspect license and data terms before any direct dependency, and never copy benchmark images or generated examples as Vulca content.",
+      "what_to_learn": "How layout-aware retrieval-augmented hierarchical slide generation can decompose a design target, retrieve examples, and generate slide code with traceable intermediate decisions.",
+      "learnable_code_patterns": [
+        "layout-aware decomposition before generation",
+        "RAG example retrieval for slide structure",
+        "hierarchical planning from slide to visual objects",
+        "code generation from design representation",
+        "evaluation framing for reference-grounded generation"
+      ],
+      "integration_boundary": "This is the closest research analogy for design-memory to slide-code. Vulca should learn workflow shape, not copy data, layouts, or outputs.",
+      "product_relevance": "Directly relevant to our data -> design memory -> skill workflow -> code-generated editable PPT thesis.",
+      "do_not_copy_source_assets": true
+    }
+  ],
+  "next_workflow_obligation": {
+    "target_run": "2.59",
+    "action": "Convert the five reference records into a Vulca-native code-pattern memory: PPTX object model, source-to-render pipeline, theme/component boundary, motion/runtime boundary, and RAG-to-layout planning.",
+    "must_not_do": "Do not add more rectangles or style variations until the generator proves it uses at least one concrete code-pattern memory record per slide role."
+  }
+}

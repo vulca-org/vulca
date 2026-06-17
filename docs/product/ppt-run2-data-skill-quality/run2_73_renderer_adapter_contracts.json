@@ -1,0 +1,879 @@
+{
+  "artifact_id": "run2_73_renderer_adapter_contracts",
+  "part": "Part E2",
+  "schema_version": "ppt_run2_73_renderer_adapter_contracts.v1",
+  "status": "run2_73_renderer_adapter_contracts_ready_public_blocked",
+  "stage_policy": "part_e2_renderer_adapter_contracts_only_no_renderer_rerun_no_public_release",
+  "source_scene_plan_expansion": "run2_73_scene_plan_expansion.json",
+  "source_renderer_input_validation": "run2_73_renderer_input_validation.json",
+  "source_visual_grammar_modules": "run2_73_visual_grammar_modules.json",
+  "source_inputs": [
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+      "available": true,
+      "use_in_this_artifact": "Provide D2 renderer-ready semantic components, visual containers, and expanded renderer action bindings."
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_input_validation.json",
+      "available": true,
+      "use_in_this_artifact": "Provide D3 pass/fail validation and renderer handoff status before adapter binding."
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+      "available": true,
+      "use_in_this_artifact": "Provide Part E visual grammar module, main structure, draw order, and geometry blueprint."
+    }
+  ],
+  "artifact_scope": {
+    "starts": [
+      "bind_validated_d2_scene_structures_to_part_e_visual_grammar",
+      "prepare_renderer_adapter_manifest_from_d2_d3_e_inputs"
+    ],
+    "does_not_start": [
+      "renderer_rerun",
+      "pptx_output",
+      "html_viewer",
+      "public_release"
+    ]
+  },
+  "execution_guard": {
+    "mode": "adapter_contract_only",
+    "rendering_subprocesses_allowed": false,
+    "allowed_side_effects": [
+      "read_run2_73_scene_plan_expansion_json",
+      "read_run2_73_renderer_input_validation_json",
+      "read_run2_73_visual_grammar_modules_json",
+      "write_run2_73_renderer_adapter_contracts_json"
+    ],
+    "forbidden_invocations": [
+      "renderer_rerun",
+      "pptx_output",
+      "html_viewer",
+      "public_release"
+    ],
+    "forbidden_runtime_imports": [
+      "importlib",
+      "playwright",
+      "pptx",
+      "runpy",
+      "selenium",
+      "subprocess",
+      "webbrowser"
+    ],
+    "forbidden_dynamic_import_calls": [
+      "__import__",
+      "eval",
+      "exec"
+    ]
+  },
+  "adapter_policy": {
+    "must_consume_d2_scene_plan_expansion": true,
+    "must_consume_d3_renderer_input_validation": true,
+    "must_consume_part_e_visual_grammar_modules": true,
+    "must_bind_visual_grammar_before_renderer_execution": true,
+    "geometry_source_priority": [
+      "part_e.module_geometry_blueprint",
+      "d2.semantic_components",
+      "d2.expanded_renderer_action_bindings"
+    ],
+    "no_empty_boxes": true,
+    "public_release_blocked": true
+  },
+  "adapter_scene_records": [
+    {
+      "adapter_scene_id": "renderer_adapter_2_73_cover",
+      "role": "cover",
+      "slide_index": 1,
+      "source_expansion_id": "scene_expansion_2_73_cover",
+      "source_validation_id": "renderer_input_validation_2_73_cover",
+      "source_visual_grammar_page_type": "cover",
+      "validation_status": "pass",
+      "adapter_blocking_issues": [],
+      "visual_grammar_binding": {
+        "module_id": "product_reveal",
+        "module_variant": "opening_reveal_from_memory_field",
+        "main_structure": {
+          "name": "deck_object_emerging_from_source_memory_field",
+          "non_rectangular_or_non_card_basis": [
+            "oversized deck surface is cropped beyond the frame and tilted in perspective",
+            "source memory is a layered field of contours and orbiting controls rather than equal tiles",
+            "supporting proof marks attach to the deck edge and field routes instead of sitting in cards"
+          ],
+          "serves_content_by": "The viewer reads the real brief, source memory, editable deck, and review boundary as one product path before seeing any explanatory label."
+        },
+        "draw_order": [
+          "draw a shallow diagonal memory field across the background with contour bands and curved route lines",
+          "place one oversized editable launch deck object on the front plane, cropped at one or two edges",
+          "attach brief capsule, source-memory control, and quiet review-boundary marker to the deck perimeter",
+          "lock the headline to a negative-space pocket created by the deck crop, not inside a box",
+          "add small proof labels only after the product object reads at contact-sheet scale"
+        ],
+        "forbidden_fallbacks": [
+          "decorative hero with no product object",
+          "source screenshots",
+          "three equal launch-value cards",
+          "large report panel explaining the workflow"
+        ],
+        "success_probe": "At thumbnail scale, the cover must read as one generated launch deck emerging from a source-memory field, not as a stack of labeled blocks."
+      },
+      "geometry_blueprint_binding": {
+        "module_id": "product_reveal",
+        "coordinate_system": "normalized_16_9_canvas_0_100",
+        "primary_structure_is_not": "a product screenshot card",
+        "primary_structure_is": "one oversized product surface fused with source, code, review, and proof signals",
+        "native_ppt_shape_plan": [
+          {
+            "shape_id": "hero_product_surface",
+            "primitive": "cropped_perspective_surface",
+            "path_hint": "M 34 17 L 96 8 L 90 76 L 25 86 Z; crop may extend beyond canvas on one edge",
+            "semantic_role": "generated editable PPT deck or launch result",
+            "why_not_card": "overscale crop, tilt, and fused perimeter details make it a revealed object rather than a container"
+          },
+          {
+            "shape_id": "support_memory_field",
+            "primitive": "masked_orbit_field",
+            "path_hint": "two curved arcs behind hero_product_surface from x=9 y=67 to x=82 y=20",
+            "semantic_role": "source memory and design controls supporting the object"
+          },
+          {
+            "shape_id": "fused_perimeter_signals",
+            "primitive": "edge_tabs_code_strip_and_review_marker",
+            "placement_hint": "code strip along lower-left surface edge; review marker on upper-right edge; proof tags on rear rail",
+            "semantic_role": "code renderer, editability, review boundary, QA proof"
+          }
+        ],
+        "content_attachment_points": [
+          "headline occupies open space created by the crop, not a separate card",
+          "proof labels attach to perimeter signals",
+          "support evidence stays behind or below hero_product_surface"
+        ]
+      },
+      "renderer_adapter_manifest": {
+        "semantic_component_ids": [
+          "cover_hero_object",
+          "cover_proof_panel",
+          "cover_supporting_copy",
+          "cover_evidence_marks",
+          "cover_viewer_note_route"
+        ],
+        "visual_container_ids": [
+          "cover_hero_object_container",
+          "cover_proof_panel_container",
+          "cover_supporting_copy_container",
+          "cover_evidence_marks_container",
+          "cover_viewer_note_route_container",
+          "cover_claim_container_expanded",
+          "cover_proof_container_expanded",
+          "cover_route_marker_container_expanded",
+          "cover_scene_frame_expanded",
+          "cover_note_viewer_affordance_expanded"
+        ],
+        "expanded_renderer_binding_ids": [
+          "cover_hero_object_expanded_binding",
+          "cover_proof_panel_expanded_binding",
+          "cover_supporting_copy_expanded_binding",
+          "cover_evidence_marks_expanded_binding",
+          "cover_viewer_note_route_expanded_binding"
+        ],
+        "d3_renderer_handoff": {
+          "can_handoff_to_renderer": true,
+          "must_not_render_in_d3": true,
+          "component_manifest_count": 5,
+          "visual_container_count": 10,
+          "action_binding_count": 5,
+          "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+        },
+        "d2_off_canvas_contract": {
+          "must_delete_from_canvas": [
+            "decorative hero with no product object",
+            "source screenshots",
+            "full-slide raster output",
+            "full proof field list"
+          ],
+          "speaker_note": "State that this is not an image-only demo; the product promise is editable PPT with inspectable inputs.",
+          "viewer_only": [
+            "raw source records",
+            "review metadata",
+            "full proof field list"
+          ]
+        }
+      },
+      "adapter_renderer_instructions": {
+        "draw_primary_structure_before_components": true,
+        "apply_geometry_blueprint_before_component_layout": true,
+        "bind_semantic_components_before_geometry": true,
+        "preserve_off_canvas_contract": true,
+        "renderer_execution_allowed_in_this_artifact": false,
+        "public_release_allowed_in_this_artifact": false
+      }
+    },
+    {
+      "adapter_scene_id": "renderer_adapter_2_73_setup",
+      "role": "setup",
+      "slide_index": 2,
+      "source_expansion_id": "scene_expansion_2_73_setup",
+      "source_validation_id": "renderer_input_validation_2_73_setup",
+      "source_visual_grammar_page_type": "setup",
+      "validation_status": "pass",
+      "adapter_blocking_issues": [],
+      "visual_grammar_binding": {
+        "module_id": "hero_field",
+        "module_variant": "source_to_memory_operating_field",
+        "main_structure": {
+          "name": "source_memory_compiler_field",
+          "non_rectangular_or_non_card_basis": [
+            "source observations enter as an irregular source wall, not a uniform file grid",
+            "the compiler is drawn as a compressed field bend and route turn, not a node box",
+            "the proof object sits at the field's destination edge with path tension from the source side"
+          ],
+          "serves_content_by": "The field shows why drawing waits until source observations become memory, obligations, and proof objects."
+        },
+        "draw_order": [
+          "draw a wide oblique field band that bends once from source side to proof side",
+          "scatter source fragments along the entry edge with varied scale and partial masking",
+          "compress fragments through a central memory condenser drawn as nested contours and route pressure",
+          "surface the message obligation and proof object at the destination as one stable composed object",
+          "place copy along the field's open edge so labels follow the transformation path"
+        ],
+        "forbidden_fallbacks": [
+          "four-step horizontal process cards",
+          "raw tutorial transcript",
+          "copied tutorial frame",
+          "dense audit checklist",
+          "full source lineage"
+        ],
+        "success_probe": "A reviewer should be able to point to the field bend and explain source-to-memory transformation without reading a process list."
+      },
+      "geometry_blueprint_binding": {
+        "module_id": "hero_field",
+        "coordinate_system": "normalized_16_9_canvas_0_100",
+        "primary_structure_is_not": "a rectangle containing content",
+        "primary_structure_is": "a bent freeform field whose contour and pressure show transformation",
+        "native_ppt_shape_plan": [
+          {
+            "shape_id": "hero_field_outer_band",
+            "primitive": "freeform_closed_path",
+            "path_hint": "M 3 74 C 18 56, 31 63, 44 45 C 58 25, 77 29, 98 13 L 100 44 C 79 50, 66 55, 54 70 C 38 88, 17 86, 3 74 Z",
+            "semantic_role": "causal field carrying source-to-memory pressure",
+            "why_not_card": "curved edge, diagonal route, and changing thickness prevent a panel read"
+          },
+          {
+            "shape_id": "hero_field_memory_condenser",
+            "primitive": "nested_freeform_contours",
+            "path_hint": "three concentric open contours around x=48 y=47, compressed along the route bend",
+            "semantic_role": "source fragments become memory and obligations"
+          },
+          {
+            "shape_id": "hero_field_destination_object",
+            "primitive": "grouped_surface_attached_to_field_edge",
+            "bounds_hint": "x=67 y=34 w=24 h=23, tilted -4deg, clipped by field edge",
+            "semantic_role": "stable proof object at the end of transformation"
+          }
+        ],
+        "content_attachment_points": [
+          "source fragments attach along x=6..28 y=58..76",
+          "memory labels attach outside the bend at x=42..54 y=33..42",
+          "proof object labels attach to destination perimeter at x=72..91 y=29..58"
+        ]
+      },
+      "renderer_adapter_manifest": {
+        "semantic_component_ids": [
+          "setup_hero_object",
+          "setup_proof_panel",
+          "setup_supporting_copy",
+          "setup_evidence_marks",
+          "setup_viewer_note_route"
+        ],
+        "visual_container_ids": [
+          "setup_hero_object_container",
+          "setup_proof_panel_container",
+          "setup_supporting_copy_container",
+          "setup_evidence_marks_container",
+          "setup_viewer_note_route_container",
+          "setup_claim_container_expanded",
+          "setup_proof_container_expanded",
+          "setup_route_marker_container_expanded",
+          "setup_scene_frame_expanded",
+          "setup_note_viewer_affordance_expanded"
+        ],
+        "expanded_renderer_binding_ids": [
+          "setup_hero_object_expanded_binding",
+          "setup_proof_panel_expanded_binding",
+          "setup_supporting_copy_expanded_binding",
+          "setup_evidence_marks_expanded_binding",
+          "setup_viewer_note_route_expanded_binding"
+        ],
+        "d3_renderer_handoff": {
+          "can_handoff_to_renderer": true,
+          "must_not_render_in_d3": true,
+          "component_manifest_count": 5,
+          "visual_container_count": 10,
+          "action_binding_count": 5,
+          "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+        },
+        "d2_off_canvas_contract": {
+          "must_delete_from_canvas": [
+            "raw tutorial transcript",
+            "copied tutorial frame",
+            "dense audit checklist",
+            "full source lineage"
+          ],
+          "speaker_note": "Explain that tutorials and videos guide decisions only after they are converted into original product memory.",
+          "viewer_only": [
+            "source audit gaps",
+            "blocked weak sources",
+            "full source lineage"
+          ]
+        }
+      },
+      "adapter_renderer_instructions": {
+        "draw_primary_structure_before_components": true,
+        "apply_geometry_blueprint_before_component_layout": true,
+        "bind_semantic_components_before_geometry": true,
+        "preserve_off_canvas_contract": true,
+        "renderer_execution_allowed_in_this_artifact": false,
+        "public_release_allowed_in_this_artifact": false
+      }
+    },
+    {
+      "adapter_scene_id": "renderer_adapter_2_73_contrast",
+      "role": "contrast",
+      "slide_index": 3,
+      "source_expansion_id": "scene_expansion_2_73_contrast",
+      "source_validation_id": "renderer_input_validation_2_73_contrast",
+      "source_visual_grammar_page_type": "contrast",
+      "validation_status": "pass",
+      "adapter_blocking_issues": [],
+      "visual_grammar_binding": {
+        "module_id": "before_after_theater",
+        "module_variant": "asymmetric_route_break_theater",
+        "main_structure": {
+          "name": "small_before_thumbnail_vs_dominant_after_stage",
+          "non_rectangular_or_non_card_basis": [
+            "before state is a recessed, partly clipped thumbnail on a dim side stage",
+            "after state is a large angled product surface occupying the front stage",
+            "the delta is a lens or spotlight bridging the depth gap rather than a center column"
+          ],
+          "serves_content_by": "The theater makes the product difference a mechanism gap: prompt-only collapses, while Vulca continues through source memory, proof routing, design moves, and editable output."
+        },
+        "draw_order": [
+          "draw a darkened side-stage pocket for the small before surface",
+          "draw the after surface large and forward with perspective, crop, and brighter state",
+          "insert a route break between them using a jagged path, dimmed connector, or interruption notch",
+          "attach the delta lens to the after object and name the four gained mechanisms there",
+          "keep the headline compressed near the after stage so the after state carries the argument"
+        ],
+        "forbidden_fallbacks": [
+          "two equal before and after cards",
+          "five-row comparison matrix",
+          "subjective style ranking",
+          "template gallery",
+          "raw comparison fields"
+        ],
+        "success_probe": "The after surface must dominate the before thumbnail, and the viewer must understand that the difference is mechanism rather than taste."
+      },
+      "geometry_blueprint_binding": {
+        "module_id": "before_after_theater",
+        "coordinate_system": "normalized_16_9_canvas_0_100",
+        "primary_structure_is_not": "two comparison cards",
+        "primary_structure_is": "an asymmetric stage with depth, route break, and after-state dominance",
+        "native_ppt_shape_plan": [
+          {
+            "shape_id": "before_side_stage",
+            "primitive": "clipped_recessed_surface",
+            "bounds_hint": "x=7 y=43 w=22 h=25, tilted 5deg, clipped by a dark side-stage mask",
+            "semantic_role": "prompt-only before state",
+            "why_not_card": "small scale, partial clipping, and dim side-stage treatment make it subordinate"
+          },
+          {
+            "shape_id": "after_front_stage",
+            "primitive": "large_perspective_product_surface",
+            "path_hint": "M 43 22 L 94 15 L 90 78 L 37 83 Z",
+            "semantic_role": "dominant Vulca after state"
+          },
+          {
+            "shape_id": "route_break_lens",
+            "primitive": "freeform_lens_with_interrupted_connector",
+            "path_hint": "connector C 27 55, 36 48, 42 45 is interrupted at x=34..39; lens sits on after edge x=40..55 y=38..55",
+            "semantic_role": "missing mechanism and business delta"
+          }
+        ],
+        "content_attachment_points": [
+          "before label stays inside side-stage pocket only as a low-weight state cue",
+          "mechanism labels attach to the route_break_lens",
+          "main claim anchors to the after_front_stage negative space"
+        ]
+      },
+      "renderer_adapter_manifest": {
+        "semantic_component_ids": [
+          "contrast_hero_object",
+          "contrast_proof_panel",
+          "contrast_supporting_copy",
+          "contrast_evidence_marks",
+          "contrast_viewer_note_route"
+        ],
+        "visual_container_ids": [
+          "contrast_hero_object_container",
+          "contrast_proof_panel_container",
+          "contrast_supporting_copy_container",
+          "contrast_evidence_marks_container",
+          "contrast_viewer_note_route_container",
+          "contrast_claim_container_expanded",
+          "contrast_proof_container_expanded",
+          "contrast_route_marker_container_expanded",
+          "contrast_scene_frame_expanded",
+          "contrast_note_viewer_affordance_expanded"
+        ],
+        "expanded_renderer_binding_ids": [
+          "contrast_hero_object_expanded_binding",
+          "contrast_proof_panel_expanded_binding",
+          "contrast_supporting_copy_expanded_binding",
+          "contrast_evidence_marks_expanded_binding",
+          "contrast_viewer_note_route_expanded_binding"
+        ],
+        "d3_renderer_handoff": {
+          "can_handoff_to_renderer": true,
+          "must_not_render_in_d3": true,
+          "component_manifest_count": 5,
+          "visual_container_count": 10,
+          "action_binding_count": 5,
+          "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+        },
+        "d2_off_canvas_contract": {
+          "must_delete_from_canvas": [
+            "five-row text matrix",
+            "subjective style ranking",
+            "template gallery",
+            "raw comparison fields"
+          ],
+          "speaker_note": "Name prompt-only and image-only paths as missing mechanism, not as inferior style by default.",
+          "viewer_only": [
+            "competitor boundary ids",
+            "bad-control details",
+            "raw comparison fields"
+          ]
+        }
+      },
+      "adapter_renderer_instructions": {
+        "draw_primary_structure_before_components": true,
+        "apply_geometry_blueprint_before_component_layout": true,
+        "bind_semantic_components_before_geometry": true,
+        "preserve_off_canvas_contract": true,
+        "renderer_execution_allowed_in_this_artifact": false,
+        "public_release_allowed_in_this_artifact": false
+      }
+    },
+    {
+      "adapter_scene_id": "renderer_adapter_2_73_proof",
+      "role": "proof",
+      "slide_index": 4,
+      "source_expansion_id": "scene_expansion_2_73_proof",
+      "source_validation_id": "renderer_input_validation_2_73_proof",
+      "source_visual_grammar_page_type": "proof",
+      "validation_status": "pass",
+      "adapter_blocking_issues": [],
+      "visual_grammar_binding": {
+        "module_id": "evidence_workspace",
+        "module_variant": "inspectable_product_workbench",
+        "main_structure": {
+          "name": "active_decision_lane_on_inspection_workbench",
+          "non_rectangular_or_non_card_basis": [
+            "the workspace is a single angled workbench plane, not separate UI cards",
+            "source, decision, output, and gate are connected by one active lane with depth layers",
+            "proof markers are embedded as pins, tabs, and overlays on the workbench surface"
+          ],
+          "serves_content_by": "The active lane lets viewers inspect capability binding, contract match, content check, and bad-control failure without turning proof into a table."
+        },
+        "draw_order": [
+          "draw one angled workbench plane spanning the page with a visible active lane",
+          "place source, decision, output, and release gate along the lane as attached surfaces with unequal scale",
+          "make the decision pane the brightest and most legible object because it proves mapping, not storage",
+          "pin compact proof markers to exact lane points instead of listing them in a side table",
+          "reserve a small off-canvas route affordance for raw records and keep the public canvas readable"
+        ],
+        "forbidden_fallbacks": [
+          "generic dashboard grid",
+          "schema report",
+          "raw proof list",
+          "oversized compliance table",
+          "workflow report panel"
+        ],
+        "success_probe": "A reviewer should see an inspectable product workspace with one active proof lane, not a compliance dashboard."
+      },
+      "geometry_blueprint_binding": {
+        "module_id": "evidence_workspace",
+        "coordinate_system": "normalized_16_9_canvas_0_100",
+        "primary_structure_is_not": "a dashboard grid or compliance table",
+        "primary_structure_is": "one angled workbench plane with an active decision lane embedded in it",
+        "native_ppt_shape_plan": [
+          {
+            "shape_id": "workspace_plane",
+            "primitive": "large_perspective_workbench_freeform",
+            "path_hint": "M 8 70 L 29 25 L 92 31 L 79 84 Z",
+            "semantic_role": "continuous product workspace",
+            "why_not_card": "the proof states live on one skewed plane rather than separate equal containers"
+          },
+          {
+            "shape_id": "active_decision_lane",
+            "primitive": "curved_lane_spine",
+            "path_hint": "C 18 64, 35 48, 50 52 C 64 56, 70 43, 82 38",
+            "semantic_role": "source-to-decision-to-output-to-gate path"
+          },
+          {
+            "shape_id": "proof_pins",
+            "primitive": "small_tabs_and_pin_overlays",
+            "placement_hint": "four pins on active_decision_lane at t=.18,.43,.68,.89",
+            "semantic_role": "capability bound, contract matched, content checked, bad control failed"
+          }
+        ],
+        "content_attachment_points": [
+          "source attaches at lane t=.18",
+          "decision attaches at lane t=.43 and gets highest contrast",
+          "output attaches at lane t=.68",
+          "release gate attaches at lane t=.89"
+        ]
+      },
+      "renderer_adapter_manifest": {
+        "semantic_component_ids": [
+          "proof_hero_object",
+          "proof_proof_panel",
+          "proof_supporting_copy",
+          "proof_evidence_marks",
+          "proof_viewer_note_route"
+        ],
+        "visual_container_ids": [
+          "proof_hero_object_container",
+          "proof_proof_panel_container",
+          "proof_supporting_copy_container",
+          "proof_evidence_marks_container",
+          "proof_viewer_note_route_container",
+          "proof_claim_container_expanded",
+          "proof_proof_container_expanded",
+          "proof_route_marker_container_expanded",
+          "proof_scene_frame_expanded",
+          "proof_note_viewer_affordance_expanded"
+        ],
+        "expanded_renderer_binding_ids": [
+          "proof_hero_object_expanded_binding",
+          "proof_proof_panel_expanded_binding",
+          "proof_supporting_copy_expanded_binding",
+          "proof_evidence_marks_expanded_binding",
+          "proof_viewer_note_route_expanded_binding"
+        ],
+        "d3_renderer_handoff": {
+          "can_handoff_to_renderer": true,
+          "must_not_render_in_d3": true,
+          "component_manifest_count": 5,
+          "visual_container_count": 10,
+          "action_binding_count": 5,
+          "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+        },
+        "d2_off_canvas_contract": {
+          "must_delete_from_canvas": [
+            "schema report",
+            "raw proof list",
+            "oversized compliance table",
+            "bad-control comparison details"
+          ],
+          "speaker_note": "Explain that raw proof stays inspectable off-canvas so the public slide remains readable.",
+          "viewer_only": [
+            "reader question records",
+            "off-canvas proof obligations",
+            "bad-control comparison details"
+          ]
+        }
+      },
+      "adapter_renderer_instructions": {
+        "draw_primary_structure_before_components": true,
+        "apply_geometry_blueprint_before_component_layout": true,
+        "bind_semantic_components_before_geometry": true,
+        "preserve_off_canvas_contract": true,
+        "renderer_execution_allowed_in_this_artifact": false,
+        "public_release_allowed_in_this_artifact": false
+      }
+    },
+    {
+      "adapter_scene_id": "renderer_adapter_2_73_climax",
+      "role": "climax",
+      "slide_index": 5,
+      "source_expansion_id": "scene_expansion_2_73_climax",
+      "source_validation_id": "renderer_input_validation_2_73_climax",
+      "source_visual_grammar_page_type": "climax",
+      "validation_status": "pass",
+      "adapter_blocking_issues": [],
+      "visual_grammar_binding": {
+        "module_id": "product_reveal",
+        "module_variant": "climax_editable_result_reveal",
+        "main_structure": {
+          "name": "single_editable_ppt_preview_hero_object",
+          "non_rectangular_or_non_card_basis": [
+            "one generated result object owns most of the frame and is cropped like a cinematic product shot",
+            "before, memory, code, and release states fuse into the object's surface and perimeter",
+            "proof rail orbits behind or below the object rather than splitting into cards"
+          ],
+          "serves_content_by": "The climax proves convergence: brief, source memory, mapped design moves, renderer output, editable preview, and QA proof become one result object."
+        },
+        "draw_order": [
+          "draw the editable PPT preview first at the largest scale in the deck",
+          "use perspective, partial crop, and one bright edge to create a product-reveal moment",
+          "embed memory route, code strip, editable state, and QA proof as fused surface details",
+          "place the proof rail behind or under the hero object with lower contrast and smaller scale",
+          "delay labels until the object is visually self-explanatory"
+        ],
+        "forbidden_fallbacks": [
+          "separate report cards",
+          "small disconnected diagram",
+          "generic launch slogan",
+          "internal QA criteria as public labels",
+          "image-only full-slide raster"
+        ],
+        "success_probe": "The slide must feel like one editable product result being revealed, not a recap of disconnected workflow pieces."
+      },
+      "geometry_blueprint_binding": {
+        "module_id": "product_reveal",
+        "coordinate_system": "normalized_16_9_canvas_0_100",
+        "primary_structure_is_not": "a product screenshot card",
+        "primary_structure_is": "one oversized product surface fused with source, code, review, and proof signals",
+        "native_ppt_shape_plan": [
+          {
+            "shape_id": "hero_product_surface",
+            "primitive": "cropped_perspective_surface",
+            "path_hint": "M 34 17 L 96 8 L 90 76 L 25 86 Z; crop may extend beyond canvas on one edge",
+            "semantic_role": "generated editable PPT deck or launch result",
+            "why_not_card": "overscale crop, tilt, and fused perimeter details make it a revealed object rather than a container"
+          },
+          {
+            "shape_id": "support_memory_field",
+            "primitive": "masked_orbit_field",
+            "path_hint": "two curved arcs behind hero_product_surface from x=9 y=67 to x=82 y=20",
+            "semantic_role": "source memory and design controls supporting the object"
+          },
+          {
+            "shape_id": "fused_perimeter_signals",
+            "primitive": "edge_tabs_code_strip_and_review_marker",
+            "placement_hint": "code strip along lower-left surface edge; review marker on upper-right edge; proof tags on rear rail",
+            "semantic_role": "code renderer, editability, review boundary, QA proof"
+          }
+        ],
+        "content_attachment_points": [
+          "headline occupies open space created by the crop, not a separate card",
+          "proof labels attach to perimeter signals",
+          "support evidence stays behind or below hero_product_surface"
+        ]
+      },
+      "renderer_adapter_manifest": {
+        "semantic_component_ids": [
+          "climax_hero_object",
+          "climax_proof_panel",
+          "climax_supporting_copy",
+          "climax_evidence_marks",
+          "climax_viewer_note_route"
+        ],
+        "visual_container_ids": [
+          "climax_hero_object_container",
+          "climax_proof_panel_container",
+          "climax_supporting_copy_container",
+          "climax_evidence_marks_container",
+          "climax_viewer_note_route_container",
+          "climax_claim_container_expanded",
+          "climax_proof_container_expanded",
+          "climax_route_marker_container_expanded",
+          "climax_scene_frame_expanded",
+          "climax_note_viewer_affordance_expanded"
+        ],
+        "expanded_renderer_binding_ids": [
+          "climax_hero_object_expanded_binding",
+          "climax_proof_panel_expanded_binding",
+          "climax_supporting_copy_expanded_binding",
+          "climax_evidence_marks_expanded_binding",
+          "climax_viewer_note_route_expanded_binding"
+        ],
+        "d3_renderer_handoff": {
+          "can_handoff_to_renderer": true,
+          "must_not_render_in_d3": true,
+          "component_manifest_count": 5,
+          "visual_container_count": 10,
+          "action_binding_count": 5,
+          "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+        },
+        "d2_off_canvas_contract": {
+          "must_delete_from_canvas": [
+            "separate report cards",
+            "small disconnected diagram",
+            "generic launch slogan",
+            "internal QA criteria"
+          ],
+          "speaker_note": "Keep this slide cinematic and least report-like; proof should orbit the result, not compete with it.",
+          "viewer_only": [
+            "full product term list",
+            "source refs",
+            "internal QA criteria"
+          ]
+        }
+      },
+      "adapter_renderer_instructions": {
+        "draw_primary_structure_before_components": true,
+        "apply_geometry_blueprint_before_component_layout": true,
+        "bind_semantic_components_before_geometry": true,
+        "preserve_off_canvas_contract": true,
+        "renderer_execution_allowed_in_this_artifact": false,
+        "public_release_allowed_in_this_artifact": false
+      }
+    },
+    {
+      "adapter_scene_id": "renderer_adapter_2_73_close",
+      "role": "close",
+      "slide_index": 6,
+      "source_expansion_id": "scene_expansion_2_73_close",
+      "source_validation_id": "renderer_input_validation_2_73_close",
+      "source_visual_grammar_page_type": "close",
+      "validation_status": "pass",
+      "adapter_blocking_issues": [],
+      "visual_grammar_binding": {
+        "module_id": "decision_map",
+        "module_variant": "release_handoff_gate_map",
+        "main_structure": {
+          "name": "forked_release_handoff_gate",
+          "non_rectangular_or_non_card_basis": [
+            "the decision surface is a directional map with a fork and gate, not a checklist grid",
+            "generated proof, human review, public block, and next run are placed on a single route",
+            "the blocked state is a calm barrier in the path rather than a red status card"
+          ],
+          "serves_content_by": "The map protects credibility by showing that the next proof is generated and public release waits for visual review, native inspection, source-boundary review, and human approval."
+        },
+        "draw_order": [
+          "draw one route from story-ready input to generated-proof output",
+          "insert a visible human-review gate before public release using a path barrier, hinge, or decision fork",
+          "place release-blocked state on the public branch as a restrained wall, not a celebratory badge",
+          "place next-run action on the continuing branch with stronger direction than decoration",
+          "attach final copy to the route's destination side and keep full checklist detail off-canvas"
+        ],
+        "forbidden_fallbacks": [
+          "launch celebration",
+          "public-ready claim",
+          "dense run history",
+          "full release checklist",
+          "spreadsheet-like decision table"
+        ],
+        "success_probe": "The close must resolve as a calm handoff map with one dominant next action and one visible release gate."
+      },
+      "geometry_blueprint_binding": {
+        "module_id": "decision_map",
+        "coordinate_system": "normalized_16_9_canvas_0_100",
+        "primary_structure_is_not": "a checklist, table, or row of status cards",
+        "primary_structure_is": "a forked directional route with a visible gate and blocked public branch",
+        "native_ppt_shape_plan": [
+          {
+            "shape_id": "decision_route",
+            "primitive": "thick_curved_route",
+            "path_hint": "M 11 66 C 27 54, 39 48, 50 48 C 62 48, 72 42, 88 28",
+            "semantic_role": "story-ready to generated-proof to review path",
+            "why_not_card": "the route is the organizing structure and content is placed on path events"
+          },
+          {
+            "shape_id": "human_review_gate",
+            "primitive": "hinge_or_barrier_crossing_route",
+            "bounds_hint": "center x=61 y=45, angled -12deg, intersects decision_route",
+            "semantic_role": "human approval and source-boundary review before release"
+          },
+          {
+            "shape_id": "public_blocked_branch",
+            "primitive": "dimmed_forked_path_with_quiet_wall",
+            "path_hint": "fork begins x=61 y=45; blocked branch curves to x=89 y=62 behind a restrained barrier",
+            "semantic_role": "public release remains blocked"
+          },
+          {
+            "shape_id": "next_run_destination",
+            "primitive": "directional_destination_surface",
+            "bounds_hint": "x=78 y=18 w=17 h=14, attached to main route end",
+            "semantic_role": "next generated proof"
+          }
+        ],
+        "content_attachment_points": [
+          "story ready attaches at route start",
+          "generated proof attaches before human_review_gate",
+          "release blocked attaches to public_blocked_branch",
+          "next action attaches to next_run_destination"
+        ]
+      },
+      "renderer_adapter_manifest": {
+        "semantic_component_ids": [
+          "close_hero_object",
+          "close_proof_panel",
+          "close_supporting_copy",
+          "close_evidence_marks",
+          "close_viewer_note_route"
+        ],
+        "visual_container_ids": [
+          "close_hero_object_container",
+          "close_proof_panel_container",
+          "close_supporting_copy_container",
+          "close_evidence_marks_container",
+          "close_viewer_note_route_container",
+          "close_claim_container_expanded",
+          "close_proof_container_expanded",
+          "close_route_marker_container_expanded",
+          "close_scene_frame_expanded",
+          "close_note_viewer_affordance_expanded"
+        ],
+        "expanded_renderer_binding_ids": [
+          "close_hero_object_expanded_binding",
+          "close_proof_panel_expanded_binding",
+          "close_supporting_copy_expanded_binding",
+          "close_evidence_marks_expanded_binding",
+          "close_viewer_note_route_expanded_binding"
+        ],
+        "d3_renderer_handoff": {
+          "can_handoff_to_renderer": true,
+          "must_not_render_in_d3": true,
+          "component_manifest_count": 5,
+          "visual_container_count": 10,
+          "action_binding_count": 5,
+          "handoff_payload_source": "run2_73_scene_plan_expansion.json"
+        },
+        "d2_off_canvas_contract": {
+          "must_delete_from_canvas": [
+            "launch celebration",
+            "public-ready claim",
+            "dense run history",
+            "full release checklist"
+          ],
+          "speaker_note": "Name the remaining gate calmly: generated proof, visual review, native inspection, source-boundary review, and human approval.",
+          "viewer_only": [
+            "run-specific handoff ids",
+            "full release checklist",
+            "human approval notes"
+          ]
+        }
+      },
+      "adapter_renderer_instructions": {
+        "draw_primary_structure_before_components": true,
+        "apply_geometry_blueprint_before_component_layout": true,
+        "bind_semantic_components_before_geometry": true,
+        "preserve_off_canvas_contract": true,
+        "renderer_execution_allowed_in_this_artifact": false,
+        "public_release_allowed_in_this_artifact": false
+      }
+    }
+  ],
+  "traceability_summary": {
+    "scene_count": 6,
+    "validated_scene_count": 6,
+    "visual_grammar_module_count": 5,
+    "geometry_blueprint_count": 5,
+    "adapter_blocking_issue_count": 0,
+    "modules_used": [
+      "before_after_theater",
+      "decision_map",
+      "evidence_workspace",
+      "hero_field",
+      "product_reveal"
+    ],
+    "sources_consumed": [
+      "run2_73_scene_plan_expansion.json",
+      "run2_73_renderer_input_validation.json",
+      "run2_73_visual_grammar_modules.json"
+    ]
+  },
+  "next_required_action": "renderer_execute_from_d2_d3_e_adapter_manifest"
+}

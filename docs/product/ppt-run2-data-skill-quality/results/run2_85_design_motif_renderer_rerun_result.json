@@ -1,0 +1,317 @@
+{
+  "artifact_id": "run2_85_design_motif_renderer_rerun_result",
+  "part": "Part P2",
+  "schema_version": "ppt_run2_85_design_motif_renderer_rerun_result.v1",
+  "run_id": "2.85",
+  "status": "run2_85_design_motif_renderer_rerun_generated_public_blocked",
+  "public_ready": false,
+  "public_release_started": false,
+  "quality_claim_boundary": "design_motif_renderer_generated_viewer_check_only_no_part_q_quality_verdict",
+  "consumed_sources": [
+    "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json"
+  ],
+  "source_p1_design_motif_plan": {
+    "status": "run2_84_design_motif_taxonomy_style_router_plan_ready_public_blocked",
+    "next_required_action": "part_p2_renderer_rerun_from_design_motif_layer_and_style_router",
+    "source_result": "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json"
+  },
+  "source_o2_renderer_result": {
+    "status": "run2_82_renderer_product_surface_text_composition_rerun_generated_public_blocked",
+    "next_required_action": "part_p_visual_quality_evaluation_for_run2_82",
+    "source_result": "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json"
+  },
+  "renderer_design_motif_manifest": {
+    "generator": "scripts/generate_ppt_run2_85_design_motif_renderer_arms.mjs",
+    "consumed_sources": [
+      "docs/product/ppt-run2-data-skill-quality/run2_84_design_motif_taxonomy_style_router_plan.json",
+      "docs/product/ppt-run2-data-skill-quality/results/run2_82_renderer_product_surface_text_composition_rerun_result.json"
+    ],
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_85_full_design_motif_style_router",
+      "bad_run2_85_without_design_motif_layer"
+    ],
+    "best_internal_arm": "run2_85_full_design_motif_style_router",
+    "outputs": {
+      "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-85-full-vulca/output/run2-85-design-motif-renderer.html",
+      "pptx": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-85-full-vulca/output/ppt-run2-85-full-vulca.pptx",
+      "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+      "four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-85-four-arm-contact-sheet.png"
+    },
+    "viewer_update": {
+      "latest_run_id": "2.85",
+      "viewer_can_reference_new_run": true
+    }
+  },
+  "rendered_pages": [
+    {
+      "role": "cover",
+      "slide_index": 1,
+      "visual_grammar_module": "product_reveal",
+      "source_p1_primary_motif_id": "motif_2_84_product_theater",
+      "source_p1_fallback_motif_id": "motif_2_84_editorial_text_field",
+      "source_o2_product_surface_type": "editable_ppt_product_mock",
+      "motif_family": "product_theater",
+      "style_family": "public_product_keynote",
+      "scenario": "product_pitch",
+      "visual_density": "sparse",
+      "renderer_repair_directives_applied": [
+        "p1_design_motif_layer_consumed",
+        "style_router_applied",
+        "motif_family_rendered",
+        "preserved_visual_effects_rendered",
+        "text_integrated_with_motif",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "preserved_visual_effects_rendered": [
+        "modular_matrix",
+        "rectangle_layering",
+        "overlay_sticker_stack",
+        "product_theater",
+        "editorial_text_density"
+      ],
+      "motif_fidelity_checks": [
+        "motif_family_visible",
+        "not_rectangle_only",
+        "text_integrated_with_shape"
+      ],
+      "motif_family_visible": true,
+      "not_rectangle_only": true,
+      "text_integrated_with_shape": true,
+      "concrete_product_surface_visible": true,
+      "text_hierarchy": "motif_aware_headline_subhead_proof_caption",
+      "floating_label_count": 0,
+      "label_count": 2,
+      "min_visible_label_font_size": 12,
+      "source_trace_terms_visible_on_canvas": [],
+      "public_polish_claimed": false
+    },
+    {
+      "role": "setup",
+      "slide_index": 2,
+      "visual_grammar_module": "hero_field",
+      "source_p1_primary_motif_id": "motif_2_84_editorial_text_field",
+      "source_p1_fallback_motif_id": "motif_2_84_evidence_workspace",
+      "source_o2_product_surface_type": "source_to_memory_product_flow",
+      "motif_family": "editorial_text_field",
+      "style_family": "technical_editorial",
+      "scenario": "teaching_tutorial",
+      "visual_density": "dense",
+      "renderer_repair_directives_applied": [
+        "p1_design_motif_layer_consumed",
+        "style_router_applied",
+        "motif_family_rendered",
+        "preserved_visual_effects_rendered",
+        "text_integrated_with_motif",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "preserved_visual_effects_rendered": [
+        "modular_matrix",
+        "rectangle_layering",
+        "overlay_sticker_stack",
+        "product_theater",
+        "editorial_text_density"
+      ],
+      "motif_fidelity_checks": [
+        "motif_family_visible",
+        "not_rectangle_only",
+        "text_integrated_with_shape"
+      ],
+      "motif_family_visible": true,
+      "not_rectangle_only": true,
+      "text_integrated_with_shape": true,
+      "concrete_product_surface_visible": true,
+      "text_hierarchy": "motif_aware_headline_subhead_proof_caption",
+      "floating_label_count": 0,
+      "label_count": 3,
+      "min_visible_label_font_size": 12,
+      "source_trace_terms_visible_on_canvas": [],
+      "public_polish_claimed": false
+    },
+    {
+      "role": "contrast",
+      "slide_index": 3,
+      "visual_grammar_module": "before_after_theater",
+      "source_p1_primary_motif_id": "motif_2_84_before_after_theater",
+      "source_p1_fallback_motif_id": "motif_2_84_modular_matrix",
+      "source_o2_product_surface_type": "before_after_product_theater",
+      "motif_family": "before_after_theater",
+      "style_family": "high_contrast_demo",
+      "scenario": "product_pitch",
+      "visual_density": "balanced",
+      "renderer_repair_directives_applied": [
+        "p1_design_motif_layer_consumed",
+        "style_router_applied",
+        "motif_family_rendered",
+        "preserved_visual_effects_rendered",
+        "text_integrated_with_motif",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "preserved_visual_effects_rendered": [
+        "modular_matrix",
+        "rectangle_layering",
+        "overlay_sticker_stack",
+        "product_theater",
+        "editorial_text_density"
+      ],
+      "motif_fidelity_checks": [
+        "motif_family_visible",
+        "not_rectangle_only",
+        "text_integrated_with_shape"
+      ],
+      "motif_family_visible": true,
+      "not_rectangle_only": true,
+      "text_integrated_with_shape": true,
+      "concrete_product_surface_visible": true,
+      "text_hierarchy": "motif_aware_headline_subhead_proof_caption",
+      "floating_label_count": 0,
+      "label_count": 3,
+      "min_visible_label_font_size": 12,
+      "source_trace_terms_visible_on_canvas": [],
+      "public_polish_claimed": false
+    },
+    {
+      "role": "proof",
+      "slide_index": 4,
+      "visual_grammar_module": "evidence_workspace",
+      "source_p1_primary_motif_id": "motif_2_84_modular_matrix",
+      "source_p1_fallback_motif_id": "motif_2_84_evidence_workspace",
+      "source_o2_product_surface_type": "evidence_product_workspace",
+      "motif_family": "modular_matrix",
+      "style_family": "dense_teaching_walkthrough",
+      "scenario": "technical_proof",
+      "visual_density": "balanced",
+      "renderer_repair_directives_applied": [
+        "p1_design_motif_layer_consumed",
+        "style_router_applied",
+        "motif_family_rendered",
+        "preserved_visual_effects_rendered",
+        "text_integrated_with_motif",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "preserved_visual_effects_rendered": [
+        "modular_matrix",
+        "rectangle_layering",
+        "overlay_sticker_stack",
+        "product_theater",
+        "editorial_text_density"
+      ],
+      "motif_fidelity_checks": [
+        "motif_family_visible",
+        "not_rectangle_only",
+        "text_integrated_with_shape"
+      ],
+      "motif_family_visible": true,
+      "not_rectangle_only": true,
+      "text_integrated_with_shape": true,
+      "concrete_product_surface_visible": true,
+      "text_hierarchy": "motif_aware_headline_subhead_proof_caption",
+      "floating_label_count": 0,
+      "label_count": 3,
+      "min_visible_label_font_size": 12,
+      "source_trace_terms_visible_on_canvas": [],
+      "public_polish_claimed": false
+    },
+    {
+      "role": "climax",
+      "slide_index": 5,
+      "visual_grammar_module": "product_reveal",
+      "source_p1_primary_motif_id": "motif_2_84_overlay_sticker_stack",
+      "source_p1_fallback_motif_id": "motif_2_84_product_theater",
+      "source_o2_product_surface_type": "editable_ppt_product_mock",
+      "motif_family": "overlay_sticker_stack",
+      "style_family": "high_contrast_demo",
+      "scenario": "public_video_demo",
+      "visual_density": "climax",
+      "renderer_repair_directives_applied": [
+        "p1_design_motif_layer_consumed",
+        "style_router_applied",
+        "motif_family_rendered",
+        "preserved_visual_effects_rendered",
+        "text_integrated_with_motif",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "preserved_visual_effects_rendered": [
+        "modular_matrix",
+        "rectangle_layering",
+        "overlay_sticker_stack",
+        "product_theater",
+        "editorial_text_density"
+      ],
+      "motif_fidelity_checks": [
+        "motif_family_visible",
+        "not_rectangle_only",
+        "text_integrated_with_shape"
+      ],
+      "motif_family_visible": true,
+      "not_rectangle_only": true,
+      "text_integrated_with_shape": true,
+      "concrete_product_surface_visible": true,
+      "text_hierarchy": "motif_aware_headline_subhead_proof_caption",
+      "floating_label_count": 0,
+      "label_count": 3,
+      "min_visible_label_font_size": 12,
+      "source_trace_terms_visible_on_canvas": [],
+      "public_polish_claimed": false
+    },
+    {
+      "role": "close",
+      "slide_index": 6,
+      "visual_grammar_module": "decision_map",
+      "source_p1_primary_motif_id": "motif_2_84_decision_map",
+      "source_p1_fallback_motif_id": "motif_2_84_modular_matrix",
+      "source_o2_product_surface_type": "release_decision_product_map",
+      "motif_family": "decision_map",
+      "style_family": "financial_decision_brief",
+      "scenario": "financial_product",
+      "visual_density": "balanced",
+      "renderer_repair_directives_applied": [
+        "p1_design_motif_layer_consumed",
+        "style_router_applied",
+        "motif_family_rendered",
+        "preserved_visual_effects_rendered",
+        "text_integrated_with_motif",
+        "traceability_routed_off_canvas",
+        "public_polish_not_claimed"
+      ],
+      "preserved_visual_effects_rendered": [
+        "modular_matrix",
+        "rectangle_layering",
+        "overlay_sticker_stack",
+        "product_theater",
+        "editorial_text_density"
+      ],
+      "motif_fidelity_checks": [
+        "motif_family_visible",
+        "not_rectangle_only",
+        "text_integrated_with_shape"
+      ],
+      "motif_family_visible": true,
+      "not_rectangle_only": true,
+      "text_integrated_with_shape": true,
+      "concrete_product_surface_visible": true,
+      "text_hierarchy": "motif_aware_headline_subhead_proof_caption",
+      "floating_label_count": 0,
+      "label_count": 3,
+      "min_visible_label_font_size": 12,
+      "source_trace_terms_visible_on_canvas": [],
+      "public_polish_claimed": false
+    }
+  ],
+  "renderer_design_motif_checks": {
+    "pages_with_p1_motif_consumed": 6,
+    "pages_with_motif_family_visible": 6,
+    "pages_with_not_rectangle_only": 6,
+    "pages_with_text_integrated_with_shape": 6,
+    "pages_with_traceability_routed_off_canvas": 6,
+    "public_quality_verdict_started": false
+  },
+  "next_required_action": "part_q_visual_quality_evaluation_for_run2_85"
+}

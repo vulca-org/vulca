@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "run_id": "2.28",
+  "status": "run2_28_evidence_chain_view_model_ready_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_layer": "run2_7_multimodal_source_records.json",
+  "content_layer": "run2_24_single_usecase_content_memory.json",
+  "visual_asset_layer": "run2_24_visual_evidence_asset_memory.json",
+  "workflow_layer": "run2_24_content_visual_workflow_gates.json",
+  "previous_rerun_result": "run2_27_content_surface_thickening_rerun_result.json",
+  "purpose": "Make the source evidence to extracted design rule to workflow decision to generated slide surface chain visible and testable before native PPT code generation.",
+  "viewer_contract": {
+    "show_chain_in_html_viewer": true,
+    "chain_order": [
+      "source evidence",
+      "extracted design rule",
+      "workflow decision",
+      "generated slide surface"
+    ],
+    "first_read_boundary": "The public slide can show compact human-readable evidence labels, but raw trace ids stay in manifest/viewer QA.",
+    "qa_probe": "A reviewer should be able to explain what each slide learned from data without opening the generator code."
+  },
+  "slide_evidence_chains": [
+    {
+      "evidence_chain_id": "chain_2_28_cover",
+      "role": "cover",
+      "slide_index": 1,
+      "multimodal_source_record_ids": [
+        "mm_2_7_design_system_launch_case",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "content_memory_id": "content_2_24_cover",
+      "visual_evidence_slot_ids": [
+        "slot_2_24_cover_launch_field",
+        "slot_2_24_cover_case_badge"
+      ],
+      "workflow_gate_id": "gate_2_24_cover_content_visual_density",
+      "source_evidence_summary": "Launch references teach a single product promise before trace detail; pacing references keep the opener as an orientation beat.",
+      "extracted_design_rule": "Show one launch promise and one native system surface before introducing detailed proof.",
+      "workflow_decision": "Lock the selected design-to-production usecase first, then expose only the cover content memory and two native evidence slots.",
+      "native_ppt_surface_instruction": "Draw a large editable launch promise, one native product-system motif, and a compact evidence-chain rail.",
+      "native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "generated_slide_surface": "cover slide with source-evidence rail, rule chip, workflow decision strip, and generated launch field",
+      "viewer_inspection_prompt": "Can the reviewer see that the cover learned a launch-orientation rule from data before code rendered the hero field?",
+      "negative_control_failure_mode": "The bad arm can name the usecase but cannot prove which source records or workflow gate shaped the cover.",
+      "required_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_28_evidence_chain_execution_status",
+        "run2_28_code_module_ids",
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "release_boundary": "public_blocked_until_source_boundary_native_render_review_and_human_approval"
+    },
+    {
+      "evidence_chain_id": "chain_2_28_setup",
+      "role": "setup",
+      "slide_index": 2,
+      "multimodal_source_record_ids": [
+        "mm_2_7_design_system_launch_case",
+        "mm_2_7_typography_hierarchy_tutorial",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "content_memory_id": "content_2_24_setup",
+      "visual_evidence_slot_ids": [
+        "slot_2_24_setup_prompt_loss",
+        "slot_2_24_setup_selected_route"
+      ],
+      "workflow_gate_id": "gate_2_24_setup_content_visual_density",
+      "source_evidence_summary": "Launch and hierarchy sources teach that the problem slide must contrast one weak prompt path against one selected product route.",
+      "extracted_design_rule": "Use a deterministic type ladder so the business failure reads before the workflow machinery.",
+      "workflow_decision": "Bind setup content memory, then require a visible prompt-loss object plus selected-route object before the gate can pass.",
+      "native_ppt_surface_instruction": "Draw a two-lane evidence chain: collapsed prompt path on the left, selected data/workflow route on the right.",
+      "native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "generated_slide_surface": "setup slide with before path, selected route, source-rule card, and workflow-gate card",
+      "viewer_inspection_prompt": "Can the reviewer see why prompt-only is weaker and which data rule creates the selected-route layout?",
+      "negative_control_failure_mode": "The bad arm may show a route label but lacks the typed hierarchy rule and density gate proof.",
+      "required_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_28_evidence_chain_execution_status",
+        "run2_28_code_module_ids",
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "release_boundary": "public_blocked_until_source_boundary_native_render_review_and_human_approval"
+    },
+    {
+      "evidence_chain_id": "chain_2_28_contrast",
+      "role": "contrast",
+      "slide_index": 3,
+      "multimodal_source_record_ids": [
+        "mm_2_7_typography_hierarchy_tutorial",
+        "mm_2_7_spacing_editorial_grid_tutorial"
+      ],
+      "content_memory_id": "content_2_24_contrast",
+      "visual_evidence_slot_ids": [
+        "slot_2_24_contrast_prompt_thumbnail",
+        "slot_2_24_contrast_selected_thumbnail"
+      ],
+      "workflow_gate_id": "gate_2_24_contrast_content_visual_density",
+      "source_evidence_summary": "Hierarchy and spacing tutorials teach that before/after comparison needs asymmetric weight instead of equal cards.",
+      "extracted_design_rule": "Make the selected evidence route visibly larger than the weak prompt-only thumbnail.",
+      "workflow_decision": "Bind the contrast memory and only allow the selected thumbnail to become the dominant generated surface.",
+      "native_ppt_surface_instruction": "Draw a small weak-before block, a larger selected-after block, and a vertical evidence-chain spine between them.",
+      "native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "generated_slide_surface": "contrast slide with asymmetric before/after proof and inspectable source-rule-workflow spine",
+      "viewer_inspection_prompt": "Can the reviewer see which tutorial-derived rule made the selected-after surface larger and more legible?",
+      "negative_control_failure_mode": "The bad arm can label before/after but cannot justify the asymmetric weighting through source rules and workflow gates.",
+      "required_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_28_evidence_chain_execution_status",
+        "run2_28_code_module_ids",
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "release_boundary": "public_blocked_until_source_boundary_native_render_review_and_human_approval"
+    },
+    {
+      "evidence_chain_id": "chain_2_28_proof",
+      "role": "proof",
+      "slide_index": 4,
+      "multimodal_source_record_ids": [
+        "mm_2_7_typography_hierarchy_tutorial",
+        "mm_2_7_spacing_editorial_grid_tutorial",
+        "mm_2_7_product_surface_interaction_reference",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "content_memory_id": "content_2_24_proof",
+      "visual_evidence_slot_ids": [
+        "slot_2_24_proof_content_memory_surface",
+        "slot_2_24_proof_visual_asset_rail"
+      ],
+      "workflow_gate_id": "gate_2_24_proof_content_visual_density",
+      "source_evidence_summary": "Tutorial and interaction records teach that proof must expose the memory surface and asset rail as product behavior, not as hidden metadata.",
+      "extracted_design_rule": "Show source cards, rule extraction, and asset obligations as one inspectable proof surface.",
+      "workflow_decision": "Require both content memory and visual asset rail to be present before the proof slide can claim the system learned from data.",
+      "native_ppt_surface_instruction": "Draw a four-step chain surface with source evidence, extracted rule, workflow decision, and generated slide surface columns.",
+      "native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "generated_slide_surface": "proof slide with complete four-step evidence-chain table and native asset obligation rail",
+      "viewer_inspection_prompt": "Can the reviewer trace one proof object from source record through rule and workflow into the generated surface?",
+      "negative_control_failure_mode": "The bad arm can show a proof panel but cannot bind asset obligations or source-rule provenance.",
+      "required_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_28_evidence_chain_execution_status",
+        "run2_28_code_module_ids",
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "release_boundary": "public_blocked_until_source_boundary_native_render_review_and_human_approval"
+    },
+    {
+      "evidence_chain_id": "chain_2_28_climax",
+      "role": "climax",
+      "slide_index": 5,
+      "multimodal_source_record_ids": [
+        "mm_2_7_video_climax_single_object",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "content_memory_id": "content_2_24_climax",
+      "visual_evidence_slot_ids": [
+        "slot_2_24_climax_hero_result",
+        "slot_2_24_climax_density_annotation"
+      ],
+      "workflow_gate_id": "gate_2_24_climax_content_visual_density",
+      "source_evidence_summary": "Video/audio references teach that climax attention should converge on one result object while trace detail stays secondary.",
+      "extracted_design_rule": "Reserve the largest field for one generated proof object and place the evidence chain as a supporting audit rail.",
+      "workflow_decision": "Bind climax content memory and hero-result slot before rendering a large editable result object.",
+      "native_ppt_surface_instruction": "Draw one oversized native hero result with a compact chain rail proving why it owns the room.",
+      "native_surface_module_id": "drawRun228ClimaxEvidenceObject",
+      "generated_slide_surface": "climax slide with hero editable result object and compact evidence-chain rail",
+      "viewer_inspection_prompt": "Can the reviewer see that video/audio learning changed the climax into one dominant object rather than another diagram?",
+      "negative_control_failure_mode": "The bad arm can draw a big object but cannot prove it came from a video/audio climax rule and workflow gate.",
+      "required_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_28_evidence_chain_execution_status",
+        "run2_28_code_module_ids",
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "release_boundary": "public_blocked_until_source_boundary_native_render_review_and_human_approval"
+    },
+    {
+      "evidence_chain_id": "chain_2_28_close",
+      "role": "close",
+      "slide_index": 6,
+      "multimodal_source_record_ids": [
+        "mm_2_7_product_surface_interaction_reference",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "content_memory_id": "content_2_24_close",
+      "visual_evidence_slot_ids": [
+        "slot_2_24_close_release_gate",
+        "slot_2_24_close_trace_handoff"
+      ],
+      "workflow_gate_id": "gate_2_24_close_content_visual_density",
+      "source_evidence_summary": "Interaction and pacing records teach that the close must hand off an inspectable path, not a generic next-step list.",
+      "extracted_design_rule": "Show the release gate and trace handoff as the final product behavior.",
+      "workflow_decision": "Keep public release blocked until the reviewer can inspect source, rule, workflow, and generated-surface lineage.",
+      "native_ppt_surface_instruction": "Draw a release gate panel connected to a four-step evidence-chain handoff path.",
+      "native_surface_module_id": "drawRun228WorkflowTracePanel",
+      "generated_slide_surface": "close slide with blocked release gate and inspectable trace handoff path",
+      "viewer_inspection_prompt": "Can the reviewer see what remains blocked and what evidence would be inspected before public release?",
+      "negative_control_failure_mode": "The bad arm can list release gates but cannot show the source-rule-workflow-output handoff path.",
+      "required_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_28_evidence_chain_execution_status",
+        "run2_28_code_module_ids",
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "release_boundary": "public_blocked_until_source_boundary_native_render_review_and_human_approval"
+    }
+  ],
+  "negative_control_contract": {
+    "arm_id": "bad_evidence_chain_memory",
+    "allowed_input": "selected_usecase_label_only",
+    "forbidden_layers": [
+      "run2_28_evidence_chain_view_model.json",
+      "run2_24_single_usecase_content_memory.json",
+      "run2_24_visual_evidence_asset_memory.json",
+      "run2_24_content_visual_workflow_gates.json",
+      "run2_27_content_surface_thickening_rerun_result.json"
+    ],
+    "expected_failure": "It may look superficially similar, but it cannot prove source evidence, extracted rule, workflow decision, or generated-surface lineage."
+  },
+  "public_release_gate": "blocked",
+  "release_boundary": "public_blocked_until_source_boundary_native_render_review_motion_review_human_visual_review_and_human_approval"
+}

@@ -1,0 +1,586 @@
+{
+  "schema_version": "ppt_run2_dynamic_socket_renderer_memory.v1",
+  "run_id": "2.64",
+  "status": "run2_64_dynamic_socket_renderer_memory_ready_public_blocked",
+  "source_audit_run": "2.63",
+  "source_data_run": "2.61",
+  "dynamic_socket_renderer_records": [
+    {
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_cover",
+      "role": "cover",
+      "source_run2_63_role_title": "A real brief becomes editable PPT proof.",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_cover",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_cover",
+      "static_socket_plan_replaced": true,
+      "active_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_cover_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_cover_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_cover_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_cover_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_cover_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_cover_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "dynamic_socket_plan_policy": "show only sockets active for this role; suppress repeated global socket legend; send overflow diagnostics to trace/viewer",
+      "public_surface_rule": "socket labels must attach to semantic visual objects, not float as detached cards",
+      "bad_control_probe": "fail_if_cover_keeps_static_socket_plan_or_unbound_copy_units",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_setup",
+      "role": "setup",
+      "source_run2_63_role_title": "Sources compile into design memory before drawing.",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_setup",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_setup",
+      "static_socket_plan_replaced": true,
+      "active_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_setup_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_setup_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_setup_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_setup_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_setup_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_setup_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "dynamic_socket_plan_policy": "show only sockets active for this role; suppress repeated global socket legend; send overflow diagnostics to trace/viewer",
+      "public_surface_rule": "socket labels must attach to semantic visual objects, not float as detached cards",
+      "bad_control_probe": "fail_if_setup_keeps_static_socket_plan_or_unbound_copy_units",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_contrast",
+      "role": "contrast",
+      "source_run2_63_role_title": "The difference is mechanism, not taste.",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_contrast",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_contrast",
+      "static_socket_plan_replaced": true,
+      "active_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_contrast_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_contrast_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_contrast_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_contrast_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_contrast_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_contrast_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "dynamic_socket_plan_policy": "show only sockets active for this role; suppress repeated global socket legend; send overflow diagnostics to trace/viewer",
+      "public_surface_rule": "socket labels must attach to semantic visual objects, not float as detached cards",
+      "bad_control_probe": "fail_if_contrast_keeps_static_socket_plan_or_unbound_copy_units",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_proof",
+      "role": "proof",
+      "source_run2_63_role_title": "Trace proves the data path was used.",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_proof",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_proof",
+      "static_socket_plan_replaced": true,
+      "active_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_proof_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_proof_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_proof_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_proof_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_proof_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_proof_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "dynamic_socket_plan_policy": "show only sockets active for this role; suppress repeated global socket legend; send overflow diagnostics to trace/viewer",
+      "public_surface_rule": "socket labels must attach to semantic visual objects, not float as detached cards",
+      "bad_control_probe": "fail_if_proof_keeps_static_socket_plan_or_unbound_copy_units",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_climax",
+      "role": "climax",
+      "source_run2_63_role_title": "The product moment is the operating loop.",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_climax",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_climax",
+      "static_socket_plan_replaced": true,
+      "active_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_climax_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_climax_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_climax_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_climax_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_climax_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_climax_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "dynamic_socket_plan_policy": "show only sockets active for this role; suppress repeated global socket legend; send overflow diagnostics to trace/viewer",
+      "public_surface_rule": "socket labels must attach to semantic visual objects, not float as detached cards",
+      "bad_control_probe": "fail_if_climax_keeps_static_socket_plan_or_unbound_copy_units",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_close",
+      "role": "close",
+      "source_run2_63_role_title": "Generated proof exists; release remains gated.",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_close",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_close",
+      "static_socket_plan_replaced": true,
+      "active_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_close_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_close_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_close_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_close_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_close_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_close_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "dynamic_socket_behavior": "render only when this copy unit is active for the slide; do not reuse a global static socket plan block",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "dynamic_socket_plan_policy": "show only sockets active for this role; suppress repeated global socket legend; send overflow diagnostics to trace/viewer",
+      "public_surface_rule": "socket labels must attach to semantic visual objects, not float as detached cards",
+      "bad_control_probe": "fail_if_close_keeps_static_socket_plan_or_unbound_copy_units",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    }
+  ],
+  "next_required_action": "run2_65_generate_four_arm_ppt_consuming_run2_64_renderer_composition_repair"
+}

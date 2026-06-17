@@ -1,0 +1,301 @@
+{
+  "schema_version": "ppt_run2_visual_object_grammar_memory.v1",
+  "status": "run2_46_visual_object_grammar_memory_ready_public_blocked",
+  "run_id": "2.46",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_multimodal_composition_decomposition": "run2_46_multimodal_composition_decomposition.json",
+  "target_layer": "multimodal_composition_memory_and_visual_object_grammar",
+  "visual_object_grammar_records": [
+    {
+      "visual_object_grammar_id": "visual_object_grammar_2_46_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_decomposition_id": "composition_decomposition_2_46_cover",
+      "required_run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_cover_1",
+        "semantic_asset_2_43_cover_2",
+        "semantic_asset_2_43_cover_3"
+      ],
+      "required_run2_43_editorial_typography_memory_id": "editorial_typography_2_43_cover",
+      "required_run2_43_visual_asset_semantics_gate_id": "gate_2_43_cover_visual_asset_semantics",
+      "replaces_run2_44_slot_based_geometry": true,
+      "visual_object_grammar": [
+        "one poster-scale generated deck object owns the first read",
+        "memory controls sit as a midground field, not equal feature cards",
+        "benchmark cues become abstract atmosphere behind the hero object",
+        "headline locks to the object edge and leaves open negative space"
+      ],
+      "composition_quality_checks": [
+        "main object reads before labels at contact-sheet scale",
+        "supporting objects are visibly secondary",
+        "no three-equal-card layout",
+        "buyer decision is visible without trace terminology"
+      ],
+      "native_ppt_generation_contract": [
+        "draw one primary composed object scene before support objects",
+        "use scale, crop, overlap, depth, and connective state rather than equal slots",
+        "derive all shapes and text from source-safe instructions",
+        "hide run ids, memory ids, gate ids, and database terms from the public surface"
+      ],
+      "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+      "forbidden_patterns": [
+        "slot_based_semantic_geometry_as_primary_surface",
+        "three_equal_feature_cards",
+        "generic dashboard grid",
+        "visible workflow report panel",
+        "copied source media or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "qa_probe": "A reviewer should be able to describe the composed visual object without reading slot labels."
+    },
+    {
+      "visual_object_grammar_id": "visual_object_grammar_2_46_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_decomposition_id": "composition_decomposition_2_46_setup",
+      "required_run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_setup_1",
+        "semantic_asset_2_43_setup_2",
+        "semantic_asset_2_43_setup_3"
+      ],
+      "required_run2_43_editorial_typography_memory_id": "editorial_typography_2_43_setup",
+      "required_run2_43_visual_asset_semantics_gate_id": "gate_2_43_setup_visual_asset_semantics",
+      "replaces_run2_44_slot_based_geometry": true,
+      "visual_object_grammar": [
+        "collapsed prompt output is small, low-confidence, and visibly unstable",
+        "selected route is the stable destination object",
+        "risk cue connects failure to route without becoming a process diagram",
+        "type contrast separates failure label from selected-route claim"
+      ],
+      "composition_quality_checks": [
+        "failure state and selected route are asymmetrical",
+        "route object is larger and calmer than failure object",
+        "storyboard path is visible without workflow jargon",
+        "spacing keeps the route from reading as another block"
+      ],
+      "native_ppt_generation_contract": [
+        "draw one primary composed object scene before support objects",
+        "use scale, crop, overlap, depth, and connective state rather than equal slots",
+        "derive all shapes and text from source-safe instructions",
+        "hide run ids, memory ids, gate ids, and database terms from the public surface"
+      ],
+      "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+      "forbidden_patterns": [
+        "slot_based_semantic_geometry_as_primary_surface",
+        "three_equal_feature_cards",
+        "generic dashboard grid",
+        "visible workflow report panel",
+        "copied source media or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "qa_probe": "A reviewer should be able to describe the composed visual object without reading slot labels."
+    },
+    {
+      "visual_object_grammar_id": "visual_object_grammar_2_46_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_decomposition_id": "composition_decomposition_2_46_contrast",
+      "required_run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_contrast_1",
+        "semantic_asset_2_43_contrast_2",
+        "semantic_asset_2_43_contrast_3"
+      ],
+      "required_run2_43_editorial_typography_memory_id": "editorial_typography_2_43_contrast",
+      "required_run2_43_visual_asset_semantics_gate_id": "gate_2_43_contrast_visual_asset_semantics",
+      "replaces_run2_44_slot_based_geometry": true,
+      "visual_object_grammar": [
+        "before object is a small thumbnail with low visual confidence",
+        "after object is a large product-state surface with clear business consequence",
+        "delta strip attaches to the after object rather than floating as a chart",
+        "typography compresses the comparison into one after-state claim"
+      ],
+      "composition_quality_checks": [
+        "after state dominates before state",
+        "delta is visible as a business consequence",
+        "comparison is not two equal cards",
+        "support text does not compete with the after object"
+      ],
+      "native_ppt_generation_contract": [
+        "draw one primary composed object scene before support objects",
+        "use scale, crop, overlap, depth, and connective state rather than equal slots",
+        "derive all shapes and text from source-safe instructions",
+        "hide run ids, memory ids, gate ids, and database terms from the public surface"
+      ],
+      "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+      "forbidden_patterns": [
+        "slot_based_semantic_geometry_as_primary_surface",
+        "three_equal_feature_cards",
+        "generic dashboard grid",
+        "visible workflow report panel",
+        "copied source media or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "qa_probe": "A reviewer should be able to describe the composed visual object without reading slot labels."
+    },
+    {
+      "visual_object_grammar_id": "visual_object_grammar_2_46_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_decomposition_id": "composition_decomposition_2_46_proof",
+      "required_run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_proof_1",
+        "semantic_asset_2_43_proof_2",
+        "semantic_asset_2_43_proof_3"
+      ],
+      "required_run2_43_editorial_typography_memory_id": "editorial_typography_2_43_proof",
+      "required_run2_43_visual_asset_semantics_gate_id": "gate_2_43_proof_visual_asset_semantics",
+      "replaces_run2_44_slot_based_geometry": true,
+      "visual_object_grammar": [
+        "one active decision lane anchors the product surface",
+        "deck preview and review state are subordinate proof objects",
+        "rows and controls feel like a product workspace, not a table",
+        "labels explain state changes rather than list internal systems"
+      ],
+      "composition_quality_checks": [
+        "active lane is visually dominant",
+        "product proof objects are inspectable",
+        "table-like repetition is suppressed",
+        "public surface hides database and gate terminology"
+      ],
+      "native_ppt_generation_contract": [
+        "draw one primary composed object scene before support objects",
+        "use scale, crop, overlap, depth, and connective state rather than equal slots",
+        "derive all shapes and text from source-safe instructions",
+        "hide run ids, memory ids, gate ids, and database terms from the public surface"
+      ],
+      "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+      "forbidden_patterns": [
+        "slot_based_semantic_geometry_as_primary_surface",
+        "three_equal_feature_cards",
+        "generic dashboard grid",
+        "visible workflow report panel",
+        "copied source media or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "qa_probe": "A reviewer should be able to describe the composed visual object without reading slot labels."
+    },
+    {
+      "visual_object_grammar_id": "visual_object_grammar_2_46_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_decomposition_id": "composition_decomposition_2_46_climax",
+      "required_run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_climax_1",
+        "semantic_asset_2_43_climax_2",
+        "semantic_asset_2_43_climax_3"
+      ],
+      "required_run2_43_editorial_typography_memory_id": "editorial_typography_2_43_climax",
+      "required_run2_43_visual_asset_semantics_gate_id": "gate_2_43_climax_visual_asset_semantics",
+      "replaces_run2_44_slot_based_geometry": true,
+      "visual_object_grammar": [
+        "single result object carries the slide and uses the largest scale contrast",
+        "before, memory, and release states fuse into the object rather than separate cards",
+        "proof rail stays behind or below the object",
+        "motion implication is scale-and-reveal, not transcript or labels"
+      ],
+      "composition_quality_checks": [
+        "one object owns the climax",
+        "supporting proof does not split attention",
+        "object feels like a publishable result, not a slot",
+        "motion beat can be described without needing copied video frames"
+      ],
+      "native_ppt_generation_contract": [
+        "draw one primary composed object scene before support objects",
+        "use scale, crop, overlap, depth, and connective state rather than equal slots",
+        "derive all shapes and text from source-safe instructions",
+        "hide run ids, memory ids, gate ids, and database terms from the public surface"
+      ],
+      "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+      "forbidden_patterns": [
+        "slot_based_semantic_geometry_as_primary_surface",
+        "three_equal_feature_cards",
+        "generic dashboard grid",
+        "visible workflow report panel",
+        "copied source media or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "qa_probe": "A reviewer should be able to describe the composed visual object without reading slot labels."
+    },
+    {
+      "visual_object_grammar_id": "visual_object_grammar_2_46_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_decomposition_id": "composition_decomposition_2_46_close",
+      "required_run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_close_1",
+        "semantic_asset_2_43_close_2",
+        "semantic_asset_2_43_close_3"
+      ],
+      "required_run2_43_editorial_typography_memory_id": "editorial_typography_2_43_close",
+      "required_run2_43_visual_asset_semantics_gate_id": "gate_2_43_close_visual_asset_semantics",
+      "replaces_run2_44_slot_based_geometry": true,
+      "visual_object_grammar": [
+        "review decision surface becomes an inspectable handoff object",
+        "release readiness wall shows state progression without a checklist grid",
+        "next-run action surface is directional and secondary",
+        "final typography names the release boundary without becoming a report"
+      ],
+      "composition_quality_checks": [
+        "handoff path is visible as one decision scene",
+        "release blocked state is clear but not visually dominant",
+        "next action is inspectable",
+        "close does not collapse into a table or list"
+      ],
+      "native_ppt_generation_contract": [
+        "draw one primary composed object scene before support objects",
+        "use scale, crop, overlap, depth, and connective state rather than equal slots",
+        "derive all shapes and text from source-safe instructions",
+        "hide run ids, memory ids, gate ids, and database terms from the public surface"
+      ],
+      "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+      "forbidden_patterns": [
+        "slot_based_semantic_geometry_as_primary_surface",
+        "three_equal_feature_cards",
+        "generic dashboard grid",
+        "visible workflow report panel",
+        "copied source media or source layout"
+      ],
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "qa_probe": "A reviewer should be able to describe the composed visual object without reading slot labels."
+    }
+  ]
+}

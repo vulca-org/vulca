@@ -1,0 +1,202 @@
+{
+  "schema_version": "ppt_run2_public_video_workflow_gates.v1",
+  "status": "run2_38_public_video_workflow_gates_ready_public_blocked",
+  "run_id": "2.38",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "visual_rhythm_diversity_contract": {
+    "min_unique_visual_rhythms": 6,
+    "max_repeated_layout_signature_allowed": 1,
+    "forbidden_dominant_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon"
+  },
+  "gates": [
+    {
+      "gate_id": "gate_2_38_cover_public_video_visual_direction",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_public_video_slide_direction_memory_id": "direction_2_38_cover",
+      "required_per_slide_visual_recipe_memory_id": "recipe_2_38_cover",
+      "required_visual_rhythm_id": "poster_reveal",
+      "required_layout_signature_target": "poster_scale_launch_object_with_memory_halo",
+      "required_code_modules": [
+        "drawRun239LaunchPosterStage"
+      ],
+      "forbid_run2_36_dominant_layout_signature": true,
+      "forbid_workflow_gate_as_public_ribbon": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_39_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_layout_signature_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide must use the Run 2.38 per-slide recipe before native PPT drawing.",
+        "The public surface must not expose workflow gates as audit ribbons.",
+        "The slide layout signature must differ from the Run 2.36 dominant card layout.",
+        "Across the full arm, all six roles must use six unique visual rhythms.",
+        "The slide must keep source media boundaries: derived instructions only, no copied source visuals."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.38 direction memory, visual recipe memory, visual rhythm id, or layout signature target.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_38_setup_public_video_visual_direction",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_public_video_slide_direction_memory_id": "direction_2_38_setup",
+      "required_per_slide_visual_recipe_memory_id": "recipe_2_38_setup",
+      "required_visual_rhythm_id": "failure_path_scene",
+      "required_layout_signature_target": "diagonal_failure_path_to_selected_route",
+      "required_code_modules": [
+        "drawRun239FailurePathScene"
+      ],
+      "forbid_run2_36_dominant_layout_signature": true,
+      "forbid_workflow_gate_as_public_ribbon": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_39_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_layout_signature_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide must use the Run 2.38 per-slide recipe before native PPT drawing.",
+        "The public surface must not expose workflow gates as audit ribbons.",
+        "The slide layout signature must differ from the Run 2.36 dominant card layout.",
+        "Across the full arm, all six roles must use six unique visual rhythms.",
+        "The slide must keep source media boundaries: derived instructions only, no copied source visuals."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.38 direction memory, visual recipe memory, visual rhythm id, or layout signature target.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_38_contrast_public_video_visual_direction",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_public_video_slide_direction_memory_id": "direction_2_38_contrast",
+      "required_per_slide_visual_recipe_memory_id": "recipe_2_38_contrast",
+      "required_visual_rhythm_id": "asymmetric_before_after",
+      "required_layout_signature_target": "small_before_large_after_product_state",
+      "required_code_modules": [
+        "drawRun239AsymmetricBeforeAfterState"
+      ],
+      "forbid_run2_36_dominant_layout_signature": true,
+      "forbid_workflow_gate_as_public_ribbon": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_39_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_layout_signature_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide must use the Run 2.38 per-slide recipe before native PPT drawing.",
+        "The public surface must not expose workflow gates as audit ribbons.",
+        "The slide layout signature must differ from the Run 2.36 dominant card layout.",
+        "Across the full arm, all six roles must use six unique visual rhythms.",
+        "The slide must keep source media boundaries: derived instructions only, no copied source visuals."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.38 direction memory, visual recipe memory, visual rhythm id, or layout signature target.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_38_proof_public_video_visual_direction",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_public_video_slide_direction_memory_id": "direction_2_38_proof",
+      "required_per_slide_visual_recipe_memory_id": "recipe_2_38_proof",
+      "required_visual_rhythm_id": "product_workflow_surface",
+      "required_layout_signature_target": "product_console_with_selected_recipe_lane",
+      "required_code_modules": [
+        "drawRun239ProductWorkflowSurface"
+      ],
+      "forbid_run2_36_dominant_layout_signature": true,
+      "forbid_workflow_gate_as_public_ribbon": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_39_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_layout_signature_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide must use the Run 2.38 per-slide recipe before native PPT drawing.",
+        "The public surface must not expose workflow gates as audit ribbons.",
+        "The slide layout signature must differ from the Run 2.36 dominant card layout.",
+        "Across the full arm, all six roles must use six unique visual rhythms.",
+        "The slide must keep source media boundaries: derived instructions only, no copied source visuals."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.38 direction memory, visual recipe memory, visual rhythm id, or layout signature target.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_38_climax_public_video_visual_direction",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_public_video_slide_direction_memory_id": "direction_2_38_climax",
+      "required_per_slide_visual_recipe_memory_id": "recipe_2_38_climax",
+      "required_visual_rhythm_id": "cinematic_climax_object",
+      "required_layout_signature_target": "single_cinematic_result_object_with_quiet_release_boundary",
+      "required_code_modules": [
+        "drawRun239CinematicClimaxObject"
+      ],
+      "forbid_run2_36_dominant_layout_signature": true,
+      "forbid_workflow_gate_as_public_ribbon": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_39_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_layout_signature_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide must use the Run 2.38 per-slide recipe before native PPT drawing.",
+        "The public surface must not expose workflow gates as audit ribbons.",
+        "The slide layout signature must differ from the Run 2.36 dominant card layout.",
+        "Across the full arm, all six roles must use six unique visual rhythms.",
+        "The slide must keep source media boundaries: derived instructions only, no copied source visuals."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.38 direction memory, visual recipe memory, visual rhythm id, or layout signature target.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_38_close_public_video_visual_direction",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_public_video_slide_direction_memory_id": "direction_2_38_close",
+      "required_per_slide_visual_recipe_memory_id": "recipe_2_38_close",
+      "required_visual_rhythm_id": "decision_handoff_path",
+      "required_layout_signature_target": "quiet_handoff_path_with_single_decision_gate",
+      "required_code_modules": [
+        "drawRun239DecisionHandoffPath"
+      ],
+      "forbid_run2_36_dominant_layout_signature": true,
+      "forbid_workflow_gate_as_public_ribbon": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_39_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_layout_signature_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide must use the Run 2.38 per-slide recipe before native PPT drawing.",
+        "The public surface must not expose workflow gates as audit ribbons.",
+        "The slide layout signature must differ from the Run 2.36 dominant card layout.",
+        "Across the full arm, all six roles must use six unique visual rhythms.",
+        "The slide must keep source media boundaries: derived instructions only, no copied source visuals."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.38 direction memory, visual recipe memory, visual rhythm id, or layout signature target.",
+      "public_release_gate": "blocked"
+    }
+  ]
+}

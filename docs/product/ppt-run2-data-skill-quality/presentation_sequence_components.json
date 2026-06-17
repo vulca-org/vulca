@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "status": "run2_4_sequence_components_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "components": [
+    {
+      "id": "sequence_component_opening_reset",
+      "motion_target_ids": ["motion_target_opening_attention_reset"],
+      "visual_component_ids": ["component_rhythm_budget_strip"],
+      "slide_roles": ["cover"],
+      "native_ppt_primitives": [
+        "native editable PPT background field shape",
+        "native editable PPT headline and support text",
+        "native editable PPT rhythm marker"
+      ],
+      "sequence_steps": [
+        {
+          "step_id": "opening_field_first",
+          "order": 1,
+          "reveal_object": "wide native opening field",
+          "trigger": "on slide start",
+          "duration": "short hold",
+          "purpose": "Create attention space before any proof density."
+        },
+        {
+          "step_id": "headline_second",
+          "order": 2,
+          "reveal_object": "editable headline",
+          "trigger": "after opening hold",
+          "duration": "quick reveal",
+          "purpose": "Name the product claim after orientation."
+        },
+        {
+          "step_id": "proof_marker_delayed",
+          "order": 3,
+          "reveal_object": "small native proof marker",
+          "trigger": "after headline settles",
+          "duration": "quick reveal",
+          "purpose": "Signal that proof will follow without filling the cover."
+        }
+      ],
+      "trace_fields": [
+        "motion_target_ids",
+        "sequence_component_ids",
+        "visual_component_ids",
+        "density_counts",
+        "native_ppt_checks"
+      ],
+      "qa_probe": "The reveal sequence keeps the cover sparse before any proof marker appears.",
+      "failure_modes": ["dense cover grid", "all objects visible at once", "headline competes with proof labels"],
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "sequence_component_before_after_reveal",
+      "motion_target_ids": ["motion_target_before_after_reveal"],
+      "visual_component_ids": ["component_before_after_thumbnail"],
+      "slide_roles": ["contrast", "proof"],
+      "native_ppt_primitives": [
+        "native editable PPT before thumbnail",
+        "native editable PPT after thumbnail",
+        "native editable PPT delta arrow and label"
+      ],
+      "sequence_steps": [
+        {
+          "step_id": "before_state",
+          "order": 1,
+          "reveal_object": "flat native before thumbnail",
+          "trigger": "on slide start",
+          "duration": "quick reveal",
+          "purpose": "Show the report-like failure state."
+        },
+        {
+          "step_id": "after_state",
+          "order": 2,
+          "reveal_object": "designed native after thumbnail",
+          "trigger": "after before state",
+          "duration": "quick reveal",
+          "purpose": "Show the visible hierarchy change."
+        },
+        {
+          "step_id": "delta_lockup",
+          "order": 3,
+          "reveal_object": "native delta label and connector",
+          "trigger": "after after state",
+          "duration": "short hold",
+          "purpose": "Explain what the generator learned."
+        }
+      ],
+      "trace_fields": [
+        "motion_target_ids",
+        "sequence_component_ids",
+        "visual_learning_target_ids",
+        "visual_component_ids",
+        "deleted_or_routed_content"
+      ],
+      "qa_probe": "The reveal order makes the before to after transformation legible.",
+      "failure_modes": ["two equal screenshots", "no transformation direction", "delta label is body text"],
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "sequence_component_proof_build",
+      "motion_target_ids": ["motion_target_proof_build"],
+      "visual_component_ids": ["component_transcript_headline_route", "component_rhythm_budget_strip"],
+      "slide_roles": ["proof"],
+      "native_ppt_primitives": [
+        "native editable PPT proof headline",
+        "native editable PPT proof object",
+        "native editable PPT trace route marker"
+      ],
+      "sequence_steps": [
+        {
+          "step_id": "claim_first",
+          "order": 1,
+          "reveal_object": "compressed native proof headline",
+          "trigger": "on slide start",
+          "duration": "short hold",
+          "purpose": "Avoid transcript-like body text."
+        },
+        {
+          "step_id": "object_second",
+          "order": 2,
+          "reveal_object": "native proof object",
+          "trigger": "after claim",
+          "duration": "build reveal",
+          "purpose": "Make the proof object carry the evidence."
+        },
+        {
+          "step_id": "route_marker_third",
+          "order": 3,
+          "reveal_object": "native route marker for trace-only detail",
+          "trigger": "after proof object",
+          "duration": "quick reveal",
+          "purpose": "Show where excess explanation moved."
+        }
+      ],
+      "trace_fields": [
+        "motion_target_ids",
+        "sequence_component_ids",
+        "multimodal_anchor_ids",
+        "transcript_anchor_ids",
+        "deleted_or_routed_content"
+      ],
+      "qa_probe": "The proof reveal sequence builds evidence without placing transcript-like detail in the slide body.",
+      "failure_modes": ["paragraph proof", "equal proof cards", "route marker becomes a dense status panel"],
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "sequence_component_climax_scale",
+      "motion_target_ids": ["motion_target_climax_scale_emphasis"],
+      "visual_component_ids": ["component_public_demo_climax_object"],
+      "slide_roles": ["climax"],
+      "native_ppt_primitives": [
+        "native editable PPT dominant outcome object",
+        "native editable PPT subordinate support labels",
+        "native editable PPT comparison lockup"
+      ],
+      "sequence_steps": [
+        {
+          "step_id": "support_context",
+          "order": 1,
+          "reveal_object": "small native support context",
+          "trigger": "on slide start",
+          "duration": "quick reveal",
+          "purpose": "Connect the climax to prior proof without adding a grid."
+        },
+        {
+          "step_id": "outcome_scale",
+          "order": 2,
+          "reveal_object": "dominant native outcome object",
+          "trigger": "after context",
+          "duration": "scale emphasis",
+          "purpose": "Create the public-demo climax object."
+        },
+        {
+          "step_id": "comparison_lock",
+          "order": 3,
+          "reveal_object": "native comparison label",
+          "trigger": "after outcome scale",
+          "duration": "short hold",
+          "purpose": "Lock the result as the main takeaway."
+        }
+      ],
+      "trace_fields": [
+        "motion_target_ids",
+        "sequence_component_ids",
+        "visual_component_ids",
+        "layout_geometry_checks",
+        "native_ppt_checks"
+      ],
+      "qa_probe": "The reveal sequence makes the climax object larger and more memorable than setup or proof objects.",
+      "failure_modes": ["climax repeats proof grid", "scale object is not dominant", "support labels compete with outcome"],
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "sequence_component_release_gate",
+      "motion_target_ids": ["motion_target_release_gate_handoff"],
+      "visual_component_ids": ["component_public_demo_climax_object", "component_slide_mini_preview"],
+      "slide_roles": ["close"],
+      "native_ppt_primitives": [
+        "native editable PPT release gate",
+        "native editable PPT handoff line",
+        "native editable PPT optional mini-preview"
+      ],
+      "sequence_steps": [
+        {
+          "step_id": "outcome_reminder",
+          "order": 1,
+          "reveal_object": "native outcome reminder",
+          "trigger": "on slide start",
+          "duration": "quick reveal",
+          "purpose": "Keep the climax result present without repeating proof detail."
+        },
+        {
+          "step_id": "gate_reveal",
+          "order": 2,
+          "reveal_object": "native public-blocked release gate",
+          "trigger": "after outcome reminder",
+          "duration": "quick reveal",
+          "purpose": "Make the current release state explicit."
+        },
+        {
+          "step_id": "handoff_pause",
+          "order": 3,
+          "reveal_object": "native next-decision handoff line",
+          "trigger": "after gate reveal",
+          "duration": "final pause",
+          "purpose": "End with a decision instead of more status detail."
+        }
+      ],
+      "trace_fields": [
+        "motion_target_ids",
+        "sequence_component_ids",
+        "release_gate_inputs",
+        "visual_component_ids",
+        "aesthetic_qa"
+      ],
+      "qa_probe": "The close reveal sequence ends with a release handoff and not a final report page.",
+      "failure_modes": ["close becomes appendix", "gate hidden in small text", "new evidence appears after handoff"],
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    }
+  ],
+  "qa_gates": [
+    "each sequence component references known motion targets and native visual components",
+    "sequence steps are sequential and start at one",
+    "native editable PPT primitives are required for every sequence component",
+    "trace fields include motion_target_ids and sequence_component_ids",
+    "public release remains blocked until render, provenance, and human approval"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "selector_data_workflow_ready_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "run_id": "2.15",
+  "creates_new_ppt_outputs": false,
+  "selector_artifacts": {
+    "sources": "docs/product/ppt-run2-data-skill-quality/run2_15_layout_selector_sources.json",
+    "memory": "docs/product/ppt-run2-data-skill-quality/run2_15_layout_module_memory.json",
+    "gate_matrix": "docs/product/ppt-run2-data-skill-quality/run2_15_layout_selector_gate_matrix.json"
+  },
+  "input_chain": {
+    "prior_aesthetic_shell": "docs/product/ppt-run2-data-skill-quality/run2_10_visual_system_memory.json",
+    "prior_thick_data_trace": "docs/product/ppt-run2-data-skill-quality/run2_12_thick_multimodal_evidence.json",
+    "prior_aesthetic_trace_rerun": "docs/product/ppt-run2-data-skill-quality/results/run2_14_aesthetic_trace_rerun_result.json"
+  },
+  "learning": [
+    "layout module selector converts Run 2.14 aesthetic recovery into reusable generation policy",
+    "text resilience is now a selector gate before native PPT generation",
+    "trace hidden from public slide surface remains required",
+    "product theater realism is now a gate rather than a hand-coded slide choice",
+    "metric reveal climax is now a selector gate rather than an implicit role-to-module side effect",
+    "bad selector control boundary is defined before the next four-arm rerun"
+  ],
+  "next_generation_gate": "run2_15_selector_gate_matrix_must_drive_next_four_arm_rerun",
+  "qa_summary": {
+    "artifact_contract": "passed: sources, module memory, and gate matrix validate through focused tests",
+    "ppt_generation": "not run: Run 2.15 is data/workflow-only",
+    "public_release": "blocked"
+  },
+  "not_public_ready_reasons": [
+    "Run 2.15 creates no new PPT outputs.",
+    "The selector has not yet driven a four-arm generated rerun.",
+    "No human release approval has been recorded."
+  ],
+  "next_required_action": "use the Run 2.15 selector gate matrix to drive the next four-arm rerun; do not advance to Run 3.0 yet."
+}

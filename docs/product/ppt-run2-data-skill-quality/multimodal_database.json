@@ -1,0 +1,357 @@
+{
+  "schema_version": 1,
+  "status": "run2_2_multimodal_contract_public_blocked",
+  "storage_policy": {
+    "default": "derived_observations_only",
+    "raw_media": "forbidden",
+    "transcripts": "short_anchor_descriptions_only",
+    "screenshots": "forbidden_unless_generated_or_explicitly_licensed",
+    "local_cache": "allowed_only_under_untracked_outputs_for_processing",
+    "copyright_boundary": "Store source identity, locator, short observations, and derived design signals. Do not store copied prose, screenshots, frames, audio, video, brand marks, layouts, source assets, or full transcripts."
+  },
+  "required_modalities": ["text", "image_reference", "video", "audio", "transcript", "interaction"],
+  "records": [
+    {
+      "id": "mm_text_visual_hierarchy_tutorial",
+      "source_id": "slidemodel_visual_hierarchy",
+      "source_kind": "tutorial_page",
+      "modalities": ["text", "image_reference"],
+      "allowed_storage": "derived_observations_only",
+      "ingestion_status": "metadata_and_derived_observations_recorded",
+      "anchors": [
+        {
+          "anchor_id": "text_hierarchy_single_dominant_object",
+          "modality": "text",
+          "locator": "article-level hierarchy principle",
+          "observation": "A presentation hierarchy lesson should become a slide contract: one primary claim, one dominant proof object, and visibly subordinate support.",
+          "extracted_design_signal": "Reject slides where all panels have equal visual weight or the main claim competes with multiple same-size proof objects.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "image_reference_hierarchy_shape",
+          "modality": "image_reference",
+          "locator": "visual examples observed at page level",
+          "observation": "Image references are useful only as composition analysis: focal scale, whitespace, contrast, and reading order.",
+          "extracted_design_signal": "Generate original editable PPT compositions that express focal hierarchy without copying source layouts or screenshots.",
+          "allowed_use": "visual_inspiration"
+        }
+      ],
+      "derived_outputs": ["extraction_units", "aesthetic_memory_candidates", "layout_qa_probes"],
+      "do_not_store": ["full prose", "screenshots", "logos", "source layouts"],
+      "qa_gates": ["source boundary recorded", "derived rule is executable", "no copied media stored"]
+    },
+    {
+      "id": "mm_text_whitespace_tutorial",
+      "source_id": "present_partners_whitespace",
+      "source_kind": "tutorial_page",
+      "modalities": ["text", "image_reference"],
+      "allowed_storage": "derived_observations_only",
+      "ingestion_status": "metadata_and_derived_observations_recorded",
+      "anchors": [
+        {
+          "anchor_id": "text_whitespace_density_budget",
+          "modality": "text",
+          "locator": "white-space guidance summarized as rule",
+          "observation": "Whitespace guidance should become a measurable density budget, not a generic instruction to make the slide cleaner.",
+          "extracted_design_signal": "Every main-story slide must choose max words, max panels, max proof objects, and an explicit route for excess proof.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "image_reference_negative_space",
+          "modality": "image_reference",
+          "locator": "page-level visual reference analysis",
+          "observation": "Useful whitespace is active composition space around the focal object, not empty decoration.",
+          "extracted_design_signal": "The generator must reserve a dominant field on cover, climax, and close slides rather than filling the canvas with equal cards.",
+          "allowed_use": "visual_inspiration"
+        }
+      ],
+      "derived_outputs": ["density_budget", "deletion_rule_inputs", "aesthetic_qa_probes"],
+      "do_not_store": ["full prose", "screenshots", "logos", "source layouts"],
+      "qa_gates": ["density budget is numeric", "overflow route exists", "no copied media stored"]
+    },
+    {
+      "id": "mm_video_audio_keynote_rhythm",
+      "source_id": "schema_2025_keynote_video",
+      "source_kind": "video_tutorial_or_keynote",
+      "modalities": ["video", "audio", "transcript"],
+      "allowed_storage": "derived_observations_only",
+      "ingestion_status": "timestamped_observations_recorded_no_media_saved",
+      "anchors": [
+        {
+          "anchor_id": "video_opening_scale_shift",
+          "modality": "video",
+          "locator": "00:00-00:45 visual opening beat",
+          "observation": "Opening video rhythm can be translated into one wide visual field before explanatory panels appear.",
+          "extracted_design_signal": "The cover slide must begin with a dominant visual object or field and fewer panels than later proof slides.",
+          "allowed_use": "timestamped_observation_only"
+        },
+        {
+          "anchor_id": "audio_pause_density_control",
+          "modality": "audio",
+          "locator": "00:00-00:45 speech cadence observation",
+          "observation": "Audio pacing implies density control: when narration leaves attention space, the slide should not overfill that beat with labels.",
+          "extracted_design_signal": "Reduce visible words on orientation beats and avoid dense labels before the mechanism has been introduced.",
+          "allowed_use": "timestamped_observation_only"
+        },
+        {
+          "anchor_id": "transcript_claim_compression",
+          "modality": "transcript",
+          "locator": "short paraphrased claim anchor only",
+          "observation": "Transcript analysis should compress spoken explanation into a slide headline and speaker-note support, not copy phrasing.",
+          "extracted_design_signal": "Convert long explanation into one native headline, one short support line, and optional speaker notes; do not place full transcript text on slide.",
+          "allowed_use": "derived_rules_only"
+        }
+      ],
+      "derived_outputs": ["rhythm_roles", "pacing_rules", "speaker_note_routes"],
+      "do_not_store": ["video frames", "audio files", "full transcripts", "speaker language", "source screenshots"],
+      "qa_gates": ["timestamps are anchors only", "no raw media stored", "spoken content is paraphrased into design signals"]
+    },
+    {
+      "id": "mm_interaction_presentation_product_reference",
+      "source_id": "geo_figma_slides",
+      "source_kind": "presentation_product_reference",
+      "modalities": ["interaction", "text", "image_reference"],
+      "allowed_storage": "derived_observations_only",
+      "ingestion_status": "interaction_observations_recorded_no_product_assets_saved",
+      "anchors": [
+        {
+          "anchor_id": "interaction_controls_as_slide_system",
+          "modality": "interaction",
+          "locator": "product behavior described at page level",
+          "observation": "A presentation product reference is useful when its interaction model becomes generator controls, not when its UI is copied.",
+          "extracted_design_signal": "Expose slide-generation controls as inspectable state: selected memory ids, density budget, asset policy, and release gate.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "image_reference_product_surface",
+          "modality": "image_reference",
+          "locator": "public product visuals observed as high-level reference",
+          "observation": "Product screenshots should not be copied; they can inspire original native surfaces that make generation state legible.",
+          "extracted_design_signal": "Use original UI-like panels only when they explain product behavior, not as decorative dashboard filler.",
+          "allowed_use": "visual_inspiration"
+        }
+      ],
+      "derived_outputs": ["workflow_surface_rules", "trace_manifest_presentation_rules"],
+      "do_not_store": ["screenshots", "UI copies", "brand marks", "template files"],
+      "qa_gates": ["state surfaces are original", "controls map to trace fields", "no copied product UI"]
+    },
+    {
+      "id": "mm_case_public_keynote_reference",
+      "source_id": "google_cloud_next_keynote",
+      "source_kind": "commercial_keynote_case",
+      "modalities": ["text", "image_reference", "interaction"],
+      "allowed_storage": "derived_observations_only",
+      "ingestion_status": "case_observations_recorded_no_event_assets_saved",
+      "anchors": [
+        {
+          "anchor_id": "case_large_scale_climax",
+          "modality": "text",
+          "locator": "case-study description summarized as event design need",
+          "observation": "Large-scale keynote references should be used to enforce a visible climax, not to borrow event graphics.",
+          "extracted_design_signal": "Reserve one slide for the largest supported outcome object and ensure it breaks from setup/proof density.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "interaction_audience_handoff",
+          "modality": "interaction",
+          "locator": "audience journey inferred from case structure",
+          "observation": "A public keynote close should hand the audience to a decision, next action, or proof checkpoint.",
+          "extracted_design_signal": "The close slide must include one decision handoff and one release gate, not an appendix-like status grid.",
+          "allowed_use": "derived_rules_only"
+        }
+      ],
+      "derived_outputs": ["climax_rules", "closing_handoff_rules"],
+      "do_not_store": ["event graphics", "photos", "brand marks", "source layouts"],
+      "qa_gates": ["climax is visually distinct", "close is a decision handoff", "no copied event assets"]
+    },
+    {
+      "id": "mm_duarte_visual_storytelling_webinar",
+      "source_id": "duarte_persuasive_visual_storytelling",
+      "source_kind": "webinar_video_reference",
+      "modalities": ["text", "video", "audio"],
+      "allowed_storage": "derived_observations_only",
+      "ingestion_status": "public_page_metadata_and_derived_observations_recorded_no_webinar_media_saved",
+      "anchors": [
+        {
+          "anchor_id": "duarte_storytelling_data_kill_rest",
+          "modality": "text",
+          "locator": "public page learning outcome about visually enhancing important data and removing the rest",
+          "observation": "A visual storytelling lesson should force the generator to separate the important data from surrounding explanation.",
+          "extracted_design_signal": "Generate a before/after delta where the after state enlarges one data object and routes nonessential explanation to notes or trace detail.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "duarte_storytelling_action_motivation",
+          "modality": "text",
+          "locator": "public page description of motivating support for an idea",
+          "observation": "Presentation storytelling is not just clearer layout; it should end with audience belief or action.",
+          "extracted_design_signal": "The close slide must preserve one decision handoff and one reason to act, with no appendix-like status grid.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "duarte_webinar_longform_pacing",
+          "modality": "video",
+          "locator": "45-minute webinar metadata on public page",
+          "observation": "A long-form video/webinar implies repeated attention resets; a six-slide demo needs planned rhythm changes rather than six equal panels.",
+          "extracted_design_signal": "Use a rhythm ladder: orientation slide under 30 visible words, proof slide under 55 words, climax slide with the largest proof object.",
+          "allowed_use": "short_analysis"
+        },
+        {
+          "anchor_id": "duarte_webinar_audio_attention_space",
+          "modality": "audio",
+          "locator": "webinar audio channel acknowledged as source modality; no audio saved",
+          "observation": "Audio teaching moments should be translated into attention space, not copied speech.",
+          "extracted_design_signal": "When a slide represents a narrated explanation, compress the visible slide to headline plus proof object and route extra explanation to speaker notes.",
+          "allowed_use": "derived_rules_only"
+        }
+      ],
+      "derived_outputs": ["before_after_targets", "closing_handoff_rules", "audio_rhythm_budgets"],
+      "do_not_store": ["webinar video", "webinar audio", "transcripts", "screenshots", "slides", "gated materials"],
+      "qa_gates": ["public page metadata only", "no webinar media stored", "derived signals change generator behavior"]
+    },
+    {
+      "id": "mm_duarte_slide_design_course",
+      "source_id": "duarte_slide_design_course",
+      "source_kind": "slide_design_course_reference",
+      "modalities": ["text", "image_reference", "interaction", "video"],
+      "allowed_storage": "derived_observations_only",
+      "ingestion_status": "public_course_page_metadata_and_derived_observations_recorded_no_course_assets_saved",
+      "anchors": [
+        {
+          "anchor_id": "duarte_course_direct_attention",
+          "modality": "text",
+          "locator": "public course overview statement about directing audience attention",
+          "observation": "Slide design training should become an attention-directing requirement, not a decorative style prompt.",
+          "extracted_design_signal": "Every generated slide must name its focal object and prove that no other same-scale object competes with it.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "duarte_course_powerpoint_tooling",
+          "modality": "interaction",
+          "locator": "public course module list mentioning PowerPoint UI/tool operations",
+          "observation": "Tooling lessons should become editable PPT implementation requirements.",
+          "extracted_design_signal": "Prefer native PowerPoint shapes, alignment guides, selection-pane-friendly groups, editable text, and transitions recorded as metadata instead of flattened slide images.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "duarte_course_image_reference_polish",
+          "modality": "image_reference",
+          "locator": "public page image references observed only as high-level composition cues",
+          "observation": "Course imagery can inform polish cues but cannot become copied layout, screenshot, or asset memory.",
+          "extracted_design_signal": "Generate original mini-previews with restrained spacing, strong focal scale, and native labels; do not copy course visuals.",
+          "allowed_use": "visual_inspiration"
+        },
+        {
+          "anchor_id": "duarte_course_video_modules",
+          "modality": "video",
+          "locator": "public course metadata: on-demand video modules",
+          "observation": "Video-module training implies stepwise transformation that should be visible in the generated deck.",
+          "extracted_design_signal": "At least one slide must show an original before/after mini-preview pair where a report-like input becomes a designed output.",
+          "allowed_use": "short_analysis"
+        }
+      ],
+      "derived_outputs": ["native_ppt_targets", "slide_mini_preview_targets", "attention_focus_qa"],
+      "do_not_store": ["course lessons", "exercise files", "screenshots", "course videos", "audio", "transcripts", "brand marks"],
+      "qa_gates": ["only public course metadata is used", "no course assets stored", "native editability is required"]
+    },
+    {
+      "id": "mm_udel_design_principles_video",
+      "source_id": "udel_design_principles_video",
+      "source_kind": "open_video_tutorial_with_transcript",
+      "modalities": ["video", "audio", "transcript", "text", "image_reference"],
+      "allowed_storage": "derived_observations_only",
+      "ingestion_status": "public_tutorial_metadata_license_boundary_and_derived_observations_recorded_no_media_saved",
+      "anchors": [
+        {
+          "anchor_id": "udel_principles_four_part_contract",
+          "modality": "text",
+          "locator": "public tutorial description naming proximity, repetition, alignment, and contrast",
+          "observation": "General design principles become useful only when mapped to slide-level QA checks.",
+          "extracted_design_signal": "Each generated target must include proximity grouping, repeated style tokens, alignment constraints, and one contrast mechanism.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "udel_video_action_in_practice",
+          "modality": "video",
+          "locator": "7:19 video tutorial metadata; no frames saved",
+          "observation": "A tutorial that shows principles in action should produce a visible transformation target rather than a text summary.",
+          "extracted_design_signal": "Generate a native before/after slide pair that demonstrates alignment and contrast changes without copying tutorial frames.",
+          "allowed_use": "timestamped_observation_only"
+        },
+        {
+          "anchor_id": "udel_audio_stepwise_teaching",
+          "modality": "audio",
+          "locator": "video audio channel acknowledged as source modality; no audio saved",
+          "observation": "Stepwise instruction should become sequential slide reveal logic, not dense static explanation.",
+          "extracted_design_signal": "Use staged native slide groups with a recorded reveal order and no more than three visible stages at once.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "udel_transcript_timecode_boundary",
+          "modality": "transcript",
+          "locator": "public page lists written and time-code transcript links; transcript text not stored",
+          "observation": "Transcript availability is useful for locator precision, but the generated slide should paraphrase the lesson into native labels.",
+          "extracted_design_signal": "Use transcript only as locator metadata; convert principle explanation into short editable labels and speaker notes, not copied transcript text.",
+          "allowed_use": "derived_rules_only"
+        },
+        {
+          "anchor_id": "udel_license_noncommercial_boundary",
+          "modality": "image_reference",
+          "locator": "public license area noting CC BY-NC for video content",
+          "observation": "The license makes the public-packaging boundary explicit; this case pack should still avoid storing or redistributing the source media.",
+          "extracted_design_signal": "Use internal-only release labels on any slide target using this source until provenance and human approval explicitly clear public packaging.",
+          "allowed_use": "short_analysis"
+        }
+      ],
+      "derived_outputs": ["design_principle_qa", "before_after_targets", "license_boundary_checks"],
+      "do_not_store": ["video", "audio", "frames", "full transcripts", "tutorial visuals", "source layouts"],
+      "qa_gates": ["CC BY-NC boundary recorded", "no media redistributed", "transcript used only as locator metadata"]
+    }
+  ],
+  "cross_modal_design_tasks": [
+    {
+      "id": "before_after_visual_delta",
+      "input_modalities": ["text", "image_reference"],
+      "task": "Convert tutorial and image-reference observations into an original before/after slide target.",
+      "required_generator_behavior": "The full-skill arm must show at least one visible transformation from flat report layout to stronger visual hierarchy."
+    },
+    {
+      "id": "audio_to_rhythm_budget",
+      "input_modalities": ["audio", "video"],
+      "task": "Translate pacing observations into slide density and rhythm budgets.",
+      "required_generator_behavior": "Orientation beats use fewer visible words and larger visual fields; proof beats may add detail only after the focal object is established."
+    },
+    {
+      "id": "transcript_to_native_headline",
+      "input_modalities": ["transcript", "text"],
+      "task": "Compress spoken or written tutorial explanation into native editable headline/support text.",
+      "required_generator_behavior": "Long explanations route to speaker notes or trace notes instead of becoming tiny slide text."
+    },
+    {
+      "id": "interaction_to_skill_surface",
+      "input_modalities": ["interaction", "text"],
+      "task": "Turn product and workflow observations into inspectable generation controls.",
+      "required_generator_behavior": "Slides expose selected memory, density budget, and release gate only when those controls explain product behavior."
+    },
+    {
+      "id": "tutorial_to_before_after_mini_preview",
+      "input_modalities": ["text", "video", "image_reference"],
+      "task": "Convert tutorial observations into original native before/after slide mini-previews.",
+      "required_generator_behavior": "The full-skill arm must show at least one editable mini-preview pair that proves a design transformation."
+    },
+    {
+      "id": "principles_to_layout_qa",
+      "input_modalities": ["text", "transcript", "video"],
+      "task": "Map proximity, repetition, alignment, and contrast into layout QA probes.",
+      "required_generator_behavior": "Generated slides must record grouping, token repetition, alignment, and contrast checks in the trace."
+    }
+  ],
+  "qa_gates": [
+    "all required modalities appear in at least one record",
+    "every record references a source in sources.json",
+    "every anchor has a locator, observation, extracted design signal, and allowed use",
+    "raw audio, video, screenshots, source layouts, full transcripts, and copied prose are not stored",
+    "cross-modal tasks produce generator behavior, not just documentation",
+    "license and copyright boundaries are reviewed before any public packaging"
+  ]
+}

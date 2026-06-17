@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "rerun": {
+    "status": "completed",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-4-four-arm-contact-sheet.png",
+    "delivery_gate": "internal-demo-ok-public-blocked",
+    "best_internal_arm": "run2_4_full_skill",
+    "best_internal_arm_verdict": "motion_sequence_visible_but_not_public_video_grade"
+  },
+  "motion_sequence_learning": {
+    "opening_attention_reset": "native_sequence_visible",
+    "before_after_reveal": "native_sequence_visible",
+    "proof_build": "native_sequence_visible",
+    "climax_scale_emphasis": "native_sequence_visible",
+    "release_gate_handoff": "native_sequence_visible",
+    "trace_fields": "video_beat_ids_motion_target_ids_sequence_component_ids_ordered_reveal_steps_present",
+    "layout_geometry": "layout_errors_zero_warnings_zero",
+    "visual_quality_boundary": "still_schematic_internal_demo_grade"
+  },
+  "qa_summary": {
+    "prompt_only_layout_errors": 0,
+    "prompt_only_layout_warnings": 0,
+    "run1_5_layout_errors": 0,
+    "run1_5_layout_warnings": 0,
+    "run2_4_full_layout_errors": 0,
+    "run2_4_full_layout_warnings": 0,
+    "bad_aesthetic_memory_layout_errors": 0,
+    "bad_aesthetic_memory_layout_warnings": 0,
+    "generated_outputs_committed": false,
+    "gemini_contact_sheet_reviews": [
+      ".gemini-agent/artifacts/2026-06-01T203249986Z-artifacts.json"
+    ]
+  },
+  "next_required_action": "thicken_public_grade_visual_system_and_motion_rendering_then_rerun_same_five_layers",
+  "release_gate": "public_blocked_until_native_render_human_approval_and_public_demo_visual_pass"
+}

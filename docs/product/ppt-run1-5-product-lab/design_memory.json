@@ -1,0 +1,98 @@
+{
+  "schema_version": 2,
+  "contract": {
+    "required_fields": [
+      "evidence_id",
+      "source_role",
+      "observation",
+      "design_rule",
+      "slide_primitive",
+      "layout_constraint",
+      "qa_signal"
+    ],
+    "allowed_source_roles": [
+      "brief",
+      "source",
+      "tutorial",
+      "review"
+    ],
+    "allowed_slide_primitives": [
+      "cockpit",
+      "learning_map",
+      "comparison_delta",
+      "qa_gate",
+      "decision_table"
+    ]
+  },
+  "observations": [
+    {
+      "evidence_id": "brief_cockpit_input_surface",
+      "source_role": "brief",
+      "source_ids": [
+        "figma_config_2024",
+        "supervity_ai_keynote"
+      ],
+      "observation": "The experiment needs a visible input surface that makes audience, constraints, decision, and proof objects legible before any deck generation claim appears.",
+      "design_rule": "Use a cockpit slide to place brief fields, constraints, arm status, and decision pressure in one controlled product surface.",
+      "slide_primitive": "cockpit",
+      "layout_constraint": "The slide must reserve one dominant cockpit area with no more than three secondary panels.",
+      "qa_signal": "Review whether a contact-sheet reader can identify the business brief and blocked publish status without presenter narration.",
+      "do_not_copy": "Do not copy source visuals, layouts, screenshots, or brand marks."
+    },
+    {
+      "evidence_id": "tutorial_rules_to_learning_map",
+      "source_role": "tutorial",
+      "source_ids": [
+        "geo_figma_slides",
+        "figma_config_2025_identity"
+      ],
+      "observation": "Tutorial guidance should become a learnable map of evidence, memory, primitive choice, and generated slide behavior rather than a prose checklist.",
+      "design_rule": "Use a learning map that converts each tutorial rule into a node with an editable output implication.",
+      "slide_primitive": "learning_map",
+      "layout_constraint": "The slide must keep the map readable as a single path from intake to generation.",
+      "qa_signal": "Review whether each map node changes an observable slide primitive or QA rule.",
+      "do_not_copy": "Do not copy reference templates, glyphs, motion systems, screenshots, or brand marks."
+    },
+    {
+      "evidence_id": "comparison_delta_over_full_table",
+      "source_role": "source",
+      "source_ids": [
+        "supervity_ai_keynote"
+      ],
+      "observation": "Commercial AI presentation material becomes clearer when technical density is reduced into a visible before-after decision.",
+      "design_rule": "Use a comparison delta instead of a full table when the audience needs to see how full Vulca differs from prompt-only output.",
+      "slide_primitive": "comparison_delta",
+      "layout_constraint": "The slide must give the primary delta more area than the supporting score details.",
+      "qa_signal": "Review whether the comparison is understandable from slide thumbnails and whether secondary evidence stays subordinate.",
+      "do_not_copy": "Do not copy deck visuals, layouts, screenshots, narrative copy, or brand marks."
+    },
+    {
+      "evidence_id": "publish_gate_as_product_feature",
+      "source_role": "review",
+      "source_ids": [
+        "figma_config_2024"
+      ],
+      "observation": "A credible product workflow treats readiness and review status as part of the product surface rather than as post-hoc notes.",
+      "design_rule": "Use a QA gate slide that makes render checks, provenance, human review, and public publishing block state explicit.",
+      "slide_primitive": "qa_gate",
+      "layout_constraint": "The slide must place public publishing blocked status in the main gate area and keep remediation items editable.",
+      "qa_signal": "Review whether the gate blocks public release until evidence, render, provenance, and human approval exist.",
+      "do_not_copy": "Do not copy product UI screenshots, article visuals, layouts, or brand marks."
+    },
+    {
+      "evidence_id": "evidence_selects_next_primitive",
+      "source_role": "source",
+      "source_ids": [
+        "geo_figma_slides",
+        "figma_config_2025_identity",
+        "supervity_ai_keynote"
+      ],
+      "observation": "The pack should show that evidence selects the next slide primitive, because a product-lab deck must demonstrate controllable generation rather than a generic aesthetic.",
+      "design_rule": "Use a decision table to bind evidence type, risk, selected primitive, and next QA action.",
+      "slide_primitive": "decision_table",
+      "layout_constraint": "The slide must keep the decision table editable and restrict supporting notes to a narrow side rail.",
+      "qa_signal": "Review whether each decision row changes either the next slide primitive or the publish gate.",
+      "do_not_copy": "Do not copy reference visuals, layouts, screenshots, brand systems, or proprietary creative assets."
+    }
+  ]
+}

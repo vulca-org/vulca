@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "status": "run2_9_visual_gate_matrix_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "selection_chain": [
+    "run2_8_visual_diagnosis",
+    "run2_9_visual_primitive_repairs",
+    "run2_9_executable_visual_modules",
+    "run2_9_visual_gate_matrix",
+    "native_ppt_code_generation",
+    "visual_delta_gate",
+    "delivery_gate"
+  ],
+  "gates": [
+    {
+      "id": "gate_2_9_cover",
+      "slide_role": "cover",
+      "visual_primitive_ids": [
+        "primitive_2_9_editorial_spread_composition",
+        "primitive_2_9_typographic_field_composition"
+      ],
+      "visual_module_ids": [
+        "module_2_9_editorial_spread",
+        "module_2_9_typographic_field"
+      ],
+      "required_code_modules": [
+        "drawRun29EditorialSpread",
+        "drawRun29TypographicField"
+      ],
+      "boxiness_failure_probe": "Fails if the cover is a title box above supporting boxes instead of a typographic field with editorial asymmetry.",
+      "pass_fail_checks": [
+        "One dominant typographic field is visible before supporting objects.",
+        "No card grid appears below the headline.",
+        "Run 2.9 primitive and module ids are recorded in trace."
+      ],
+      "trace_fields": [
+        "run2_9_visual_primitive_ids",
+        "run2_9_visual_module_ids",
+        "run2_9_gate_matrix_ids",
+        "run2_9_code_module_ids",
+        "run2_9_boxiness_failure_probe",
+        "run2_9_visual_delta_from_run2_8"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "gate_2_9_setup",
+      "slide_role": "setup",
+      "visual_primitive_ids": [
+        "primitive_2_9_editorial_spread_composition",
+        "primitive_2_9_product_surface_depth"
+      ],
+      "visual_module_ids": [
+        "module_2_9_editorial_spread",
+        "module_2_9_layered_product_surface"
+      ],
+      "required_code_modules": [
+        "drawRun29EditorialSpread",
+        "drawRun29LayeredProductSurface"
+      ],
+      "boxiness_failure_probe": "Fails if setup still uses equal report boxes instead of editorial spread plus layered product surface.",
+      "pass_fail_checks": [
+        "Setup uses an asymmetric field before showing proof detail.",
+        "Product surface has at least three native layers.",
+        "No copied source UI or flat dashboard card cluster appears."
+      ],
+      "trace_fields": [
+        "run2_9_visual_primitive_ids",
+        "run2_9_visual_module_ids",
+        "run2_9_gate_matrix_ids",
+        "run2_9_code_module_ids",
+        "run2_9_boxiness_failure_probe",
+        "run2_9_visual_delta_from_run2_8"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "gate_2_9_contrast",
+      "slide_role": "contrast",
+      "visual_primitive_ids": [
+        "primitive_2_9_editorial_spread_composition"
+      ],
+      "visual_module_ids": [
+        "module_2_9_editorial_spread"
+      ],
+      "required_code_modules": [
+        "drawRun29EditorialSpread"
+      ],
+      "boxiness_failure_probe": "Fails if the contrast slide remains a two-column box comparison without an editorial focal field.",
+      "pass_fail_checks": [
+        "Contrast uses an editorial field rather than mirrored equal rectangles.",
+        "The before/after relationship is visible without dense text.",
+        "Proof rail remains subordinate."
+      ],
+      "trace_fields": [
+        "run2_9_visual_primitive_ids",
+        "run2_9_visual_module_ids",
+        "run2_9_gate_matrix_ids",
+        "run2_9_code_module_ids",
+        "run2_9_boxiness_failure_probe",
+        "run2_9_visual_delta_from_run2_8"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "gate_2_9_proof",
+      "slide_role": "proof",
+      "visual_primitive_ids": [
+        "primitive_2_9_product_surface_depth",
+        "primitive_2_9_motion_storyboard_sequence"
+      ],
+      "visual_module_ids": [
+        "module_2_9_layered_product_surface",
+        "module_2_9_motion_storyboard"
+      ],
+      "required_code_modules": [
+        "drawRun29LayeredProductSurface",
+        "drawRun29MotionStoryboard"
+      ],
+      "boxiness_failure_probe": "Fails if proof remains a box dashboard or card grid instead of layered surface plus visible storyboard progression.",
+      "pass_fail_checks": [
+        "Proof surface shows depth through native layers.",
+        "Storyboard beats are unequal and show a visible transformation.",
+        "Secondary proof is routed away from the main field."
+      ],
+      "trace_fields": [
+        "run2_9_visual_primitive_ids",
+        "run2_9_visual_module_ids",
+        "run2_9_gate_matrix_ids",
+        "run2_9_code_module_ids",
+        "run2_9_boxiness_failure_probe",
+        "run2_9_visual_delta_from_run2_8"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "gate_2_9_climax",
+      "slide_role": "climax",
+      "visual_primitive_ids": [
+        "primitive_2_9_motion_storyboard_sequence",
+        "primitive_2_9_climax_stage_composition"
+      ],
+      "visual_module_ids": [
+        "module_2_9_motion_storyboard",
+        "module_2_9_climax_stage"
+      ],
+      "required_code_modules": [
+        "drawRun29MotionStoryboard",
+        "drawRun29ClimaxStage"
+      ],
+      "boxiness_failure_probe": "Fails if the climax object is trapped in a box, surrounded by equal proof panels, or visually similar to proof slides.",
+      "pass_fail_checks": [
+        "Hero object owns at least the required stage field.",
+        "Perimeter evidence is secondary.",
+        "The full-series view shows a clear climax break from Run 2.8."
+      ],
+      "trace_fields": [
+        "run2_9_visual_primitive_ids",
+        "run2_9_visual_module_ids",
+        "run2_9_gate_matrix_ids",
+        "run2_9_code_module_ids",
+        "run2_9_boxiness_failure_probe",
+        "run2_9_visual_delta_from_run2_8"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "gate_2_9_close",
+      "slide_role": "close",
+      "visual_primitive_ids": [
+        "primitive_2_9_product_surface_depth",
+        "primitive_2_9_motion_storyboard_sequence",
+        "primitive_2_9_typographic_field_composition"
+      ],
+      "visual_module_ids": [
+        "module_2_9_layered_product_surface",
+        "module_2_9_motion_storyboard",
+        "module_2_9_typographic_field"
+      ],
+      "required_code_modules": [
+        "drawRun29LayeredProductSurface",
+        "drawRun29MotionStoryboard",
+        "drawRun29TypographicField"
+      ],
+      "boxiness_failure_probe": "Fails if the close becomes a footer box, appendix grid, or checklist card stack.",
+      "pass_fail_checks": [
+        "Close is a decision handoff, not an appendix.",
+        "Typographic field owns the closing decision.",
+        "Product surface and storyboard appear only as subordinate handoff evidence."
+      ],
+      "trace_fields": [
+        "run2_9_visual_primitive_ids",
+        "run2_9_visual_module_ids",
+        "run2_9_gate_matrix_ids",
+        "run2_9_code_module_ids",
+        "run2_9_boxiness_failure_probe",
+        "run2_9_visual_delta_from_run2_8"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    }
+  ]
+}

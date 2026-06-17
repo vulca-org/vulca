@@ -1,0 +1,197 @@
+{
+  "schema_version": "ppt_run2_visual_evidence_workflow_gates.v1",
+  "status": "run2_35_visual_evidence_workflow_gates_ready_public_blocked",
+  "run_id": "2.35",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "gates": [
+    {
+      "gate_id": "gate_2_35_cover_visual_evidence_realism",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_realism_memory_ids": [
+        "realism_2_35_cover_1",
+        "realism_2_35_cover_2"
+      ],
+      "required_editorial_composition_memory_id": "composition_2_35_cover",
+      "min_realistic_visual_evidence_objects": 2,
+      "forbid_generic_block_diagrams": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_36_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_35_visual_evidence_asset_realism_ids",
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_realism_gate_id",
+        "run2_35_observable_product_state",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds at least two Run 2.35 realism memory ids before native PPT drawing.",
+        "The main visual object has a usecase-specific observable product or business state.",
+        "The main object is not only a generic block diagram, token rail, or equal-weight card grid.",
+        "The role's editorial anchor object owns the first read at thumbnail scale.",
+        "No copied screenshots, brand marks, source layouts, raw media, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.35 realism memory ids, editorial composition memory, or gate id.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_35_setup_visual_evidence_realism",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_realism_memory_ids": [
+        "realism_2_35_setup_1",
+        "realism_2_35_setup_2"
+      ],
+      "required_editorial_composition_memory_id": "composition_2_35_setup",
+      "min_realistic_visual_evidence_objects": 2,
+      "forbid_generic_block_diagrams": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_36_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_35_visual_evidence_asset_realism_ids",
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_realism_gate_id",
+        "run2_35_observable_product_state",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds at least two Run 2.35 realism memory ids before native PPT drawing.",
+        "The main visual object has a usecase-specific observable product or business state.",
+        "The main object is not only a generic block diagram, token rail, or equal-weight card grid.",
+        "The role's editorial anchor object owns the first read at thumbnail scale.",
+        "No copied screenshots, brand marks, source layouts, raw media, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.35 realism memory ids, editorial composition memory, or gate id.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_35_contrast_visual_evidence_realism",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_realism_memory_ids": [
+        "realism_2_35_contrast_1",
+        "realism_2_35_contrast_2"
+      ],
+      "required_editorial_composition_memory_id": "composition_2_35_contrast",
+      "min_realistic_visual_evidence_objects": 2,
+      "forbid_generic_block_diagrams": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_36_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_35_visual_evidence_asset_realism_ids",
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_realism_gate_id",
+        "run2_35_observable_product_state",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds at least two Run 2.35 realism memory ids before native PPT drawing.",
+        "The main visual object has a usecase-specific observable product or business state.",
+        "The main object is not only a generic block diagram, token rail, or equal-weight card grid.",
+        "The role's editorial anchor object owns the first read at thumbnail scale.",
+        "No copied screenshots, brand marks, source layouts, raw media, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.35 realism memory ids, editorial composition memory, or gate id.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_35_proof_visual_evidence_realism",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_realism_memory_ids": [
+        "realism_2_35_proof_1",
+        "realism_2_35_proof_2"
+      ],
+      "required_editorial_composition_memory_id": "composition_2_35_proof",
+      "min_realistic_visual_evidence_objects": 2,
+      "forbid_generic_block_diagrams": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_36_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_35_visual_evidence_asset_realism_ids",
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_realism_gate_id",
+        "run2_35_observable_product_state",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds at least two Run 2.35 realism memory ids before native PPT drawing.",
+        "The main visual object has a usecase-specific observable product or business state.",
+        "The main object is not only a generic block diagram, token rail, or equal-weight card grid.",
+        "The role's editorial anchor object owns the first read at thumbnail scale.",
+        "No copied screenshots, brand marks, source layouts, raw media, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.35 realism memory ids, editorial composition memory, or gate id.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_35_climax_visual_evidence_realism",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_realism_memory_ids": [
+        "realism_2_35_climax_1",
+        "realism_2_35_climax_2"
+      ],
+      "required_editorial_composition_memory_id": "composition_2_35_climax",
+      "min_realistic_visual_evidence_objects": 2,
+      "forbid_generic_block_diagrams": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_36_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_35_visual_evidence_asset_realism_ids",
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_realism_gate_id",
+        "run2_35_observable_product_state",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds at least two Run 2.35 realism memory ids before native PPT drawing.",
+        "The main visual object has a usecase-specific observable product or business state.",
+        "The main object is not only a generic block diagram, token rail, or equal-weight card grid.",
+        "The role's editorial anchor object owns the first read at thumbnail scale.",
+        "No copied screenshots, brand marks, source layouts, raw media, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.35 realism memory ids, editorial composition memory, or gate id.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_35_close_visual_evidence_realism",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_realism_memory_ids": [
+        "realism_2_35_close_1",
+        "realism_2_35_close_2"
+      ],
+      "required_editorial_composition_memory_id": "composition_2_35_close",
+      "min_realistic_visual_evidence_objects": 2,
+      "forbid_generic_block_diagrams": true,
+      "forbid_copied_source_media": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_36_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_35_visual_evidence_asset_realism_ids",
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_realism_gate_id",
+        "run2_35_observable_product_state",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds at least two Run 2.35 realism memory ids before native PPT drawing.",
+        "The main visual object has a usecase-specific observable product or business state.",
+        "The main object is not only a generic block diagram, token rail, or equal-weight card grid.",
+        "The role's editorial anchor object owns the first read at thumbnail scale.",
+        "No copied screenshots, brand marks, source layouts, raw media, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive the usecase label but fails if it lacks Run 2.35 realism memory ids, editorial composition memory, or gate id.",
+      "public_release_gate": "blocked"
+    }
+  ]
+}

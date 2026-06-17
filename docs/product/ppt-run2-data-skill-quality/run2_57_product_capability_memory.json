@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "run_id": "2.57",
+  "status": "run2_57_product_capability_memory_ready_public_blocked",
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_generated_run_id": "2.56",
+  "target_layer": "product_capability_narrative_and_content_specificity",
+  "source_gap_diagnosis": {
+    "observed_issue": "Run 2.56 repairs role-renderer sameness, but the slides still do not explain the product mechanism deeply enough.",
+    "content_problem": "The deck has visual roles and more copy, yet it underspecifies what users provide, what Vulca learns, what code is generated, how comparisons prove value, and what output ships.",
+    "repair_policy": "Add product capability memory before the next generated run. Do not solve this by adding more generic text to the renderer."
+  },
+  "product_capability_records": [
+    {
+      "id": "capability_input_layer",
+      "capability_layer": "input_layer",
+      "plain_language_claim": "Vulca starts from a real commercial brief plus a selected multimodal tutorial, video, transcript, image-reference, and case database instead of a blank prompt.",
+      "what_user_provides": [
+        "commercial brief",
+        "target audience and usecase",
+        "deck goal",
+        "constraints for source usage and release"
+      ],
+      "what_system_selects": [
+        "matched usecase record",
+        "allowed source pack",
+        "source-boundary notes",
+        "baseline and bad-control plan"
+      ],
+      "visible_ppt_obligation": "Show the brief, selected source pack, and source-boundary badge before making any visual-quality claim.",
+      "workflow_contract": "The next generated run must bind usecase id, source-pack id, and source-boundary status before writing native PPT objects.",
+      "next_renderer_obligation": "Render an input-to-output product strip, not a decorative intro slide.",
+      "trace_obligation": "run2_57_product_capability_ids",
+      "why_it_matters": "The audience needs to see that the product is controlled by real business and design inputs, not by vague prompt creativity.",
+      "related_artifacts": [
+        "commercial_usecase_bank.json",
+        "run2_12_thick_multimodal_evidence.json",
+        "run2_53_product_surface_scene_memory.json"
+      ]
+    },
+    {
+      "id": "capability_understanding_layer",
+      "capability_layer": "understanding_layer",
+      "plain_language_claim": "Vulca turns selected sources into design memory, message contracts, and workflow gates that decide what each slide must say and prove.",
+      "what_user_provides": [
+        "product positioning",
+        "audience knowledge level",
+        "required proof points"
+      ],
+      "what_system_selects": [
+        "capability graph",
+        "product logic relations",
+        "slide message contracts",
+        "forbidden empty claims"
+      ],
+      "visible_ppt_obligation": "Show how a real brief becomes structured memory and per-slide obligations.",
+      "workflow_contract": "Every slide role must reference at least one capability id and one product logic relation id.",
+      "next_renderer_obligation": "Render a visible transformation diagram from source evidence to design memory to slide contract.",
+      "trace_obligation": "run2_57_product_logic_relation_ids",
+      "why_it_matters": "This is the product's learning claim; without it, the deck looks like a normal GPT-produced presentation.",
+      "related_artifacts": [
+        "run2_51_editorial_copy_memory.json",
+        "run2_57_slide_message_contracts.json",
+        "run2_57_content_workflow_gates.json"
+      ]
+    },
+    {
+      "id": "capability_generation_layer",
+      "capability_layer": "generation_layer",
+      "plain_language_claim": "Vulca generates editable native PPT objects with code, including layouts, text containers, product surfaces, trace fields, and QA metadata.",
+      "what_user_provides": [
+        "preferred output format",
+        "brand constraints",
+        "review tolerance for generated code"
+      ],
+      "what_system_selects": [
+        "renderer module family",
+        "native PPT primitives",
+        "text-shape sockets",
+        "layout QA thresholds"
+      ],
+      "visible_ppt_obligation": "Say explicitly that the primary generation mode is code-generated editable PPT, not a raster image deck.",
+      "workflow_contract": "The next generated run must reject any slide that implies the final deck is image-only.",
+      "next_renderer_obligation": "Render editable PPT surfaces as inspectable modules with labels for code module, object type, and trace status.",
+      "trace_obligation": "run2_57_content_workflow_gate_id",
+      "why_it_matters": "The product value is not image generation; it is controllable, inspectable, editable slide generation.",
+      "related_artifacts": [
+        "scripts/generate_ppt_run2_56_role_renderer_split_arms.mjs",
+        "run2_51_shape_text_socket_memory.json",
+        "run2_53_scene_renderer_workflow_gates.json"
+      ]
+    },
+    {
+      "id": "capability_comparison_layer",
+      "capability_layer": "comparison_layer",
+      "plain_language_claim": "Vulca proves improvement through four arms: prompt-only, Run 1.5 skill baseline, full product-content workflow, and a bad control that removes the new content layer.",
+      "what_user_provides": [
+        "acceptance criteria",
+        "comparison usecase",
+        "expected failure mode"
+      ],
+      "what_system_selects": [
+        "baseline arms",
+        "negative-control boundary",
+        "same-brief comparison route"
+      ],
+      "visible_ppt_obligation": "Show the audience what the product beats and what it intentionally does not claim to beat yet.",
+      "workflow_contract": "The next generated run must include competitor-boundary ids and a bad control that can see Run 2.56 but cannot use Run 2.57 content contracts.",
+      "next_renderer_obligation": "Render the baseline difference as a product proof, not as a hidden trace-only claim.",
+      "trace_obligation": "run2_57_competitor_boundary_ids",
+      "why_it_matters": "A demo without a comparison can look nice but cannot prove product value.",
+      "related_artifacts": [
+        "results/run2_56_role_renderer_split_rerun_result.json",
+        "results/comparison_report.md"
+      ]
+    },
+    {
+      "id": "capability_verification_layer",
+      "capability_layer": "verification_layer",
+      "plain_language_claim": "Vulca records trace manifests, layout checks, source boundaries, content gates, and human review boundaries before publication.",
+      "what_user_provides": [
+        "release standard",
+        "source usage policy",
+        "human review decision"
+      ],
+      "what_system_selects": [
+        "trace manifest schema",
+        "layout collision checks",
+        "content specificity gates",
+        "public-blocked release boundary"
+      ],
+      "visible_ppt_obligation": "Explain the QA gate as part of the product, not as an internal engineering footnote.",
+      "workflow_contract": "Every slide must pass reader-question and content-specificity gates before the deck can claim product clarity.",
+      "next_renderer_obligation": "Render a compact gate board showing trace, content, layout, source boundary, and human review states.",
+      "trace_obligation": "run2_57_content_specificity_status",
+      "why_it_matters": "The product needs trust. The deck must show why generated output can be reviewed and repaired.",
+      "related_artifacts": [
+        "results/trace_manifest_contract.json",
+        "scripts/check_ppt_layout_quality.py",
+        "run2_57_content_workflow_gates.json"
+      ]
+    },
+    {
+      "id": "capability_output_layer",
+      "capability_layer": "output_layer",
+      "plain_language_claim": "Vulca outputs a native editable PPT deck, previews, trace files, contact sheets, and a viewer that lets the team inspect product proof before release.",
+      "what_user_provides": [
+        "handoff format",
+        "review destination",
+        "publication channel"
+      ],
+      "what_system_selects": [
+        "PPTX output",
+        "HTML viewer",
+        "slide thumbnails",
+        "trace and layout reports"
+      ],
+      "visible_ppt_obligation": "Make the final output path concrete: editable PPTX plus viewer and QA artifacts.",
+      "workflow_contract": "The next generated run must distinguish static editable PPT output from future motion or video proof.",
+      "next_renderer_obligation": "Render the handoff as a product surface with deck, viewer, trace, and review artifacts.",
+      "trace_obligation": "run2_57_reader_question_answered_status",
+      "why_it_matters": "The audience needs to understand what they can try and what is still blocked.",
+      "related_artifacts": [
+        "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+        "results/run2_56_role_renderer_split_rerun_result.json"
+      ]
+    },
+    {
+      "id": "capability_repair_loop",
+      "capability_layer": "repair_loop",
+      "plain_language_claim": "Vulca does not jump to a new stage when quality is weak; it repeats the same case-data-memory-workflow-generation loop and turns defects into stricter contracts.",
+      "what_user_provides": [
+        "human critique",
+        "failure examples",
+        "priority for the next repair"
+      ],
+      "what_system_selects": [
+        "defect category",
+        "new data requirement",
+        "new workflow gate",
+        "next rerun contract"
+      ],
+      "visible_ppt_obligation": "Show the repair loop as the product operating model, including why Run 2.57 is content-only and Run 2.58 is the next generated proof.",
+      "workflow_contract": "If the content is generic, the next run must fail before renderer execution.",
+      "next_renderer_obligation": "Render the defect-to-contract-to-rerun loop as the closing product promise.",
+      "trace_obligation": "run2_57_generic_claim_count",
+      "why_it_matters": "This answers why multiple versions exist and why later versions are not automatically better unless the data/workflow layer improves.",
+      "related_artifacts": [
+        "results/run2_57_product_capability_content_result.json",
+        "run2_57_content_workflow_gates.json"
+      ]
+    }
+  ],
+  "product_logic_relation_records": [
+    {
+      "id": "logic_relation_2_57_input_to_understanding",
+      "from_capability_id": "capability_input_layer",
+      "to_capability_id": "capability_understanding_layer",
+      "relation_type": "source_selection_to_design_memory",
+      "must_be_visible_as": "brief plus source pack becomes capability graph and per-slide message contracts"
+    },
+    {
+      "id": "logic_relation_2_57_understanding_to_generation",
+      "from_capability_id": "capability_understanding_layer",
+      "to_capability_id": "capability_generation_layer",
+      "relation_type": "message_contract_to_code_renderer",
+      "must_be_visible_as": "slide contract selects native PPT renderer obligations before code writes objects"
+    },
+    {
+      "id": "logic_relation_2_57_generation_to_output",
+      "from_capability_id": "capability_generation_layer",
+      "to_capability_id": "capability_output_layer",
+      "relation_type": "code_modules_to_editable_deck",
+      "must_be_visible_as": "native PPT primitives become editable deck, thumbnails, trace, and viewer output"
+    },
+    {
+      "id": "logic_relation_2_57_generation_to_verification",
+      "from_capability_id": "capability_generation_layer",
+      "to_capability_id": "capability_verification_layer",
+      "relation_type": "generated_objects_to_qa_gate",
+      "must_be_visible_as": "generated slide objects are checked for content specificity, layout, trace, and source boundary"
+    },
+    {
+      "id": "logic_relation_2_57_comparison_to_verification",
+      "from_capability_id": "capability_comparison_layer",
+      "to_capability_id": "capability_verification_layer",
+      "relation_type": "baseline_difference_to_proof_gate",
+      "must_be_visible_as": "four-arm comparison is only credited when full arm passes content gates and bad control fails"
+    },
+    {
+      "id": "logic_relation_2_57_verification_to_repair",
+      "from_capability_id": "capability_verification_layer",
+      "to_capability_id": "capability_repair_loop",
+      "relation_type": "failed_gate_to_next_contract",
+      "must_be_visible_as": "failed or weak slide review becomes new data/workflow contract before the next generated run"
+    }
+  ],
+  "competitor_boundary_records": [
+    {
+      "competitor_boundary_id": "prompt_only_slide_generator",
+      "competitor_pattern": "A model writes a deck directly from a prompt without source-bound memory or bad-control proof.",
+      "vulca_difference": "Vulca binds a real brief, selected source pack, workflow gates, and code-generated editable PPT before claiming improvement.",
+      "slide_obligation": "Show why prompt-only can sound fluent while missing product logic, trace proof, and repeatable repair."
+    },
+    {
+      "competitor_boundary_id": "image_generator",
+      "competitor_pattern": "The output is mainly raster imagery or visual mockups.",
+      "vulca_difference": "Vulca may use generated images as backgrounds or illustrations, but the main product output is code-generated editable PPT.",
+      "slide_obligation": "Say that backgrounds and illustrations are optional assets, while text, layout, trace, and deck structure stay editable."
+    },
+    {
+      "competitor_boundary_id": "template_slide_tool",
+      "competitor_pattern": "A user fills a template or theme with generic content blocks.",
+      "vulca_difference": "Vulca derives slide obligations from usecase data, product capability memory, and workflow gates, then generates code-generated editable PPT.",
+      "slide_obligation": "Contrast template reuse against evidence-bound per-slide message contracts."
+    },
+    {
+      "competitor_boundary_id": "design_editor",
+      "competitor_pattern": "A designer manually arranges visual components in a canvas editor.",
+      "vulca_difference": "Vulca creates a code-generated editable PPT artifact with traceable data, workflow, and QA, then leaves room for human design review.",
+      "slide_obligation": "Show automation plus inspection, not a claim that human visual judgment is unnecessary."
+    },
+    {
+      "competitor_boundary_id": "office_copilot",
+      "competitor_pattern": "Office-native assistance can create or rewrite slides, but the generation path may be hard to audit as a case database plus workflow experiment.",
+      "vulca_difference": "Vulca makes the case database, skill workflow, bad control, trace manifest, and code-generated editable PPT contract visible.",
+      "slide_obligation": "Frame Vulca as an experimentable product loop, not just a helper inside an existing slide editor."
+    }
+  ],
+  "forbidden_empty_claims": [
+    "evidence becomes design",
+    "design decks people can judge",
+    "workflow changes the surface",
+    "better aesthetics from data",
+    "AI-generated presentation with high quality",
+    "public-video-grade output without release approval"
+  ],
+  "release_boundary": "public_blocked_until_run2_58_generated_output_consumes_run2_57_content_contracts_and_passes_visual_human_review"
+}

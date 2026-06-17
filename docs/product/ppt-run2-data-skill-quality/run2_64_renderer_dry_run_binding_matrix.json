@@ -1,0 +1,203 @@
+{
+  "schema_version": "ppt_run2_renderer_dry_run_binding_matrix.v1",
+  "run_id": "2.64",
+  "status": "run2_64_renderer_dry_run_binding_matrix_ready_public_blocked",
+  "source_audit_run": "2.63",
+  "source_data_run": "2.61",
+  "dry_run_binding_records": [
+    {
+      "renderer_dry_run_binding_id": "renderer_dry_run_binding_2_64_cover",
+      "role": "cover",
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_cover",
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_cover",
+      "text_fit_gate_id": "text_fit_gate_2_64_cover",
+      "required_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_count": 6,
+      "proof_object_binding_count": 3,
+      "all_required_copy_units_bound": true,
+      "orphan_socket_count": 0,
+      "unbound_copy_unit_count": 0,
+      "unbound_copy_unit_keys": [],
+      "orphan_socket_ids": [],
+      "ready_for_run2_65_consumption": true,
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "renderer_dry_run_binding_id": "renderer_dry_run_binding_2_64_setup",
+      "role": "setup",
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_setup",
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_setup",
+      "text_fit_gate_id": "text_fit_gate_2_64_setup",
+      "required_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_count": 6,
+      "proof_object_binding_count": 3,
+      "all_required_copy_units_bound": true,
+      "orphan_socket_count": 0,
+      "unbound_copy_unit_count": 0,
+      "unbound_copy_unit_keys": [],
+      "orphan_socket_ids": [],
+      "ready_for_run2_65_consumption": true,
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "renderer_dry_run_binding_id": "renderer_dry_run_binding_2_64_contrast",
+      "role": "contrast",
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_contrast",
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_contrast",
+      "text_fit_gate_id": "text_fit_gate_2_64_contrast",
+      "required_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_count": 6,
+      "proof_object_binding_count": 3,
+      "all_required_copy_units_bound": true,
+      "orphan_socket_count": 0,
+      "unbound_copy_unit_count": 0,
+      "unbound_copy_unit_keys": [],
+      "orphan_socket_ids": [],
+      "ready_for_run2_65_consumption": true,
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "renderer_dry_run_binding_id": "renderer_dry_run_binding_2_64_proof",
+      "role": "proof",
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_proof",
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_proof",
+      "text_fit_gate_id": "text_fit_gate_2_64_proof",
+      "required_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_count": 6,
+      "proof_object_binding_count": 3,
+      "all_required_copy_units_bound": true,
+      "orphan_socket_count": 0,
+      "unbound_copy_unit_count": 0,
+      "unbound_copy_unit_keys": [],
+      "orphan_socket_ids": [],
+      "ready_for_run2_65_consumption": true,
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "renderer_dry_run_binding_id": "renderer_dry_run_binding_2_64_climax",
+      "role": "climax",
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_climax",
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_climax",
+      "text_fit_gate_id": "text_fit_gate_2_64_climax",
+      "required_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_count": 6,
+      "proof_object_binding_count": 3,
+      "all_required_copy_units_bound": true,
+      "orphan_socket_count": 0,
+      "unbound_copy_unit_count": 0,
+      "unbound_copy_unit_keys": [],
+      "orphan_socket_ids": [],
+      "ready_for_run2_65_consumption": true,
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "renderer_dry_run_binding_id": "renderer_dry_run_binding_2_64_close",
+      "role": "close",
+      "dynamic_socket_renderer_id": "dynamic_socket_renderer_2_64_close",
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_close",
+      "text_fit_gate_id": "text_fit_gate_2_64_close",
+      "required_copy_unit_keys": [
+        "headline",
+        "subhead",
+        "proof_badges",
+        "annotations",
+        "state_labels",
+        "speaker_note"
+      ],
+      "active_socket_count": 6,
+      "proof_object_binding_count": 3,
+      "all_required_copy_units_bound": true,
+      "orphan_socket_count": 0,
+      "unbound_copy_unit_count": 0,
+      "unbound_copy_unit_keys": [],
+      "orphan_socket_ids": [],
+      "ready_for_run2_65_consumption": true,
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    }
+  ],
+  "all_roles_ready_for_run2_65": true,
+  "next_required_action": "run2_65_generate_four_arm_ppt_consuming_run2_64_renderer_composition_repair"
+}

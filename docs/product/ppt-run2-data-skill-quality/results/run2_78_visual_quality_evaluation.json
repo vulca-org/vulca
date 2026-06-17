@@ -1,0 +1,277 @@
+{
+  "artifact_id": "run2_78_visual_quality_evaluation",
+  "part": "Part L",
+  "schema_version": "ppt_run2_78_visual_quality_evaluation.v1",
+  "run_id": "2.78",
+  "status": "run2_78_visual_quality_evaluation_public_blocked",
+  "stage_policy": "evaluation_only_after_k2_no_renderer_rerun",
+  "creates_new_ppt_deck": false,
+  "starts_renderer_rerun": false,
+  "updates_html_viewer": false,
+  "public_release_started": false,
+  "public_ready": false,
+  "quality_claim_boundary": "part_l_evaluation_only_no_public_release_no_renderer_rerun",
+  "source_runs": {
+    "comparison_baseline": "2.75",
+    "evaluated_run": "2.77",
+    "prior_reference_run": "2.73"
+  },
+  "input_chain": {
+    "run2_75_result": "docs/product/ppt-run2-data-skill-quality/results/run2_75_renderer_repair_rerun_result.json",
+    "run2_77_result": "docs/product/ppt-run2-data-skill-quality/results/run2_77_visual_grammar_renderer_repair_rerun_result.json",
+    "run2_76_j_evaluation": "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json",
+    "run2_76_k1_repair_plan": "docs/product/ppt-run2-data-skill-quality/run2_76_visual_grammar_renderer_repair_plan.json",
+    "run2_75_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-75-full-vulca/preview/contact-sheet.png",
+    "run2_77_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-77-full-vulca/preview/contact-sheet.png",
+    "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html"
+  },
+  "viewer_comparison_closure": {
+    "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+    "viewer_latest_run_id": "2.77",
+    "viewer_can_compare_2_75_and_2_77": true,
+    "run2_75_full_preview_count": 6,
+    "run2_77_full_preview_count": 6,
+    "browser_check_required_for_handoff": true,
+    "browser_check_note": "Part L records expected viewer closure. Browser verification must confirm latest 2.77 and visible 2.75/2.77 comparison after this artifact is written."
+  },
+  "gemini_agent_review_summary": {
+    "tool": "mcp__gemini_agent.gemini_artifact_review",
+    "model": "gemini-3.5-flash",
+    "review_count": 1,
+    "used_for_verdict": true,
+    "capture_method": "live_gemini_agent_artifact_review",
+    "comparison_artifacts": [
+      "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-75-full-vulca/preview/contact-sheet.png",
+      "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-77-full-vulca/preview/contact-sheet.png"
+    ],
+    "reviewed_artifacts": [
+      {
+        "run_id": "2.77",
+        "file": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-77-full-vulca/preview/contact-sheet.png",
+        "key_findings": [
+          "moderate_page_differentiation",
+          "slides_02_03_06_have_distinct_layouts",
+          "slides_01_04_05_share_wireframe_box_structure",
+          "technical_abstract_feel_remains"
+        ],
+        "risks": [
+          "wireframe_aesthetic_remains",
+          "small_label_readability_risk",
+          "red_annotation_marks_can_read_as_debug_or_interactive_ui"
+        ]
+      }
+    ],
+    "run2_77_findings": [
+      "moderate page differentiation",
+      "slides 02, 03, and 06 are more distinct",
+      "slides 01, 04, and 05 still share a wireframe box family",
+      "technical abstract presentation feel remains"
+    ],
+    "run2_77_risks": [
+      "wireframe aesthetic remains",
+      "small labels remain compressed",
+      "red annotation marks may read as debug or interactive controls"
+    ],
+    "limitations": [
+      "Review is based on the static full-arm contact sheet; no transition or OCR verification was performed."
+    ]
+  },
+  "evaluation_questions": {
+    "is_2_77_better_than_2_75": {
+      "answer": "partial_page_differentiation_up_public_blocked",
+      "basis": "2.77 applies the K1 target scene directions and reduces label count, but Gemini and local review both find persistent wireframe/public-readiness blockers."
+    },
+    "did_2_77_restore_page_differentiation": {
+      "answer": "moderately_improved_but_01_04_05_share_wireframe_family",
+      "basis": "Setup, contrast, climax, and close read more distinct than the mixed 2.75 state, but cover, proof, and climax still share a thin product-surface family."
+    },
+    "did_2_77_reduce_wireframe_aesthetic": {
+      "answer": "no_wireframe_still_dominant",
+      "basis": "Thin grey/blue outlines and red annotation circles are still first-read features across the contact sheet."
+    },
+    "did_2_77_reduce_small_label_problem": {
+      "answer": "partial_label_count_down_but_labels_still_tiny",
+      "basis": "K2 reduced metadata label count and bound text to scene objects, but remaining labels are still compressed at contact-sheet scale."
+    },
+    "does_2_77_improve_product_presentation_feel": {
+      "answer": "partial_more_scene_specific_but_abstract_product_surface",
+      "basis": "The visual grammar directions are clearer, but the product surfaces remain abstract wireframe shells rather than finished public presentation objects."
+    },
+    "does_2_77_reach_public_video_presentation_direction": {
+      "answer": "no_public_blocked",
+      "basis": "2.77 is useful for internal workflow verification, but still reads too technical and schematic for public-video presentation."
+    }
+  },
+  "visual_quality_assessment": {
+    "data_workflow_entry_gate": "pass_internal_only",
+    "viewer_comparison_gate": "pass_internal_only",
+    "design_quality_gate": "blocked",
+    "public_video_readiness": "blocked",
+    "global_delta_vs_2_75": "page_differentiation_up_label_count_down_wireframe_still_blocks_public_readiness",
+    "top_blocker": "thin_wireframe_product_surfaces_and_annotation_marks_still_read_as_internal_diagram",
+    "next_layer_to_fix": "renderer_art_direction_and_scene_realization"
+  },
+  "role_assessments": [
+    {
+      "role": "cover",
+      "slide_index": 1,
+      "visual_grammar_module": "product_reveal",
+      "delta_vs_2_75": "partial",
+      "page_differentiation": "partial",
+      "wireframe_reduction": "weak",
+      "label_hierarchy": "partial",
+      "public_video_direction": "no",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "The opening hero keeps a clearer product edge than the pre-K repair plan, but it still reads as a thin outlined product diagram with red annotation marks.",
+      "next_repair_instruction": "Replace the thin product-outline hero with a more finished product crop and reduce red debug markers to one purposeful editorial highlight.",
+      "trace_support": {
+        "target_scene_direction": "finished product hero emerging from source memory",
+        "visual_density_profile": "cover_k2_finished_product_hero_emerging_from_source_memory",
+        "renderer_capabilities_applied": [
+          "hero crop",
+          "editorial mask",
+          "asymmetric foreground/background depth",
+          "fewer but more meaningful labels"
+        ],
+        "label_count": 4
+      }
+    },
+    {
+      "role": "setup",
+      "slide_index": 2,
+      "visual_grammar_module": "hero_field",
+      "delta_vs_2_75": "partial",
+      "page_differentiation": "improved",
+      "wireframe_reduction": "weak",
+      "label_hierarchy": "partial",
+      "public_video_direction": "partial",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "The route field is more clearly a transformation scene, but the destination surface and route labels still feel schematic.",
+      "next_repair_instruction": "Keep the route bend and unequal field scale, then give the destination a stronger public-facing product surface instead of stacked outline panels.",
+      "trace_support": {
+        "target_scene_direction": "source-to-memory transformation field with one visible route bend",
+        "visual_density_profile": "setup_k2_source_to_memory_transformation_field_with_one_visible_route_bend",
+        "renderer_capabilities_applied": [
+          "editorial mask",
+          "scene-specific connectors",
+          "asymmetric foreground/background depth"
+        ],
+        "label_count": 4
+      }
+    },
+    {
+      "role": "contrast",
+      "slide_index": 3,
+      "visual_grammar_module": "before_after_theater",
+      "delta_vs_2_75": "improved",
+      "page_differentiation": "improved",
+      "wireframe_reduction": "partial",
+      "label_hierarchy": "partial",
+      "public_video_direction": "partial",
+      "root_cause_layer": "visual_grammar",
+      "repair_required": true,
+      "visual_observation": "The asymmetric seam remains the clearest differentiated scene, but the after-state is still an abstract product wireframe.",
+      "next_repair_instruction": "Preserve the seam and after-state dominance while making the after product visibly richer at thumbnail scale.",
+      "trace_support": {
+        "target_scene_direction": "asymmetric before-after product theater with after-state dominance",
+        "visual_density_profile": "contrast_k2_asymmetric_before_after_product_theater_with_after_state_dominance",
+        "renderer_capabilities_applied": [
+          "asymmetric foreground/background depth",
+          "scene-specific connectors",
+          "fewer but more meaningful labels"
+        ],
+        "label_count": 4
+      }
+    },
+    {
+      "role": "proof",
+      "slide_index": 4,
+      "visual_grammar_module": "evidence_workspace",
+      "delta_vs_2_75": "partial",
+      "page_differentiation": "partial",
+      "wireframe_reduction": "weak",
+      "label_hierarchy": "weak",
+      "public_video_direction": "no",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "The proof page has an inspection-scene direction, but the active proof object remains a large thin-line frame with tiny labels.",
+      "next_repair_instruction": "Turn the proof object into a larger, legible evidence surface with two readable labels, not a thin workbench diagram.",
+      "trace_support": {
+        "target_scene_direction": "evidence inspection scene with a larger active proof object",
+        "visual_density_profile": "proof_k2_evidence_inspection_scene_with_a_larger_active_proof_object",
+        "renderer_capabilities_applied": [
+          "larger proof object",
+          "non-grid evidence arrangement",
+          "fewer but more meaningful labels"
+        ],
+        "label_count": 4
+      }
+    },
+    {
+      "role": "climax",
+      "slide_index": 5,
+      "visual_grammar_module": "product_reveal",
+      "delta_vs_2_75": "partial",
+      "page_differentiation": "improved",
+      "wireframe_reduction": "weak",
+      "label_hierarchy": "partial",
+      "public_video_direction": "no",
+      "root_cause_layer": "renderer",
+      "repair_required": true,
+      "visual_observation": "The climax is more differentiated from the cover by scale and frame ownership, but the payoff is still mostly an outlined UI shell.",
+      "next_repair_instruction": "Make the completion reveal feel like a finished editable PPT result with richer slide content and less schematic outline language.",
+      "trace_support": {
+        "target_scene_direction": "completion reveal of editable PPT result with full-frame payoff",
+        "visual_density_profile": "climax_k2_completion_reveal_of_editable_ppt_result_with_full_frame_payoff",
+        "renderer_capabilities_applied": [
+          "hero crop",
+          "asymmetric foreground/background depth",
+          "larger proof object"
+        ],
+        "label_count": 4
+      }
+    },
+    {
+      "role": "close",
+      "slide_index": 6,
+      "visual_grammar_module": "decision_map",
+      "delta_vs_2_75": "partial",
+      "page_differentiation": "improved",
+      "wireframe_reduction": "partial",
+      "label_hierarchy": "weak",
+      "public_video_direction": "partial",
+      "root_cause_layer": "text_binding",
+      "repair_required": true,
+      "visual_observation": "The release gate direction is visible and different from the product pages, but the node labels are still too small for public-video readability.",
+      "next_repair_instruction": "Keep the release-gate map, enlarge the decision labels, and make the blocked-public branch the dominant visual decision.",
+      "trace_support": {
+        "target_scene_direction": "decision / release gate handoff map with one dominant blocked-public branch",
+        "visual_density_profile": "close_k2_decision_release_gate_handoff_map_with_one_dominant_blocked_public_branc",
+        "renderer_capabilities_applied": [
+          "scene-specific connectors",
+          "fewer but more meaningful labels",
+          "editorial mask"
+        ],
+        "label_count": 4
+      }
+    }
+  ],
+  "root_cause_summary": {
+    "primary_layer": "renderer_art_direction_and_scene_realization",
+    "secondary_layers": [
+      "text_binding",
+      "visual_grammar"
+    ],
+    "not_primary_layer": "data_absence",
+    "rationale": "K2 consumed J, 2.75, D2/D3/E/E2/F, and the K1 repair plan. Remaining visible blockers are the renderer's art direction, surface finish, and public hierarchy."
+  },
+  "no_new_renderer_proof": {
+    "new_pptx_created": false,
+    "new_html_created": false,
+    "starts_renderer_rerun": false,
+    "status": "pass"
+  },
+  "next_required_action": "part_m_renderer_art_direction_repair_from_l_evaluation"
+}

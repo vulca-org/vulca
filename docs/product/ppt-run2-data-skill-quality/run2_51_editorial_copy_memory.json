@@ -1,0 +1,512 @@
+{
+  "schema_version": "ppt_run2_editorial_copy_memory.v1",
+  "status": "run2_51_editorial_copy_memory_ready_public_blocked",
+  "run_id": "2.51",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_data_workflow_run": "2.49",
+  "source_generated_run": "2.50",
+  "target_layer": "editorial_copy_and_shape_text_socket_repair",
+  "editorial_copy_records": [
+    {
+      "copy_memory_id": "editorial_copy_2_51_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_run2_49_readability_memory_id": "readability_memory_2_49_cover",
+      "required_run2_49_content_evidence_density_memory_id": "content_evidence_density_2_49_cover",
+      "raw_evidence_inputs": {
+        "readability_goal": "launch promise must read at contact-sheet scale before system proof labels",
+        "business_proof_points": [
+          "The user is evaluating Vulca as a design-to-production presentation workflow, not a prompt-only slide generator.",
+          "The first read must show a product-system promise before any trace detail appears.",
+          "The launch story must avoid source-brand imitation while still feeling like a real commercial product reveal."
+        ],
+        "run2_50_quality_delta": "readability_content_density_and_editorial_renderer_binding"
+      },
+      "public_surface_copy_bundle": {
+        "headline": "Design decks people can judge",
+        "subline": "Turn messy design evidence into a launch-ready presentation path.",
+        "proof_nuggets": [
+          "Real brief selected",
+          "Evidence becomes design",
+          "Deck stays editable"
+        ],
+        "annotations": [
+          "Usecase locked",
+          "Public copy only",
+          "No raw process"
+        ],
+        "state_labels": [
+          "Brief",
+          "Learn",
+          "Build"
+        ]
+      },
+      "trace_only_copy_bundle": {
+        "source_status": "run2_50_readability_density_renderer_rerun_public_blocked",
+        "source_data_status": "run2_49_repair_pack_consumed_before_native_ppt_drawing"
+      },
+      "copy_fit_budget": {
+        "headline": {
+          "max_words": 7,
+          "max_chars": 48,
+          "max_lines": 2
+        },
+        "subline": {
+          "max_words": 18,
+          "max_chars": 120,
+          "max_lines": 3
+        },
+        "proof_nugget": {
+          "max_words": 8,
+          "max_chars": 54,
+          "max_lines": 2
+        },
+        "annotation": {
+          "max_words": 6,
+          "max_chars": 42,
+          "max_lines": 2
+        },
+        "state_label": {
+          "max_words": 4,
+          "max_chars": 28,
+          "max_lines": 1
+        }
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "memory",
+        "workflow gate",
+        "trace",
+        "audit",
+        "negative control",
+        "public blocked"
+      ],
+      "business_claim_preservation_check": "The product can convert design evidence into an editable launch presentation.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "bad_control_probe": "Bad control fails if public copy is raw Run 2.49/2.50 workflow language.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    },
+    {
+      "copy_memory_id": "editorial_copy_2_51_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_run2_49_readability_memory_id": "readability_memory_2_49_setup",
+      "required_run2_49_content_evidence_density_memory_id": "content_evidence_density_2_49_setup",
+      "raw_evidence_inputs": {
+        "readability_goal": "failure and selected route must be readable without workflow terminology",
+        "business_proof_points": [
+          "The buyer needs repeatable launch-deck quality for public demos, customer briefings, and investor narratives.",
+          "One-shot prompting cannot show which source records, memory, and gates shaped the output.",
+          "The visual surface should show a thin prompt-only path collapsing before the selected product route appears."
+        ],
+        "run2_50_quality_delta": "readability_content_density_and_editorial_renderer_binding"
+      },
+      "public_surface_copy_bundle": {
+        "headline": "The old path stays boxy",
+        "subline": "Prompt-only decks miss the route from evidence to visual decision.",
+        "proof_nuggets": [
+          "Failure is visible",
+          "Route is selected",
+          "Risk is named"
+        ],
+        "annotations": [
+          "Before state",
+          "Decision path",
+          "Break point"
+        ],
+        "state_labels": [
+          "Fail",
+          "Route",
+          "Select"
+        ]
+      },
+      "trace_only_copy_bundle": {
+        "source_status": "run2_50_readability_density_renderer_rerun_public_blocked",
+        "source_data_status": "run2_49_repair_pack_consumed_before_native_ppt_drawing"
+      },
+      "copy_fit_budget": {
+        "headline": {
+          "max_words": 7,
+          "max_chars": 48,
+          "max_lines": 2
+        },
+        "subline": {
+          "max_words": 18,
+          "max_chars": 120,
+          "max_lines": 3
+        },
+        "proof_nugget": {
+          "max_words": 8,
+          "max_chars": 54,
+          "max_lines": 2
+        },
+        "annotation": {
+          "max_words": 6,
+          "max_chars": 42,
+          "max_lines": 2
+        },
+        "state_label": {
+          "max_words": 4,
+          "max_chars": 28,
+          "max_lines": 1
+        }
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "memory",
+        "workflow gate",
+        "trace",
+        "audit",
+        "negative control",
+        "public blocked"
+      ],
+      "business_claim_preservation_check": "The setup slide explains the commercial failure and the selected correction route.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "bad_control_probe": "Bad control fails if public copy is raw Run 2.49/2.50 workflow language.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    },
+    {
+      "copy_memory_id": "editorial_copy_2_51_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_run2_49_readability_memory_id": "readability_memory_2_49_contrast",
+      "required_run2_49_content_evidence_density_memory_id": "content_evidence_density_2_49_contrast",
+      "raw_evidence_inputs": {
+        "readability_goal": "before/after delta must show business consequence, not equal cards",
+        "business_proof_points": [
+          "The selected usecase creates a concrete commercial decision instead of a generic AI capability claim.",
+          "The deck must show what changed from prompt-only: more case specificity, visible product surface, and explicit release boundary.",
+          "The visual comparison should be asymmetric: weak prompt output stays small while selected workflow output owns the frame."
+        ],
+        "run2_50_quality_delta": "readability_content_density_and_editorial_renderer_binding"
+      },
+      "public_surface_copy_bundle": {
+        "headline": "Evidence changes the surface",
+        "subline": "The after state must show a business consequence, not another equal card set.",
+        "proof_nuggets": [
+          "Before is smaller",
+          "After owns focus",
+          "Delta is explicit"
+        ],
+        "annotations": [
+          "Before",
+          "After",
+          "Why it matters"
+        ],
+        "state_labels": [
+          "Before",
+          "After",
+          "Delta"
+        ]
+      },
+      "trace_only_copy_bundle": {
+        "source_status": "run2_50_readability_density_renderer_rerun_public_blocked",
+        "source_data_status": "run2_49_repair_pack_consumed_before_native_ppt_drawing"
+      },
+      "copy_fit_budget": {
+        "headline": {
+          "max_words": 7,
+          "max_chars": 48,
+          "max_lines": 2
+        },
+        "subline": {
+          "max_words": 18,
+          "max_chars": 120,
+          "max_lines": 3
+        },
+        "proof_nugget": {
+          "max_words": 8,
+          "max_chars": 54,
+          "max_lines": 2
+        },
+        "annotation": {
+          "max_words": 6,
+          "max_chars": 42,
+          "max_lines": 2
+        },
+        "state_label": {
+          "max_words": 4,
+          "max_chars": 28,
+          "max_lines": 1
+        }
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "memory",
+        "workflow gate",
+        "trace",
+        "audit",
+        "negative control",
+        "public blocked"
+      ],
+      "business_claim_preservation_check": "The contrast slide must make the improvement legible as a business outcome.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "bad_control_probe": "Bad control fails if public copy is raw Run 2.49/2.50 workflow language.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    },
+    {
+      "copy_memory_id": "editorial_copy_2_51_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_run2_49_readability_memory_id": "readability_memory_2_49_proof",
+      "required_run2_49_content_evidence_density_memory_id": "content_evidence_density_2_49_proof",
+      "raw_evidence_inputs": {
+        "readability_goal": "active product surface must expose proof objects without becoming a table",
+        "business_proof_points": [
+          "Each slide role receives a headline, support line, business proof points, and visual evidence slots.",
+          "The product surface must show content memory and visual evidence as inspectable inputs, not hidden prompt text.",
+          "The largest area should be an original native product surface that can later be opened and edited in PPT."
+        ],
+        "run2_50_quality_delta": "readability_content_density_and_editorial_renderer_binding"
+      },
+      "public_surface_copy_bundle": {
+        "headline": "Proof lives inside the workspace",
+        "subline": "Each proof point is attached to an inspectable object, lane, or surface.",
+        "proof_nuggets": [
+          "Decision lane",
+          "Preview object",
+          "Review state"
+        ],
+        "annotations": [
+          "Active lane",
+          "Proof object",
+          "Review state"
+        ],
+        "state_labels": [
+          "Lane",
+          "Proof",
+          "Review"
+        ]
+      },
+      "trace_only_copy_bundle": {
+        "source_status": "run2_50_readability_density_renderer_rerun_public_blocked",
+        "source_data_status": "run2_49_repair_pack_consumed_before_native_ppt_drawing"
+      },
+      "copy_fit_budget": {
+        "headline": {
+          "max_words": 7,
+          "max_chars": 48,
+          "max_lines": 2
+        },
+        "subline": {
+          "max_words": 18,
+          "max_chars": 120,
+          "max_lines": 3
+        },
+        "proof_nugget": {
+          "max_words": 8,
+          "max_chars": 54,
+          "max_lines": 2
+        },
+        "annotation": {
+          "max_words": 6,
+          "max_chars": 42,
+          "max_lines": 2
+        },
+        "state_label": {
+          "max_words": 4,
+          "max_chars": 28,
+          "max_lines": 1
+        }
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "memory",
+        "workflow gate",
+        "trace",
+        "audit",
+        "negative control",
+        "public blocked"
+      ],
+      "business_claim_preservation_check": "The proof slide shows how evidence becomes a working presentation surface.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "bad_control_probe": "Bad control fails if public copy is raw Run 2.49/2.50 workflow language.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    },
+    {
+      "copy_memory_id": "editorial_copy_2_51_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_run2_49_readability_memory_id": "readability_memory_2_49_climax",
+      "required_run2_49_content_evidence_density_memory_id": "content_evidence_density_2_49_climax",
+      "raw_evidence_inputs": {
+        "readability_goal": "result object must own the frame and still carry concrete proof",
+        "business_proof_points": [
+          "The viewer needs one large visible result that demonstrates the platform can structure a real launch deck.",
+          "The hero object must carry business content, product surface, and QA boundary in one composition.",
+          "The slide stays public-blocked until native render, source-boundary, and human visual review pass."
+        ],
+        "run2_50_quality_delta": "readability_content_density_and_editorial_renderer_binding"
+      },
+      "public_surface_copy_bundle": {
+        "headline": "One result owns the frame",
+        "subline": "The peak slide needs one dominant generated result with attached proof tags.",
+        "proof_nuggets": [
+          "Result object",
+          "Layered proof",
+          "Release boundary"
+        ],
+        "annotations": [
+          "Large result",
+          "Proof tag",
+          "Boundary"
+        ],
+        "state_labels": [
+          "Result",
+          "Proof",
+          "Gate"
+        ]
+      },
+      "trace_only_copy_bundle": {
+        "source_status": "run2_50_readability_density_renderer_rerun_public_blocked",
+        "source_data_status": "run2_49_repair_pack_consumed_before_native_ppt_drawing"
+      },
+      "copy_fit_budget": {
+        "headline": {
+          "max_words": 7,
+          "max_chars": 48,
+          "max_lines": 2
+        },
+        "subline": {
+          "max_words": 18,
+          "max_chars": 120,
+          "max_lines": 3
+        },
+        "proof_nugget": {
+          "max_words": 8,
+          "max_chars": 54,
+          "max_lines": 2
+        },
+        "annotation": {
+          "max_words": 6,
+          "max_chars": 42,
+          "max_lines": 2
+        },
+        "state_label": {
+          "max_words": 4,
+          "max_chars": 28,
+          "max_lines": 1
+        }
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "memory",
+        "workflow gate",
+        "trace",
+        "audit",
+        "negative control",
+        "public blocked"
+      ],
+      "business_claim_preservation_check": "The climax slide must focus attention on the generated result and its evidence.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "bad_control_probe": "Bad control fails if public copy is raw Run 2.49/2.50 workflow language.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    },
+    {
+      "copy_memory_id": "editorial_copy_2_51_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_run2_49_readability_memory_id": "readability_memory_2_49_close",
+      "required_run2_49_content_evidence_density_memory_id": "content_evidence_density_2_49_close",
+      "raw_evidence_inputs": {
+        "readability_goal": "handoff decision must be clear while release remains blocked",
+        "business_proof_points": [
+          "The product is credible only if the generated deck can explain what data, memory, and visual evidence it used.",
+          "The next generated rerun must prove this single-usecase pack changes visible slide content, not only trace fields.",
+          "The public gate remains blocked until the deck passes native render and human release review."
+        ],
+        "run2_50_quality_delta": "readability_content_density_and_editorial_renderer_binding"
+      },
+      "public_surface_copy_bundle": {
+        "headline": "Ship only after the gate",
+        "subline": "The handoff makes next action clear while release remains blocked.",
+        "proof_nuggets": [
+          "Decision wall",
+          "Next action",
+          "Residual blocker"
+        ],
+        "annotations": [
+          "Decision",
+          "Next step",
+          "Blocked item"
+        ],
+        "state_labels": [
+          "Gate",
+          "Next",
+          "Hold"
+        ]
+      },
+      "trace_only_copy_bundle": {
+        "source_status": "run2_50_readability_density_renderer_rerun_public_blocked",
+        "source_data_status": "run2_49_repair_pack_consumed_before_native_ppt_drawing"
+      },
+      "copy_fit_budget": {
+        "headline": {
+          "max_words": 7,
+          "max_chars": 48,
+          "max_lines": 2
+        },
+        "subline": {
+          "max_words": 18,
+          "max_chars": 120,
+          "max_lines": 3
+        },
+        "proof_nugget": {
+          "max_words": 8,
+          "max_chars": 54,
+          "max_lines": 2
+        },
+        "annotation": {
+          "max_words": 6,
+          "max_chars": 42,
+          "max_lines": 2
+        },
+        "state_label": {
+          "max_words": 4,
+          "max_chars": 28,
+          "max_lines": 1
+        }
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "memory",
+        "workflow gate",
+        "trace",
+        "audit",
+        "negative control",
+        "public blocked"
+      ],
+      "business_claim_preservation_check": "The close slide turns evaluation into a clear release decision.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "bad_control_probe": "Bad control fails if public copy is raw Run 2.49/2.50 workflow language.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "status": "run2_7_commercial_usecase_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "id": "usecase_ai_design_to_production_platform_launch",
+  "primary_usecase": "AI design-to-production platform launch deck",
+  "audience": [
+    "AI product builders evaluating whether a design-to-production workflow can become a reliable product system.",
+    "Design engineering leaders responsible for repeatable native presentation quality.",
+    "Technical founders deciding whether AI deck generation can support launch and customer proof."
+  ],
+  "business_job": [
+    "Explain product-system learning through source data, selected memory, workflow policy, and native PPT generation.",
+    "Show not one-shot prompting by proving how the same contract compounds into repeatable output quality."
+  ],
+  "business_decision": "Decide whether the platform is credible enough to use for a public launch, investor demo, or design-engineering customer briefing instead of ad hoc presentation prompting.",
+  "deck_mission": "Turn the Run 2.7 data, memory, and workflow contract into a six-slide launch narrative that proves editable PPT output can be controlled by traceable design memory.",
+  "six_slide_arc": [
+    {
+      "slide_id": "slide_01",
+      "rhythm_role": "cover",
+      "job": "Name the product-system promise with one launch claim and one native editable visual field.",
+      "must_show": [
+        "AI design-to-production platform launch promise.",
+        "One native editable visual field that signals product-system learning."
+      ],
+      "must_not_show": [
+        "Source brand marks, copied launch visuals, or rasterized title treatment."
+      ]
+    },
+    {
+      "slide_id": "slide_02",
+      "rhythm_role": "setup",
+      "job": "Show why AI deck generation fails when each deck is treated as a one-off prompt.",
+      "must_show": [
+        "The workflow problem created by one-shot prompting.",
+        "A clear setup for why product-system learning is needed."
+      ],
+      "must_not_show": [
+        "Generic AI feature claims or a prompt-tip tutorial."
+      ]
+    },
+    {
+      "slide_id": "slide_03",
+      "rhythm_role": "contrast",
+      "job": "Contrast prompt-only output with a workflow that selects source records and design memory before generation.",
+      "must_show": [
+        "Prompt-only output contrasted with source-record and design-memory selection.",
+        "A visible workflow choice before generation."
+      ],
+      "must_not_show": [
+        "Equal-weight dashboard cards that hide the contrast."
+      ]
+    },
+    {
+      "slide_id": "slide_04",
+      "rhythm_role": "proof",
+      "job": "Trace multimodal source observations into deterministic typography, spacing, composition, and rhythm memory.",
+      "must_show": [
+        "Source records becoming deterministic design memory.",
+        "Typography, spacing, composition, and rhythm rules as traceable inputs."
+      ],
+      "must_not_show": [
+        "Opaque before/after output without memory ids or trace fields."
+      ]
+    },
+    {
+      "slide_id": "slide_05",
+      "rhythm_role": "climax",
+      "job": "Reveal one large native proof object that makes the design-to-production improvement visible.",
+      "must_show": [
+        "One large native editable proof object.",
+        "The visible improvement from design memory to generated PPT structure."
+      ],
+      "must_not_show": [
+        "Full-slide raster proof, copied UI, or source-like demo frame."
+      ]
+    },
+    {
+      "slide_id": "slide_06",
+      "rhythm_role": "close",
+      "job": "Close on the launch decision, editable PPT trace, and public_blocked release gate.",
+      "must_show": [
+        "Launch decision handoff.",
+        "Editable PPT trace and public_blocked release gate."
+      ],
+      "must_not_show": [
+        "Any claim that public release is approved before native render and human review."
+      ]
+    }
+  ],
+  "must_show": [
+    "Data source records become explicit design rules before generation.",
+    "Design memory is selected by slide rhythm role, not invented after generation.",
+    "Workflow decisions are traceable through native editable PPT output.",
+    "The quality gate blocks public release until contact sheet and native render checks pass."
+  ],
+  "must_not_show": [
+    "Do not copy source layouts, media, or prose.",
+    "Do not imitate any source brand, product brand, event identity, or logo system.",
+    "Do not use full-slide raster output or rasterized text as the generated deck surface."
+  ],
+  "proof_questions": [
+    "Which data records shaped this slide?",
+    "Which memory rules were selected?",
+    "Which workflow decision controlled generation?",
+    "Which PPT objects remain native, editable, and traceable?"
+  ],
+  "release_boundary": "public_blocked_until_native_render_contact_sheet_trace_review_and_human_approval"
+}

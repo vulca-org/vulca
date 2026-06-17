@@ -1,0 +1,739 @@
+{
+  "artifact_id": "run2_73_visual_grammar_modules",
+  "part": "Part E",
+  "schema_version": "ppt_run2_73_visual_grammar_modules.v1",
+  "status": "run2_73_visual_grammar_modules_ready_public_blocked",
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "objective": "Extend the run2 deck visual vocabulary beyond stacked rectangles by assigning each page role a content-serving, non-card primary visual grammar.",
+  "artifact_scope": {
+    "starts": [
+      "map_page_roles_to_advanced_visual_grammar",
+      "define_hero_field_before_after_theater_evidence_workspace_product_reveal_decision_map",
+      "specify_native_ppt_draw_order_for_non_rectangular_primary_structures"
+    ],
+    "does_not_start": [
+      "renderer_rerun",
+      "pptx_output",
+      "html_viewer",
+      "public_release"
+    ],
+    "quality_gate": "Every page role must name a non-rectangular or non-card primary structure, and the structure must carry the page proof object rather than act as decoration."
+  },
+  "source_inputs": [
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_design_grammar.json",
+      "required": true,
+      "available": true,
+      "record_count": 6,
+      "id_field": "role_design_grammar_records[].reference_archetype_id",
+      "use_in_this_artifact": "Source layout archetype, public first-read object, composition lock, and native module intent."
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_43_semantic_visual_asset_memory.json",
+      "required": true,
+      "available": true,
+      "record_count": 18,
+      "id_field": "semantic_visual_asset_records[].semantic_asset_id",
+      "use_in_this_artifact": "Source semantic objects and observable scene evidence that each grammar module must make visible."
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_46_visual_object_grammar_memory.json",
+      "required": true,
+      "available": true,
+      "record_count": 6,
+      "id_field": "visual_object_grammar_records[].visual_object_grammar_id",
+      "use_in_this_artifact": "Source object hierarchy, forbidden card/grid fallbacks, and composition quality checks."
+    }
+  ],
+  "stage_policy": "part_e_visual_grammar_modules_only_no_renderer_rerun_no_public_release",
+  "global_visual_grammar_contract": {
+    "must_do": [
+      "draw the primary structure before labels, proof chips, badges, or captions",
+      "make scale, crop, overlap, perspective, masking, curved paths, or field topology carry hierarchy",
+      "bind each page's proof object to the primary structure so the structure explains the content",
+      "keep trace ids, memory ids, gate ids, and raw source terms off the public slide surface",
+      "use native PPT vectors, masks, gradients, type, connectors, and editable grouped objects"
+    ],
+    "must_not_do": [
+      "use three equal feature cards as the primary structure",
+      "use a generic dashboard grid as the primary structure",
+      "put a process diagram inside a large rounded card",
+      "let a bottom legend carry the main information",
+      "copy source media, source screenshots, or source brand layouts"
+    ],
+    "minimum_non_card_signals_per_page": [
+      "one dominant composed object or field",
+      "one secondary depth layer that is visibly subordinate",
+      "one connective structure such as a route, lens, contour, orbit, lane, gate, or path",
+      "one negative-space text socket attached to the structure rather than boxed away from it"
+    ]
+  },
+  "page_type_to_visual_grammar": [
+    {
+      "page_type": "cover",
+      "slide_index": 1,
+      "visual_role": "opening_product_path",
+      "primary_visual_grammar_module": "product_reveal",
+      "module_variant": "opening_reveal_from_memory_field",
+      "source_reference_archetype_id": "reference_first_archetype_2_66_cover",
+      "source_visual_object_grammar_id": "visual_object_grammar_2_46_cover",
+      "source_semantic_asset_ids": [
+        "semantic_asset_2_43_cover_1",
+        "semantic_asset_2_43_cover_2",
+        "semantic_asset_2_43_cover_3"
+      ],
+      "main_structure": {
+        "name": "deck_object_emerging_from_source_memory_field",
+        "non_rectangular_or_non_card_basis": [
+          "oversized deck surface is cropped beyond the frame and tilted in perspective",
+          "source memory is a layered field of contours and orbiting controls rather than equal tiles",
+          "supporting proof marks attach to the deck edge and field routes instead of sitting in cards"
+        ],
+        "serves_content_by": "The viewer reads the real brief, source memory, editable deck, and review boundary as one product path before seeing any explanatory label."
+      },
+      "draw_order": [
+        "draw a shallow diagonal memory field across the background with contour bands and curved route lines",
+        "place one oversized editable launch deck object on the front plane, cropped at one or two edges",
+        "attach brief capsule, source-memory control, and quiet review-boundary marker to the deck perimeter",
+        "lock the headline to a negative-space pocket created by the deck crop, not inside a box",
+        "add small proof labels only after the product object reads at contact-sheet scale"
+      ],
+      "forbidden_fallbacks": [
+        "decorative hero with no product object",
+        "source screenshots",
+        "three equal launch-value cards",
+        "large report panel explaining the workflow"
+      ],
+      "success_probe": "At thumbnail scale, the cover must read as one generated launch deck emerging from a source-memory field, not as a stack of labeled blocks."
+    },
+    {
+      "page_type": "setup",
+      "slide_index": 2,
+      "visual_role": "compiler_path",
+      "primary_visual_grammar_module": "hero_field",
+      "module_variant": "source_to_memory_operating_field",
+      "source_reference_archetype_id": "reference_first_archetype_2_66_setup",
+      "source_visual_object_grammar_id": "visual_object_grammar_2_46_setup",
+      "source_semantic_asset_ids": [
+        "semantic_asset_2_43_setup_1",
+        "semantic_asset_2_43_setup_2",
+        "semantic_asset_2_43_setup_3"
+      ],
+      "main_structure": {
+        "name": "source_memory_compiler_field",
+        "non_rectangular_or_non_card_basis": [
+          "source observations enter as an irregular source wall, not a uniform file grid",
+          "the compiler is drawn as a compressed field bend and route turn, not a node box",
+          "the proof object sits at the field's destination edge with path tension from the source side"
+        ],
+        "serves_content_by": "The field shows why drawing waits until source observations become memory, obligations, and proof objects."
+      },
+      "draw_order": [
+        "draw a wide oblique field band that bends once from source side to proof side",
+        "scatter source fragments along the entry edge with varied scale and partial masking",
+        "compress fragments through a central memory condenser drawn as nested contours and route pressure",
+        "surface the message obligation and proof object at the destination as one stable composed object",
+        "place copy along the field's open edge so labels follow the transformation path"
+      ],
+      "forbidden_fallbacks": [
+        "four-step horizontal process cards",
+        "raw tutorial transcript",
+        "copied tutorial frame",
+        "dense audit checklist",
+        "full source lineage"
+      ],
+      "success_probe": "A reviewer should be able to point to the field bend and explain source-to-memory transformation without reading a process list."
+    },
+    {
+      "page_type": "contrast",
+      "slide_index": 3,
+      "visual_role": "route_comparison",
+      "primary_visual_grammar_module": "before_after_theater",
+      "module_variant": "asymmetric_route_break_theater",
+      "source_reference_archetype_id": "reference_first_archetype_2_66_contrast",
+      "source_visual_object_grammar_id": "visual_object_grammar_2_46_contrast",
+      "source_semantic_asset_ids": [
+        "semantic_asset_2_43_contrast_1",
+        "semantic_asset_2_43_contrast_2",
+        "semantic_asset_2_43_contrast_3"
+      ],
+      "main_structure": {
+        "name": "small_before_thumbnail_vs_dominant_after_stage",
+        "non_rectangular_or_non_card_basis": [
+          "before state is a recessed, partly clipped thumbnail on a dim side stage",
+          "after state is a large angled product surface occupying the front stage",
+          "the delta is a lens or spotlight bridging the depth gap rather than a center column"
+        ],
+        "serves_content_by": "The theater makes the product difference a mechanism gap: prompt-only collapses, while Vulca continues through source memory, proof routing, design moves, and editable output."
+      },
+      "draw_order": [
+        "draw a darkened side-stage pocket for the small before surface",
+        "draw the after surface large and forward with perspective, crop, and brighter state",
+        "insert a route break between them using a jagged path, dimmed connector, or interruption notch",
+        "attach the delta lens to the after object and name the four gained mechanisms there",
+        "keep the headline compressed near the after stage so the after state carries the argument"
+      ],
+      "forbidden_fallbacks": [
+        "two equal before and after cards",
+        "five-row comparison matrix",
+        "subjective style ranking",
+        "template gallery",
+        "raw comparison fields"
+      ],
+      "success_probe": "The after surface must dominate the before thumbnail, and the viewer must understand that the difference is mechanism rather than taste."
+    },
+    {
+      "page_type": "proof",
+      "slide_index": 4,
+      "visual_role": "inspection_board",
+      "primary_visual_grammar_module": "evidence_workspace",
+      "module_variant": "inspectable_product_workbench",
+      "source_reference_archetype_id": "reference_first_archetype_2_66_proof",
+      "source_visual_object_grammar_id": "visual_object_grammar_2_46_proof",
+      "source_semantic_asset_ids": [
+        "semantic_asset_2_43_proof_1",
+        "semantic_asset_2_43_proof_2",
+        "semantic_asset_2_43_proof_3"
+      ],
+      "main_structure": {
+        "name": "active_decision_lane_on_inspection_workbench",
+        "non_rectangular_or_non_card_basis": [
+          "the workspace is a single angled workbench plane, not separate UI cards",
+          "source, decision, output, and gate are connected by one active lane with depth layers",
+          "proof markers are embedded as pins, tabs, and overlays on the workbench surface"
+        ],
+        "serves_content_by": "The active lane lets viewers inspect capability binding, contract match, content check, and bad-control failure without turning proof into a table."
+      },
+      "draw_order": [
+        "draw one angled workbench plane spanning the page with a visible active lane",
+        "place source, decision, output, and release gate along the lane as attached surfaces with unequal scale",
+        "make the decision pane the brightest and most legible object because it proves mapping, not storage",
+        "pin compact proof markers to exact lane points instead of listing them in a side table",
+        "reserve a small off-canvas route affordance for raw records and keep the public canvas readable"
+      ],
+      "forbidden_fallbacks": [
+        "generic dashboard grid",
+        "schema report",
+        "raw proof list",
+        "oversized compliance table",
+        "workflow report panel"
+      ],
+      "success_probe": "A reviewer should see an inspectable product workspace with one active proof lane, not a compliance dashboard."
+    },
+    {
+      "page_type": "climax",
+      "slide_index": 5,
+      "visual_role": "hero_editable_result",
+      "primary_visual_grammar_module": "product_reveal",
+      "module_variant": "climax_editable_result_reveal",
+      "source_reference_archetype_id": "reference_first_archetype_2_66_climax",
+      "source_visual_object_grammar_id": "visual_object_grammar_2_46_climax",
+      "source_semantic_asset_ids": [
+        "semantic_asset_2_43_climax_1",
+        "semantic_asset_2_43_climax_2",
+        "semantic_asset_2_43_climax_3"
+      ],
+      "main_structure": {
+        "name": "single_editable_ppt_preview_hero_object",
+        "non_rectangular_or_non_card_basis": [
+          "one generated result object owns most of the frame and is cropped like a cinematic product shot",
+          "before, memory, code, and release states fuse into the object's surface and perimeter",
+          "proof rail orbits behind or below the object rather than splitting into cards"
+        ],
+        "serves_content_by": "The climax proves convergence: brief, source memory, mapped design moves, renderer output, editable preview, and QA proof become one result object."
+      },
+      "draw_order": [
+        "draw the editable PPT preview first at the largest scale in the deck",
+        "use perspective, partial crop, and one bright edge to create a product-reveal moment",
+        "embed memory route, code strip, editable state, and QA proof as fused surface details",
+        "place the proof rail behind or under the hero object with lower contrast and smaller scale",
+        "delay labels until the object is visually self-explanatory"
+      ],
+      "forbidden_fallbacks": [
+        "separate report cards",
+        "small disconnected diagram",
+        "generic launch slogan",
+        "internal QA criteria as public labels",
+        "image-only full-slide raster"
+      ],
+      "success_probe": "The slide must feel like one editable product result being revealed, not a recap of disconnected workflow pieces."
+    },
+    {
+      "page_type": "close",
+      "slide_index": 6,
+      "visual_role": "quiet_release_decision_wall",
+      "primary_visual_grammar_module": "decision_map",
+      "module_variant": "release_handoff_gate_map",
+      "source_reference_archetype_id": "reference_first_archetype_2_66_close",
+      "source_visual_object_grammar_id": "visual_object_grammar_2_46_close",
+      "source_semantic_asset_ids": [
+        "semantic_asset_2_43_close_1",
+        "semantic_asset_2_43_close_2",
+        "semantic_asset_2_43_close_3"
+      ],
+      "main_structure": {
+        "name": "forked_release_handoff_gate",
+        "non_rectangular_or_non_card_basis": [
+          "the decision surface is a directional map with a fork and gate, not a checklist grid",
+          "generated proof, human review, public block, and next run are placed on a single route",
+          "the blocked state is a calm barrier in the path rather than a red status card"
+        ],
+        "serves_content_by": "The map protects credibility by showing that the next proof is generated and public release waits for visual review, native inspection, source-boundary review, and human approval."
+      },
+      "draw_order": [
+        "draw one route from story-ready input to generated-proof output",
+        "insert a visible human-review gate before public release using a path barrier, hinge, or decision fork",
+        "place release-blocked state on the public branch as a restrained wall, not a celebratory badge",
+        "place next-run action on the continuing branch with stronger direction than decoration",
+        "attach final copy to the route's destination side and keep full checklist detail off-canvas"
+      ],
+      "forbidden_fallbacks": [
+        "launch celebration",
+        "public-ready claim",
+        "dense run history",
+        "full release checklist",
+        "spreadsheet-like decision table"
+      ],
+      "success_probe": "The close must resolve as a calm handoff map with one dominant next action and one visible release gate."
+    }
+  ],
+  "visual_grammar_modules": [
+    {
+      "module_id": "hero_field",
+      "display_name": "Hero Field",
+      "use_when": [
+        "a page needs to show transformation, pressure, or selection before a final object exists",
+        "the content is a source-to-memory, evidence-to-obligation, or route-forming mechanism",
+        "equal cards would hide the causal path"
+      ],
+      "primary_structure": "One oblique field or landscape that bends from input pressure to output obligation.",
+      "how_to_draw": [
+        "start with a large freeform field band that crosses the canvas diagonally or in a shallow arc",
+        "use contours, nested translucent masks, varied fragment scale, and partial crops to avoid a rectangular panel read",
+        "place semantic objects along the field according to causal order: source fragments, memory condenser, obligation, proof object",
+        "make the destination object stable and calmer than the entry fragments",
+        "place text in negative-space sockets created by the field edge, never inside the field as a caption box"
+      ],
+      "content_service": "The field itself explains how raw source observations become product memory and proof obligations.",
+      "native_ppt_primitives": [
+        "freeform contour shapes",
+        "gradient masks",
+        "curved connectors",
+        "cropped vector fragments",
+        "grouped destination object",
+        "edge-anchored text"
+      ],
+      "avoid": [
+        "horizontal process cards",
+        "node grid",
+        "background blob with unrelated labels",
+        "equal-weight source tiles"
+      ]
+    },
+    {
+      "module_id": "before_after_theater",
+      "display_name": "Before-After Theater",
+      "use_when": [
+        "a page must make a contrast legible through scale and consequence",
+        "the after state is the argument and the before state is intentionally underpowered",
+        "the comparison is about mechanism, not aesthetic preference"
+      ],
+      "primary_structure": "An asymmetric stage where a recessed before thumbnail is overpowered by a large forward after surface.",
+      "how_to_draw": [
+        "draw the before object small, dim, and pushed into a side-stage pocket",
+        "draw the after object large, cropped, and closer to the viewer with a brighter product surface",
+        "break or dim the route from before to after at the missing mechanism",
+        "attach the delta lens, proof marker, or consequence strip to the after surface",
+        "compress copy around the after object so the after state owns the claim"
+      ],
+      "content_service": "The theater makes the missing mechanism visible without relying on a matrix or verbal scoring.",
+      "native_ppt_primitives": [
+        "perspective quadrilaterals",
+        "spotlight masks",
+        "jagged or interrupted route",
+        "lens overlay",
+        "front/back z-order contrast"
+      ],
+      "avoid": [
+        "two equal cards",
+        "comparison table",
+        "beauty contest labels",
+        "centered legend carrying the argument"
+      ]
+    },
+    {
+      "module_id": "evidence_workspace",
+      "display_name": "Evidence Workspace",
+      "use_when": [
+        "a page needs to prove inspectability without exposing raw records",
+        "multiple evidence states must stay connected to one product action",
+        "table-like proof would overwhelm the public slide"
+      ],
+      "primary_structure": "A single angled workbench plane with one active decision lane and embedded proof pins.",
+      "how_to_draw": [
+        "draw one continuous workspace surface before any pane, row, or label",
+        "run one active lane through the workspace and place proof states on the lane",
+        "vary scale and z-order so source, decision, output, and gate are related but not equal",
+        "embed proof markers as pins, tabs, overlays, or small surface annotations",
+        "send raw evidence to a small viewer route marker instead of placing it on the main surface"
+      ],
+      "content_service": "The workspace lets the viewer inspect source, decision, output, and gate as one product state.",
+      "native_ppt_primitives": [
+        "angled workbench plane",
+        "lane spine",
+        "pinned proof chips",
+        "tabbed overlays",
+        "small off-canvas route affordance"
+      ],
+      "avoid": [
+        "dashboard grid",
+        "schema report",
+        "oversized compliance table",
+        "four equal proof cards"
+      ]
+    },
+    {
+      "module_id": "product_reveal",
+      "display_name": "Product Reveal",
+      "use_when": [
+        "a page needs one product object to own the first read",
+        "the business claim is best proven by seeing the generated deck or editable result",
+        "supporting systems should appear as depth, perimeter, or fused surface details"
+      ],
+      "primary_structure": "One dominant generated product surface that emerges from, or absorbs, its supporting system.",
+      "how_to_draw": [
+        "draw the product object first at poster or hero scale",
+        "crop it beyond the canvas or tilt it slightly so it cannot read as a flat card",
+        "fuse source memory, code, review, and proof signals into the object's surface or perimeter",
+        "keep support rails behind, below, or orbiting the object with clearly lower visual priority",
+        "add labels only after the product surface is legible without them"
+      ],
+      "content_service": "The reveal turns the abstract workflow into a concrete generated, editable artifact.",
+      "native_ppt_primitives": [
+        "large cropped product surface",
+        "perspective shadow",
+        "perimeter chips",
+        "subsurface proof rail",
+        "masked support field"
+      ],
+      "avoid": [
+        "generic product card",
+        "image-only screenshot",
+        "separate system cards around a small output",
+        "launch slogan without proof object"
+      ]
+    },
+    {
+      "module_id": "decision_map",
+      "display_name": "Decision Map",
+      "use_when": [
+        "a page needs to show status, gate, and next action without claiming release",
+        "the important structure is a decision path or handoff boundary",
+        "a checklist would imply completion or flatten priority"
+      ],
+      "primary_structure": "A directional route with a visible gate, fork, blocked branch, and next-run destination.",
+      "how_to_draw": [
+        "draw the route first as one continuous path with a clear direction",
+        "place generated proof on the path before the human-review gate",
+        "show public release as a branch held behind a quiet blocked gate",
+        "make the next-run branch the readable destination without celebratory styling",
+        "keep detailed release criteria off-canvas or in speaker notes"
+      ],
+      "content_service": "The map explains what is ready, what is blocked, and what must happen next in one glance.",
+      "native_ppt_primitives": [
+        "curved route",
+        "forked path",
+        "gate barrier",
+        "destination surface",
+        "subtle state markers"
+      ],
+      "avoid": [
+        "release checklist grid",
+        "red/green status card row",
+        "public-ready badge",
+        "dense run-history table"
+      ]
+    }
+  ],
+  "module_geometry_blueprints": [
+    {
+      "module_id": "hero_field",
+      "coordinate_system": "normalized_16_9_canvas_0_100",
+      "primary_structure_is_not": "a rectangle containing content",
+      "primary_structure_is": "a bent freeform field whose contour and pressure show transformation",
+      "native_ppt_shape_plan": [
+        {
+          "shape_id": "hero_field_outer_band",
+          "primitive": "freeform_closed_path",
+          "path_hint": "M 3 74 C 18 56, 31 63, 44 45 C 58 25, 77 29, 98 13 L 100 44 C 79 50, 66 55, 54 70 C 38 88, 17 86, 3 74 Z",
+          "semantic_role": "causal field carrying source-to-memory pressure",
+          "why_not_card": "curved edge, diagonal route, and changing thickness prevent a panel read"
+        },
+        {
+          "shape_id": "hero_field_memory_condenser",
+          "primitive": "nested_freeform_contours",
+          "path_hint": "three concentric open contours around x=48 y=47, compressed along the route bend",
+          "semantic_role": "source fragments become memory and obligations"
+        },
+        {
+          "shape_id": "hero_field_destination_object",
+          "primitive": "grouped_surface_attached_to_field_edge",
+          "bounds_hint": "x=67 y=34 w=24 h=23, tilted -4deg, clipped by field edge",
+          "semantic_role": "stable proof object at the end of transformation"
+        }
+      ],
+      "content_attachment_points": [
+        "source fragments attach along x=6..28 y=58..76",
+        "memory labels attach outside the bend at x=42..54 y=33..42",
+        "proof object labels attach to destination perimeter at x=72..91 y=29..58"
+      ]
+    },
+    {
+      "module_id": "before_after_theater",
+      "coordinate_system": "normalized_16_9_canvas_0_100",
+      "primary_structure_is_not": "two comparison cards",
+      "primary_structure_is": "an asymmetric stage with depth, route break, and after-state dominance",
+      "native_ppt_shape_plan": [
+        {
+          "shape_id": "before_side_stage",
+          "primitive": "clipped_recessed_surface",
+          "bounds_hint": "x=7 y=43 w=22 h=25, tilted 5deg, clipped by a dark side-stage mask",
+          "semantic_role": "prompt-only before state",
+          "why_not_card": "small scale, partial clipping, and dim side-stage treatment make it subordinate"
+        },
+        {
+          "shape_id": "after_front_stage",
+          "primitive": "large_perspective_product_surface",
+          "path_hint": "M 43 22 L 94 15 L 90 78 L 37 83 Z",
+          "semantic_role": "dominant Vulca after state"
+        },
+        {
+          "shape_id": "route_break_lens",
+          "primitive": "freeform_lens_with_interrupted_connector",
+          "path_hint": "connector C 27 55, 36 48, 42 45 is interrupted at x=34..39; lens sits on after edge x=40..55 y=38..55",
+          "semantic_role": "missing mechanism and business delta"
+        }
+      ],
+      "content_attachment_points": [
+        "before label stays inside side-stage pocket only as a low-weight state cue",
+        "mechanism labels attach to the route_break_lens",
+        "main claim anchors to the after_front_stage negative space"
+      ]
+    },
+    {
+      "module_id": "evidence_workspace",
+      "coordinate_system": "normalized_16_9_canvas_0_100",
+      "primary_structure_is_not": "a dashboard grid or compliance table",
+      "primary_structure_is": "one angled workbench plane with an active decision lane embedded in it",
+      "native_ppt_shape_plan": [
+        {
+          "shape_id": "workspace_plane",
+          "primitive": "large_perspective_workbench_freeform",
+          "path_hint": "M 8 70 L 29 25 L 92 31 L 79 84 Z",
+          "semantic_role": "continuous product workspace",
+          "why_not_card": "the proof states live on one skewed plane rather than separate equal containers"
+        },
+        {
+          "shape_id": "active_decision_lane",
+          "primitive": "curved_lane_spine",
+          "path_hint": "C 18 64, 35 48, 50 52 C 64 56, 70 43, 82 38",
+          "semantic_role": "source-to-decision-to-output-to-gate path"
+        },
+        {
+          "shape_id": "proof_pins",
+          "primitive": "small_tabs_and_pin_overlays",
+          "placement_hint": "four pins on active_decision_lane at t=.18,.43,.68,.89",
+          "semantic_role": "capability bound, contract matched, content checked, bad control failed"
+        }
+      ],
+      "content_attachment_points": [
+        "source attaches at lane t=.18",
+        "decision attaches at lane t=.43 and gets highest contrast",
+        "output attaches at lane t=.68",
+        "release gate attaches at lane t=.89"
+      ]
+    },
+    {
+      "module_id": "product_reveal",
+      "coordinate_system": "normalized_16_9_canvas_0_100",
+      "primary_structure_is_not": "a product screenshot card",
+      "primary_structure_is": "one oversized product surface fused with source, code, review, and proof signals",
+      "native_ppt_shape_plan": [
+        {
+          "shape_id": "hero_product_surface",
+          "primitive": "cropped_perspective_surface",
+          "path_hint": "M 34 17 L 96 8 L 90 76 L 25 86 Z; crop may extend beyond canvas on one edge",
+          "semantic_role": "generated editable PPT deck or launch result",
+          "why_not_card": "overscale crop, tilt, and fused perimeter details make it a revealed object rather than a container"
+        },
+        {
+          "shape_id": "support_memory_field",
+          "primitive": "masked_orbit_field",
+          "path_hint": "two curved arcs behind hero_product_surface from x=9 y=67 to x=82 y=20",
+          "semantic_role": "source memory and design controls supporting the object"
+        },
+        {
+          "shape_id": "fused_perimeter_signals",
+          "primitive": "edge_tabs_code_strip_and_review_marker",
+          "placement_hint": "code strip along lower-left surface edge; review marker on upper-right edge; proof tags on rear rail",
+          "semantic_role": "code renderer, editability, review boundary, QA proof"
+        }
+      ],
+      "content_attachment_points": [
+        "headline occupies open space created by the crop, not a separate card",
+        "proof labels attach to perimeter signals",
+        "support evidence stays behind or below hero_product_surface"
+      ]
+    },
+    {
+      "module_id": "decision_map",
+      "coordinate_system": "normalized_16_9_canvas_0_100",
+      "primary_structure_is_not": "a checklist, table, or row of status cards",
+      "primary_structure_is": "a forked directional route with a visible gate and blocked public branch",
+      "native_ppt_shape_plan": [
+        {
+          "shape_id": "decision_route",
+          "primitive": "thick_curved_route",
+          "path_hint": "M 11 66 C 27 54, 39 48, 50 48 C 62 48, 72 42, 88 28",
+          "semantic_role": "story-ready to generated-proof to review path",
+          "why_not_card": "the route is the organizing structure and content is placed on path events"
+        },
+        {
+          "shape_id": "human_review_gate",
+          "primitive": "hinge_or_barrier_crossing_route",
+          "bounds_hint": "center x=61 y=45, angled -12deg, intersects decision_route",
+          "semantic_role": "human approval and source-boundary review before release"
+        },
+        {
+          "shape_id": "public_blocked_branch",
+          "primitive": "dimmed_forked_path_with_quiet_wall",
+          "path_hint": "fork begins x=61 y=45; blocked branch curves to x=89 y=62 behind a restrained barrier",
+          "semantic_role": "public release remains blocked"
+        },
+        {
+          "shape_id": "next_run_destination",
+          "primitive": "directional_destination_surface",
+          "bounds_hint": "x=78 y=18 w=17 h=14, attached to main route end",
+          "semantic_role": "next generated proof"
+        }
+      ],
+      "content_attachment_points": [
+        "story ready attaches at route start",
+        "generated proof attaches before human_review_gate",
+        "release blocked attaches to public_blocked_branch",
+        "next action attaches to next_run_destination"
+      ]
+    }
+  ],
+  "module_selection_rules": [
+    {
+      "rule_id": "select_product_reveal_for_artifact_first_read",
+      "condition": "The page proof object is the generated deck, editable PPT preview, or product result.",
+      "select_module": "product_reveal",
+      "applies_to_page_types": [
+        "cover",
+        "climax"
+      ]
+    },
+    {
+      "rule_id": "select_hero_field_for_transformation_before_rendering",
+      "condition": "The page proof object is a source-to-memory transformation or operating stage.",
+      "select_module": "hero_field",
+      "applies_to_page_types": [
+        "setup"
+      ]
+    },
+    {
+      "rule_id": "select_before_after_theater_for_route_delta",
+      "condition": "The page needs to compare prompt-only failure with Vulca mechanism.",
+      "select_module": "before_after_theater",
+      "applies_to_page_types": [
+        "contrast"
+      ]
+    },
+    {
+      "rule_id": "select_evidence_workspace_for_inspectable_proof",
+      "condition": "The page must expose proof states while preserving public readability.",
+      "select_module": "evidence_workspace",
+      "applies_to_page_types": [
+        "proof"
+      ]
+    },
+    {
+      "rule_id": "select_decision_map_for_release_boundary",
+      "condition": "The page needs to show generated proof, human review, blocked public release, and next run.",
+      "select_module": "decision_map",
+      "applies_to_page_types": [
+        "close"
+      ]
+    }
+  ],
+  "coverage_matrix": {
+    "page_roles_covered": [
+      "cover",
+      "setup",
+      "contrast",
+      "proof",
+      "climax",
+      "close"
+    ],
+    "modules_covered": [
+      "hero_field",
+      "before_after_theater",
+      "evidence_workspace",
+      "product_reveal",
+      "decision_map"
+    ],
+    "source_reference_archetype_ids_covered": [
+      "reference_first_archetype_2_66_cover",
+      "reference_first_archetype_2_66_setup",
+      "reference_first_archetype_2_66_contrast",
+      "reference_first_archetype_2_66_proof",
+      "reference_first_archetype_2_66_climax",
+      "reference_first_archetype_2_66_close"
+    ],
+    "source_visual_object_grammar_ids_covered": [
+      "visual_object_grammar_2_46_cover",
+      "visual_object_grammar_2_46_setup",
+      "visual_object_grammar_2_46_contrast",
+      "visual_object_grammar_2_46_proof",
+      "visual_object_grammar_2_46_climax",
+      "visual_object_grammar_2_46_close"
+    ],
+    "source_semantic_asset_ids_covered": [
+      "semantic_asset_2_43_cover_1",
+      "semantic_asset_2_43_cover_2",
+      "semantic_asset_2_43_cover_3",
+      "semantic_asset_2_43_setup_1",
+      "semantic_asset_2_43_setup_2",
+      "semantic_asset_2_43_setup_3",
+      "semantic_asset_2_43_contrast_1",
+      "semantic_asset_2_43_contrast_2",
+      "semantic_asset_2_43_contrast_3",
+      "semantic_asset_2_43_proof_1",
+      "semantic_asset_2_43_proof_2",
+      "semantic_asset_2_43_proof_3",
+      "semantic_asset_2_43_climax_1",
+      "semantic_asset_2_43_climax_2",
+      "semantic_asset_2_43_climax_3",
+      "semantic_asset_2_43_close_1",
+      "semantic_asset_2_43_close_2",
+      "semantic_asset_2_43_close_3"
+    ]
+  },
+  "success_criteria_check": {
+    "every_page_has_non_rectangular_or_non_card_main_structure": true,
+    "every_main_structure_serves_content": true,
+    "all_requested_modules_defined": true,
+    "no_module_depends_on_copied_source_media": true,
+    "public_surface_trace_terms_hidden": true
+  },
+  "traceability_summary": {
+    "page_type_count": 6,
+    "visual_grammar_module_count": 5,
+    "semantic_asset_count_bound": 18,
+    "reference_archetype_count_bound": 6,
+    "visual_object_grammar_count_bound": 6,
+    "primary_structure_policy": "non_rectangular_or_non_card_structure_must_carry_page_proof_object"
+  }
+}

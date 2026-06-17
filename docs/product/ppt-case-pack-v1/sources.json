@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "supervity_ai_keynote",
+      "title": "Supervity AI Presentation Case",
+      "url": "https://musecreatives.org/case-studies/visual-presentation-for-ai-thought-leadership/",
+      "role": "main_commercial_reference",
+      "accessed_on": "2026-05-31",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use only for original reference analysis. Do not copy proprietary visuals, slide layouts, screenshots, article text, or client materials."
+    },
+    {
+      "id": "figma_config_2025_identity",
+      "title": "How Figma Shaped the Visual Identity for Config 2025",
+      "url": "https://www.figma.com/blog/how-we-shaped-the-visual-identity-for-config-2025/",
+      "role": "visual_system_reference",
+      "accessed_on": "2026-05-31",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use only for original reference analysis. Do not copy proprietary event artwork, images, motion assets, brand-system files, or article text."
+    },
+    {
+      "id": "figma_slides_geo",
+      "title": "Figma Slides Case by GEO",
+      "url": "https://geo-nyc.com/projects/figma-slides/",
+      "role": "product_slide_reference",
+      "accessed_on": "2026-05-31",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use only for original reference analysis. Do not copy proprietary campaign visuals, templates, page layouts, video content, or product-launch copy."
+    },
+    {
+      "id": "launch_labs_sales_deck",
+      "title": "Launch Labs Presentation Case",
+      "url": "https://www.whitepage.studio/portfolio/launch-lab",
+      "role": "commercial_deck_reference",
+      "accessed_on": "2026-05-31",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use only for original reference analysis. Do not copy proprietary client slides, before-after imagery, visuals, sales copy, or client materials."
+    },
+    {
+      "id": "google_cloud_next_keynote",
+      "title": "Google Cloud Next Keynote Case",
+      "url": "https://www.wearesparks.com/our-work/google-cloud-next/",
+      "role": "high_end_keynote_reference",
+      "accessed_on": "2026-05-31",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use only for original reference analysis. Do not copy proprietary stage visuals, Google marks, event graphics, keynote imagery, or production assets."
+    }
+  ]
+}

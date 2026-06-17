@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "status": "run2_12_design_memory_seed_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "derived_from": "run2_12_thick_multimodal_evidence.json",
+  "run_scope": {
+    "run_id": "2.12",
+    "creates_new_ppt_deck": false,
+    "primary_quality_target": "convert_thick_evidence_to_executable_memory"
+  },
+  "memory_seeds": [
+    {
+      "id": "memory_2_12_launch_arc_to_six_slide_route",
+      "evidence_record_ids": [
+        "thick_2_12_figma_platform_launch_arc",
+        "thick_2_12_figma_design_to_code_surface",
+        "thick_2_12_present_partners_whitespace_hierarchy"
+      ],
+      "memory_type": "launch_arc_story_system",
+      "applies_to_slide_roles": ["cover", "setup", "contrast", "proof", "close"],
+      "design_constraints": {
+        "story_route": [
+          "one platform promise",
+          "one workflow tension",
+          "one product-system proof",
+          "one traceability proof",
+          "one release gate"
+        ],
+        "first_read_rule": "The cover and setup must communicate the platform arc before any detailed feature list is readable.",
+        "forbidden_shape_family": ["equal feature cards", "dashboard grid", "copied launch page composition"],
+        "density_budget": {
+          "max_visible_words": 46,
+          "max_primary_objects": 2,
+          "max_feature_labels": 4
+        }
+      },
+      "native_ppt_contract": {
+        "object_strategy": "native editable stage labels, route line, product-surface placeholders, and release-gate marker",
+        "code_binding_hint": "drawRun212LaunchArcRoute",
+        "required_before_render": ["selected evidence ids", "selected memory seed id", "source boundary"]
+      },
+      "required_trace_fields": [
+        "run2_7_source_record_ids",
+        "run2_10_visual_system_source_ids",
+        "run2_10_public_demo_first_read_probe",
+        "release_gate_inputs"
+      ],
+      "failure_probe": "Fails if the launch story becomes a feature catalogue or if source branding is visually imitated.",
+      "qa_probe": "The contact sheet should read as a launch argument, not a report of product bullets.",
+      "release_boundary": "public_blocked_until_thick_data_gate_native_render_and_human_review"
+    },
+    {
+      "id": "memory_2_12_product_demo_sequence_pacing",
+      "evidence_record_ids": [
+        "thick_2_12_figma_design_to_code_surface",
+        "thick_2_12_stripe_agentic_commerce_demo"
+      ],
+      "memory_type": "product_demo_sequence_system",
+      "applies_to_slide_roles": ["proof", "climax", "close"],
+      "design_constraints": {
+        "sequence_states": ["command", "route", "progress", "resolved state"],
+        "climax_rule": "The resolved state must become the largest visual object after the route is understood.",
+        "label_policy": "Use sparse orbit labels and avoid explanatory transcript blocks.",
+        "density_budget": {
+          "max_visible_words": 34,
+          "max_sequence_states": 4,
+          "max_secondary_labels": 5
+        }
+      },
+      "native_ppt_contract": {
+        "object_strategy": "native editable sequence nodes, state surface, connector path, progress marker, and final resolved object",
+        "code_binding_hint": "drawRun212DemoSequence",
+        "required_before_render": ["ordered reveal steps", "selected evidence ids", "climax state id"]
+      },
+      "required_trace_fields": [
+        "ordered_reveal_steps",
+        "run2_10_visual_system_memory_ids",
+        "run2_10_code_module_ids",
+        "run2_10_sameness_failure_probe"
+      ],
+      "failure_probe": "Fails if the demo is flattened into screenshots or equal storyboard panels.",
+      "qa_probe": "The slide should show a route into one resolved state without needing to read small labels.",
+      "release_boundary": "public_blocked_until_thick_data_gate_native_render_and_human_review"
+    },
+    {
+      "id": "memory_2_12_typographic_whitespace_system",
+      "evidence_record_ids": [
+        "thick_2_12_present_partners_whitespace_hierarchy",
+        "thick_2_12_slidecow_powerpoint_whitespace",
+        "thick_2_12_figma_platform_launch_arc",
+        "thick_2_12_stripe_product_keynote_metric_reframe"
+      ],
+      "memory_type": "typography_spacing_execution_system",
+      "applies_to_slide_roles": ["cover", "setup", "contrast", "proof", "climax", "close"],
+      "design_constraints": {
+        "type_ladder": {
+          "hero": "large decisive phrase or metric",
+          "proof_label": "short secondary phrase",
+          "note": "small routed caveat, never primary"
+        },
+        "spacing_tokens": {
+          "macro_margin_min_pct": 8,
+          "primary_to_secondary_gap_min_pct": 5,
+          "micro_label_gap_min_px": 14
+        },
+        "forbidden_patterns": ["negative letter spacing", "equal text weight", "dense paragraph block", "collapsed margins"],
+        "density_budget": {
+          "max_visible_words": 42,
+          "max_text_boxes": 8,
+          "max_equal_containers": 0
+        }
+      },
+      "native_ppt_contract": {
+        "object_strategy": "native editable text boxes with explicit roles, numeric spacing tokens, and layout geometry checks",
+        "code_binding_hint": "drawRun212TypeWhitespaceSystem",
+        "required_before_render": ["type role assignment", "spacing token set", "layout geometry budget"]
+      },
+      "required_trace_fields": [
+        "typography_system_id",
+        "spacing_token_set_id",
+        "density_counts",
+        "layout_geometry_checks"
+      ],
+      "failure_probe": "Fails if the slide looks like a slightly recolored engineering report or if margins collapse.",
+      "qa_probe": "A squint test should reveal one primary zone, one secondary proof route, and no equal-weight report grid.",
+      "release_boundary": "public_blocked_until_thick_data_gate_native_render_and_human_review"
+    },
+    {
+      "id": "memory_2_12_metric_to_climax_object",
+      "evidence_record_ids": [
+        "thick_2_12_stripe_product_keynote_metric_reframe",
+        "thick_2_12_stripe_agentic_commerce_demo",
+        "thick_2_12_present_partners_whitespace_hierarchy"
+      ],
+      "memory_type": "metric_climax_object_system",
+      "applies_to_slide_roles": ["proof", "climax"],
+      "design_constraints": {
+        "metric_object_rule": "Only one metric or resolved business state can own first read on a proof or climax slide.",
+        "composition_rule": "The metric object must sit in a protected quiet zone and route detail away from the center.",
+        "routed_detail_policy": "Secondary evidence moves to a rail, notes, or trace field rather than visible clutter.",
+        "density_budget": {
+          "max_primary_metrics": 1,
+          "max_visible_words": 30,
+          "hero_canvas_share_min": 0.4
+        }
+      },
+      "native_ppt_contract": {
+        "object_strategy": "native editable metric object, route line, proof chips, and routed-content trace fields",
+        "code_binding_hint": "drawRun212MetricClimaxObject",
+        "required_before_render": ["metric id", "routed detail list", "release gate input"]
+      },
+      "required_trace_fields": [
+        "deleted_or_routed_content",
+        "density_counts",
+        "run2_10_shape_count_budget",
+        "run2_10_asymmetry_whitespace_rule"
+      ],
+      "failure_probe": "Fails if multiple metrics compete or if the climax is another dense table.",
+      "qa_probe": "The proof or climax slide should read as one business delta before any supporting text is inspected.",
+      "release_boundary": "public_blocked_until_thick_data_gate_native_render_and_human_review"
+    }
+  ]
+}

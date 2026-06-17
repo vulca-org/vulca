@@ -1,0 +1,148 @@
+{
+  "schema_version": "ppt_run2_content_visual_workflow_gates.v1",
+  "status": "run2_24_content_visual_workflow_gates_ready_public_blocked",
+  "run_id": "2.24",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "gates": [
+    {
+      "gate_id": "gate_2_24_cover_content_visual_density",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_content_memory_id": "content_2_24_cover",
+      "min_business_proof_points": 2,
+      "min_visual_evidence_slots": 2,
+      "forbid_cross_case_primary_story": true,
+      "required_trace_fields": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "pass_fail_checks": [
+        "The slide's primary story uses the selected design-to-production platform launch usecase.",
+        "At least two business proof points are visible or represented by native editable slide objects.",
+        "At least two visual evidence slots are generated as native PPT objects or documented public-blocked fallbacks.",
+        "Raw source screenshots, copied layouts, brand marks, audio, video frames, and transcript text are absent."
+      ],
+      "bad_control_probe": "A bad control may receive the selected usecase label but fails if it lacks content memory, visual evidence assets, or density gates.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_24_setup_content_visual_density",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_content_memory_id": "content_2_24_setup",
+      "min_business_proof_points": 2,
+      "min_visual_evidence_slots": 2,
+      "forbid_cross_case_primary_story": true,
+      "required_trace_fields": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "pass_fail_checks": [
+        "The slide's primary story uses the selected design-to-production platform launch usecase.",
+        "At least two business proof points are visible or represented by native editable slide objects.",
+        "At least two visual evidence slots are generated as native PPT objects or documented public-blocked fallbacks.",
+        "Raw source screenshots, copied layouts, brand marks, audio, video frames, and transcript text are absent."
+      ],
+      "bad_control_probe": "A bad control may receive the selected usecase label but fails if it lacks content memory, visual evidence assets, or density gates.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_24_contrast_content_visual_density",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_content_memory_id": "content_2_24_contrast",
+      "min_business_proof_points": 2,
+      "min_visual_evidence_slots": 2,
+      "forbid_cross_case_primary_story": true,
+      "required_trace_fields": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "pass_fail_checks": [
+        "The slide's primary story uses the selected design-to-production platform launch usecase.",
+        "At least two business proof points are visible or represented by native editable slide objects.",
+        "At least two visual evidence slots are generated as native PPT objects or documented public-blocked fallbacks.",
+        "Raw source screenshots, copied layouts, brand marks, audio, video frames, and transcript text are absent."
+      ],
+      "bad_control_probe": "A bad control may receive the selected usecase label but fails if it lacks content memory, visual evidence assets, or density gates.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_24_proof_content_visual_density",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_content_memory_id": "content_2_24_proof",
+      "min_business_proof_points": 2,
+      "min_visual_evidence_slots": 2,
+      "forbid_cross_case_primary_story": true,
+      "required_trace_fields": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "pass_fail_checks": [
+        "The slide's primary story uses the selected design-to-production platform launch usecase.",
+        "At least two business proof points are visible or represented by native editable slide objects.",
+        "At least two visual evidence slots are generated as native PPT objects or documented public-blocked fallbacks.",
+        "Raw source screenshots, copied layouts, brand marks, audio, video frames, and transcript text are absent."
+      ],
+      "bad_control_probe": "A bad control may receive the selected usecase label but fails if it lacks content memory, visual evidence assets, or density gates.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_24_climax_content_visual_density",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_content_memory_id": "content_2_24_climax",
+      "min_business_proof_points": 2,
+      "min_visual_evidence_slots": 2,
+      "forbid_cross_case_primary_story": true,
+      "required_trace_fields": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "pass_fail_checks": [
+        "The slide's primary story uses the selected design-to-production platform launch usecase.",
+        "At least two business proof points are visible or represented by native editable slide objects.",
+        "At least two visual evidence slots are generated as native PPT objects or documented public-blocked fallbacks.",
+        "Raw source screenshots, copied layouts, brand marks, audio, video frames, and transcript text are absent."
+      ],
+      "bad_control_probe": "A bad control may receive the selected usecase label but fails if it lacks content memory, visual evidence assets, or density gates.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_24_close_content_visual_density",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_content_memory_id": "content_2_24_close",
+      "min_business_proof_points": 2,
+      "min_visual_evidence_slots": 2,
+      "forbid_cross_case_primary_story": true,
+      "required_trace_fields": [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id"
+      ],
+      "pass_fail_checks": [
+        "The slide's primary story uses the selected design-to-production platform launch usecase.",
+        "At least two business proof points are visible or represented by native editable slide objects.",
+        "At least two visual evidence slots are generated as native PPT objects or documented public-blocked fallbacks.",
+        "Raw source screenshots, copied layouts, brand marks, audio, video frames, and transcript text are absent."
+      ],
+      "bad_control_probe": "A bad control may receive the selected usecase label but fails if it lacks content memory, visual evidence assets, or density gates.",
+      "public_release_gate": "blocked"
+    }
+  ]
+}

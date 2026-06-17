@@ -1,0 +1,681 @@
+{
+  "artifact_id": "run2_74_content_quality_audit",
+  "part": "Part C3",
+  "schema_version": 1,
+  "status": "run2_74_content_quality_audit_public_blocked",
+  "stage_policy": "part_c3_content_quality_audit_only",
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_product_claim_graph": "run2_74_product_claim_graph.json",
+  "source_slide_story": "run2_74_slide_story.json",
+  "source_inputs": [
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_74_product_claim_graph.json",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "claim ids, causal logic, public routing policy, and forbidden empty claims"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_74_slide_story.json",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "per-slide thesis, proof object, visual role, on-canvas copy, and note/viewer routing"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_57_product_capability_memory.json",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "forbidden empty claims and capability-specific quality boundaries"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_57_slide_message_contracts.json",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "reader questions, proof obligations, and public-surface specificity requirements"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_61_narrative_proof_dataset.json",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "narrative proof objects, note routes, and viewer-only proof boundaries"
+    }
+  ],
+  "artifact_scope": {
+    "goal": "Audit the six-slide story for content density before the scene compiler turns it into renderable structure.",
+    "does_not_start": [
+      "part_d_scene_compiler",
+      "renderer_rerun",
+      "public_release"
+    ],
+    "quality_gate": "Every slide must retain a main claim, proof object, business logic, visual role, on-canvas copy decision, and delete-or-note route."
+  },
+  "quality_dimensions": [
+    "empty_claim",
+    "duplicate_message",
+    "claim_without_proof",
+    "copy_visual_mismatch",
+    "public_surface_routing",
+    "text_budget_fit"
+  ],
+  "audit_policy": {
+    "empty_claim": "A slide fails if it could be read as a generic design-quality slogan after removing the product name.",
+    "duplicate_message": "A slide fails if its role, audience question, and product claim repeat another slide without advancing the story arc.",
+    "claim_without_proof": "A slide fails if its main claim does not carry a named proof object and visible evidence.",
+    "copy_visual_mismatch": "A slide fails if the visual role does not show the product mechanism or proof object named in copy.",
+    "public_surface_routing": "A slide fails if raw trace, schema, source inventory, release metadata, or full proof lists appear as public slide copy.",
+    "text_budget_fit": "A slide fails if the required on-canvas copy cannot fit the role's public-word and proof-label budget."
+  },
+  "slide_quality_audits": [
+    {
+      "audit_id": "content_qa_2_74_cover",
+      "slide_id": "slide_content_qa_2_74_cover",
+      "role": "cover",
+      "source_slide_story_id": "slide_story_2_74_cover",
+      "checked_claim_ids": [
+        "claim_product_identity",
+        "claim_input_boundary",
+        "claim_native_ppt_output"
+      ],
+      "quality_checks": [
+        {
+          "dimension": "empty_claim",
+          "status": "pass",
+          "evidence": "The claim names Vulca, source-bound generation, a commercial brief, and editable PPT output.",
+          "route_decision": "Keep product identity and output format on canvas."
+        },
+        {
+          "dimension": "duplicate_message",
+          "status": "pass",
+          "evidence": "The cover owns product identity; later slides own compiler mechanism, contrast, proof, result, and release gate.",
+          "route_decision": "Do not reuse the cover as a generic launch slogan on later slides."
+        },
+        {
+          "dimension": "claim_without_proof",
+          "status": "pass",
+          "evidence": "The proof object is the input-to-output product surface with brief, source memory, editable preview, and review boundary.",
+          "route_decision": "Render the path as the proof object, not as decoration."
+        },
+        {
+          "dimension": "copy_visual_mismatch",
+          "status": "pass",
+          "evidence": "The visual role is the opening product path and matches the brief-to-editable-PPT claim.",
+          "route_decision": "Delete decorative hero imagery if it hides the product path."
+        },
+        {
+          "dimension": "public_surface_routing",
+          "status": "pass",
+          "evidence": "Raw source records, review metadata, and full proof fields are routed to viewer-only material.",
+          "route_decision": "Keep trace language off canvas and in the note/viewer route."
+        },
+        {
+          "dimension": "text_budget_fit",
+          "status": "pass",
+          "evidence": "Headline, supporting line, and four proof labels fit inside the 58-word cover budget.",
+          "route_decision": "Keep public copy short so the product path carries the proof."
+        }
+      ],
+      "blocking_issues": [],
+      "watch_items": [
+        "Keep the review boundary visible so the cover does not imply public release."
+      ],
+      "approved_content_units": {
+        "main_claim": "Vulca is a source-bound system that turns a commercial brief and selected source memory into a code-generated editable PPT deck.",
+        "proof_object": "input-to-output product surface",
+        "business_logic": "The product is credible only if the viewer can connect the real brief, allowed memory, generated editable output, and review boundary in one glance.",
+        "visual_role": "opening product path",
+        "on_canvas_copy": {
+          "headline": "A real brief becomes editable PPT proof.",
+          "supporting_line": "Commercial brief, curated source memory, and code-generated editable PPT appear as one product path.",
+          "proof_labels": [
+            "commercial brief",
+            "source memory",
+            "editable PPT",
+            "review boundary"
+          ]
+        },
+        "delete_or_note_route": {
+          "must_delete_from_canvas": [
+            "decorative hero with no product object",
+            "source screenshots",
+            "full-slide raster output",
+            "full proof field list"
+          ],
+          "speaker_note": "State that this is not an image-only demo; the product promise is editable PPT with inspectable inputs.",
+          "viewer_only": [
+            "raw source records",
+            "review metadata",
+            "full proof field list"
+          ]
+        }
+      },
+      "scene_compiler_constraints": {
+        "content_only": true,
+        "must_keep_main_claim": "Vulca is a source-bound system that turns a commercial brief and selected source memory into a code-generated editable PPT deck.",
+        "must_render_proof_object": "input-to-output product surface",
+        "must_preserve_visual_role": "opening product path",
+        "must_route_off_canvas": [
+          "raw source records",
+          "review metadata",
+          "full proof field list"
+        ],
+        "must_not_add": [
+          "public-ready claim",
+          "image-only generator framing",
+          "unreviewed launch promise"
+        ]
+      }
+    },
+    {
+      "audit_id": "content_qa_2_74_setup",
+      "slide_id": "slide_content_qa_2_74_setup",
+      "role": "setup",
+      "source_slide_story_id": "slide_story_2_74_setup",
+      "checked_claim_ids": [
+        "claim_input_boundary",
+        "claim_content_compiler",
+        "claim_design_move_binding"
+      ],
+      "quality_checks": [
+        {
+          "dimension": "empty_claim",
+          "status": "pass",
+          "evidence": "The claim explains the compiler stage: source observations become capability memory, message obligations, and proof objects before rendering.",
+          "route_decision": "Keep the compiler mechanism, not a vague data-workflow promise."
+        },
+        {
+          "dimension": "duplicate_message",
+          "status": "pass",
+          "evidence": "The setup advances from input boundary to understanding layer, which the cover only names.",
+          "route_decision": "Do not repeat the cover's input-to-output path."
+        },
+        {
+          "dimension": "claim_without_proof",
+          "status": "pass",
+          "evidence": "The proof object is a source-to-memory compiler stage with source pack, capability memory, message obligation, and proof object.",
+          "route_decision": "Show the compiler artifacts as evidence."
+        },
+        {
+          "dimension": "copy_visual_mismatch",
+          "status": "pass",
+          "evidence": "The visual role is a compiler path, matching the before-drawing mechanism in the headline and thesis.",
+          "route_decision": "Delete raw tutorial transcript or copied frames from the public surface."
+        },
+        {
+          "dimension": "public_surface_routing",
+          "status": "pass",
+          "evidence": "Source audit gaps, blocked weak sources, and full lineage are routed to viewer-only material.",
+          "route_decision": "Use speaker note for why tutorials become original product memory."
+        },
+        {
+          "dimension": "text_budget_fit",
+          "status": "pass",
+          "evidence": "Headline, supporting line, and four proof labels fit inside the 66-word setup budget.",
+          "route_decision": "Keep source detail compact and move raw source evidence off canvas."
+        }
+      ],
+      "blocking_issues": [],
+      "watch_items": [
+        "Avoid turning the compiler path into a dense audit checklist."
+      ],
+      "approved_content_units": {
+        "main_claim": "Allowed source observations are reduced into capability memory, message obligations, and proof objects before any slide is rendered.",
+        "proof_object": "source-to-memory compiler stage",
+        "business_logic": "A deck can only explain its design decisions if source material is compiled into product memory and obligations before drawing starts.",
+        "visual_role": "compiler path",
+        "on_canvas_copy": {
+          "headline": "Sources become product memory before drawing.",
+          "supporting_line": "Allowed source observations become capability memory, message obligations, and proof objects.",
+          "proof_labels": [
+            "source pack",
+            "capability memory",
+            "message obligation",
+            "proof object"
+          ]
+        },
+        "delete_or_note_route": {
+          "must_delete_from_canvas": [
+            "raw tutorial transcript",
+            "copied tutorial frame",
+            "dense audit checklist",
+            "full source lineage"
+          ],
+          "speaker_note": "Explain that tutorials and videos guide decisions only after they are converted into original product memory.",
+          "viewer_only": [
+            "source audit gaps",
+            "blocked weak sources",
+            "full source lineage"
+          ]
+        }
+      },
+      "scene_compiler_constraints": {
+        "content_only": true,
+        "must_keep_main_claim": "Allowed source observations are reduced into capability memory, message obligations, and proof objects before any slide is rendered.",
+        "must_render_proof_object": "source-to-memory compiler stage",
+        "must_preserve_visual_role": "compiler path",
+        "must_route_off_canvas": [
+          "source audit gaps",
+          "blocked weak sources",
+          "full source lineage"
+        ],
+        "must_not_add": [
+          "better aesthetics from data",
+          "unbounded source copying",
+          "raw source dump"
+        ]
+      }
+    },
+    {
+      "audit_id": "content_qa_2_74_contrast",
+      "slide_id": "slide_content_qa_2_74_contrast",
+      "role": "contrast",
+      "source_slide_story_id": "slide_story_2_74_contrast",
+      "checked_claim_ids": [
+        "claim_content_compiler",
+        "claim_design_move_binding",
+        "claim_inspectable_trust"
+      ],
+      "quality_checks": [
+        {
+          "dimension": "empty_claim",
+          "status": "pass",
+          "evidence": "The claim names the missing mechanisms: source memory, proof routing, mapped design moves, and editable output guarantees.",
+          "route_decision": "Keep comparison grounded in mechanism rather than taste."
+        },
+        {
+          "dimension": "duplicate_message",
+          "status": "pass",
+          "evidence": "The contrast slide uniquely explains why prompt-only and image-only routes break.",
+          "route_decision": "Do not repeat setup mechanics except as the reason the alternate path breaks."
+        },
+        {
+          "dimension": "claim_without_proof",
+          "status": "pass",
+          "evidence": "The proof object is a before-after route break with prompt-only route, missing compiler turn, Vulca route, and editable destination.",
+          "route_decision": "Show the route break as the proof, not a competitor scorecard."
+        },
+        {
+          "dimension": "copy_visual_mismatch",
+          "status": "pass",
+          "evidence": "The visual role is route comparison, matching the thesis about missing mechanism.",
+          "route_decision": "Delete subjective style ranking and template gallery references."
+        },
+        {
+          "dimension": "public_surface_routing",
+          "status": "pass",
+          "evidence": "Competitor boundary ids, bad-control details, and raw comparison fields are routed to viewer-only material.",
+          "route_decision": "Use public copy for mechanism, not internal comparison fields."
+        },
+        {
+          "dimension": "text_budget_fit",
+          "status": "pass",
+          "evidence": "Headline, supporting line, and four proof labels fit inside the 70-word contrast budget.",
+          "route_decision": "Keep the contrast readable by limiting public proof labels to four mechanisms."
+        }
+      ],
+      "blocking_issues": [],
+      "watch_items": [
+        "Keep the bad-control route objective and avoid style-only superiority language."
+      ],
+      "approved_content_units": {
+        "main_claim": "Prompt-only can produce plausible slides, but it lacks source memory, proof routing, mapped design moves, and editable output guarantees.",
+        "proof_object": "before-after route break",
+        "business_logic": "The product difference is credible when the alternate path fails at a named missing mechanism and the Vulca path continues to editable output.",
+        "visual_role": "route comparison",
+        "on_canvas_copy": {
+          "headline": "The difference is mechanism, not taste.",
+          "supporting_line": "Vulca binds source memory, proof routing, design moves, and editable output before the deck is claimed.",
+          "proof_labels": [
+            "source memory",
+            "proof routing",
+            "design moves",
+            "editable output"
+          ]
+        },
+        "delete_or_note_route": {
+          "must_delete_from_canvas": [
+            "five-row text matrix",
+            "subjective style ranking",
+            "template gallery",
+            "raw comparison fields"
+          ],
+          "speaker_note": "Name prompt-only and image-only paths as missing mechanism, not as inferior style by default.",
+          "viewer_only": [
+            "competitor boundary ids",
+            "bad-control details",
+            "raw comparison fields"
+          ]
+        }
+      },
+      "scene_compiler_constraints": {
+        "content_only": true,
+        "must_keep_main_claim": "Prompt-only can produce plausible slides, but it lacks source memory, proof routing, mapped design moves, and editable output guarantees.",
+        "must_render_proof_object": "before-after route break",
+        "must_preserve_visual_role": "route comparison",
+        "must_route_off_canvas": [
+          "competitor boundary ids",
+          "bad-control details",
+          "raw comparison fields"
+        ],
+        "must_not_add": [
+          "style-only superiority claim",
+          "competitor beauty ranking",
+          "unbacked comparison"
+        ]
+      }
+    },
+    {
+      "audit_id": "content_qa_2_74_proof",
+      "slide_id": "slide_content_qa_2_74_proof",
+      "role": "proof",
+      "source_slide_story_id": "slide_story_2_74_proof",
+      "checked_claim_ids": [
+        "claim_content_compiler",
+        "claim_inspectable_trust",
+        "claim_release_boundary"
+      ],
+      "quality_checks": [
+        {
+          "dimension": "empty_claim",
+          "status": "pass",
+          "evidence": "The claim states the trust model: compact public proof markers point to inspectable workflow evidence.",
+          "route_decision": "Keep proof names specific enough to avoid generic trust language."
+        },
+        {
+          "dimension": "duplicate_message",
+          "status": "pass",
+          "evidence": "The proof slide uniquely explains how the viewer knows the workflow was used.",
+          "route_decision": "Do not duplicate the contrast slide's route break."
+        },
+        {
+          "dimension": "claim_without_proof",
+          "status": "pass",
+          "evidence": "The proof object is a compact inspection board with capability binding, contract match, content check, and bad-control failure.",
+          "route_decision": "Render proof markers and route raw evidence to viewer-only material."
+        },
+        {
+          "dimension": "copy_visual_mismatch",
+          "status": "pass",
+          "evidence": "The visual role is an inspection board, matching the public proof-marker claim.",
+          "route_decision": "Delete schema reports, raw proof lists, and oversized compliance tables from the slide."
+        },
+        {
+          "dimension": "public_surface_routing",
+          "status": "pass",
+          "evidence": "Reader question records, proof obligations, and bad-control comparison details are routed to viewer-only material.",
+          "route_decision": "Use the speaker note to say raw proof remains inspectable off canvas."
+        },
+        {
+          "dimension": "text_budget_fit",
+          "status": "pass",
+          "evidence": "Headline, supporting line, and four proof labels fit inside the 76-word proof budget.",
+          "route_decision": "Keep four named proof states and avoid raw fields on canvas."
+        }
+      ],
+      "blocking_issues": [],
+      "watch_items": [
+        "Keep the inspection board compact so proof does not become the whole presentation."
+      ],
+      "approved_content_units": {
+        "main_claim": "Each public proof marker points to capability binding, contract match, content check, and bad-control failure behind the surface.",
+        "proof_object": "compact inspection board",
+        "business_logic": "Trust improves when public proof is readable but still points to off-canvas records that can be inspected.",
+        "visual_role": "inspection board",
+        "on_canvas_copy": {
+          "headline": "Proof stays inspectable without taking over the slide.",
+          "supporting_line": "Compact proof markers show that the workflow consumed content, contracts, and comparison boundaries.",
+          "proof_labels": [
+            "capability bound",
+            "contract matched",
+            "content checked",
+            "bad control failed"
+          ]
+        },
+        "delete_or_note_route": {
+          "must_delete_from_canvas": [
+            "schema report",
+            "raw proof list",
+            "oversized compliance table",
+            "bad-control comparison details"
+          ],
+          "speaker_note": "Explain that raw proof stays inspectable off-canvas so the public slide remains readable.",
+          "viewer_only": [
+            "reader question records",
+            "off-canvas proof obligations",
+            "bad-control comparison details"
+          ]
+        }
+      },
+      "scene_compiler_constraints": {
+        "content_only": true,
+        "must_keep_main_claim": "Each public proof marker points to capability binding, contract match, content check, and bad-control failure behind the surface.",
+        "must_render_proof_object": "compact inspection board",
+        "must_preserve_visual_role": "inspection board",
+        "must_route_off_canvas": [
+          "reader question records",
+          "off-canvas proof obligations",
+          "bad-control comparison details"
+        ],
+        "must_not_add": [
+          "raw field wall",
+          "long checklist",
+          "unreadable proof labels"
+        ]
+      }
+    },
+    {
+      "audit_id": "content_qa_2_74_climax",
+      "slide_id": "slide_content_qa_2_74_climax",
+      "role": "climax",
+      "source_slide_story_id": "slide_story_2_74_climax",
+      "checked_claim_ids": [
+        "claim_design_move_binding",
+        "claim_native_ppt_output",
+        "claim_inspectable_trust"
+      ],
+      "quality_checks": [
+        {
+          "dimension": "empty_claim",
+          "status": "pass",
+          "evidence": "The claim names the convergence of design memory, mapped moves, code generation, editable preview, and QA proof.",
+          "route_decision": "Keep the result object as the main product memory."
+        },
+        {
+          "dimension": "duplicate_message",
+          "status": "pass",
+          "evidence": "The climax uniquely converts prior mechanism and proof into one remembered result.",
+          "route_decision": "Do not repeat setup or proof as equal cards."
+        },
+        {
+          "dimension": "claim_without_proof",
+          "status": "pass",
+          "evidence": "The proof object is an editable PPT preview hero object with route, renderer tag, editable preview, and QA proof tag.",
+          "route_decision": "Attach proof to the result object instead of separating it into reports."
+        },
+        {
+          "dimension": "copy_visual_mismatch",
+          "status": "pass",
+          "evidence": "The visual role is hero editable result, matching the one-result thesis.",
+          "route_decision": "Delete equal-weight report cards or disconnected diagrams."
+        },
+        {
+          "dimension": "public_surface_routing",
+          "status": "pass",
+          "evidence": "Full product term list, source refs, and internal QA criteria are routed to viewer-only material.",
+          "route_decision": "Use the speaker note to protect the cinematic product moment from proof clutter."
+        },
+        {
+          "dimension": "text_budget_fit",
+          "status": "pass",
+          "evidence": "Headline, supporting line, and four proof labels fit inside the 62-word climax budget.",
+          "route_decision": "Keep the copy supportive so the editable preview dominates."
+        }
+      ],
+      "blocking_issues": [],
+      "watch_items": [
+        "Do not let orbiting proof tags compete with the editable preview."
+      ],
+      "approved_content_units": {
+        "main_claim": "The brief, source memory, mapped design moves, code renderer, editable preview, and QA proof converge into one result object.",
+        "proof_object": "editable PPT preview hero object",
+        "business_logic": "The product becomes memorable when the user sees the operating loop converge into one editable artifact rather than disconnected process cards.",
+        "visual_role": "hero editable result",
+        "on_canvas_copy": {
+          "headline": "One editable result owns the product moment.",
+          "supporting_line": "Design memory, mapped design moves, code generation, and proof converge into one editable PPT preview.",
+          "proof_labels": [
+            "design memory",
+            "mapped design moves",
+            "editable preview",
+            "QA proof"
+          ]
+        },
+        "delete_or_note_route": {
+          "must_delete_from_canvas": [
+            "separate report cards",
+            "small disconnected diagram",
+            "generic launch slogan",
+            "internal QA criteria"
+          ],
+          "speaker_note": "Keep this slide cinematic and least report-like; proof should orbit the result, not compete with it.",
+          "viewer_only": [
+            "full product term list",
+            "source refs",
+            "internal QA criteria"
+          ]
+        }
+      },
+      "scene_compiler_constraints": {
+        "content_only": true,
+        "must_keep_main_claim": "The brief, source memory, mapped design moves, code renderer, editable preview, and QA proof converge into one result object.",
+        "must_render_proof_object": "editable PPT preview hero object",
+        "must_preserve_visual_role": "hero editable result",
+        "must_route_off_canvas": [
+          "full product term list",
+          "source refs",
+          "internal QA criteria"
+        ],
+        "must_not_add": [
+          "equal-weight diagrams",
+          "report layout",
+          "decorative proof labels"
+        ]
+      }
+    },
+    {
+      "audit_id": "content_qa_2_74_close",
+      "slide_id": "slide_content_qa_2_74_close",
+      "role": "close",
+      "source_slide_story_id": "slide_story_2_74_close",
+      "checked_claim_ids": [
+        "claim_release_boundary",
+        "claim_inspectable_trust",
+        "claim_native_ppt_output"
+      ],
+      "quality_checks": [
+        {
+          "dimension": "empty_claim",
+          "status": "pass",
+          "evidence": "The claim names the remaining proof and review gates instead of using launch-ready language.",
+          "route_decision": "Keep the next action concrete and the release boundary explicit."
+        },
+        {
+          "dimension": "duplicate_message",
+          "status": "pass",
+          "evidence": "The close uniquely converts content readiness into a gated handoff for the next generated proof.",
+          "route_decision": "Do not re-sell the climax result as a finished release."
+        },
+        {
+          "dimension": "claim_without_proof",
+          "status": "pass",
+          "evidence": "The proof object is a release handoff gate with story ready, next generated proof, human review, and source-boundary review.",
+          "route_decision": "Show the gate rather than claiming the product is already public-ready."
+        },
+        {
+          "dimension": "copy_visual_mismatch",
+          "status": "pass",
+          "evidence": "The visual role is a quiet release decision wall, matching the blocked-release thesis.",
+          "route_decision": "Delete launch celebration or dense run history from the public surface."
+        },
+        {
+          "dimension": "public_surface_routing",
+          "status": "pass",
+          "evidence": "Run-specific handoff ids, full release checklist, and human approval notes are routed to viewer-only material.",
+          "route_decision": "Use the speaker note for the remaining gates."
+        },
+        {
+          "dimension": "text_budget_fit",
+          "status": "pass",
+          "evidence": "Headline, supporting line, and four proof labels fit inside the 60-word close budget.",
+          "route_decision": "Keep the close quiet and decisive rather than turning it into an appendix."
+        }
+      ],
+      "blocking_issues": [],
+      "watch_items": [
+        "Keep release blocked language visible enough that the content story is not mistaken for approval."
+      ],
+      "approved_content_units": {
+        "main_claim": "The story can feed the next generated deck, but public release waits for visual review, native inspection, source-boundary review, and human approval.",
+        "proof_object": "release handoff gate",
+        "business_logic": "Credibility is preserved when the deck names the next proof and review gate instead of turning content readiness into a release claim.",
+        "visual_role": "quiet release decision wall",
+        "on_canvas_copy": {
+          "headline": "The next proof is generated, not claimed.",
+          "supporting_line": "This story becomes input for the next generated deck, then waits for review before release.",
+          "proof_labels": [
+            "story ready",
+            "generated proof next",
+            "human review",
+            "release blocked"
+          ]
+        },
+        "delete_or_note_route": {
+          "must_delete_from_canvas": [
+            "launch celebration",
+            "public-ready claim",
+            "dense run history",
+            "full release checklist"
+          ],
+          "speaker_note": "Name the remaining gate calmly: generated proof, visual review, native inspection, source-boundary review, and human approval.",
+          "viewer_only": [
+            "run-specific handoff ids",
+            "full release checklist",
+            "human approval notes"
+          ]
+        }
+      },
+      "scene_compiler_constraints": {
+        "content_only": true,
+        "must_keep_main_claim": "The story can feed the next generated deck, but public release waits for visual review, native inspection, source-boundary review, and human approval.",
+        "must_render_proof_object": "release handoff gate",
+        "must_preserve_visual_role": "quiet release decision wall",
+        "must_route_off_canvas": [
+          "run-specific handoff ids",
+          "full release checklist",
+          "human approval notes"
+        ],
+        "must_not_add": [
+          "public-ready language",
+          "launch promise",
+          "unreviewed proof claim"
+        ]
+      }
+    }
+  ],
+  "traceability_summary": {
+    "slide_count": 6,
+    "quality_dimensions": [
+      "claim_without_proof",
+      "copy_visual_mismatch",
+      "duplicate_message",
+      "empty_claim",
+      "public_surface_routing",
+      "text_budget_fit"
+    ],
+    "blocking_issue_count": 0,
+    "watch_item_count": 6,
+    "approved_content_unit_count": 6,
+    "approved_for_next_stage": "part_d_scene_compiler_inputs_only",
+    "source_slide_story": "run2_74_slide_story.json",
+    "source_product_claim_graph": "run2_74_product_claim_graph.json"
+  },
+  "next_required_action": "part_d_scene_compiler_from_c1_c2_c3_and_b2"
+}

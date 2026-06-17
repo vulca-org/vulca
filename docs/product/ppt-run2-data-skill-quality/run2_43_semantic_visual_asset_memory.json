@@ -1,0 +1,1032 @@
+{
+  "schema_version": "ppt_run2_semantic_visual_asset_memory.v1",
+  "status": "run2_43_semantic_visual_asset_memory_ready_public_blocked",
+  "run_id": "2.43",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_audit_run": "2.42",
+  "source_generated_run": "2.41",
+  "source_prior_generated_run": "2.40",
+  "target_layer": "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy",
+  "source_boundary": {
+    "allowed_storage": "derived_semantic_visual_asset_instructions_only",
+    "copied_screenshots": "forbidden",
+    "raw_tutorial_or_video_media": "forbidden",
+    "video_frames": "forbidden",
+    "source_layouts": "forbidden",
+    "brand_marks": "forbidden",
+    "audio_or_transcript_text": "forbidden"
+  },
+  "semantic_visual_asset_records": [
+    {
+      "semantic_asset_id": "semantic_asset_2_43_cover_1",
+      "role": "cover",
+      "slide_index": 1,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "market poster",
+      "source_run2_41_code_module_ids": [
+        "drawRun241MarketScenePoster"
+      ],
+      "source_scene_payload": {
+        "role": "cover",
+        "scene_type": "launch_poster",
+        "first_read_object": "one oversized generated launch deck emerging from a memory-control field",
+        "visual_rhythm_id": "poster_reveal",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "market-facing launch poster scene with the buyer decision visible before any workflow detail",
+      "observable_scene_evidence": [
+        "first read object: one oversized generated launch deck emerging from a memory-control field",
+        "visual rhythm: poster_reveal",
+        "surface role: market poster",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_cover_2",
+      "role": "cover",
+      "slide_index": 1,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "generated deck object",
+      "source_run2_41_code_module_ids": [
+        "drawRun241MarketScenePoster"
+      ],
+      "source_scene_payload": {
+        "role": "cover",
+        "scene_type": "launch_poster",
+        "first_read_object": "one oversized generated launch deck emerging from a memory-control field",
+        "visual_rhythm_id": "poster_reveal",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "generated launch deck hero object with attached design-memory controls and review state",
+      "observable_scene_evidence": [
+        "first read object: one oversized generated launch deck emerging from a memory-control field",
+        "visual rhythm: poster_reveal",
+        "surface role: generated deck object",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_cover_3",
+      "role": "cover",
+      "slide_index": 1,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "source-safe benchmark cue",
+      "source_run2_41_code_module_ids": [
+        "drawRun241MarketScenePoster"
+      ],
+      "source_scene_payload": {
+        "role": "cover",
+        "scene_type": "launch_poster",
+        "first_read_object": "one oversized generated launch deck emerging from a memory-control field",
+        "visual_rhythm_id": "poster_reveal",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "source-safe benchmark cue rendered as an abstract design-quality signal, not a copied source asset",
+      "observable_scene_evidence": [
+        "first read object: one oversized generated launch deck emerging from a memory-control field",
+        "visual rhythm: poster_reveal",
+        "surface role: source-safe benchmark cue",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_setup_1",
+      "role": "setup",
+      "slide_index": 2,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "failure storyboard",
+      "source_run2_41_code_module_ids": [
+        "drawRun241FailureStoryboard"
+      ],
+      "source_scene_payload": {
+        "role": "setup",
+        "scene_type": "failure_scene",
+        "first_read_object": "prompt-only failure path collapsing into a smaller unreviewable slide surface",
+        "visual_rhythm_id": "failure_path_scene",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "prompt-only failure storyboard showing loss of context, source boundary, and reviewability",
+      "observable_scene_evidence": [
+        "first read object: prompt-only failure path collapsing into a smaller unreviewable slide surface",
+        "visual rhythm: failure_path_scene",
+        "surface role: failure storyboard",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_setup_2",
+      "role": "setup",
+      "slide_index": 2,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "collapsed prompt output",
+      "source_run2_41_code_module_ids": [
+        "drawRun241FailureStoryboard"
+      ],
+      "source_scene_payload": {
+        "role": "setup",
+        "scene_type": "failure_scene",
+        "first_read_object": "prompt-only failure path collapsing into a smaller unreviewable slide surface",
+        "visual_rhythm_id": "failure_path_scene",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "collapsed prompt output surface that looks thin and commercially risky at thumbnail scale",
+      "observable_scene_evidence": [
+        "first read object: prompt-only failure path collapsing into a smaller unreviewable slide surface",
+        "visual rhythm: failure_path_scene",
+        "surface role: collapsed prompt output",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_setup_3",
+      "role": "setup",
+      "slide_index": 2,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "selected route scene",
+      "source_run2_41_code_module_ids": [
+        "drawRun241FailureStoryboard"
+      ],
+      "source_scene_payload": {
+        "role": "setup",
+        "scene_type": "failure_scene",
+        "first_read_object": "prompt-only failure path collapsing into a smaller unreviewable slide surface",
+        "visual_rhythm_id": "failure_path_scene",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "selected route scene where usecase, memory, and QA gate converge before generation",
+      "observable_scene_evidence": [
+        "first read object: prompt-only failure path collapsing into a smaller unreviewable slide surface",
+        "visual rhythm: failure_path_scene",
+        "surface role: selected route scene",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_contrast_1",
+      "role": "contrast",
+      "slide_index": 3,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "before thumbnail",
+      "source_run2_41_code_module_ids": [
+        "drawRun241BeforeAfterBusinessCase"
+      ],
+      "source_scene_payload": {
+        "role": "contrast",
+        "scene_type": "before_after_product_state",
+        "first_read_object": "large after-state product surface dwarfing a small prompt-only before thumbnail",
+        "visual_rhythm_id": "asymmetric_before_after",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "small before thumbnail that intentionally reads generic and underpowered",
+      "observable_scene_evidence": [
+        "first read object: large after-state product surface dwarfing a small prompt-only before thumbnail",
+        "visual rhythm: asymmetric_before_after",
+        "surface role: before thumbnail",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_contrast_2",
+      "role": "contrast",
+      "slide_index": 3,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "after launch surface",
+      "source_run2_41_code_module_ids": [
+        "drawRun241BeforeAfterBusinessCase"
+      ],
+      "source_scene_payload": {
+        "role": "contrast",
+        "scene_type": "before_after_product_state",
+        "first_read_object": "large after-state product surface dwarfing a small prompt-only before thumbnail",
+        "visual_rhythm_id": "asymmetric_before_after",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "dominant after launch surface carrying selected usecase, visual memory, and output state",
+      "observable_scene_evidence": [
+        "first read object: large after-state product surface dwarfing a small prompt-only before thumbnail",
+        "visual rhythm: asymmetric_before_after",
+        "surface role: after launch surface",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_contrast_3",
+      "role": "contrast",
+      "slide_index": 3,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "business delta strip",
+      "source_run2_41_code_module_ids": [
+        "drawRun241BeforeAfterBusinessCase"
+      ],
+      "source_scene_payload": {
+        "role": "contrast",
+        "scene_type": "before_after_product_state",
+        "first_read_object": "large after-state product surface dwarfing a small prompt-only before thumbnail",
+        "visual_rhythm_id": "asymmetric_before_after",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "business delta strip that explains the commercial improvement without trace jargon",
+      "observable_scene_evidence": [
+        "first read object: large after-state product surface dwarfing a small prompt-only before thumbnail",
+        "visual rhythm: asymmetric_before_after",
+        "surface role: business delta strip",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_proof_1",
+      "role": "proof",
+      "slide_index": 4,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "product UI evidence",
+      "source_run2_41_code_module_ids": [
+        "drawRun241ProductUiEvidenceScene"
+      ],
+      "source_scene_payload": {
+        "role": "proof",
+        "scene_type": "product_workflow_surface",
+        "first_read_object": "working product console that maps slide roles to visual decisions and proof objects",
+        "visual_rhythm_id": "product_workflow_surface",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "product UI evidence surface showing role-to-visual-decision mapping as an app state",
+      "observable_scene_evidence": [
+        "first read object: working product console that maps slide roles to visual decisions and proof objects",
+        "visual rhythm: product_workflow_surface",
+        "surface role: product UI evidence",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_proof_2",
+      "role": "proof",
+      "slide_index": 4,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "editable deck preview",
+      "source_run2_41_code_module_ids": [
+        "drawRun241ProductUiEvidenceScene"
+      ],
+      "source_scene_payload": {
+        "role": "proof",
+        "scene_type": "product_workflow_surface",
+        "first_read_object": "working product console that maps slide roles to visual decisions and proof objects",
+        "visual_rhythm_id": "product_workflow_surface",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "editable deck preview object with selected memory and slide-code status visible",
+      "observable_scene_evidence": [
+        "first read object: working product console that maps slide roles to visual decisions and proof objects",
+        "visual rhythm: product_workflow_surface",
+        "surface role: editable deck preview",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_proof_3",
+      "role": "proof",
+      "slide_index": 4,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "review status badge",
+      "source_run2_41_code_module_ids": [
+        "drawRun241ProductUiEvidenceScene"
+      ],
+      "source_scene_payload": {
+        "role": "proof",
+        "scene_type": "product_workflow_surface",
+        "first_read_object": "working product console that maps slide roles to visual decisions and proof objects",
+        "visual_rhythm_id": "product_workflow_surface",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "review status badge that is quiet and source-boundary safe, not a public ribbon composition",
+      "observable_scene_evidence": [
+        "first read object: working product console that maps slide roles to visual decisions and proof objects",
+        "visual rhythm: product_workflow_surface",
+        "surface role: review status badge",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_climax_1",
+      "role": "climax",
+      "slide_index": 5,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "cinematic output stage",
+      "source_run2_41_code_module_ids": [
+        "drawRun241CinematicLaunchMoment"
+      ],
+      "source_scene_payload": {
+        "role": "climax",
+        "scene_type": "cinematic_climax_object",
+        "first_read_object": "one cinematic generated deck object with visible before, memory, and release state fused together",
+        "visual_rhythm_id": "cinematic_climax_object",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "cinematic output stage where the generated deck object owns most of the frame",
+      "observable_scene_evidence": [
+        "first read object: one cinematic generated deck object with visible before, memory, and release state fused together",
+        "visual rhythm: cinematic_climax_object",
+        "surface role: cinematic output stage",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_climax_2",
+      "role": "climax",
+      "slide_index": 5,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "launch asset surface",
+      "source_run2_41_code_module_ids": [
+        "drawRun241CinematicLaunchMoment"
+      ],
+      "source_scene_payload": {
+        "role": "climax",
+        "scene_type": "cinematic_climax_object",
+        "first_read_object": "one cinematic generated deck object with visible before, memory, and release state fused together",
+        "visual_rhythm_id": "cinematic_climax_object",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "launch asset surface fusing before, memory, and release state into one result object",
+      "observable_scene_evidence": [
+        "first read object: one cinematic generated deck object with visible before, memory, and release state fused together",
+        "visual rhythm: cinematic_climax_object",
+        "surface role: launch asset surface",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_climax_3",
+      "role": "climax",
+      "slide_index": 5,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "audience proof rail",
+      "source_run2_41_code_module_ids": [
+        "drawRun241CinematicLaunchMoment"
+      ],
+      "source_scene_payload": {
+        "role": "climax",
+        "scene_type": "cinematic_climax_object",
+        "first_read_object": "one cinematic generated deck object with visible before, memory, and release state fused together",
+        "visual_rhythm_id": "cinematic_climax_object",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "audience proof rail that supports the hero result without becoming the main composition",
+      "observable_scene_evidence": [
+        "first read object: one cinematic generated deck object with visible before, memory, and release state fused together",
+        "visual rhythm: cinematic_climax_object",
+        "surface role: audience proof rail",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_close_1",
+      "role": "close",
+      "slide_index": 6,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "review decision table",
+      "source_run2_41_code_module_ids": [
+        "drawRun241ReviewDecisionRoom"
+      ],
+      "source_scene_payload": {
+        "role": "close",
+        "scene_type": "decision_handoff_path",
+        "first_read_object": "inspectable next-run handoff path with one clear decision gate and one public-blocked state",
+        "visual_rhythm_id": "decision_handoff_path",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "review decision table rendered as a decision-room surface, not a spreadsheet block",
+      "observable_scene_evidence": [
+        "first read object: inspectable next-run handoff path with one clear decision gate and one public-blocked state",
+        "visual rhythm: decision_handoff_path",
+        "surface role: review decision table",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_close_2",
+      "role": "close",
+      "slide_index": 6,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "release readiness wall",
+      "source_run2_41_code_module_ids": [
+        "drawRun241ReviewDecisionRoom"
+      ],
+      "source_scene_payload": {
+        "role": "close",
+        "scene_type": "decision_handoff_path",
+        "first_read_object": "inspectable next-run handoff path with one clear decision gate and one public-blocked state",
+        "visual_rhythm_id": "decision_handoff_path",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "release readiness wall with internal demo, native review, and public block states",
+      "observable_scene_evidence": [
+        "first read object: inspectable next-run handoff path with one clear decision gate and one public-blocked state",
+        "visual rhythm: decision_handoff_path",
+        "surface role: release readiness wall",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    },
+    {
+      "semantic_asset_id": "semantic_asset_2_43_close_3",
+      "role": "close",
+      "slide_index": 6,
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.42",
+      "source_generated_run": "2.41",
+      "source_prior_generated_run": "2.40",
+      "source_audit_root_cause": "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_run2_41_surface_type": "next-run action surface",
+      "source_run2_41_code_module_ids": [
+        "drawRun241ReviewDecisionRoom"
+      ],
+      "source_scene_payload": {
+        "role": "close",
+        "scene_type": "decision_handoff_path",
+        "first_read_object": "inspectable next-run handoff path with one clear decision gate and one public-blocked state",
+        "visual_rhythm_id": "decision_handoff_path",
+        "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+        "reference_sources": [
+          "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+          "Config 2025: Pushing Design Further",
+          "Figma Slides"
+        ]
+      },
+      "usecase_specific_semantic_object": "next-run action surface that makes the Run 2.44 consumption contract inspectable",
+      "observable_scene_evidence": [
+        "first read object: inspectable next-run handoff path with one clear decision gate and one public-blocked state",
+        "visual rhythm: decision_handoff_path",
+        "surface role: next-run action surface",
+        "business decision: Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?"
+      ],
+      "allowed_native_ppt_representation": "editable native PPT vectors, type, gradients, masks, depth layers, state labels, and original SVG-like illustration generated from derived instructions only",
+      "forbidden_schematic_substitutes": [
+        "generic placeholder",
+        "equal-weight rectangles",
+        "named-but-empty visual surface",
+        "schematic native shape-only surface",
+        "copied screenshots/source media",
+        "source brand imitation"
+      ],
+      "source_boundary_note": "Derived semantic visual asset only; no copied screenshots/source media, raw video frames, source layouts, brand marks, audio, or transcript text.",
+      "required_trace_fields": [
+        "run2_43_semantic_visual_asset_ids",
+        "run2_43_semantic_visual_asset_surface_types",
+        "run2_43_source_boundary_status",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "At contact-sheet scale, this surface must read as a product or business object specific to the selected usecase, not as a labeled abstract block."
+    }
+  ]
+}

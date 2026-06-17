@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "status": "run2_10_visual_system_memory_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "memory_type": "visual_system_code_generation_contracts",
+  "visual_systems": [
+    {
+      "visual_system_id": "visual_system_editorial_cinema",
+      "source_record_ids": [
+        "vs_source_2_10_editorial_keynote_system",
+        "vs_source_2_10_typographic_launch_field"
+      ],
+      "applicable_slide_roles": ["cover", "contrast", "climax", "close"],
+      "typography_contract": "One cinematic phrase dominates the slide; support text is sparse, secondary, and routed away from the focal field.",
+      "composition_contract": "Use full-bleed or near-full-bleed fields, asymmetric proof rails, and one quiet zone so the slide does not read as a dashboard.",
+      "asset_strategy_contract": "Draw original native stage fields, rules, proof marks, and labels; no copied source layouts or source brand surfaces.",
+      "motion_sequence_contract": "Reveal field, then proof object, then route labels; keep the final field as the pause state.",
+      "native_ppt_module_implications": [
+        "drawRun210EditorialTypeSystem",
+        "drawRun210FullBleedVisualField",
+        "drawRun210CinematicClimax"
+      ],
+      "forbidden_sameness_patterns": [
+        "same visual family as Run 2.9 light cards",
+        "rectangle-led dashboard composition",
+        "palette-only improvement",
+        "equal panel proof grid"
+      ],
+      "public_demo_first_read_probe": "Thumbnail should read as a keynote/editorial moment before labels are legible.",
+      "anti_copy_boundary": "Derived rules only; do not copy source layout, source UI, screenshots, frames, transcripts, logos, or brand marks.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "visual_system_id": "visual_system_product_theater",
+      "source_record_ids": [
+        "vs_source_2_10_product_theater_demo",
+        "vs_source_2_10_non_rectangular_proof_path"
+      ],
+      "applicable_slide_roles": ["setup", "proof", "close"],
+      "typography_contract": "A compact command headline and no more than three annotation labels should frame the product surface.",
+      "composition_contract": "Product proof is staged as a layered object with depth, crop, offset labels, and non-uniform annotation routes.",
+      "asset_strategy_contract": "Use native editable product shells, screen-like surfaces, connectors, and evidence chips, never borrowed UI screenshots.",
+      "motion_sequence_contract": "Use product, evidence attachment, and decision state as the visible sequence.",
+      "native_ppt_module_implications": [
+        "drawRun210ProductTheater",
+        "drawRun210NonRectangularProofPath"
+      ],
+      "forbidden_sameness_patterns": [
+        "same visual family as Run 2.9 product rectangles",
+        "rectangle-only product card",
+        "dashboard label pile",
+        "palette-only improvement"
+      ],
+      "public_demo_first_read_probe": "The viewer should immediately see a product system being demonstrated, not a report section.",
+      "anti_copy_boundary": "Derived rules only; do not copy source UI, screenshots, frames, transcripts, logos, or brand marks.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "visual_system_id": "visual_system_typographic_field",
+      "source_record_ids": [
+        "vs_source_2_10_typographic_launch_field",
+        "vs_source_2_10_editorial_keynote_system"
+      ],
+      "applicable_slide_roles": ["cover", "contrast", "close"],
+      "typography_contract": "Headline line breaks are intentional design objects; short evidence words sit on routes, not inside body-copy blocks.",
+      "composition_contract": "Whitespace must be visible and purposeful, with one side of the slide left quiet or used as a tension field.",
+      "asset_strategy_contract": "Use native type, rules, line marks, and small proof glyphs; decorative filler fails the memory.",
+      "motion_sequence_contract": "Route phrase fragments through problem, proof, and gate states.",
+      "native_ppt_module_implications": [
+        "drawRun210EditorialTypeSystem",
+        "drawRun210FullBleedVisualField"
+      ],
+      "forbidden_sameness_patterns": [
+        "same visual family title plus card",
+        "rectangle headline container",
+        "palette-only typography change",
+        "dashboard subtitle stack"
+      ],
+      "public_demo_first_read_probe": "The headline should feel designed and launch-grade at a glance.",
+      "anti_copy_boundary": "Derived rules only; do not copy source layout, screenshots, transcripts, logos, or brand marks.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "visual_system_id": "visual_system_kinetic_demo",
+      "source_record_ids": [
+        "vs_source_2_10_kinetic_climax_sequence",
+        "vs_source_2_10_product_theater_demo"
+      ],
+      "applicable_slide_roles": ["proof", "climax"],
+      "typography_contract": "Use low-word sequence labels; the motion structure should carry meaning before text does.",
+      "composition_contract": "Use diagonal, radial, or scale-based sequence paths instead of rows of same-size rectangles.",
+      "asset_strategy_contract": "Use editable sequence objects, pause markers, and state changes; no copied frames or video extracts.",
+      "motion_sequence_contract": "Anticipation, scale-up, lock-in, and release must be visible as native objects and traceable steps.",
+      "native_ppt_module_implications": [
+        "drawRun210KineticSequence",
+        "drawRun210CinematicClimax"
+      ],
+      "forbidden_sameness_patterns": [
+        "same visual family storyboard boxes",
+        "rectangle sequence strip",
+        "dashboard timeline",
+        "palette-only motion signal"
+      ],
+      "public_demo_first_read_probe": "The slide should visibly build toward a reveal even before animation support exists.",
+      "anti_copy_boundary": "Derived rules only; do not copy source frames, source video, screenshots, transcripts, logos, or brand marks.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "visual_system_id": "visual_system_non_rectangular_proof",
+      "source_record_ids": [
+        "vs_source_2_10_non_rectangular_proof_path",
+        "vs_source_2_10_kinetic_climax_sequence"
+      ],
+      "applicable_slide_roles": ["setup", "contrast", "proof", "climax"],
+      "typography_contract": "Labels stay short and attached to proof-path nodes; explanatory copy is routed out of the main slide.",
+      "composition_contract": "Use arcs, diagonals, wedges, and negative-space corridors to make proof movement visible without equal panels.",
+      "asset_strategy_contract": "Use editable native path geometry, connectors, wedges, labels, and proof groups.",
+      "motion_sequence_contract": "Path nodes become future reveal steps and converge into the climax or decision object.",
+      "native_ppt_module_implications": [
+        "drawRun210NonRectangularProofPath",
+        "drawRun210KineticSequence"
+      ],
+      "forbidden_sameness_patterns": [
+        "rectangle proof path",
+        "same visual family card route",
+        "dashboard connector grid",
+        "palette-only proof styling"
+      ],
+      "public_demo_first_read_probe": "The proof should read as a path, not a table, chart, or report grid.",
+      "anti_copy_boundary": "Derived rules only; do not copy source diagrams, screenshots, frames, transcripts, logos, or brand marks.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    }
+  ]
+}

@@ -1,0 +1,225 @@
+{
+  "schema_version": "ppt_run2_66_slide_art_direction_contracts.v1",
+  "status": "run2_66_slide_art_direction_contracts_ready_public_blocked",
+  "run_id": "2.66",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.65",
+  "slide_art_direction_contracts": [
+    {
+      "art_direction_contract_id": "art_direction_contract_2_66_cover",
+      "role": "cover",
+      "required_reference_archetype_id": "reference_first_archetype_2_66_cover",
+      "copy_strategy": {
+        "public_copy_mode": "reader_outcome_first",
+        "headline_obligation": "name the commercial outcome before naming the mechanism",
+        "body_copy_obligation": "explain one visible product/business scene, not a trace checklist"
+      },
+      "visual_strategy": {
+        "must_show_product_or_business_scene": true,
+        "primary_scene": "one finished launch deck emerging from a real brief and source memory",
+        "avoid": [
+          "equal rectangles as primary surface",
+          "bottom legend as required reading",
+          "trace ids on public canvas",
+          "generic workflow diagram without a product object"
+        ]
+      },
+      "content_strategy": {
+        "min_scene_specific_content_units": 4,
+        "required_units": [
+          "launch deck",
+          "brief capsule",
+          "source memory field",
+          "code rail"
+        ],
+        "max_public_visible_words": 80,
+        "public_trace_term_budget": 0
+      },
+      "qa_contract": {
+        "human_review_question": "Would this read as a public product/keynote slide without seeing trace metadata?",
+        "fail_if_answer_is_no": true,
+        "visual_review_before_run2_67_public_claim": true
+      }
+    },
+    {
+      "art_direction_contract_id": "art_direction_contract_2_66_setup",
+      "role": "setup",
+      "required_reference_archetype_id": "reference_first_archetype_2_66_setup",
+      "copy_strategy": {
+        "public_copy_mode": "reader_outcome_first",
+        "headline_obligation": "name the commercial outcome before naming the mechanism",
+        "body_copy_obligation": "explain one visible product/business scene, not a trace checklist"
+      },
+      "visual_strategy": {
+        "must_show_product_or_business_scene": true,
+        "primary_scene": "a design-to-code operating stage with one visible handoff path",
+        "avoid": [
+          "equal rectangles as primary surface",
+          "bottom legend as required reading",
+          "trace ids on public canvas",
+          "generic workflow diagram without a product object"
+        ]
+      },
+      "content_strategy": {
+        "min_scene_specific_content_units": 4,
+        "required_units": [
+          "source wall",
+          "memory compiler",
+          "skill workflow",
+          "code generator"
+        ],
+        "max_public_visible_words": 80,
+        "public_trace_term_budget": 0
+      },
+      "qa_contract": {
+        "human_review_question": "Would this read as a public product/keynote slide without seeing trace metadata?",
+        "fail_if_answer_is_no": true,
+        "visual_review_before_run2_67_public_claim": true
+      }
+    },
+    {
+      "art_direction_contract_id": "art_direction_contract_2_66_contrast",
+      "role": "contrast",
+      "required_reference_archetype_id": "reference_first_archetype_2_66_contrast",
+      "copy_strategy": {
+        "public_copy_mode": "reader_outcome_first",
+        "headline_obligation": "name the commercial outcome before naming the mechanism",
+        "body_copy_obligation": "explain one visible product/business scene, not a trace checklist"
+      },
+      "visual_strategy": {
+        "must_show_product_or_business_scene": true,
+        "primary_scene": "large after-state deck surface overpowering the small prompt-only result",
+        "avoid": [
+          "equal rectangles as primary surface",
+          "bottom legend as required reading",
+          "trace ids on public canvas",
+          "generic workflow diagram without a product object"
+        ]
+      },
+      "content_strategy": {
+        "min_scene_specific_content_units": 4,
+        "required_units": [
+          "before thumbnail",
+          "after stage",
+          "difference lens",
+          "proof marker"
+        ],
+        "max_public_visible_words": 80,
+        "public_trace_term_budget": 0
+      },
+      "qa_contract": {
+        "human_review_question": "Would this read as a public product/keynote slide without seeing trace metadata?",
+        "fail_if_answer_is_no": true,
+        "visual_review_before_run2_67_public_claim": true
+      }
+    },
+    {
+      "art_direction_contract_id": "art_direction_contract_2_66_proof",
+      "role": "proof",
+      "required_reference_archetype_id": "reference_first_archetype_2_66_proof",
+      "copy_strategy": {
+        "public_copy_mode": "reader_outcome_first",
+        "headline_obligation": "name the commercial outcome before naming the mechanism",
+        "body_copy_obligation": "explain one visible product/business scene, not a trace checklist"
+      },
+      "visual_strategy": {
+        "must_show_product_or_business_scene": true,
+        "primary_scene": "review workspace where a user can inspect source, decision, output, and gate",
+        "avoid": [
+          "equal rectangles as primary surface",
+          "bottom legend as required reading",
+          "trace ids on public canvas",
+          "generic workflow diagram without a product object"
+        ]
+      },
+      "content_strategy": {
+        "min_scene_specific_content_units": 4,
+        "required_units": [
+          "source pane",
+          "decision pane",
+          "output pane",
+          "release gate"
+        ],
+        "max_public_visible_words": 80,
+        "public_trace_term_budget": 0
+      },
+      "qa_contract": {
+        "human_review_question": "Would this read as a public product/keynote slide without seeing trace metadata?",
+        "fail_if_answer_is_no": true,
+        "visual_review_before_run2_67_public_claim": true
+      }
+    },
+    {
+      "art_direction_contract_id": "art_direction_contract_2_66_climax",
+      "role": "climax",
+      "required_reference_archetype_id": "reference_first_archetype_2_66_climax",
+      "copy_strategy": {
+        "public_copy_mode": "reader_outcome_first",
+        "headline_obligation": "name the commercial outcome before naming the mechanism",
+        "body_copy_obligation": "explain one visible product/business scene, not a trace checklist"
+      },
+      "visual_strategy": {
+        "must_show_product_or_business_scene": true,
+        "primary_scene": "one high-fidelity editable PPT preview with data and code visibly embedded",
+        "avoid": [
+          "equal rectangles as primary surface",
+          "bottom legend as required reading",
+          "trace ids on public canvas",
+          "generic workflow diagram without a product object"
+        ]
+      },
+      "content_strategy": {
+        "min_scene_specific_content_units": 4,
+        "required_units": [
+          "editable slide canvas",
+          "code strip",
+          "data trace drawer",
+          "review status"
+        ],
+        "max_public_visible_words": 80,
+        "public_trace_term_budget": 0
+      },
+      "qa_contract": {
+        "human_review_question": "Would this read as a public product/keynote slide without seeing trace metadata?",
+        "fail_if_answer_is_no": true,
+        "visual_review_before_run2_67_public_claim": true
+      }
+    },
+    {
+      "art_direction_contract_id": "art_direction_contract_2_66_close",
+      "role": "close",
+      "required_reference_archetype_id": "reference_first_archetype_2_66_close",
+      "copy_strategy": {
+        "public_copy_mode": "reader_outcome_first",
+        "headline_obligation": "name the commercial outcome before naming the mechanism",
+        "body_copy_obligation": "explain one visible product/business scene, not a trace checklist"
+      },
+      "visual_strategy": {
+        "must_show_product_or_business_scene": true,
+        "primary_scene": "clear decision map showing generated proof, blocked release, and next rerun",
+        "avoid": [
+          "equal rectangles as primary surface",
+          "bottom legend as required reading",
+          "trace ids on public canvas",
+          "generic workflow diagram without a product object"
+        ]
+      },
+      "content_strategy": {
+        "min_scene_specific_content_units": 4,
+        "required_units": [
+          "generated proof",
+          "human review",
+          "public gate",
+          "next run"
+        ],
+        "max_public_visible_words": 80,
+        "public_trace_term_budget": 0
+      },
+      "qa_contract": {
+        "human_review_question": "Would this read as a public product/keynote slide without seeing trace metadata?",
+        "fail_if_answer_is_no": true,
+        "visual_review_before_run2_67_public_claim": true
+      }
+    }
+  ]
+}

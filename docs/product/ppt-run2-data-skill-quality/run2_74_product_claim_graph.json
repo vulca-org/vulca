@@ -1,0 +1,482 @@
+{
+  "artifact_id": "run2_74_product_claim_graph",
+  "part": "Part C1",
+  "schema_version": 1,
+  "status": "run2_74_product_claim_graph_public_blocked",
+  "stage_policy": "part_c1_product_claim_graph_only",
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_inputs": [
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/commercial_case.md",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "business objective, audience, public-demo constraint, and deck boundary"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_57_product_capability_memory.json",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "product capability ids, causal product logic ids, and forbidden empty claims"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_57_slide_message_contracts.json",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "reader questions, required product terms, and proof obligations"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_61_narrative_proof_dataset.json",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "public proof objects, copy routes, and note/viewer boundaries"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_source_quality_audit.json",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "source-quality limits and release-blocking evidence constraints"
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_tutorial_to_design_moves.json",
+      "required": true,
+      "available": true,
+      "use_in_this_artifact": "tutorial-derived renderer action lineage used only as design-move evidence"
+    }
+  ],
+  "artifact_scope": {
+    "goal": "Define the product claim graph before writing slide story or scene compiler structures.",
+    "does_not_start": [
+      "part_c2_slide_story",
+      "part_c3_content_quality_audit",
+      "part_d_scene_compiler",
+      "renderer_rerun",
+      "public_release"
+    ],
+    "quality_gate": "Every product claim must identify capability ids, causal logic ids, proof objects, user benefit, visible result, and public-surface routing."
+  },
+  "product_definition": {
+    "product_category": "source-bound editable PPT generation system",
+    "primary_output": "code-generated editable PPT deck",
+    "one_sentence": "Vulca turns a commercial brief plus curated source memory into an editable PPT product demo whose claims, design moves, proof objects, and release gates can be inspected.",
+    "audience": [
+      "AI product builders",
+      "design leaders",
+      "platform reviewers"
+    ],
+    "not_product": [
+      "image-only slide generator",
+      "generic template library",
+      "one-shot prompt-to-deck toy",
+      "unreviewed public video renderer"
+    ],
+    "business_objective": "Make the PPT wedge understandable, credible, and visually strong enough for a product video without claiming public release readiness."
+  },
+  "public_surface_routing": {
+    "on_canvas_policy": "Use plain product language for input, mechanism, editable output, user benefit, and visible proof object.",
+    "viewer_or_note_only_terms": [
+      "run2",
+      "trace manifest",
+      "trace field",
+      "workflow gate",
+      "schema id",
+      "raw source inventory",
+      "complete field lists"
+    ],
+    "reason": "The source contracts require these obligations, but the public slide surface should not become a raw trace or schema report."
+  },
+  "product_claim_nodes": [
+    {
+      "claim_id": "claim_product_identity",
+      "claim_type": "product_definition",
+      "public_claim": "Vulca is a source-bound system for turning a real brief into editable PPT.",
+      "product_capability_ids": [
+        "capability_input_layer",
+        "capability_generation_layer",
+        "capability_output_layer"
+      ],
+      "product_logic_relation_ids": [
+        "logic_relation_2_57_generation_to_output"
+      ],
+      "source_message_contract_ids": [
+        "message_contract_2_57_cover"
+      ],
+      "narrative_proof_ids": [
+        "narrative_proof_2_61_cover"
+      ],
+      "tutorial_design_rule_ids": [
+        "vh_01_primary_subject_first_read",
+        "kr_02_setup_change_result"
+      ],
+      "user_benefit": "The buyer can understand the product in one sentence before judging the visuals.",
+      "visible_user_result": "A commercial brief, source database, workflow path, editable PPT preview, and review boundary are visible as one product path.",
+      "proof_standard": "The claim is credible only if the output is described as editable PPT and the review boundary remains visible.",
+      "public_surface_route": {
+        "on_canvas": [
+          "Source-bound editable PPT system",
+          "Commercial brief to editable deck",
+          "Reviewable product proof"
+        ],
+        "speaker_note_or_viewer": [
+          "The source contract also carries raw trace and review metadata.",
+          "Do not describe the product as image-only generation."
+        ]
+      }
+    },
+    {
+      "claim_id": "claim_input_boundary",
+      "claim_type": "source_boundary",
+      "public_claim": "The system starts from a brief and allowed source memory, not from a blank prompt.",
+      "product_capability_ids": [
+        "capability_input_layer",
+        "capability_understanding_layer"
+      ],
+      "product_logic_relation_ids": [
+        "logic_relation_2_57_input_to_understanding"
+      ],
+      "source_message_contract_ids": [
+        "message_contract_2_57_cover",
+        "message_contract_2_57_setup"
+      ],
+      "narrative_proof_ids": [
+        "narrative_proof_2_61_cover",
+        "narrative_proof_2_61_setup"
+      ],
+      "tutorial_design_rule_ids": [
+        "vh_04_crop_to_decision_detail",
+        "ws_05_reduce_background_noise"
+      ],
+      "user_benefit": "A reviewer can separate legitimate source-derived guidance from copied source visuals or generic prompt output.",
+      "visible_user_result": "The deck can show source pack, source boundary, and selected memory without exposing copied source surfaces.",
+      "proof_standard": "Only source records with usable derived signals can drive content or design decisions.",
+      "public_surface_route": {
+        "on_canvas": [
+          "Brief plus allowed source memory",
+          "No copied source surfaces",
+          "Selected memory before drawing"
+        ],
+        "speaker_note_or_viewer": [
+          "Source quality audit records decide which inputs are generator-ready.",
+          "Missing decomposition stays blocked from generation."
+        ]
+      }
+    },
+    {
+      "claim_id": "claim_content_compiler",
+      "claim_type": "content_mechanism",
+      "public_claim": "Source observations become product memory, message obligations, and proof objects before drawing.",
+      "product_capability_ids": [
+        "capability_understanding_layer",
+        "capability_repair_loop"
+      ],
+      "product_logic_relation_ids": [
+        "logic_relation_2_57_input_to_understanding",
+        "logic_relation_2_57_understanding_to_generation",
+        "logic_relation_2_57_verification_to_repair"
+      ],
+      "source_message_contract_ids": [
+        "message_contract_2_57_setup",
+        "message_contract_2_57_proof"
+      ],
+      "narrative_proof_ids": [
+        "narrative_proof_2_61_setup",
+        "narrative_proof_2_61_proof"
+      ],
+      "tutorial_design_rule_ids": [
+        "vh_05_labels_follow_visuals",
+        "ws_03_consolidate_labels",
+        "kr_01_one_idea_per_build"
+      ],
+      "user_benefit": "The team can explain why each product claim exists and what evidence it must carry.",
+      "visible_user_result": "A source-to-memory compiler stage with selected source pack, capability memory, and public proof object.",
+      "proof_standard": "The compiler must preserve reader questions, required terms, and proof routes without putting raw field lists on the slide.",
+      "public_surface_route": {
+        "on_canvas": [
+          "Source observations to product memory",
+          "Message obligations before drawing",
+          "Proof object selected before layout"
+        ],
+        "speaker_note_or_viewer": [
+          "Reader questions and raw trace obligations remain inspectable in the viewer.",
+          "Weak or generic claims become repair inputs."
+        ]
+      }
+    },
+    {
+      "claim_id": "claim_design_move_binding",
+      "claim_type": "design_mechanism",
+      "public_claim": "Tutorial principles become renderer decisions only after they are mapped to PPT actions.",
+      "product_capability_ids": [
+        "capability_generation_layer"
+      ],
+      "product_logic_relation_ids": [
+        "logic_relation_2_57_understanding_to_generation"
+      ],
+      "source_message_contract_ids": [
+        "message_contract_2_57_setup",
+        "message_contract_2_57_climax"
+      ],
+      "narrative_proof_ids": [
+        "narrative_proof_2_61_setup",
+        "narrative_proof_2_61_climax"
+      ],
+      "tutorial_design_rule_ids": [
+        "vh_01_primary_subject_first_read",
+        "ws_01_create_outer_breathing_room",
+        "kr_04_hold_visual_before_explanation",
+        "mp_05_motion_follows_causal_or_reading_flow"
+      ],
+      "user_benefit": "The deck can feel designed while remaining controlled by explicit renderer actions.",
+      "visible_user_result": "The viewer sees hierarchy, spacing, build rhythm, and causal motion as product behavior rather than decoration.",
+      "proof_standard": "Each design move must trace back to tutorial, visual target, and motion target ids from B2.",
+      "public_surface_route": {
+        "on_canvas": [
+          "Tutorial rule mapped to PPT action",
+          "Hierarchy, spacing, rhythm, and causal reading flow",
+          "Design move bound before rendering"
+        ],
+        "speaker_note_or_viewer": [
+          "The full renderer action list remains in the B2 artifact.",
+          "This graph does not start scene compiler geometry."
+        ]
+      }
+    },
+    {
+      "claim_id": "claim_native_ppt_output",
+      "claim_type": "output_mechanism",
+      "public_claim": "The output is editable native PPT, not a full-slide image pretending to be a deck.",
+      "product_capability_ids": [
+        "capability_generation_layer",
+        "capability_output_layer"
+      ],
+      "product_logic_relation_ids": [
+        "logic_relation_2_57_generation_to_output"
+      ],
+      "source_message_contract_ids": [
+        "message_contract_2_57_cover",
+        "message_contract_2_57_climax"
+      ],
+      "narrative_proof_ids": [
+        "narrative_proof_2_61_cover",
+        "narrative_proof_2_61_climax"
+      ],
+      "tutorial_design_rule_ids": [
+        "vh_03_z_order_guides_attention",
+        "mp_01_object_before_label",
+        "mp_04_pause_after_major_reveal"
+      ],
+      "user_benefit": "A team can inspect, edit, and hand off the generated deck instead of accepting a raster mockup.",
+      "visible_user_result": "An editable PPT preview owns the product moment and carries attached proof tags.",
+      "proof_standard": "The public claim must name editable PPT output and avoid implying the final deck is image-only.",
+      "public_surface_route": {
+        "on_canvas": [
+          "Editable native PPT output",
+          "Generated deck preview",
+          "Proof attached to the result"
+        ],
+        "speaker_note_or_viewer": [
+          "Native object and layout checks remain review artifacts.",
+          "Images may support atmosphere but cannot replace editable structure."
+        ]
+      }
+    },
+    {
+      "claim_id": "claim_inspectable_trust",
+      "claim_type": "trust_model",
+      "public_claim": "Trust comes from inspectable proof and bad-control boundaries, not from a nicer-looking slide.",
+      "product_capability_ids": [
+        "capability_comparison_layer",
+        "capability_verification_layer",
+        "capability_repair_loop"
+      ],
+      "product_logic_relation_ids": [
+        "logic_relation_2_57_generation_to_verification",
+        "logic_relation_2_57_comparison_to_verification",
+        "logic_relation_2_57_verification_to_repair"
+      ],
+      "source_message_contract_ids": [
+        "message_contract_2_57_contrast",
+        "message_contract_2_57_proof"
+      ],
+      "narrative_proof_ids": [
+        "narrative_proof_2_61_contrast",
+        "narrative_proof_2_61_proof"
+      ],
+      "tutorial_design_rule_ids": [
+        "kr_03_before_after_contrast",
+        "vh_02_remove_competing_frames",
+        "ws_02_delete_redundant_boxes"
+      ],
+      "user_benefit": "Reviewers can audit whether the workflow consumed the content layer and why a bad control fails.",
+      "visible_user_result": "A compact inspection board shows capability binding, contract match, content check, and bad-control failure.",
+      "proof_standard": "Raw proof fields must be preserved for review while public copy stays compact.",
+      "public_surface_route": {
+        "on_canvas": [
+          "Inspectable proof",
+          "Bad-control boundary",
+          "Compact proof board"
+        ],
+        "speaker_note_or_viewer": [
+          "Trace field, content workflow gate, reader question, and required term obligations remain inspectable off-canvas.",
+          "The bad control and full proof records are not public-surface copy."
+        ]
+      }
+    },
+    {
+      "claim_id": "claim_release_boundary",
+      "claim_type": "release_boundary",
+      "public_claim": "The next proof must be generated and reviewed before public release is claimed.",
+      "product_capability_ids": [
+        "capability_output_layer",
+        "capability_verification_layer",
+        "capability_repair_loop"
+      ],
+      "product_logic_relation_ids": [
+        "logic_relation_2_57_generation_to_output",
+        "logic_relation_2_57_generation_to_verification",
+        "logic_relation_2_57_verification_to_repair"
+      ],
+      "source_message_contract_ids": [
+        "message_contract_2_57_close"
+      ],
+      "narrative_proof_ids": [
+        "narrative_proof_2_61_close"
+      ],
+      "tutorial_design_rule_ids": [
+        "kr_02_setup_change_result",
+        "mp_03_stagger_dependencies",
+        "mp_04_pause_after_major_reveal"
+      ],
+      "user_benefit": "The team gets a credible handoff that separates content readiness from release readiness.",
+      "visible_user_result": "A release decision wall shows content layer, next generated proof, human review, source-boundary review, and blocked release.",
+      "proof_standard": "The graph can feed C2, but it cannot claim public readiness or start rendering.",
+      "public_surface_route": {
+        "on_canvas": [
+          "Next proof generated, not claimed",
+          "Human review and source-boundary review",
+          "Public release blocked"
+        ],
+        "speaker_note_or_viewer": [
+          "Run-specific content-layer and generated-proof terms stay in speaker notes or viewer trace.",
+          "The next generated run must consume this graph before native drawing."
+        ]
+      }
+    }
+  ],
+  "causal_edges": [
+    {
+      "edge_id": "edge_identity_to_input_boundary",
+      "from_claim_id": "claim_product_identity",
+      "to_claim_id": "claim_input_boundary",
+      "causal_relation": "A source-bound product identity requires a clear boundary between allowed source memory and copied source surfaces.",
+      "business_logic": "Without the boundary, the product looks like prompt creativity or source imitation rather than controlled generation.",
+      "user_value_delta": "The buyer can trust the starting point of the workflow.",
+      "proof_refs": [
+        "commercial_case.md",
+        "run2_73_source_quality_audit.json"
+      ]
+    },
+    {
+      "edge_id": "edge_input_boundary_to_content_compiler",
+      "from_claim_id": "claim_input_boundary",
+      "to_claim_id": "claim_content_compiler",
+      "causal_relation": "Allowed source memory is compiled into product claims, reader questions, and proof objects before drawing.",
+      "business_logic": "The deck can explain each claim because the claim exists before the renderer chooses visual structure.",
+      "user_value_delta": "The buyer sees a repeatable reasoning path instead of a finished slide with no provenance.",
+      "proof_refs": [
+        "logic_relation_2_57_input_to_understanding",
+        "message_contract_2_57_setup"
+      ]
+    },
+    {
+      "edge_id": "edge_content_compiler_to_design_move_binding",
+      "from_claim_id": "claim_content_compiler",
+      "to_claim_id": "claim_design_move_binding",
+      "causal_relation": "A product claim selects what must be emphasized; B2 design moves decide how PPT objects should express that emphasis.",
+      "business_logic": "The design layer cannot be free-form decoration; it must serve the product claim.",
+      "user_value_delta": "The viewer gets clearer hierarchy and less decorative noise.",
+      "proof_refs": [
+        "run2_73_tutorial_to_design_moves.json",
+        "vh_01_primary_subject_first_read"
+      ]
+    },
+    {
+      "edge_id": "edge_design_move_to_native_output",
+      "from_claim_id": "claim_design_move_binding",
+      "to_claim_id": "claim_native_ppt_output",
+      "causal_relation": "Mapped design moves are converted into native PPT structure instead of raster composition.",
+      "business_logic": "The product value appears only when the result remains editable and inspectable.",
+      "user_value_delta": "The team can reuse, inspect, and hand off the generated deck.",
+      "proof_refs": [
+        "logic_relation_2_57_generation_to_output",
+        "message_contract_2_57_climax"
+      ]
+    },
+    {
+      "edge_id": "edge_native_output_to_inspectable_trust",
+      "from_claim_id": "claim_native_ppt_output",
+      "to_claim_id": "claim_inspectable_trust",
+      "causal_relation": "Native output is only credible when proof, comparison, and verification records remain attached.",
+      "business_logic": "A nice deck without inspectable proof cannot demonstrate product advantage.",
+      "user_value_delta": "Reviewers can decide whether the product actually used the workflow.",
+      "proof_refs": [
+        "logic_relation_2_57_generation_to_verification",
+        "logic_relation_2_57_comparison_to_verification"
+      ]
+    },
+    {
+      "edge_id": "edge_inspectable_trust_to_release_boundary",
+      "from_claim_id": "claim_inspectable_trust",
+      "to_claim_id": "claim_release_boundary",
+      "causal_relation": "Failed or incomplete verification becomes the next content and render contract rather than a public claim.",
+      "business_logic": "The release boundary protects credibility while preserving a clear next action.",
+      "user_value_delta": "The team knows what proof must be generated next before publication.",
+      "proof_refs": [
+        "logic_relation_2_57_verification_to_repair",
+        "message_contract_2_57_close"
+      ]
+    }
+  ],
+  "trust_model": {
+    "why_credible": [
+      "The product starts from a commercial case and allowed source memory rather than a blank prompt.",
+      "Capability ids and logic relation ids preserve the product mechanism behind each claim.",
+      "Narrative proof ids preserve public proof objects without putting raw trace on the slide.",
+      "B2 tutorial-to-renderer mappings keep design moves executable instead of ornamental.",
+      "The source audit blocks weak source records from direct generation."
+    ],
+    "failure_boundaries": [
+      "Do not claim source evidence that lacks extracted design signal.",
+      "Do not render copied source visuals, source brands, or full transcripts.",
+      "Do not treat this graph as a slide story or scene compiler.",
+      "Do not claim public release from content logic alone."
+    ],
+    "release_truth": "public release remains blocked until review passes"
+  },
+  "user_result_model": {
+    "what_user_sees": [
+      "a real brief entering the system",
+      "allowed source memory becoming product claims",
+      "tutorial principles binding to PPT actions",
+      "editable PPT output with attached proof",
+      "a release gate that names the next proof"
+    ],
+    "what_user_can_do": [
+      "inspect why a claim exists",
+      "inspect what proof backs it",
+      "see what should be visible on the public slide",
+      "route raw proof details to notes or viewer",
+      "decide whether the next renderer run is ready"
+    ],
+    "business_value": "The deck story can now sell a controllable product workflow rather than a sequence of attractive but hollow slides."
+  },
+  "traceability_summary": {
+    "claim_node_count": 7,
+    "causal_edge_count": 6,
+    "source_input_count": 6,
+    "capability_source": "run2_57_product_capability_memory.json",
+    "message_contract_source": "run2_57_slide_message_contracts.json",
+    "narrative_proof_source": "run2_61_narrative_proof_dataset.json",
+    "design_move_source": "run2_73_tutorial_to_design_moves.json"
+  },
+  "next_required_action": "run2_74_c2_create_slide_story_from_product_claim_graph"
+}

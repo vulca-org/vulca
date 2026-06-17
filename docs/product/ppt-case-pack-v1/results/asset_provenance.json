@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "status": "generated-no-external-assets",
+  "assets": [],
+  "notes": "The Vulca case-pack deck uses artifact-tool native shapes and editable text only. No external images, generated bitmap assets, copied reference visuals, or embedded SVG/image assets were used."
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "rerun": {
+    "status": "completed",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-6-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "delivery_gate": "internal-demo-ok-public-blocked",
+    "best_internal_arm": "run2_6_full_skill",
+    "best_internal_arm_verdict": "data_workflow_policy_visible_but_not_public_release_ready"
+  },
+  "data_workflow_learning": {
+    "commercial_usecase_id": "present_for_run2_6_full_skill_and_bad_aesthetic_memory_only",
+    "aesthetic_benchmark_ids": "present_for_run2_6_full_skill_only",
+    "theme_policy_id": "present_for_run2_6_full_skill_only",
+    "typography_system_id": "present_for_run2_6_full_skill_only",
+    "spacing_token_set_id": "present_for_run2_6_full_skill_only",
+    "workflow_decision_ids": "present_for_run2_6_full_skill_only",
+    "source_brand_sanitization": "recorded_per_slide",
+    "control_boundary": "prompt_only_and_run1_5_forbid_commercial_usecase_bank_aesthetic_benchmark_bank_and_workflow_decision_policy",
+    "negative_control": "bad_aesthetic_memory_keeps_commercial_usecase_bank_but_forbids_aesthetic_benchmark_bank_and_workflow_decision_policy",
+    "visual_quality_boundary": "still_internal_demo_grade"
+  },
+  "qa_summary": {
+    "prompt_only_layout_errors": 0,
+    "prompt_only_layout_warnings": 0,
+    "run1_5_layout_errors": 0,
+    "run1_5_layout_warnings": 0,
+    "run2_6_full_layout_errors": 0,
+    "run2_6_full_layout_warnings": 0,
+    "bad_aesthetic_memory_layout_errors": 0,
+    "bad_aesthetic_memory_layout_warnings": 0,
+    "prompt_only_pptx_bytes": 35204,
+    "run1_5_pptx_bytes": 35338,
+    "run2_6_full_pptx_bytes": 38096,
+    "bad_aesthetic_memory_pptx_bytes": 36084,
+    "generated_outputs_committed": false,
+    "gemini_contact_sheet_reviews": [
+      ".gemini-agent/artifacts/2026-06-01T223404645Z-artifacts.json"
+    ]
+  },
+  "next_required_action": "deepen_same_five_layers_with_visual_quality_not_run3",
+  "release_gate": "public_blocked_until_native_render_human_approval_source_brand_sanitization_and_public_demo_visual_pass"
+}

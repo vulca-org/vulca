@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "status": "run2_7_design_memory_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "memory_type": "deterministic_serializable_rules",
+  "qa_gates": [
+    "Confirm selected memories trace back to Run 2.7 source record ids and the commercial usecase.",
+    "Confirm contact sheet review can see the selected typography, spacing, composition, rhythm, and sanitization rules."
+  ],
+  "memories": [
+    {
+      "id": "memory_typography_editorial_launch",
+      "source_record_ids": [
+        "mm_2_7_typography_hierarchy_tutorial",
+        "mm_2_7_design_system_launch_case"
+      ],
+      "applicable_usecases": ["usecase_ai_design_to_production_platform_launch"],
+      "applicable_slide_roles": ["cover", "setup", "contrast", "proof"],
+      "typography_rules": [
+        "Use one native editable headline as the first attention target.",
+        "Use a deterministic hierarchy ladder for headline, proof label, note, and trace caption.",
+        "Keep launch copy short enough to read from the contact sheet."
+      ],
+      "spacing_rules": [
+        "Pair the largest type role with a visibly larger whitespace field.",
+        "Keep trace captions separated from the primary launch claim."
+      ],
+      "composition_rules": [
+        "Do not let setup or proof become equal-weight text panels.",
+        "Anchor each slide with one dominant native object or headline zone."
+      ],
+      "rhythm_rules": [
+        "Typography scale should rise from setup into proof and simplify again on close."
+      ],
+      "native_ppt_generation_requirements": [
+        "Use native editable PPT text boxes for every title and label.",
+        "Trace the selected typography memory id in each generated slide."
+      ],
+      "forbidden_patterns": [
+        "report-like prose blocks",
+        "dashboard title strips",
+        "equal card grids"
+      ],
+      "qa_probes": [
+        "The contact sheet should show one clear typographic hierarchy per slide."
+      ],
+      "release_boundary": "public_blocked_until_native_render_contact_sheet_trace_review_and_human_approval"
+    },
+    {
+      "id": "memory_spacing_climax_proof_grid",
+      "source_record_ids": [
+        "mm_2_7_spacing_editorial_grid_tutorial",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "applicable_usecases": ["usecase_ai_design_to_production_platform_launch"],
+      "applicable_slide_roles": ["contrast", "proof", "climax"],
+      "typography_rules": [
+        "Use spacing to make headline, proof object, and trace note read as distinct levels."
+      ],
+      "spacing_rules": [
+        "Use large outer margins, visible gutters, and one dominant proof zone.",
+        "Increase whitespace before the climax so scale change is visible."
+      ],
+      "composition_rules": [
+        "Keep proof grids editorial, asymmetric, and visibly prioritized.",
+        "Avoid equal card rows unless one proof object is clearly dominant."
+      ],
+      "rhythm_rules": [
+        "Use tighter proof spacing after setup, then open the climax canvas."
+      ],
+      "native_ppt_generation_requirements": [
+        "Use native editable PPT coordinates, shape groups, and text boxes.",
+        "Trace spacing memory ids and geometry decisions for QA."
+      ],
+      "forbidden_patterns": [
+        "dashboard grids",
+        "equal card layouts",
+        "full-slide raster spacing references"
+      ],
+      "qa_probes": [
+        "The contact sheet should show visible margins, gutters, and a dominant proof zone."
+      ],
+      "release_boundary": "public_blocked_until_native_render_contact_sheet_trace_review_and_human_approval"
+    },
+    {
+      "id": "memory_composition_single_object_climax",
+      "source_record_ids": [
+        "mm_2_7_video_climax_single_object",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "applicable_usecases": ["usecase_ai_design_to_production_platform_launch"],
+      "applicable_slide_roles": ["climax"],
+      "typography_rules": [
+        "Use one short native label near the climax object and route explanation away from the canvas."
+      ],
+      "spacing_rules": [
+        "Leave enough whitespace around the climax object for its scale to be visible."
+      ],
+      "composition_rules": [
+        "Allocate 40-55% of the canvas to one native proof object.",
+        "The one native proof object must be original, editable, and visually stronger than all supporting labels."
+      ],
+      "rhythm_rules": [
+        "The climax is the largest visual beat after proof, not another setup or grid slide."
+      ],
+      "native_ppt_generation_requirements": [
+        "Generate the proof object with native editable PPT shapes, connectors, and labels.",
+        "Trace the composition memory id, source record ids, and quality gate."
+      ],
+      "forbidden_patterns": [
+        "full-slide raster",
+        "source brand imitation",
+        "dashboard proof wall"
+      ],
+      "qa_probes": [
+        "The contact sheet should show the climax object as the largest supported visual decision."
+      ],
+      "release_boundary": "public_blocked_until_native_render_contact_sheet_trace_review_and_human_approval"
+    },
+    {
+      "id": "memory_rhythm_six_slide_launch",
+      "source_record_ids": [
+        "mm_2_7_motion_demo_pacing_reference",
+        "mm_2_7_design_system_launch_case"
+      ],
+      "applicable_usecases": ["usecase_ai_design_to_production_platform_launch"],
+      "applicable_slide_roles": ["cover", "setup", "contrast", "proof", "climax", "close"],
+      "typography_rules": [
+        "Let typography density rise through proof and simplify at the close."
+      ],
+      "spacing_rules": [
+        "Use rhythm-aware whitespace: sparse cover, structured setup, tighter proof, open climax, simple close."
+      ],
+      "composition_rules": [
+        "Each rhythm role needs a distinct native composition, not repeated report panels."
+      ],
+      "rhythm_rules": [
+        "Preserve cover, setup, contrast, proof, climax, close in that order.",
+        "Do not add a Run 3 stage or extra relief slide for Run 2.7."
+      ],
+      "native_ppt_generation_requirements": [
+        "Generate each rhythm role with native editable PPT objects.",
+        "Trace rhythm memory ids and slide role decisions in the manifest."
+      ],
+      "forbidden_patterns": [
+        "report appendix rhythm",
+        "dashboard monotony",
+        "equal card repetition"
+      ],
+      "qa_probes": [
+        "The contact sheet should make the six-slide rhythm visible without reading body text."
+      ],
+      "release_boundary": "public_blocked_until_native_render_contact_sheet_trace_review_and_human_approval"
+    },
+    {
+      "id": "memory_source_brand_sanitization_v2",
+      "source_record_ids": [
+        "mm_2_7_product_surface_interaction_reference",
+        "mm_2_7_spacing_editorial_grid_tutorial"
+      ],
+      "applicable_usecases": ["usecase_ai_design_to_production_platform_launch"],
+      "applicable_slide_roles": ["cover", "setup", "contrast", "proof", "climax", "close"],
+      "typography_rules": [
+        "Use original wording and neutral product-system labels instead of source phrasing."
+      ],
+      "spacing_rules": [
+        "Change source-like spacing patterns into an original editorial layout before generation."
+      ],
+      "composition_rules": [
+        "Represent product surfaces as original native abstractions, not copied UI frames."
+      ],
+      "rhythm_rules": [
+        "Source sanitization applies before every slide role is generated."
+      ],
+      "native_ppt_generation_requirements": [
+        "Use native editable PPT objects with trace fields proving source-brand sanitization.",
+        "Record source record ids and design memory ids for each slide."
+      ],
+      "forbidden_patterns": [
+        "source brand mimicry",
+        "copied source layouts",
+        "full-slide raster source treatment"
+      ],
+      "qa_probes": [
+        "The contact sheet should show no source-brand resemblance while retaining derived design intent."
+      ],
+      "release_boundary": "public_blocked_until_native_render_contact_sheet_trace_review_and_human_approval"
+    }
+  ]
+}

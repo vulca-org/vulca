@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "status": "run2_4_video_demo_beat_map_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "storage_policy": {
+    "default": "derived_observations_only",
+    "raw_media": "forbidden",
+    "transcripts": "short_paraphrased_anchor_only",
+    "copyright_boundary": "Store source identity, locator ranges, short beat observations, and derived presentation rules only. Do not store source video, frames, audio, full transcript text, screenshots, layouts, files, or brand marks."
+  },
+  "beats": [
+    {
+      "id": "beat_opening_scale_reset",
+      "source_id": "schema_2025_keynote_video",
+      "source_record_ids": ["mm_video_audio_keynote_rhythm"],
+      "anchor_ids": ["video_opening_scale_shift", "audio_pause_density_control", "transcript_claim_compression"],
+      "video_card_ids": ["video_keynote_rhythm"],
+      "locator": "00:00-00:45 opening beat",
+      "observed_demo_move": "The demonstration opens with one wide visual field and enough attention space for the claim to land before proof density appears.",
+      "derived_presentation_rule": "The deck should open with a sparse native cover field, a single editable headline, and no explanatory panel row until the audience understands the arena.",
+      "motion_role": "attention_reset",
+      "reveal_sequence": [
+        "native wide field establishes orientation",
+        "native editable headline appears before support text",
+        "native proof marker stays absent until the next beat"
+      ],
+      "pacing_signal": "Hold the first beat visually sparse; do not spend the opening on mechanism detail.",
+      "do_not_store": ["source video", "video frames", "audio files", "full transcript text"],
+      "qa_probe": "From a static contact sheet, slide 1 should still read as an attention reset: one dominant field, low word count, and no proof grid.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "beat_before_after_transformation",
+      "source_id": "duarte_slide_design_course",
+      "source_record_ids": [
+        "mm_duarte_slide_design_course",
+        "mm_duarte_visual_storytelling_webinar",
+        "mm_udel_design_principles_video"
+      ],
+      "anchor_ids": [
+        "duarte_course_video_modules",
+        "duarte_storytelling_data_kill_rest",
+        "udel_video_action_in_practice"
+      ],
+      "video_card_ids": ["video_transition_pacing"],
+      "locator": "course module transformation beat / 05:30-07:00 mode shift",
+      "observed_demo_move": "Teaching material is strongest when it visibly changes a weak input into a designed output instead of describing design quality in abstract terms.",
+      "derived_presentation_rule": "The contrast slide must use native before and after mini-previews, where the after state enlarges one proof object and deletes or routes excess labels.",
+      "motion_role": "before_after_reveal",
+      "reveal_sequence": [
+        "native before thumbnail appears as a flat report state",
+        "native after thumbnail reveals the enlarged focal object",
+        "native delta label explains what changed"
+      ],
+      "pacing_signal": "Use reveal order to make transformation legible before adding supporting evidence.",
+      "do_not_store": ["course video", "video frames", "audio files", "full transcript text"],
+      "qa_probe": "The reviewer should identify the transformation direction without reading body text.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "beat_proof_reveal_cadence",
+      "source_id": "udel_design_principles_video",
+      "source_record_ids": [
+        "mm_video_audio_keynote_rhythm",
+        "mm_duarte_slide_design_course",
+        "mm_udel_design_principles_video"
+      ],
+      "anchor_ids": [
+        "transcript_claim_compression",
+        "duarte_course_powerpoint_tooling",
+        "udel_audio_stepwise_teaching",
+        "udel_transcript_timecode_boundary"
+      ],
+      "video_card_ids": ["video_keynote_rhythm", "video_transition_pacing"],
+      "locator": "10:00-12:00 proof cadence / 7:19 tutorial step",
+      "observed_demo_move": "Proof becomes easier to follow when each added layer has a clear entrance and the headline carries the meaning instead of a transcript-like paragraph.",
+      "derived_presentation_rule": "The proof slide should build from compressed native headline to proof object to small route marker, with evidence detail routed to trace or notes.",
+      "motion_role": "proof_build",
+      "reveal_sequence": [
+        "native headline states the proof claim",
+        "native proof object reveals after the claim",
+        "native route marker shows where detail was moved"
+      ],
+      "pacing_signal": "Let the proof object expand while transcript-like explanation contracts.",
+      "do_not_store": ["tutorial video", "video frames", "audio files", "full transcript text"],
+      "qa_probe": "The proof slide should show a build path, not a paragraph pasted into a slide body.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "beat_climax_scale_up",
+      "source_id": "google_cloud_next_keynote",
+      "source_record_ids": [
+        "mm_case_public_keynote_reference",
+        "mm_duarte_visual_storytelling_webinar",
+        "mm_video_audio_keynote_rhythm"
+      ],
+      "anchor_ids": ["case_large_scale_climax", "duarte_webinar_longform_pacing", "video_opening_scale_shift"],
+      "video_card_ids": ["video_keynote_rhythm", "video_transition_pacing"],
+      "locator": "13:00-15:00 outcome scale beat",
+      "observed_demo_move": "The strongest public demo moment breaks from setup density by making the outcome object visibly larger than previous proof surfaces.",
+      "derived_presentation_rule": "The climax slide must scale one native outcome object to dominate the canvas and reduce minor labels rather than repeat the prior proof grid.",
+      "motion_role": "scale_emphasis",
+      "reveal_sequence": [
+        "native support labels fade into subordinate role",
+        "native outcome object scales up as the main visual",
+        "native comparison label locks the result"
+      ],
+      "pacing_signal": "Increase object scale and reduce text at the climax.",
+      "do_not_store": ["keynote video", "video frames", "audio files", "full transcript text"],
+      "qa_probe": "The climax should be visible as the largest object in the contact sheet.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "beat_close_release_handoff",
+      "source_id": "google_cloud_next_keynote",
+      "source_record_ids": [
+        "mm_case_public_keynote_reference",
+        "mm_interaction_presentation_product_reference",
+        "mm_duarte_visual_storytelling_webinar"
+      ],
+      "anchor_ids": [
+        "interaction_audience_handoff",
+        "interaction_controls_as_slide_system",
+        "duarte_storytelling_action_motivation"
+      ],
+      "video_card_ids": ["video_transition_pacing"],
+      "locator": "close handoff beat / final simplification",
+      "observed_demo_move": "A public presentation close should simplify and hand the audience to a decision rather than add a final proof table.",
+      "derived_presentation_rule": "The close slide must reveal a native public-blocked gate and one decision handoff, with supporting detail kept outside the main visual field.",
+      "motion_role": "release_handoff",
+      "reveal_sequence": [
+        "native outcome state remains visible",
+        "native public-blocked gate reveals as the decision object",
+        "native handoff line closes the sequence"
+      ],
+      "pacing_signal": "Use visual relief after the climax; do not add new dense evidence.",
+      "do_not_store": ["source video", "video frames", "audio files", "full transcript text"],
+      "qa_probe": "The close should look like a handoff gate, not an appendix or report status page.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    }
+  ],
+  "qa_gates": [
+    "each beat references known multimodal records, anchors, and video cards",
+    "each beat stores derived observation and presentation rule only",
+    "each beat maps to one motion role",
+    "raw media, copied frames, audio, full transcript text, and source files remain forbidden",
+    "public release remains blocked until render, provenance, and human approval"
+  ]
+}

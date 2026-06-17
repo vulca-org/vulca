@@ -1,0 +1,355 @@
+{
+  "schema_version": "ppt_run2_visual_module_quality_audit.v1",
+  "run_id": "2.26",
+  "status": "run2_26_visual_module_quality_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.25",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "issue_categories": [
+    "layout_geometry",
+    "content_density",
+    "visual_evidence_visibility",
+    "composition_hierarchy",
+    "climax_impact"
+  ],
+  "input_chain": {
+    "run2_25_result": "docs/product/ppt-run2-data-skill-quality/results/run2_25_single_usecase_rerun_result.json",
+    "run2_25_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-25-full-vulca/trace_manifest.json",
+    "run2_25_full_layout_dir": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-25-full-vulca/layout/final",
+    "run2_25_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-25-full-vulca/preview/contact-sheet.png",
+    "run2_25_four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-25-four-arm-contact-sheet.png"
+  },
+  "source_inventory": {
+    "full_arm_id": "run2_25_full_single_usecase_content_visual",
+    "full_arm_slide_count": 6,
+    "layout_files_audited": 6,
+    "content_surface_roles": [
+      "setup",
+      "contrast",
+      "proof",
+      "close"
+    ]
+  },
+  "no_new_deck_proof": {
+    "presentations_dir": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations",
+    "forbidden_run2_26_output_glob": "*2-26*",
+    "matched_run2_26_outputs": [],
+    "new_pptx_created": false,
+    "status": "pass"
+  },
+  "quality_summary": {
+    "module_quality_gate": "pass_internal_only",
+    "public_release_gate": "blocked",
+    "roles_with_visible_layout_defects": [],
+    "roles_with_compressed_proof_surface": [
+      "setup",
+      "contrast",
+      "close"
+    ],
+    "top_next_module_to_thicken": "drawRun225ContentEvidenceSurface",
+    "reason": "Run 2.25 no longer has crushed text geometry, but content evidence surfaces still compress proof points in compact/medium layouts; Run 2.27 should thicken that module before rerun."
+  },
+  "role_records": [
+    {
+      "slide_id": "slide_01",
+      "role": "cover",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-25-full-vulca/layout/final/slide-01.layout.json",
+      "module_ids": [
+        "drawRun225LaunchField",
+        "drawRun225SelectedRouteMap"
+      ],
+      "geometry": {
+        "text_box_count": 19,
+        "min_text_width": 114.0,
+        "max_line_count": 2,
+        "crushed_text_box_count": 0,
+        "negative_or_tiny_text_box_count": 0,
+        "crushed_text_boxes": []
+      },
+      "content_density": {
+        "trace_business_proof_point_count": 3,
+        "visible_business_proof_point_count": 0,
+        "compressed_proof_surface": false,
+        "visual_evidence_slot_count": 2,
+        "visible_words": 40
+      },
+      "visual_evidence_visibility": {
+        "trace_slots_present": true,
+        "trace_asset_ids_present": true,
+        "native_visual_evidence_objects": 2,
+        "native_objects_present": true
+      },
+      "composition_hierarchy": {
+        "hero_object_canvas_share": 0.076,
+        "proof_objects": 1,
+        "workflow_objects": 4,
+        "content_cards": 0,
+        "surface_module_present": false
+      },
+      "climax_impact": {
+        "applies": false,
+        "hero_stage_pass": true
+      },
+      "issue_categories": [],
+      "status": "pass_internal_only",
+      "recommended_next_action": "keep module, continue public-blocked human review"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "setup",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-25-full-vulca/layout/final/slide-02.layout.json",
+      "module_ids": [
+        "drawRun225LaunchField",
+        "drawRun225SelectedRouteMap",
+        "drawRun225ContentEvidenceSurface"
+      ],
+      "geometry": {
+        "text_box_count": 22,
+        "min_text_width": 114.0,
+        "max_line_count": 3,
+        "crushed_text_box_count": 0,
+        "negative_or_tiny_text_box_count": 0,
+        "crushed_text_boxes": []
+      },
+      "content_density": {
+        "trace_business_proof_point_count": 3,
+        "visible_business_proof_point_count": 1,
+        "compressed_proof_surface": true,
+        "visual_evidence_slot_count": 2,
+        "visible_words": 63
+      },
+      "visual_evidence_visibility": {
+        "trace_slots_present": true,
+        "trace_asset_ids_present": true,
+        "native_visual_evidence_objects": 2,
+        "native_objects_present": true
+      },
+      "composition_hierarchy": {
+        "hero_object_canvas_share": 0.123,
+        "proof_objects": 3,
+        "workflow_objects": 4,
+        "content_cards": 3,
+        "surface_module_present": true
+      },
+      "climax_impact": {
+        "applies": false,
+        "hero_stage_pass": true
+      },
+      "issue_categories": [
+        "content_density"
+      ],
+      "status": "needs_next_module_thickening",
+      "recommended_next_action": "thicken drawRun225ContentEvidenceSurface so compressed proof can become readable native evidence"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "contrast",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-25-full-vulca/layout/final/slide-03.layout.json",
+      "module_ids": [
+        "drawRun225ContentEvidenceSurface",
+        "drawRun225SelectedRouteMap"
+      ],
+      "geometry": {
+        "text_box_count": 20,
+        "min_text_width": 114.0,
+        "max_line_count": 4,
+        "crushed_text_box_count": 0,
+        "negative_or_tiny_text_box_count": 0,
+        "crushed_text_boxes": []
+      },
+      "content_density": {
+        "trace_business_proof_point_count": 3,
+        "visible_business_proof_point_count": 2,
+        "compressed_proof_surface": true,
+        "visual_evidence_slot_count": 2,
+        "visible_words": 61
+      },
+      "visual_evidence_visibility": {
+        "trace_slots_present": true,
+        "trace_asset_ids_present": true,
+        "native_visual_evidence_objects": 2,
+        "native_objects_present": true
+      },
+      "composition_hierarchy": {
+        "hero_object_canvas_share": 0.274,
+        "proof_objects": 3,
+        "workflow_objects": 4,
+        "content_cards": 3,
+        "surface_module_present": true
+      },
+      "climax_impact": {
+        "applies": false,
+        "hero_stage_pass": true
+      },
+      "issue_categories": [
+        "content_density"
+      ],
+      "status": "needs_next_module_thickening",
+      "recommended_next_action": "thicken drawRun225ContentEvidenceSurface so compressed proof can become readable native evidence"
+    },
+    {
+      "slide_id": "slide_04",
+      "role": "proof",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-25-full-vulca/layout/final/slide-04.layout.json",
+      "module_ids": [
+        "drawRun225ContentEvidenceSurface",
+        "drawRun225SelectedRouteMap"
+      ],
+      "geometry": {
+        "text_box_count": 21,
+        "min_text_width": 114.0,
+        "max_line_count": 3,
+        "crushed_text_box_count": 0,
+        "negative_or_tiny_text_box_count": 0,
+        "crushed_text_boxes": []
+      },
+      "content_density": {
+        "trace_business_proof_point_count": 3,
+        "visible_business_proof_point_count": 3,
+        "compressed_proof_surface": false,
+        "visual_evidence_slot_count": 2,
+        "visible_words": 77
+      },
+      "visual_evidence_visibility": {
+        "trace_slots_present": true,
+        "trace_asset_ids_present": true,
+        "native_visual_evidence_objects": 2,
+        "native_objects_present": true
+      },
+      "composition_hierarchy": {
+        "hero_object_canvas_share": 0.371,
+        "proof_objects": 3,
+        "workflow_objects": 4,
+        "content_cards": 3,
+        "surface_module_present": true
+      },
+      "climax_impact": {
+        "applies": false,
+        "hero_stage_pass": true
+      },
+      "issue_categories": [],
+      "status": "pass_internal_only",
+      "recommended_next_action": "keep module, continue public-blocked human review"
+    },
+    {
+      "slide_id": "slide_05",
+      "role": "climax",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-25-full-vulca/layout/final/slide-05.layout.json",
+      "module_ids": [
+        "drawRun225ClimaxProofObject"
+      ],
+      "geometry": {
+        "text_box_count": 12,
+        "min_text_width": 114.0,
+        "max_line_count": 3,
+        "crushed_text_box_count": 0,
+        "negative_or_tiny_text_box_count": 0,
+        "crushed_text_boxes": []
+      },
+      "content_density": {
+        "trace_business_proof_point_count": 3,
+        "visible_business_proof_point_count": 1,
+        "compressed_proof_surface": false,
+        "visual_evidence_slot_count": 2,
+        "visible_words": 32
+      },
+      "visual_evidence_visibility": {
+        "trace_slots_present": true,
+        "trace_asset_ids_present": true,
+        "native_visual_evidence_objects": 2,
+        "native_objects_present": true
+      },
+      "composition_hierarchy": {
+        "hero_object_canvas_share": 0.826,
+        "proof_objects": 1,
+        "workflow_objects": 0,
+        "content_cards": 0,
+        "surface_module_present": false
+      },
+      "climax_impact": {
+        "applies": true,
+        "hero_stage_pass": true
+      },
+      "issue_categories": [],
+      "status": "pass_internal_only",
+      "recommended_next_action": "keep module, continue public-blocked human review"
+    },
+    {
+      "slide_id": "slide_06",
+      "role": "close",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-25-full-vulca/layout/final/slide-06.layout.json",
+      "module_ids": [
+        "drawRun225LaunchField",
+        "drawRun225ContentEvidenceSurface"
+      ],
+      "geometry": {
+        "text_box_count": 16,
+        "min_text_width": 114.0,
+        "max_line_count": 2,
+        "crushed_text_box_count": 0,
+        "negative_or_tiny_text_box_count": 0,
+        "crushed_text_boxes": []
+      },
+      "content_density": {
+        "trace_business_proof_point_count": 3,
+        "visible_business_proof_point_count": 1,
+        "compressed_proof_surface": true,
+        "visual_evidence_slot_count": 2,
+        "visible_words": 65
+      },
+      "visual_evidence_visibility": {
+        "trace_slots_present": true,
+        "trace_asset_ids_present": true,
+        "native_visual_evidence_objects": 4,
+        "native_objects_present": true
+      },
+      "composition_hierarchy": {
+        "hero_object_canvas_share": 0.123,
+        "proof_objects": 4,
+        "workflow_objects": 0,
+        "content_cards": 3,
+        "surface_module_present": true
+      },
+      "climax_impact": {
+        "applies": false,
+        "hero_stage_pass": true
+      },
+      "issue_categories": [
+        "content_density"
+      ],
+      "status": "needs_next_module_thickening",
+      "recommended_next_action": "thicken drawRun225ContentEvidenceSurface so compressed proof can become readable native evidence"
+    }
+  ],
+  "module_recommendations": [
+    {
+      "module_id": "drawRun225ContentEvidenceSurface",
+      "priority": 1,
+      "problem": "compact and medium surfaces preserve geometry by compressing proof points, which weakens data thickness at first read",
+      "required_next_delta": "turn proof points into readable native evidence rows or staged product-surface panels without clipped text",
+      "affected_roles": [
+        "setup",
+        "contrast",
+        "close"
+      ]
+    },
+    {
+      "module_id": "drawRun225ClimaxProofObject",
+      "priority": 2,
+      "problem": "climax passes hero-share gate but remains an editable proof object rather than a public-video-grade visual moment",
+      "required_next_delta": "after surface thickening, deepen climax editorial composition and motion plan",
+      "affected_roles": [
+        "climax"
+      ]
+    }
+  ],
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "next_required_action": "thicken_drawRun225ContentEvidenceSurface_before_run2_27_rerun"
+}

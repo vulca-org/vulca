@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "run_id": "2.16",
+  "rerun": {
+    "status": "completed",
+    "best_internal_arm": "run2_16_full_skill",
+    "best_internal_arm_verdict": "selector_gate_matrix_executed_before_native_ppt_generation",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-16-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html"
+  },
+  "input_chain": {
+    "usecase": "docs/product/ppt-run2-data-skill-quality/commercial_case.md",
+    "selector_sources": "docs/product/ppt-run2-data-skill-quality/run2_15_layout_selector_sources.json",
+    "selector_memory": "docs/product/ppt-run2-data-skill-quality/run2_15_layout_module_memory.json",
+    "selector_gate_matrix": "docs/product/ppt-run2-data-skill-quality/run2_15_layout_selector_gate_matrix.json",
+    "aesthetic_shell_sources": "docs/product/ppt-run2-data-skill-quality/run2_10_visual_system_sources.json",
+    "aesthetic_shell_memory": "docs/product/ppt-run2-data-skill-quality/run2_10_visual_system_memory.json",
+    "aesthetic_shell_gate": "docs/product/ppt-run2-data-skill-quality/run2_10_visual_system_gate_matrix.json",
+    "generator": "scripts/generate_ppt_run2_16_selector_rerun_arms.mjs",
+    "viewer": "scripts/build_ppt_run_html_viewer.py"
+  },
+  "actual_full_arm_modules_by_role": {
+    "cover": ["drawRun216EditorialCoverField", "drawRun216BeforeAfterRoute"],
+    "setup": ["drawRun216ProductTheaterStage", "drawRun216BeforeAfterRoute"],
+    "contrast": ["drawRun216EditorialCoverField", "drawRun216BeforeAfterRoute"],
+    "proof": ["drawRun216ProductTheaterStage", "drawRun216DenseEvidenceCompression"],
+    "climax": ["drawRun216MetricRevealStage", "drawRun216QuietReleaseHandoff"],
+    "close": ["drawRun216EditorialCoverField", "drawRun216QuietReleaseHandoff"]
+  },
+  "control_boundary": {
+    "prompt_only": "commercial_case_only; forbids Run 2.15 selector sources, layout module memory, selector gate matrix, Run 2.10 aesthetic shell inputs, skill workflow, and trace contract",
+    "run1_5_skill": "commercial_case_plus_run1_5_only; forbids Run 2.15 selector sources, layout module memory, selector gate matrix, Run 2.10 aesthetic shell inputs, skill workflow, and trace contract",
+    "bad_selector_memory": "selector_sources_without_module_memory_or_gate_matrix; allows selector source observations but forbids Run 2.15 layout module memory and selector gate matrix"
+  },
+  "selector_learning": [
+    "run2_15_layout_selector_sources.json now drives the full-arm selector source trace.",
+    "run2_15_layout_module_memory.json now provides selectable layout module ids before native PPT code generation.",
+    "run2_15_layout_selector_gate_matrix.json now writes per-slide selector gate ids and selector probes into trace_manifest.json.",
+    "selector_gate_matrix_executed_before_native_ppt_generation is recorded by the full arm.",
+    "bad_selector_memory proves selector sources alone are not allowed to claim layout module memory or gate execution."
+  ],
+  "qa_summary": {
+    "trace_truthfulness_guard": "passed: full arm trace records Run 2.15 selected module ids, selector gate ids, and actual native Run 2.16 module calls",
+    "arm_isolation_guard": "passed",
+    "layout_budget_guard": "passed for all Run 2.16 full-arm slides",
+    "case_pack_validator": "passed with --profile run2",
+    "delivery_validator": "passed structural delivery QA for all four arms; native/cross-platform render remains unverified",
+    "html_viewer_check": "passed: latestRunId is 2.16, viewer registers prompt-only, Run 1.5, full selector skill, and bad selector-memory arms; Data / Skill still shows Run 2.15 selector artifacts",
+    "gemini_artifact_review": "passed with caveats: Gemini judged Run 2.16 full as visibly more editorial and polished than controls, and judged bad_selector_memory as weaker/crowded; it flagged contact-sheet labeling ambiguity and full-series readability limits"
+  },
+  "not_public_ready_reasons": [
+    "The selector now drives the generator, but visual quality still needs human review against public-video-grade presentation standards.",
+    "No human release approval has been recorded.",
+    "Native PowerPoint, Keynote, or Google Slides render inspection has not been completed.",
+    "The public-demo product surface still uses native abstract product-theater shapes rather than real sanitized product/demo media."
+  ],
+  "next_required_action": "review Run 2.16 visually, compare against Run 2.14 and the bad selector control, then decide whether to deepen selector modules or repair visual execution within the same five-layer loop; do not advance to Run 3.0 yet."
+}

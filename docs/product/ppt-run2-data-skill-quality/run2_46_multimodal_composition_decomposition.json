@@ -1,0 +1,340 @@
+{
+  "schema_version": "ppt_run2_multimodal_composition_decomposition.v1",
+  "status": "run2_46_multimodal_composition_decomposition_ready_public_blocked",
+  "run_id": "2.46",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_audit_run": "2.45",
+  "source_multimodal_source_records": "run2_7_multimodal_source_records.json",
+  "target_layer": "multimodal_composition_memory_and_visual_object_grammar",
+  "source_boundary": {
+    "allowed_storage": "derived_composition_instructions_only",
+    "copied_screenshots": "forbidden",
+    "source_layouts": "forbidden",
+    "raw_tutorial_or_video_media": "forbidden",
+    "audio_or_transcript_text": "forbidden",
+    "brand_marks": "forbidden"
+  },
+  "multimodal_composition_decomposition_records": [
+    {
+      "decomposition_id": "composition_decomposition_2_46_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.45",
+      "source_generated_run": "2.44",
+      "source_workflow_run": "2.43",
+      "source_audit_root_cause": "run2_44_dataflow_fixed_but_composition_compiler_still_slot_based",
+      "multimodal_source_record_ids": [
+        "mm_2_7_design_system_launch_case",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "modalities": [
+        "audio",
+        "image_reference",
+        "text",
+        "transcript",
+        "video"
+      ],
+      "source_observations": [
+        "The launch story becomes more persuasive when system breadth is reduced to a few high-contrast product surfaces instead of a catalogue.",
+        "A launch deck feels more deliberate when setup pauses, proof builds, climax expands, and close removes detail."
+      ],
+      "source_teaching_rules": [
+        "For cover and setup roles, show one launch promise and one native system surface before introducing detailed proof.",
+        "Map pacing to the six-slide rhythm so proof density rises only after the audience has a clear orientation beat."
+      ],
+      "run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_cover_1",
+        "semantic_asset_2_43_cover_2",
+        "semantic_asset_2_43_cover_3"
+      ],
+      "run2_44_slot_roles_to_replace": [
+        "generated_deck_hero",
+        "memory_control_field",
+        "benchmark_cue"
+      ],
+      "slot_based_failure_mode": "semantic_objects_bound_to_geometry_slots",
+      "composition_move": "poster_scene_depth",
+      "native_ppt_composition_implications": [
+        "one poster-scale generated deck object owns the first read",
+        "memory controls sit as a midground field, not equal feature cards",
+        "use native editable shapes, masks, type, connectors, and generated vector-like illustration only",
+        "make object relationships visible through scale, depth, overlap, cropping, and reveal order"
+      ],
+      "source_boundary_rules": [
+        "do not copy screenshots, source layouts, video frames, audio, transcript text, brand marks, icons, or tutorial examples",
+        "store derived composition instructions only",
+        "use source records as teaching constraints, not as visual templates"
+      ],
+      "qa_probe": "At contact-sheet scale, the slide should read as a composed object scene, not as three labeled geometry slots."
+    },
+    {
+      "decomposition_id": "composition_decomposition_2_46_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.45",
+      "source_generated_run": "2.44",
+      "source_workflow_run": "2.43",
+      "source_audit_root_cause": "run2_44_dataflow_fixed_but_composition_compiler_still_slot_based",
+      "multimodal_source_record_ids": [
+        "mm_2_7_design_system_launch_case",
+        "mm_2_7_typography_hierarchy_tutorial",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "modalities": [
+        "audio",
+        "image_reference",
+        "text",
+        "transcript",
+        "video"
+      ],
+      "source_observations": [
+        "The launch story becomes more persuasive when system breadth is reduced to a few high-contrast product surfaces instead of a catalogue.",
+        "Slides become easier to scan when one headline, one proof phrase, and one secondary note have clearly different type roles.",
+        "A launch deck feels more deliberate when setup pauses, proof builds, climax expands, and close removes detail."
+      ],
+      "source_teaching_rules": [
+        "For cover and setup roles, show one launch promise and one native system surface before introducing detailed proof.",
+        "Use a deterministic editorial type ladder so setup, contrast, and proof slides do not collapse into equal-weight prose.",
+        "Map pacing to the six-slide rhythm so proof density rises only after the audience has a clear orientation beat."
+      ],
+      "run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_setup_1",
+        "semantic_asset_2_43_setup_2",
+        "semantic_asset_2_43_setup_3"
+      ],
+      "run2_44_slot_roles_to_replace": [
+        "collapsed_failure_path",
+        "selected_route_scene",
+        "decision_risk_lane"
+      ],
+      "slot_based_failure_mode": "semantic_objects_bound_to_geometry_slots",
+      "composition_move": "failure_to_route_storyboard",
+      "native_ppt_composition_implications": [
+        "collapsed prompt output is small, low-confidence, and visibly unstable",
+        "selected route is the stable destination object",
+        "use native editable shapes, masks, type, connectors, and generated vector-like illustration only",
+        "make object relationships visible through scale, depth, overlap, cropping, and reveal order"
+      ],
+      "source_boundary_rules": [
+        "do not copy screenshots, source layouts, video frames, audio, transcript text, brand marks, icons, or tutorial examples",
+        "store derived composition instructions only",
+        "use source records as teaching constraints, not as visual templates"
+      ],
+      "qa_probe": "At contact-sheet scale, the slide should read as a composed object scene, not as three labeled geometry slots."
+    },
+    {
+      "decomposition_id": "composition_decomposition_2_46_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.45",
+      "source_generated_run": "2.44",
+      "source_workflow_run": "2.43",
+      "source_audit_root_cause": "run2_44_dataflow_fixed_but_composition_compiler_still_slot_based",
+      "multimodal_source_record_ids": [
+        "mm_2_7_typography_hierarchy_tutorial",
+        "mm_2_7_spacing_editorial_grid_tutorial"
+      ],
+      "modalities": [
+        "image_reference",
+        "text",
+        "transcript"
+      ],
+      "source_observations": [
+        "Slides become easier to scan when one headline, one proof phrase, and one secondary note have clearly different type roles.",
+        "Editorial spacing makes proof feel designed when margins, gutters, and object scale visibly separate priority levels."
+      ],
+      "source_teaching_rules": [
+        "Use a deterministic editorial type ladder so setup, contrast, and proof slides do not collapse into equal-weight prose.",
+        "For contrast and proof roles, use a grid with large margins, deliberate gutters, and a visibly dominant proof area."
+      ],
+      "run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_contrast_1",
+        "semantic_asset_2_43_contrast_2",
+        "semantic_asset_2_43_contrast_3"
+      ],
+      "run2_44_slot_roles_to_replace": [
+        "small_before_state",
+        "large_after_state",
+        "business_delta_strip"
+      ],
+      "slot_based_failure_mode": "semantic_objects_bound_to_geometry_slots",
+      "composition_move": "asymmetric_before_after_delta",
+      "native_ppt_composition_implications": [
+        "before object is a small thumbnail with low visual confidence",
+        "after object is a large product-state surface with clear business consequence",
+        "use native editable shapes, masks, type, connectors, and generated vector-like illustration only",
+        "make object relationships visible through scale, depth, overlap, cropping, and reveal order"
+      ],
+      "source_boundary_rules": [
+        "do not copy screenshots, source layouts, video frames, audio, transcript text, brand marks, icons, or tutorial examples",
+        "store derived composition instructions only",
+        "use source records as teaching constraints, not as visual templates"
+      ],
+      "qa_probe": "At contact-sheet scale, the slide should read as a composed object scene, not as three labeled geometry slots."
+    },
+    {
+      "decomposition_id": "composition_decomposition_2_46_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.45",
+      "source_generated_run": "2.44",
+      "source_workflow_run": "2.43",
+      "source_audit_root_cause": "run2_44_dataflow_fixed_but_composition_compiler_still_slot_based",
+      "multimodal_source_record_ids": [
+        "mm_2_7_typography_hierarchy_tutorial",
+        "mm_2_7_spacing_editorial_grid_tutorial",
+        "mm_2_7_motion_demo_pacing_reference",
+        "mm_2_7_product_surface_interaction_reference"
+      ],
+      "modalities": [
+        "audio",
+        "image_reference",
+        "interaction",
+        "text",
+        "transcript",
+        "video"
+      ],
+      "source_observations": [
+        "Slides become easier to scan when one headline, one proof phrase, and one secondary note have clearly different type roles.",
+        "Editorial spacing makes proof feel designed when margins, gutters, and object scale visibly separate priority levels.",
+        "A launch deck feels more deliberate when setup pauses, proof builds, climax expands, and close removes detail.",
+        "The close works when the product surface becomes a decision handoff rather than another feature tour."
+      ],
+      "source_teaching_rules": [
+        "Use a deterministic editorial type ladder so setup, contrast, and proof slides do not collapse into equal-weight prose.",
+        "For contrast and proof roles, use a grid with large margins, deliberate gutters, and a visibly dominant proof area.",
+        "Map pacing to the six-slide rhythm so proof density rises only after the audience has a clear orientation beat.",
+        "For close and proof roles, show the handoff as an original native flow with a release gate and trace fields."
+      ],
+      "run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_proof_1",
+        "semantic_asset_2_43_proof_2",
+        "semantic_asset_2_43_proof_3"
+      ],
+      "run2_44_slot_roles_to_replace": [
+        "working_product_surface",
+        "deck_preview_support",
+        "review_state_support"
+      ],
+      "slot_based_failure_mode": "semantic_objects_bound_to_geometry_slots",
+      "composition_move": "active_product_surface",
+      "native_ppt_composition_implications": [
+        "one active decision lane anchors the product surface",
+        "deck preview and review state are subordinate proof objects",
+        "use native editable shapes, masks, type, connectors, and generated vector-like illustration only",
+        "make object relationships visible through scale, depth, overlap, cropping, and reveal order"
+      ],
+      "source_boundary_rules": [
+        "do not copy screenshots, source layouts, video frames, audio, transcript text, brand marks, icons, or tutorial examples",
+        "store derived composition instructions only",
+        "use source records as teaching constraints, not as visual templates"
+      ],
+      "qa_probe": "At contact-sheet scale, the slide should read as a composed object scene, not as three labeled geometry slots."
+    },
+    {
+      "decomposition_id": "composition_decomposition_2_46_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.45",
+      "source_generated_run": "2.44",
+      "source_workflow_run": "2.43",
+      "source_audit_root_cause": "run2_44_dataflow_fixed_but_composition_compiler_still_slot_based",
+      "multimodal_source_record_ids": [
+        "mm_2_7_video_climax_single_object",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "modalities": [
+        "audio",
+        "transcript",
+        "video"
+      ],
+      "source_observations": [
+        "A demo climax works when attention converges on one object and supporting labels arrive after the object is understood.",
+        "A launch deck feels more deliberate when setup pauses, proof builds, climax expands, and close removes detail."
+      ],
+      "source_teaching_rules": [
+        "For the climax role, reserve the largest field for one native proof object and keep supporting explanation secondary.",
+        "Map pacing to the six-slide rhythm so proof density rises only after the audience has a clear orientation beat."
+      ],
+      "run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_climax_1",
+        "semantic_asset_2_43_climax_2",
+        "semantic_asset_2_43_climax_3"
+      ],
+      "run2_44_slot_roles_to_replace": [
+        "cinematic_result_object",
+        "before_state_chip",
+        "supporting_proof_rail"
+      ],
+      "slot_based_failure_mode": "semantic_objects_bound_to_geometry_slots",
+      "composition_move": "cinematic_result_object",
+      "native_ppt_composition_implications": [
+        "single result object carries the slide and uses the largest scale contrast",
+        "before, memory, and release states fuse into the object rather than separate cards",
+        "use native editable shapes, masks, type, connectors, and generated vector-like illustration only",
+        "make object relationships visible through scale, depth, overlap, cropping, and reveal order"
+      ],
+      "source_boundary_rules": [
+        "do not copy screenshots, source layouts, video frames, audio, transcript text, brand marks, icons, or tutorial examples",
+        "store derived composition instructions only",
+        "use source records as teaching constraints, not as visual templates"
+      ],
+      "qa_probe": "At contact-sheet scale, the slide should read as a composed object scene, not as three labeled geometry slots."
+    },
+    {
+      "decomposition_id": "composition_decomposition_2_46_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.45",
+      "source_generated_run": "2.44",
+      "source_workflow_run": "2.43",
+      "source_audit_root_cause": "run2_44_dataflow_fixed_but_composition_compiler_still_slot_based",
+      "multimodal_source_record_ids": [
+        "mm_2_7_motion_demo_pacing_reference",
+        "mm_2_7_product_surface_interaction_reference"
+      ],
+      "modalities": [
+        "audio",
+        "interaction",
+        "text",
+        "transcript",
+        "video"
+      ],
+      "source_observations": [
+        "A launch deck feels more deliberate when setup pauses, proof builds, climax expands, and close removes detail.",
+        "The close works when the product surface becomes a decision handoff rather than another feature tour."
+      ],
+      "source_teaching_rules": [
+        "Map pacing to the six-slide rhythm so proof density rises only after the audience has a clear orientation beat.",
+        "For close and proof roles, show the handoff as an original native flow with a release gate and trace fields."
+      ],
+      "run2_43_semantic_visual_asset_ids": [
+        "semantic_asset_2_43_close_1",
+        "semantic_asset_2_43_close_2",
+        "semantic_asset_2_43_close_3"
+      ],
+      "run2_44_slot_roles_to_replace": [
+        "review_decision_surface",
+        "release_readiness_wall",
+        "next_run_action_surface"
+      ],
+      "slot_based_failure_mode": "semantic_objects_bound_to_geometry_slots",
+      "composition_move": "decision_room_handoff",
+      "native_ppt_composition_implications": [
+        "review decision surface becomes an inspectable handoff object",
+        "release readiness wall shows state progression without a checklist grid",
+        "use native editable shapes, masks, type, connectors, and generated vector-like illustration only",
+        "make object relationships visible through scale, depth, overlap, cropping, and reveal order"
+      ],
+      "source_boundary_rules": [
+        "do not copy screenshots, source layouts, video frames, audio, transcript text, brand marks, icons, or tutorial examples",
+        "store derived composition instructions only",
+        "use source records as teaching constraints, not as visual templates"
+      ],
+      "qa_probe": "At contact-sheet scale, the slide should read as a composed object scene, not as three labeled geometry slots."
+    }
+  ]
+}

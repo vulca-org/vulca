@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "palette": {
+    "ink": "#171717",
+    "paper": "#F8F5EF",
+    "mist": "#E8EDF0",
+    "signal": "#E34C2C",
+    "teal": "#0D7C72",
+    "blue": "#3157D5",
+    "plum": "#5A3B78",
+    "dark_panel": "#252525"
+  },
+  "font_stack": ["Aptos", "Arial", "sans-serif"],
+  "spacing": {
+    "xs": 8,
+    "sm": 16,
+    "md": 24,
+    "lg": 40,
+    "xl": 64
+  },
+  "corner_radius": {
+    "small": 4,
+    "medium": 8,
+    "large": 12
+  },
+  "stroke_widths": {
+    "hairline": 1,
+    "regular": 1.5,
+    "strong": 2
+  },
+  "usage_rules": {
+    "background": "Use paper for most slides and dark_panel for one proof or closing moment.",
+    "body_text": "Use ink on paper or paper on dark_panel.",
+    "signal_color": "Use signal only for proof badges, transitions, and review risks.",
+    "primitive_marks": "Use teal, blue, and plum as secondary accents, never as copied reference identity."
+  }
+}

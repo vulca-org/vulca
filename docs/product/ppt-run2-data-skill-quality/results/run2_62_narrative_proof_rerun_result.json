@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_id": "2.62",
+  "status": "run2_62_narrative_proof_rerun_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_repair_run_id": "2.61",
+  "source_generated_run_id": "2.60",
+  "database_expansion": false,
+  "workflow_expansion": true,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "input_chain": {
+    "run2_61_result": "docs/product/ppt-run2-data-skill-quality/results/run2_61_narrative_proof_dataset_result.json",
+    "run2_61_narrative_proof_dataset": "docs/product/ppt-run2-data-skill-quality/run2_61_narrative_proof_dataset.json",
+    "run2_61_visual_carrier_selector": "docs/product/ppt-run2-data-skill-quality/run2_61_story_to_visual_carrier_selector.json",
+    "run2_61_text_socket_fusion": "docs/product/ppt-run2-data-skill-quality/run2_61_text_socket_fusion_contracts.json",
+    "run2_61_source_policy": "docs/product/ppt-run2-data-skill-quality/run2_61_source_to_public_proof_policy.json",
+    "run2_61_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_61_narrative_workflow_gates.json",
+    "run2_60_result": "docs/product/ppt-run2-data-skill-quality/results/run2_60_content_aware_composition_rerun_result.json",
+    "run2_60_full_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-60-full-vulca/trace_manifest.json",
+    "commercial_usecase_bank": "docs/product/ppt-run2-data-skill-quality/commercial_usecase_bank.json",
+    "sources": "docs/product/ppt-run2-data-skill-quality/sources.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_62_narrative_proof_arms.mjs",
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_62_full_narrative_proof",
+      "bad_run2_60_without_run2_61_narrative_proof_dataset"
+    ],
+    "best_internal_arm": "run2_62_full_narrative_proof",
+    "best_internal_arm_verdict": "Run 2.61 narrative proof records, visual carrier selectors, text socket fusion contracts, public proof replacements, and workflow gates are consumed before native PPT drawing.",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-62-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "quality_delta": {
+    "target_layer": "run2_61_narrative_proof_dataset_consumed",
+    "source_data_status": "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing",
+    "full_slides_with_run2_61_contracts": 6,
+    "full_slides_with_socket_bindings": 6,
+    "full_slides_with_public_proof_replacements": 6,
+    "full_slides_with_required_answers_visible": 6,
+    "bad_control_slides_without_run2_61_contracts": 6,
+    "repair_modules": [
+      "drawRun262ContractCover",
+      "drawRun262SourceToSocketStage",
+      "drawRun262BeforeAfterProofRoute",
+      "drawRun262InspectionProofBoard",
+      "drawRun262ClimaxResultObject",
+      "drawRun262ReleaseGateHandoff"
+    ]
+  },
+  "control_boundary": {
+    "bad_run2_60_without_run2_61_narrative_proof_dataset": "may see Run 2.60 generated result and trace, but must not use Run 2.61 narrative proof, visual carrier, socket fusion, source policy, or workflow gate artifacts",
+    "prompt_only": "commercial_case_only_no_run2_61_narrative_proof_dataset",
+    "run1_5_skill": "prior_baseline_no_run2_61_narrative_proof_dataset"
+  },
+  "visual_quality_boundary": "Run 2.62 proves narrative-proof contract consumption; final public-video-grade aesthetics, native motion, and human release approval remain blocked.",
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "release_boundary": "public_blocked_until_visual_human_review_native_render_review_motion_review_source_boundary_review_and_human_approval",
+  "next_required_action": "audit_run2_62_narrative_proof_consumption_then_decide_renderer_or_data_thickening_do_not_advance_to_run3"
+}

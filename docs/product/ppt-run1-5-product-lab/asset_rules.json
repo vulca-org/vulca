@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "preferred_assets": [
+    "native_shapes",
+    "editable_text",
+    "editable_tables",
+    "simple_vector_icons",
+    "generated_bitmaps_with_provenance"
+  ],
+  "bitmap_use": "Only use bitmap assets when they are generated for this run or are original local artifacts with provenance; never use them for text-heavy proof objects.",
+  "forbidden": [
+    "copied reference visuals",
+    "logos",
+    "screenshots",
+    "copied layouts",
+    "rasterized text",
+    "untracked media assets"
+  ],
+  "provenance_required": true
+}

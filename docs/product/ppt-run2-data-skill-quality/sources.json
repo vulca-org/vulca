@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "geo_figma_slides",
+      "title": "Figma Slides",
+      "url": "https://geo-nyc.com/projects/figma-slides/",
+      "role": "presentation_product_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "figma_config_2025_identity",
+      "title": "How We Shaped the Visual Identity for Config 2025",
+      "url": "https://www.figma.com/blog/how-we-shaped-the-visual-identity-for-config-2025/",
+      "role": "identity_system_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "supervity_ai_keynote",
+      "title": "Visual Presentation for AI Thought Leadership",
+      "url": "https://musecreatives.org/case-studies/visual-presentation-for-ai-thought-leadership/",
+      "role": "commercial_ai_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "launch_lab_sales_deck",
+      "title": "Launch Lab Sales Deck",
+      "url": "https://www.whitepage.studio/portfolio/launch-lab",
+      "role": "sales_deck_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "google_cloud_next_keynote",
+      "title": "Google Cloud Next",
+      "url": "https://www.wearesparks.com/our-work/google-cloud-next/",
+      "role": "large_scale_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "slidemodel_visual_hierarchy",
+      "title": "Visual Hierarchy for Presentations",
+      "url": "https://slidemodel.com/visual-hierarchy-for-presentations/",
+      "role": "tutorial_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "present_partners_whitespace",
+      "title": "White Space and Visual Hierarchy in Slides",
+      "url": "https://present.partners/resources/white-space-visual-hierarchy-slides",
+      "role": "tutorial_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "slidecow_whitespace_powerpoint_tutorial",
+      "title": "How to Use White Space in PowerPoint Design",
+      "url": "https://www.slidecow.com/powerpoint-tutorials/white-space-powerpoint-design/",
+      "role": "powerpoint_whitespace_tutorial_reference",
+      "accessed_on": "2026-06-03",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy video, screenshots, layouts, diagrams, source prose, exercise material, or brand marks."
+    },
+    {
+      "id": "schema_2025_keynote_video",
+      "title": "Schema 2025 Keynote Video",
+      "url": "https://www.youtube.com/watch?v=QFjIaN_wlWg",
+      "role": "video_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, transcripts, audio, or video frames."
+    },
+    {
+      "id": "duarte_persuasive_visual_storytelling",
+      "title": "Persuasive Visual Storytelling",
+      "url": "https://www.duarte.com/resources/webinars-videos/persuasive-visual-storytelling/",
+      "role": "webinar_video_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, transcripts, audio, video frames, webinar materials, or gated content."
+    },
+    {
+      "id": "duarte_slide_design_course",
+      "title": "Presentation Design Training",
+      "url": "https://www.duarte.com/training/slide-document-design/slide-design/",
+      "role": "slide_design_course_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy course lessons, visuals, layouts, screenshots, brand marks, exercise files, full prose, transcripts, audio, or video frames."
+    },
+    {
+      "id": "udel_design_principles_video",
+      "title": "Design Principles",
+      "url": "https://library.udel.edu/teaching-and-learning/tutorials/design-principles/",
+      "role": "design_principles_video_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; license boundary noted as CC BY-NC for the source video content, but this pack stores only derived observations and does not copy video, audio, frames, full transcripts, visuals, or source layouts."
+    },
+    {
+      "id": "figma_config_2025_platform_launch",
+      "title": "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+      "url": "https://www.figma.com/blog/config-2025-press-release/",
+      "role": "design_to_production_platform_launch_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets."
+    },
+    {
+      "id": "figma_config_2025_recap",
+      "title": "Config 2025: Pushing Design Further",
+      "url": "https://www.figma.com/blog/config-2025-recap/",
+      "role": "craft_grid_design_to_production_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets."
+    },
+    {
+      "id": "figma_slides_product",
+      "title": "Figma Slides",
+      "url": "https://www.figma.com/slides/",
+      "role": "presentation_product_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets."
+    },
+    {
+      "id": "figma_slides_help",
+      "title": "Explore Figma Slides",
+      "url": "https://help.figma.com/hc/en-us/articles/24170630629911-Explore-Figma-Slides",
+      "role": "presentation_workflow_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets."
+    },
+    {
+      "id": "stripe_sessions_2025_product_keynote",
+      "title": "Stripe Sessions 2025 Product Keynote",
+      "url": "https://stripe.com/gb/sessions/2025/product-keynote",
+      "role": "fintech_product_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, transcript text, event graphics, or proprietary assets."
+    },
+    {
+      "id": "google_cloud_next_2025_wrap",
+      "title": "Google Cloud Next 2025 Wrap Up",
+      "url": "https://cloud.google.com/blog/topics/google-cloud-next/google-cloud-next-2025-wrap-up/?hl=en",
+      "role": "large_scale_ai_cloud_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, transcript text, event graphics, or proprietary assets."
+    },
+    {
+      "id": "google_cloud_next_2025_sundar",
+      "title": "Google Cloud Next 25: New AI capabilities to transform your business",
+      "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/google-cloud-next-2025-sundar-pichai-keynote/",
+      "role": "executive_ai_platform_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, transcript text, event graphics, or proprietary assets."
+    },
+    {
+      "id": "apple_liquid_glass_newsroom",
+      "title": "Apple introduces a delightful and elegant new software design",
+      "url": "https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/",
+      "role": "design_language_launch_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, video frames, or proprietary design assets."
+    },
+    {
+      "id": "apple_liquid_glass_developer",
+      "title": "Meet Liquid Glass",
+      "url": "https://developer.apple.com/videos/play/wwdc2025/219/",
+      "role": "design_language_principles_video_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, video frames, audio, or transcripts."
+    },
+    {
+      "id": "duarte_slide_design",
+      "title": "Presentation Design Training",
+      "url": "https://www.duarte.com/training/slide-document-design/slide-design/",
+      "role": "slide_design_training_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy course lessons, visuals, layouts, screenshots, brand marks, exercise files, full prose, transcripts, audio, or video frames."
+    },
+    {
+      "id": "duarte_visual_storytelling",
+      "title": "Persuasive Visual Storytelling",
+      "url": "https://www.duarte.com/resources/webinars-videos/persuasive-visual-storytelling/",
+      "role": "visual_storytelling_training_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy webinar materials, visuals, layouts, screenshots, brand marks, full prose, transcripts, audio, or video frames."
+    },
+    {
+      "id": "run2_7_figma_design_system_launch_reference",
+      "title": "Config 2025 Launch Reference",
+      "url": "https://www.figma.com/blog/config-2025-press-release/",
+      "role": "run2_7_design_system_launch_reference",
+      "accessed_on": "2026-06-02",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original reference analysis only; do not copy media, screenshots, source brand, product marks, raw assets, source layouts, or prose."
+    },
+    {
+      "id": "run2_7_slide_design_tutorial_reference",
+      "title": "Slide Design Tutorial Reference",
+      "url": "https://www.duarte.com/training/slide-document-design/slide-design/",
+      "role": "run2_7_slide_design_tutorial_reference",
+      "accessed_on": "2026-06-02",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original reference analysis only; do not copy tutorial media, source brand, course materials, raw assets, exercise files, layouts, or prose."
+    },
+    {
+      "id": "run2_7_product_demo_video_reference",
+      "title": "Product Demo Video Reference",
+      "url": "https://www.youtube.com/watch?v=QFjIaN_wlWg",
+      "role": "run2_7_product_demo_video_reference",
+      "accessed_on": "2026-06-02",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original reference analysis only; do not copy video, audio, frames, screenshots, transcripts, source brand, raw assets, or demo UI."
+    },
+    {
+      "id": "run2_7_presentation_hierarchy_reference",
+      "title": "Presentation Hierarchy Reference",
+      "url": "https://www.presentationzen.com/",
+      "role": "run2_7_presentation_hierarchy_reference",
+      "accessed_on": "2026-06-02",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original reference analysis only; do not copy tutorial media, diagrams, screenshots, source brand, raw assets, layouts, or prose."
+    }
+  ]
+}

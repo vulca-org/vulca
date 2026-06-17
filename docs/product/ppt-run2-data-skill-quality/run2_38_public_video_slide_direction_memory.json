@@ -1,0 +1,331 @@
+{
+  "schema_version": "ppt_run2_public_video_slide_direction_memory.v1",
+  "status": "run2_38_public_video_slide_direction_memory_ready_public_blocked",
+  "run_id": "2.38",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_audit_run": "2.37",
+  "source_generated_run": "2.36",
+  "source_data_workflow_run": "2.35",
+  "source_user_feedback": "Run 2.36 effect feels visually average",
+  "source_audit_root_cause": "visual_module_language_too_repetitive_and_card_like",
+  "source_rerun_verdict": "usecase_specific_visual_evidence_asset_realism_and_editorial_composition_consumed_before_native_ppt_generation",
+  "target_layer": "public_video_grade_slide_direction_and_per_slide_visual_recipe",
+  "derived_from": [
+    "results/run2_37_visual_quality_audit.json",
+    "results/run2_36_visual_evidence_realism_rerun_result.json",
+    "results/run2_35_visual_evidence_realism_workflow_result.json",
+    "commercial_usecase_bank.json",
+    "sources.json"
+  ],
+  "public_video_slide_direction_records": [
+    {
+      "direction_memory_id": "direction_2_38_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_audit_run": "2.37",
+      "source_generated_run": "2.36",
+      "source_audit_finding": "visual_module_language_too_repetitive_and_card_like",
+      "source_rejected_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "visual_rhythm_id": "poster_reveal",
+      "public_video_scene_type": "launch_poster",
+      "first_read_object": "one oversized generated launch deck emerging from a memory-control field",
+      "commercial_story_payload": {
+        "specific_business_object": "public-demo launch deck object with selected design-memory controls attached",
+        "viewer_takeaway": "Vulca turns design memory into a launch surface before code draws slides.",
+        "business_outcome": "repeatable launch-quality presentation generation, still public blocked until review",
+        "product_platform_gate": "show the product system, not a list of features"
+      },
+      "required_code_modules": [
+        "drawRun239LaunchPosterStage"
+      ],
+      "forbidden_visible_patterns": [
+        "same_visual_module_signature_across_all_roles",
+        "feature-card grid",
+        "audit ribbon as public composition",
+        "generic architecture boxes",
+        "equal-weight product state cards",
+        "editorial_anchor_object+two_product_state_cards+gate_ribbon"
+      ],
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_public_video_scene_type",
+        "run2_38_first_read_object",
+        "run2_38_public_video_execution_status"
+      ],
+      "public_video_grade_acceptance_checks": [
+        "At contact-sheet size the slide rhythm differs from the other five roles.",
+        "The first read is a concrete product or business object, not an audit panel.",
+        "The public surface does not show workflow gates as a ribbon.",
+        "The slide can be explained as a commercial launch moment without reading trace metadata.",
+        "The code module is role-specific and not the repeated Run 2.36 module stack."
+      ],
+      "source_boundary": "Derived visual direction only; no copied screenshots, source layouts, brand marks, raw media, audio, transcript text, or tutorial frames.",
+      "public_surface_allowed": true
+    },
+    {
+      "direction_memory_id": "direction_2_38_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_audit_run": "2.37",
+      "source_generated_run": "2.36",
+      "source_audit_finding": "visual_module_language_too_repetitive_and_card_like",
+      "source_rejected_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "visual_rhythm_id": "failure_path_scene",
+      "public_video_scene_type": "failure_scene",
+      "first_read_object": "prompt-only failure path collapsing into a smaller unreviewable slide surface",
+      "commercial_story_payload": {
+        "specific_business_object": "broken prompt-only route losing source boundary, product state, and release gate",
+        "viewer_takeaway": "The problem is not making a slide; it is making a slide that can be inspected and blocked.",
+        "business_outcome": "lower review risk by moving from prompt-only output to selected workflow control",
+        "product_platform_gate": "show the product system, not a list of features"
+      },
+      "required_code_modules": [
+        "drawRun239FailurePathScene"
+      ],
+      "forbidden_visible_patterns": [
+        "same_visual_module_signature_across_all_roles",
+        "feature-card grid",
+        "audit ribbon as public composition",
+        "generic architecture boxes",
+        "equal-weight product state cards",
+        "editorial_anchor_object+two_product_state_cards+gate_ribbon"
+      ],
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_public_video_scene_type",
+        "run2_38_first_read_object",
+        "run2_38_public_video_execution_status"
+      ],
+      "public_video_grade_acceptance_checks": [
+        "At contact-sheet size the slide rhythm differs from the other five roles.",
+        "The first read is a concrete product or business object, not an audit panel.",
+        "The public surface does not show workflow gates as a ribbon.",
+        "The slide can be explained as a commercial launch moment without reading trace metadata.",
+        "The code module is role-specific and not the repeated Run 2.36 module stack."
+      ],
+      "source_boundary": "Derived visual direction only; no copied screenshots, source layouts, brand marks, raw media, audio, transcript text, or tutorial frames.",
+      "public_surface_allowed": true
+    },
+    {
+      "direction_memory_id": "direction_2_38_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_audit_run": "2.37",
+      "source_generated_run": "2.36",
+      "source_audit_finding": "visual_module_language_too_repetitive_and_card_like",
+      "source_rejected_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "visual_rhythm_id": "asymmetric_before_after",
+      "public_video_scene_type": "before_after_product_state",
+      "first_read_object": "large after-state product surface dwarfing a small prompt-only before thumbnail",
+      "commercial_story_payload": {
+        "specific_business_object": "same commercial brief before and after evidence selection",
+        "viewer_takeaway": "The same brief becomes more specific when evidence and workflow are selected before generation.",
+        "business_outcome": "clearer buyer confidence because output changes are attributable, not aesthetic luck",
+        "product_platform_gate": "show the product system, not a list of features"
+      },
+      "required_code_modules": [
+        "drawRun239AsymmetricBeforeAfterState"
+      ],
+      "forbidden_visible_patterns": [
+        "same_visual_module_signature_across_all_roles",
+        "feature-card grid",
+        "audit ribbon as public composition",
+        "generic architecture boxes",
+        "equal-weight product state cards",
+        "editorial_anchor_object+two_product_state_cards+gate_ribbon"
+      ],
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_public_video_scene_type",
+        "run2_38_first_read_object",
+        "run2_38_public_video_execution_status"
+      ],
+      "public_video_grade_acceptance_checks": [
+        "At contact-sheet size the slide rhythm differs from the other five roles.",
+        "The first read is a concrete product or business object, not an audit panel.",
+        "The public surface does not show workflow gates as a ribbon.",
+        "The slide can be explained as a commercial launch moment without reading trace metadata.",
+        "The code module is role-specific and not the repeated Run 2.36 module stack."
+      ],
+      "source_boundary": "Derived visual direction only; no copied screenshots, source layouts, brand marks, raw media, audio, transcript text, or tutorial frames.",
+      "public_surface_allowed": true
+    },
+    {
+      "direction_memory_id": "direction_2_38_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_audit_run": "2.37",
+      "source_generated_run": "2.36",
+      "source_audit_finding": "visual_module_language_too_repetitive_and_card_like",
+      "source_rejected_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "visual_rhythm_id": "product_workflow_surface",
+      "public_video_scene_type": "product_workflow_surface",
+      "first_read_object": "working product console that maps slide roles to visual decisions and proof objects",
+      "commercial_story_payload": {
+        "specific_business_object": "six-role visual decision surface with selected visual recipe per slide",
+        "viewer_takeaway": "The product does not just remember references; it turns them into executable slide decisions.",
+        "business_outcome": "faster review loops because every generated slide has a visible decision source",
+        "product_platform_gate": "show the product system, not a list of features"
+      },
+      "required_code_modules": [
+        "drawRun239ProductWorkflowSurface"
+      ],
+      "forbidden_visible_patterns": [
+        "same_visual_module_signature_across_all_roles",
+        "feature-card grid",
+        "audit ribbon as public composition",
+        "generic architecture boxes",
+        "equal-weight product state cards",
+        "editorial_anchor_object+two_product_state_cards+gate_ribbon"
+      ],
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_public_video_scene_type",
+        "run2_38_first_read_object",
+        "run2_38_public_video_execution_status"
+      ],
+      "public_video_grade_acceptance_checks": [
+        "At contact-sheet size the slide rhythm differs from the other five roles.",
+        "The first read is a concrete product or business object, not an audit panel.",
+        "The public surface does not show workflow gates as a ribbon.",
+        "The slide can be explained as a commercial launch moment without reading trace metadata.",
+        "The code module is role-specific and not the repeated Run 2.36 module stack."
+      ],
+      "source_boundary": "Derived visual direction only; no copied screenshots, source layouts, brand marks, raw media, audio, transcript text, or tutorial frames.",
+      "public_surface_allowed": true
+    },
+    {
+      "direction_memory_id": "direction_2_38_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_audit_run": "2.37",
+      "source_generated_run": "2.36",
+      "source_audit_finding": "visual_module_language_too_repetitive_and_card_like",
+      "source_rejected_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "visual_rhythm_id": "cinematic_climax_object",
+      "public_video_scene_type": "cinematic_climax_object",
+      "first_read_object": "one cinematic generated deck object with visible before, memory, and release state fused together",
+      "commercial_story_payload": {
+        "specific_business_object": "final generated output object carrying the source-bound design memory proof",
+        "viewer_takeaway": "The value is one powerful generated result, not another audit of the system.",
+        "business_outcome": "internal-demo proof strong enough to justify another quality loop, not public release",
+        "product_platform_gate": "show the product system, not a list of features"
+      },
+      "required_code_modules": [
+        "drawRun239CinematicClimaxObject"
+      ],
+      "forbidden_visible_patterns": [
+        "same_visual_module_signature_across_all_roles",
+        "feature-card grid",
+        "audit ribbon as public composition",
+        "generic architecture boxes",
+        "equal-weight product state cards",
+        "editorial_anchor_object+two_product_state_cards+gate_ribbon"
+      ],
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_public_video_scene_type",
+        "run2_38_first_read_object",
+        "run2_38_public_video_execution_status"
+      ],
+      "public_video_grade_acceptance_checks": [
+        "At contact-sheet size the slide rhythm differs from the other five roles.",
+        "The first read is a concrete product or business object, not an audit panel.",
+        "The public surface does not show workflow gates as a ribbon.",
+        "The slide can be explained as a commercial launch moment without reading trace metadata.",
+        "The code module is role-specific and not the repeated Run 2.36 module stack."
+      ],
+      "source_boundary": "Derived visual direction only; no copied screenshots, source layouts, brand marks, raw media, audio, transcript text, or tutorial frames.",
+      "public_surface_allowed": true
+    },
+    {
+      "direction_memory_id": "direction_2_38_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_audit_run": "2.37",
+      "source_generated_run": "2.36",
+      "source_audit_finding": "visual_module_language_too_repetitive_and_card_like",
+      "source_rejected_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "visual_rhythm_id": "decision_handoff_path",
+      "public_video_scene_type": "decision_handoff_path",
+      "first_read_object": "inspectable next-run handoff path with one clear decision gate and one public-blocked state",
+      "commercial_story_payload": {
+        "specific_business_object": "Run 2.39 contract path from visual direction memory to generated deck",
+        "viewer_takeaway": "The next action is not more prompting; it is consuming a stricter visual-direction workflow.",
+        "business_outcome": "controlled product iteration before public launch or video release",
+        "product_platform_gate": "show the product system, not a list of features"
+      },
+      "required_code_modules": [
+        "drawRun239DecisionHandoffPath"
+      ],
+      "forbidden_visible_patterns": [
+        "same_visual_module_signature_across_all_roles",
+        "feature-card grid",
+        "audit ribbon as public composition",
+        "generic architecture boxes",
+        "equal-weight product state cards",
+        "editorial_anchor_object+two_product_state_cards+gate_ribbon"
+      ],
+      "required_trace_fields": [
+        "run2_38_visual_direction_memory_id",
+        "run2_38_visual_rhythm_id",
+        "run2_38_public_video_scene_type",
+        "run2_38_first_read_object",
+        "run2_38_public_video_execution_status"
+      ],
+      "public_video_grade_acceptance_checks": [
+        "At contact-sheet size the slide rhythm differs from the other five roles.",
+        "The first read is a concrete product or business object, not an audit panel.",
+        "The public surface does not show workflow gates as a ribbon.",
+        "The slide can be explained as a commercial launch moment without reading trace metadata.",
+        "The code module is role-specific and not the repeated Run 2.36 module stack."
+      ],
+      "source_boundary": "Derived visual direction only; no copied screenshots, source layouts, brand marks, raw media, audio, transcript text, or tutorial frames.",
+      "public_surface_allowed": true
+    }
+  ]
+}

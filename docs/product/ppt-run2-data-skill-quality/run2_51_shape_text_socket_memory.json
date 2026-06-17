@@ -1,0 +1,716 @@
+{
+  "schema_version": "ppt_run2_shape_text_socket_memory.v1",
+  "status": "run2_51_shape_text_socket_memory_ready_public_blocked",
+  "run_id": "2.51",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_data_workflow_run": "2.49",
+  "source_generated_run": "2.50",
+  "target_layer": "editorial_copy_and_shape_text_socket_repair",
+  "shape_text_socket_records": [
+    {
+      "socket_memory_id": "shape_text_socket_2_51_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_cover",
+      "required_run2_49_editorial_renderer_gate_id": "gate_2_49_cover_editorial_renderer",
+      "primary_archetype": "poster_stage",
+      "shape_primitives": [
+        "stage",
+        "spotlight",
+        "stamp_badge",
+        "ribbon"
+      ],
+      "socket_contracts": [
+        {
+          "socket_id": "socket_2_51_cover_headline_plane",
+          "copy_role": "headline",
+          "owning_shape_id": "shape_2_51_cover_stage_1",
+          "placement_rule": "bind headline_plane to stage with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            11,
+            34
+          ],
+          "character_budget": 48,
+          "minimum_padding": 8,
+          "alignment": "center",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_cover_hero_object_caption",
+          "copy_role": "subline",
+          "owning_shape_id": "shape_2_51_cover_spotlight_2",
+          "placement_rule": "bind hero_object_caption to spotlight with visible padding and no float-away label",
+          "max_lines": 3,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 120,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_cover_proof_badge",
+          "copy_role": "proof_nugget",
+          "owning_shape_id": "shape_2_51_cover_stamp_badge_3",
+          "placement_rule": "bind proof_badge to stamp_badge with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 54,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_cover_source_boundary_whisper",
+          "copy_role": "subline",
+          "owning_shape_id": "shape_2_51_cover_ribbon_4",
+          "placement_rule": "bind source_boundary_whisper to ribbon with visible padding and no float-away label",
+          "max_lines": 3,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 120,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        }
+      ],
+      "geometry_constraints": [
+        "poster-scale field; not an equal card; owns the headline plane",
+        "clipped focus field that creates contrast around the main object",
+        "compact proof marker with status or proof socket",
+        "narrow strip or diagonal strip for state labels; smaller than the main surface"
+      ],
+      "proof_socket_ids": [
+        "socket_2_51_cover_proof_badge"
+      ],
+      "copy_role_bindings": {
+        "headline": "dominant archetype title socket",
+        "subline": "secondary semantic surface socket",
+        "proof_nugget": "proof object, path node, badge, callout, or layer tag",
+        "annotation": "bracket, leader, or caption socket",
+        "state_label": "ribbon, badge, or node label socket"
+      },
+      "fit_checks": [
+        "character budget passes before drawing",
+        "max-line budget passes before drawing",
+        "public copy is bound to a socket, not a free-floating label"
+      ],
+      "forbidden_layout_patterns": [
+        "equal card cluster as primary surface",
+        "plain rectangle renamed as lens",
+        "proof text detached from proof object",
+        "workflow terms rendered as public labels"
+      ],
+      "bad_control_probe": "Bad control fails if it draws text without Run 2.51 socket ids.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    },
+    {
+      "socket_memory_id": "shape_text_socket_2_51_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_setup",
+      "required_run2_49_editorial_renderer_gate_id": "gate_2_49_setup_editorial_renderer",
+      "primary_archetype": "route_map",
+      "shape_primitives": [
+        "route_path",
+        "bracket_callout",
+        "stamp_badge",
+        "depth_stack"
+      ],
+      "socket_contracts": [
+        {
+          "socket_id": "socket_2_51_setup_failure_path_title",
+          "copy_role": "headline",
+          "owning_shape_id": "shape_2_51_setup_route_path_1",
+          "placement_rule": "bind failure_path_title to route_path with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            11,
+            34
+          ],
+          "character_budget": 48,
+          "minimum_padding": 8,
+          "alignment": "center",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_setup_route_node_labels",
+          "copy_role": "state_label",
+          "owning_shape_id": "shape_2_51_setup_bracket_callout_2",
+          "placement_rule": "bind route_node_labels to bracket_callout with visible padding and no float-away label",
+          "max_lines": 1,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 28,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_setup_break_risk_marker",
+          "copy_role": "state_label",
+          "owning_shape_id": "shape_2_51_setup_stamp_badge_3",
+          "placement_rule": "bind break_risk_marker to stamp_badge with visible padding and no float-away label",
+          "max_lines": 1,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 28,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_setup_selected_route_claim",
+          "copy_role": "headline",
+          "owning_shape_id": "shape_2_51_setup_depth_stack_4",
+          "placement_rule": "bind selected_route_claim to depth_stack with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            11,
+            34
+          ],
+          "character_budget": 48,
+          "minimum_padding": 8,
+          "alignment": "center",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_setup_setup_derived_proof_socket",
+          "copy_role": "proof_nugget",
+          "owning_shape_id": "shape_2_51_setup_route_path_derived_proof",
+          "placement_rule": "bind derived proof socket to route_path with visible proof ownership and no detached proof label",
+          "max_lines": 2,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 54,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile",
+          "fallback_reason": "required proof socket added because the archetype socket list had no proof_nugget lane"
+        }
+      ],
+      "geometry_constraints": [
+        "connected path with at least three node sockets and visible connectors",
+        "brace, bracket, or leader line that anchors annotation copy",
+        "compact proof marker with status or proof socket",
+        "unequal overlapping layers with visible offset"
+      ],
+      "proof_socket_ids": [
+        "socket_2_51_setup_setup_derived_proof_socket"
+      ],
+      "copy_role_bindings": {
+        "headline": "dominant archetype title socket",
+        "subline": "secondary semantic surface socket",
+        "proof_nugget": "proof object, path node, badge, callout, or layer tag",
+        "annotation": "bracket, leader, or caption socket",
+        "state_label": "ribbon, badge, or node label socket"
+      },
+      "fit_checks": [
+        "character budget passes before drawing",
+        "max-line budget passes before drawing",
+        "public copy is bound to a socket, not a free-floating label"
+      ],
+      "forbidden_layout_patterns": [
+        "equal card cluster as primary surface",
+        "plain rectangle renamed as lens",
+        "proof text detached from proof object",
+        "workflow terms rendered as public labels"
+      ],
+      "bad_control_probe": "Bad control fails if it draws text without Run 2.51 socket ids.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    },
+    {
+      "socket_memory_id": "shape_text_socket_2_51_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_contrast",
+      "required_run2_49_editorial_renderer_gate_id": "gate_2_49_contrast_editorial_renderer",
+      "primary_archetype": "before_after_lens",
+      "shape_primitives": [
+        "lens",
+        "route_path",
+        "bracket_callout",
+        "spotlight"
+      ],
+      "socket_contracts": [
+        {
+          "socket_id": "socket_2_51_contrast_before_caption",
+          "copy_role": "subline",
+          "owning_shape_id": "shape_2_51_contrast_lens_1",
+          "placement_rule": "bind before_caption to lens with visible padding and no float-away label",
+          "max_lines": 3,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 120,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_contrast_after_claim",
+          "copy_role": "headline",
+          "owning_shape_id": "shape_2_51_contrast_route_path_2",
+          "placement_rule": "bind after_claim to route_path with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            11,
+            34
+          ],
+          "character_budget": 48,
+          "minimum_padding": 8,
+          "alignment": "center",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_contrast_delta_marker",
+          "copy_role": "state_label",
+          "owning_shape_id": "shape_2_51_contrast_bracket_callout_3",
+          "placement_rule": "bind delta_marker to bracket_callout with visible padding and no float-away label",
+          "max_lines": 1,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 28,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_contrast_implication_line",
+          "copy_role": "subline",
+          "owning_shape_id": "shape_2_51_contrast_spotlight_4",
+          "placement_rule": "bind implication_line to spotlight with visible padding and no float-away label",
+          "max_lines": 3,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 120,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_contrast_contrast_derived_proof_socket",
+          "copy_role": "proof_nugget",
+          "owning_shape_id": "shape_2_51_contrast_lens_derived_proof",
+          "placement_rule": "bind derived proof socket to lens with visible proof ownership and no detached proof label",
+          "max_lines": 2,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 54,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile",
+          "fallback_reason": "required proof socket added because the archetype socket list had no proof_nugget lane"
+        }
+      ],
+      "geometry_constraints": [
+        "oval, circle, or cropped-window comparison surface; not a plain rectangle",
+        "connected path with at least three node sockets and visible connectors",
+        "brace, bracket, or leader line that anchors annotation copy",
+        "clipped focus field that creates contrast around the main object"
+      ],
+      "proof_socket_ids": [
+        "socket_2_51_contrast_contrast_derived_proof_socket"
+      ],
+      "copy_role_bindings": {
+        "headline": "dominant archetype title socket",
+        "subline": "secondary semantic surface socket",
+        "proof_nugget": "proof object, path node, badge, callout, or layer tag",
+        "annotation": "bracket, leader, or caption socket",
+        "state_label": "ribbon, badge, or node label socket"
+      },
+      "fit_checks": [
+        "character budget passes before drawing",
+        "max-line budget passes before drawing",
+        "public copy is bound to a socket, not a free-floating label"
+      ],
+      "forbidden_layout_patterns": [
+        "equal card cluster as primary surface",
+        "plain rectangle renamed as lens",
+        "proof text detached from proof object",
+        "workflow terms rendered as public labels"
+      ],
+      "bad_control_probe": "Bad control fails if it draws text without Run 2.51 socket ids.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    },
+    {
+      "socket_memory_id": "shape_text_socket_2_51_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_proof",
+      "required_run2_49_editorial_renderer_gate_id": "gate_2_49_proof_editorial_renderer",
+      "primary_archetype": "workspace_surface",
+      "shape_primitives": [
+        "stage",
+        "depth_stack",
+        "bracket_callout",
+        "stamp_badge"
+      ],
+      "socket_contracts": [
+        {
+          "socket_id": "socket_2_51_proof_workspace_title",
+          "copy_role": "headline",
+          "owning_shape_id": "shape_2_51_proof_stage_1",
+          "placement_rule": "bind workspace_title to stage with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            11,
+            34
+          ],
+          "character_budget": 48,
+          "minimum_padding": 8,
+          "alignment": "center",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_proof_lane_labels",
+          "copy_role": "state_label",
+          "owning_shape_id": "shape_2_51_proof_depth_stack_2",
+          "placement_rule": "bind lane_labels to depth_stack with visible padding and no float-away label",
+          "max_lines": 1,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 28,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_proof_proof_nuggets",
+          "copy_role": "proof_nugget",
+          "owning_shape_id": "shape_2_51_proof_bracket_callout_3",
+          "placement_rule": "bind proof_nuggets to bracket_callout with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 54,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_proof_inspectable_object_captions",
+          "copy_role": "subline",
+          "owning_shape_id": "shape_2_51_proof_stamp_badge_4",
+          "placement_rule": "bind inspectable_object_captions to stamp_badge with visible padding and no float-away label",
+          "max_lines": 3,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 120,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        }
+      ],
+      "geometry_constraints": [
+        "poster-scale field; not an equal card; owns the headline plane",
+        "unequal overlapping layers with visible offset",
+        "brace, bracket, or leader line that anchors annotation copy",
+        "compact proof marker with status or proof socket"
+      ],
+      "proof_socket_ids": [
+        "socket_2_51_proof_proof_nuggets"
+      ],
+      "copy_role_bindings": {
+        "headline": "dominant archetype title socket",
+        "subline": "secondary semantic surface socket",
+        "proof_nugget": "proof object, path node, badge, callout, or layer tag",
+        "annotation": "bracket, leader, or caption socket",
+        "state_label": "ribbon, badge, or node label socket"
+      },
+      "fit_checks": [
+        "character budget passes before drawing",
+        "max-line budget passes before drawing",
+        "public copy is bound to a socket, not a free-floating label"
+      ],
+      "forbidden_layout_patterns": [
+        "equal card cluster as primary surface",
+        "plain rectangle renamed as lens",
+        "proof text detached from proof object",
+        "workflow terms rendered as public labels"
+      ],
+      "bad_control_probe": "Bad control fails if it draws text without Run 2.51 socket ids.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    },
+    {
+      "socket_memory_id": "shape_text_socket_2_51_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_climax",
+      "required_run2_49_editorial_renderer_gate_id": "gate_2_49_climax_editorial_renderer",
+      "primary_archetype": "exploded_hero_object",
+      "shape_primitives": [
+        "exploded_layers",
+        "spotlight",
+        "ribbon",
+        "bracket_callout"
+      ],
+      "socket_contracts": [
+        {
+          "socket_id": "socket_2_51_climax_result_headline",
+          "copy_role": "headline",
+          "owning_shape_id": "shape_2_51_climax_exploded_layers_1",
+          "placement_rule": "bind result_headline to exploded_layers with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            11,
+            34
+          ],
+          "character_budget": 48,
+          "minimum_padding": 8,
+          "alignment": "center",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_climax_exploded_proof_tags",
+          "copy_role": "proof_nugget",
+          "owning_shape_id": "shape_2_51_climax_spotlight_2",
+          "placement_rule": "bind exploded_proof_tags to spotlight with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 54,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_climax_release_boundary_tag",
+          "copy_role": "state_label",
+          "owning_shape_id": "shape_2_51_climax_ribbon_3",
+          "placement_rule": "bind release_boundary_tag to ribbon with visible padding and no float-away label",
+          "max_lines": 1,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 28,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_climax_memory_route_label",
+          "copy_role": "state_label",
+          "owning_shape_id": "shape_2_51_climax_bracket_callout_4",
+          "placement_rule": "bind memory_route_label to bracket_callout with visible padding and no float-away label",
+          "max_lines": 1,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 28,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        }
+      ],
+      "geometry_constraints": [
+        "at least three offset layers with scale separation and connector lines",
+        "clipped focus field that creates contrast around the main object",
+        "narrow strip or diagonal strip for state labels; smaller than the main surface",
+        "brace, bracket, or leader line that anchors annotation copy"
+      ],
+      "proof_socket_ids": [
+        "socket_2_51_climax_exploded_proof_tags"
+      ],
+      "copy_role_bindings": {
+        "headline": "dominant archetype title socket",
+        "subline": "secondary semantic surface socket",
+        "proof_nugget": "proof object, path node, badge, callout, or layer tag",
+        "annotation": "bracket, leader, or caption socket",
+        "state_label": "ribbon, badge, or node label socket"
+      },
+      "fit_checks": [
+        "character budget passes before drawing",
+        "max-line budget passes before drawing",
+        "public copy is bound to a socket, not a free-floating label"
+      ],
+      "forbidden_layout_patterns": [
+        "equal card cluster as primary surface",
+        "plain rectangle renamed as lens",
+        "proof text detached from proof object",
+        "workflow terms rendered as public labels"
+      ],
+      "bad_control_probe": "Bad control fails if it draws text without Run 2.51 socket ids.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    },
+    {
+      "socket_memory_id": "shape_text_socket_2_51_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.49",
+        "2.50"
+      ],
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_close",
+      "required_run2_49_editorial_renderer_gate_id": "gate_2_49_close_editorial_renderer",
+      "primary_archetype": "decision_room",
+      "shape_primitives": [
+        "decision_wall",
+        "route_path",
+        "ribbon",
+        "stamp_badge"
+      ],
+      "socket_contracts": [
+        {
+          "socket_id": "socket_2_51_close_decision_headline",
+          "copy_role": "headline",
+          "owning_shape_id": "shape_2_51_close_decision_wall_1",
+          "placement_rule": "bind decision_headline to decision_wall with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            11,
+            34
+          ],
+          "character_budget": 48,
+          "minimum_padding": 8,
+          "alignment": "center",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_close_gate_labels",
+          "copy_role": "state_label",
+          "owning_shape_id": "shape_2_51_close_route_path_2",
+          "placement_rule": "bind gate_labels to route_path with visible padding and no float-away label",
+          "max_lines": 1,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 28,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_close_next_action_strip",
+          "copy_role": "annotation",
+          "owning_shape_id": "shape_2_51_close_ribbon_3",
+          "placement_rule": "bind next_action_strip to ribbon with visible padding and no float-away label",
+          "max_lines": 2,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 42,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_close_residual_blocker_caption",
+          "copy_role": "subline",
+          "owning_shape_id": "shape_2_51_close_stamp_badge_4",
+          "placement_rule": "bind residual_blocker_caption to stamp_badge with visible padding and no float-away label",
+          "max_lines": 3,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 120,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile"
+        },
+        {
+          "socket_id": "socket_2_51_close_close_derived_proof_socket",
+          "copy_role": "proof_nugget",
+          "owning_shape_id": "shape_2_51_close_decision_wall_derived_proof",
+          "placement_rule": "bind derived proof socket to decision_wall with visible proof ownership and no detached proof label",
+          "max_lines": 2,
+          "font_size_range": [
+            8,
+            18
+          ],
+          "character_budget": 54,
+          "minimum_padding": 8,
+          "alignment": "left",
+          "overflow_policy": "reject_and_recompile",
+          "fallback_reason": "required proof socket added because the archetype socket list had no proof_nugget lane"
+        }
+      ],
+      "geometry_constraints": [
+        "handoff surface with gate/action sockets and grouped decisions",
+        "connected path with at least three node sockets and visible connectors",
+        "narrow strip or diagonal strip for state labels; smaller than the main surface",
+        "compact proof marker with status or proof socket"
+      ],
+      "proof_socket_ids": [
+        "socket_2_51_close_close_derived_proof_socket"
+      ],
+      "copy_role_bindings": {
+        "headline": "dominant archetype title socket",
+        "subline": "secondary semantic surface socket",
+        "proof_nugget": "proof object, path node, badge, callout, or layer tag",
+        "annotation": "bracket, leader, or caption socket",
+        "state_label": "ribbon, badge, or node label socket"
+      },
+      "fit_checks": [
+        "character budget passes before drawing",
+        "max-line budget passes before drawing",
+        "public copy is bound to a socket, not a free-floating label"
+      ],
+      "forbidden_layout_patterns": [
+        "equal card cluster as primary surface",
+        "plain rectangle renamed as lens",
+        "proof text detached from proof object",
+        "workflow terms rendered as public labels"
+      ],
+      "bad_control_probe": "Bad control fails if it draws text without Run 2.51 socket ids.",
+      "next_rerun_obligation": "must_be_consumed_before_run2_52_four_arm_rerun"
+    }
+  ]
+}

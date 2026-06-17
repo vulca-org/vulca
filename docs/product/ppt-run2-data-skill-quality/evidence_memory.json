@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "claim_data_changes_deck_quality",
+      "source_card_ids": ["card_editorial_comparison", "card_visual_climax", "card_proof_reveal"],
+      "claim": "Run 2.0 data changes deck quality only when source cards become concrete layout, proof, rhythm, and gate decisions.",
+      "business_relevance": "A public demo must show that the system improves commercial communication, not merely that it collected more references.",
+      "allowed_use": "derived_rules_only",
+      "qa_checks": [
+        "Each generated slide references at least one evidence, aesthetic, or asset memory rule.",
+        "The comparison slide names the weaker and stronger states and highlights one delta.",
+        "No slide claims post-training, fine-tuning, or model learning."
+      ]
+    },
+    {
+      "id": "claim_aesthetic_memory_controls_rhythm",
+      "source_card_ids": ["video_keynote_rhythm", "video_transition_pacing", "card_low_density_claim", "card_visual_climax"],
+      "claim": "Aesthetic memory should control slide rhythm by varying density, scale, and visual role across cover, setup, contrast, proof, climax, and close.",
+      "business_relevance": "Commercial buyers judge taste through pacing as much as content; six equal technical panels would make the demo feel like a report.",
+      "allowed_use": "derived_rules_only",
+      "qa_checks": [
+        "Narrative spine roles appear in the required six-slide order.",
+        "Adjacent slides do not use identical panel counts and scale.",
+        "The climax receives visibly larger outcome weight than setup and proof."
+      ]
+    },
+    {
+      "id": "claim_asset_memory_preserves_editability",
+      "source_card_ids": ["card_cinematic_cover", "card_big_object_layout", "card_premium_closing", "card_editorial_comparison"],
+      "claim": "Asset memory should use generated images or SVGs only for atmosphere, marks, or diagrams while keeping core text and claims editable in PowerPoint.",
+      "business_relevance": "The public demo must look premium without sacrificing buyer edits, accessibility review, or release governance.",
+      "allowed_use": "derived_rules_only",
+      "qa_checks": [
+        "Core claims, labels, and gate text remain native editable PPT text.",
+        "Generated backgrounds contain no essential text.",
+        "SVG or diagram assets have provenance and render-risk notes."
+      ]
+    },
+    {
+      "id": "claim_bad_aesthetic_memory_is_negative_control",
+      "source_card_ids": ["card_low_density_claim", "card_editorial_comparison", "card_visual_climax"],
+      "claim": "A bad aesthetic-memory arm is a useful negative control when it intentionally violates rhythm, density, and hierarchy rules.",
+      "business_relevance": "The experiment can show that design memory quality matters, not just that extra files or longer prompts improve outputs.",
+      "allowed_use": "derived_rules_only",
+      "qa_checks": [
+        "Negative-control brief names the violated memory behavior.",
+        "Evaluation separates content completeness from aesthetic control.",
+        "The negative control is not presented as a public-ready deck."
+      ]
+    },
+    {
+      "id": "claim_appendix_absorbs_proof_detail",
+      "source_card_ids": ["card_appendix_absorption", "card_proof_reveal", "card_low_density_claim"],
+      "claim": "Appendix absorption preserves credibility by routing proof detail to notes or appendix material instead of compressing it into smaller main-slide text.",
+      "business_relevance": "A six-slide public demo needs evidence depth available for review without making the main story feel dense or defensive.",
+      "allowed_use": "derived_rules_only",
+      "qa_checks": [
+        "Main slides stay within their density budgets.",
+        "Detailed source or QA notes are routed outside the main visible body.",
+        "No main slide uses tiny text to compensate for excess proof."
+      ]
+    },
+    {
+      "id": "claim_public_release_requires_render_and_human_gate",
+      "source_card_ids": ["card_premium_closing", "card_proof_reveal", "card_appendix_absorption"],
+      "claim": "Public release requires both native render verification and a human approval gate before any generated deck is treated as publishable.",
+      "business_relevance": "The demo is commercial-facing; release governance protects against broken renders, inaccessible assets, and unsupported claims.",
+      "allowed_use": "derived_rules_only",
+      "qa_checks": [
+        "Delivery status remains blocked until render checks are recorded.",
+        "Human approval is required for public publishing.",
+        "Generated artifacts are not committed as final release evidence without the gate."
+      ]
+    }
+  ]
+}

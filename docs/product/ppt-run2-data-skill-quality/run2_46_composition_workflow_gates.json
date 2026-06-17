@@ -1,0 +1,186 @@
+{
+  "schema_version": "ppt_run2_composition_workflow_gates.v1",
+  "status": "run2_46_composition_workflow_gates_ready_public_blocked",
+  "run_id": "2.46",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "next_rerun_contract": "must_be_consumed_before_run2_47_four_arm_rerun",
+  "composition_workflow_gates": [
+    {
+      "gate_id": "gate_2_46_cover_composition_quality",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_visual_object_grammar_id": "visual_object_grammar_2_46_cover",
+      "required_multimodal_composition_decomposition_id": "composition_decomposition_2_46_cover",
+      "min_composition_quality_checks": 4,
+      "forbid_slot_based_geometry_as_primary_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "require_multimodal_composition_decomposition": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_47_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds one Run 2.46 visual object grammar id before native PPT drawing.",
+        "The generated slide binds one Run 2.46 multimodal composition decomposition id before native PPT drawing.",
+        "The primary composition is not three explicit semantic geometry slots.",
+        "The public surface makes the primary object scene visible before labels are read.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive Run 2.43 ids and Run 2.44 geometry slots, but fails if it lacks Run 2.46 visual object grammar and composition gate ids.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_46_setup_composition_quality",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_visual_object_grammar_id": "visual_object_grammar_2_46_setup",
+      "required_multimodal_composition_decomposition_id": "composition_decomposition_2_46_setup",
+      "min_composition_quality_checks": 4,
+      "forbid_slot_based_geometry_as_primary_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "require_multimodal_composition_decomposition": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_47_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds one Run 2.46 visual object grammar id before native PPT drawing.",
+        "The generated slide binds one Run 2.46 multimodal composition decomposition id before native PPT drawing.",
+        "The primary composition is not three explicit semantic geometry slots.",
+        "The public surface makes the primary object scene visible before labels are read.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive Run 2.43 ids and Run 2.44 geometry slots, but fails if it lacks Run 2.46 visual object grammar and composition gate ids.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_46_contrast_composition_quality",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_visual_object_grammar_id": "visual_object_grammar_2_46_contrast",
+      "required_multimodal_composition_decomposition_id": "composition_decomposition_2_46_contrast",
+      "min_composition_quality_checks": 4,
+      "forbid_slot_based_geometry_as_primary_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "require_multimodal_composition_decomposition": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_47_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds one Run 2.46 visual object grammar id before native PPT drawing.",
+        "The generated slide binds one Run 2.46 multimodal composition decomposition id before native PPT drawing.",
+        "The primary composition is not three explicit semantic geometry slots.",
+        "The public surface makes the primary object scene visible before labels are read.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive Run 2.43 ids and Run 2.44 geometry slots, but fails if it lacks Run 2.46 visual object grammar and composition gate ids.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_46_proof_composition_quality",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_visual_object_grammar_id": "visual_object_grammar_2_46_proof",
+      "required_multimodal_composition_decomposition_id": "composition_decomposition_2_46_proof",
+      "min_composition_quality_checks": 4,
+      "forbid_slot_based_geometry_as_primary_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "require_multimodal_composition_decomposition": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_47_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds one Run 2.46 visual object grammar id before native PPT drawing.",
+        "The generated slide binds one Run 2.46 multimodal composition decomposition id before native PPT drawing.",
+        "The primary composition is not three explicit semantic geometry slots.",
+        "The public surface makes the primary object scene visible before labels are read.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive Run 2.43 ids and Run 2.44 geometry slots, but fails if it lacks Run 2.46 visual object grammar and composition gate ids.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_46_climax_composition_quality",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_visual_object_grammar_id": "visual_object_grammar_2_46_climax",
+      "required_multimodal_composition_decomposition_id": "composition_decomposition_2_46_climax",
+      "min_composition_quality_checks": 4,
+      "forbid_slot_based_geometry_as_primary_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "require_multimodal_composition_decomposition": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_47_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds one Run 2.46 visual object grammar id before native PPT drawing.",
+        "The generated slide binds one Run 2.46 multimodal composition decomposition id before native PPT drawing.",
+        "The primary composition is not three explicit semantic geometry slots.",
+        "The public surface makes the primary object scene visible before labels are read.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive Run 2.43 ids and Run 2.44 geometry slots, but fails if it lacks Run 2.46 visual object grammar and composition gate ids.",
+      "public_release_gate": "blocked"
+    },
+    {
+      "gate_id": "gate_2_46_close_composition_quality",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_visual_object_grammar_id": "visual_object_grammar_2_46_close",
+      "required_multimodal_composition_decomposition_id": "composition_decomposition_2_46_close",
+      "min_composition_quality_checks": 4,
+      "forbid_slot_based_geometry_as_primary_surface": true,
+      "forbid_equal_card_distribution": true,
+      "forbid_copied_source_media": true,
+      "require_multimodal_composition_decomposition": true,
+      "next_rerun_contract": "must_be_consumed_before_run2_47_four_arm_rerun",
+      "required_trace_fields": [
+        "run2_46_visual_object_grammar_id",
+        "run2_46_multimodal_composition_decomposition_id",
+        "run2_46_composition_gate_id",
+        "run2_46_slot_based_geometry_replaced",
+        "run2_46_source_boundary_status"
+      ],
+      "pass_fail_checks": [
+        "The generated slide binds one Run 2.46 visual object grammar id before native PPT drawing.",
+        "The generated slide binds one Run 2.46 multimodal composition decomposition id before native PPT drawing.",
+        "The primary composition is not three explicit semantic geometry slots.",
+        "The public surface makes the primary object scene visible before labels are read.",
+        "No copied screenshots, raw tutorial frames, source layouts, brand marks, audio, or transcript text are used."
+      ],
+      "bad_control_probe": "A negative control may receive Run 2.43 ids and Run 2.44 geometry slots, but fails if it lacks Run 2.46 visual object grammar and composition gate ids.",
+      "public_release_gate": "blocked"
+    }
+  ]
+}

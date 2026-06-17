@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "status": "run2_7_multimodal_source_records_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "storage_policy": {
+    "default": "derived_rules_only",
+    "raw_media": "forbidden",
+    "copyright_boundary": "Store only paraphrased observations and extracted design rules; do not store copied media, screenshots, transcripts, brand marks, or raw assets."
+  },
+  "qa_gates": [
+    "Confirm each source record stores derived rules only and no copied media, screenshots, transcripts, brand marks, layouts, or prose.",
+    "Confirm every source record has a contact sheet qa_probe and public_blocked release boundary before generation."
+  ],
+  "records": [
+    {
+      "id": "mm_2_7_design_system_launch_case",
+      "source_id": "run2_7_figma_design_system_launch_reference",
+      "source_type": "design_system_launch_reference",
+      "allowed_use": "derived_rules_only",
+      "anchor": "public launch article observed as a design-system-to-product narrative",
+      "modalities": ["text", "image_reference"],
+      "visual_observation": "The launch story becomes more persuasive when system breadth is reduced to a few high-contrast product surfaces instead of a catalogue.",
+      "transcript_or_teaching_claim": "Paraphrased claim: explain the system as a workflow customers can adopt, not as disconnected feature announcements.",
+      "extracted_design_rule": "For cover and setup roles, show one launch promise and one native system surface before introducing detailed proof.",
+      "slide_roles": ["cover", "setup"],
+      "native_ppt_implication": "Generate native editable headline text, shape groups, and product-surface placeholders rather than copied imagery.",
+      "anti_copy_boundary": "do not copy source visuals, source brand, screenshots, layouts, icons, or launch article prose.",
+      "qa_probe": "The contact sheet should read as an original launch deck and not a disguised source page.",
+      "release_boundary": "public_blocked_until_source_boundary_native_render_and_human_review"
+    },
+    {
+      "id": "mm_2_7_video_climax_single_object",
+      "source_id": "run2_7_product_demo_video_reference",
+      "source_type": "product_demo_video_reference",
+      "allowed_use": "derived_rules_only",
+      "anchor": "demo pacing observed as a climax beat without retaining frames",
+      "modalities": ["video", "audio"],
+      "visual_observation": "A demo climax works when attention converges on one object and supporting labels arrive after the object is understood.",
+      "transcript_or_teaching_claim": "Paraphrased claim: spoken emphasis should become a short native label and a scale change, not a transcript block.",
+      "extracted_design_rule": "For the climax role, reserve the largest field for one native proof object and keep supporting explanation secondary.",
+      "slide_roles": ["climax"],
+      "native_ppt_implication": "Build the climax as native editable PPT shapes, text, and connectors with a traceable focal object.",
+      "anti_copy_boundary": "do not copy video frames, audio, transcript text, product brand, demo UI, or source camera composition.",
+      "qa_probe": "The contact sheet should show one dominant climax object before any label is read.",
+      "release_boundary": "public_blocked_until_source_boundary_native_render_and_human_review"
+    },
+    {
+      "id": "mm_2_7_typography_hierarchy_tutorial",
+      "source_id": "run2_7_presentation_hierarchy_reference",
+      "source_type": "presentation_hierarchy_reference",
+      "allowed_use": "derived_rules_only",
+      "anchor": "hierarchy tutorial observed for headline/body contrast",
+      "modalities": ["text", "transcript"],
+      "visual_observation": "Slides become easier to scan when one headline, one proof phrase, and one secondary note have clearly different type roles.",
+      "transcript_or_teaching_claim": "Paraphrased claim: visual hierarchy should guide attention through contrast, scale, and grouping.",
+      "extracted_design_rule": "Use a deterministic editorial type ladder so setup, contrast, and proof slides do not collapse into equal-weight prose.",
+      "slide_roles": ["setup", "contrast", "proof"],
+      "native_ppt_implication": "Use native editable PPT text boxes with explicit type roles and traceable hierarchy decisions.",
+      "anti_copy_boundary": "do not copy tutorial examples, source brand, screenshots, diagrams, lesson prose, or type specimens.",
+      "qa_probe": "The contact sheet should reveal a readable hierarchy before body text is legible.",
+      "release_boundary": "public_blocked_until_source_boundary_native_render_and_human_review"
+    },
+    {
+      "id": "mm_2_7_spacing_editorial_grid_tutorial",
+      "source_id": "run2_7_slide_design_tutorial_reference",
+      "source_type": "slide_design_tutorial_reference",
+      "allowed_use": "derived_rules_only",
+      "anchor": "slide design teaching observed for whitespace and grid discipline",
+      "modalities": ["image_reference", "text"],
+      "visual_observation": "Editorial spacing makes proof feel designed when margins, gutters, and object scale visibly separate priority levels.",
+      "transcript_or_teaching_claim": "Paraphrased claim: whitespace is an active organizer rather than unused space.",
+      "extracted_design_rule": "For contrast and proof roles, use a grid with large margins, deliberate gutters, and a visibly dominant proof area.",
+      "slide_roles": ["contrast", "proof"],
+      "native_ppt_implication": "Construct spacing with native editable shape coordinates, margins, and guides that remain traceable in PPT.",
+      "anti_copy_boundary": "do not copy source layouts, grids, course visuals, source brand, screenshots, or exercise files.",
+      "qa_probe": "The contact sheet should show differentiated margins and proof zones, not equal dashboard cards.",
+      "release_boundary": "public_blocked_until_source_boundary_native_render_and_human_review"
+    },
+    {
+      "id": "mm_2_7_motion_demo_pacing_reference",
+      "source_id": "run2_7_product_demo_video_reference",
+      "source_type": "product_demo_video_reference",
+      "allowed_use": "derived_rules_only",
+      "anchor": "demo rhythm observed from pacing only, with no media stored",
+      "modalities": ["video", "audio", "transcript"],
+      "visual_observation": "A launch deck feels more deliberate when setup pauses, proof builds, climax expands, and close removes detail.",
+      "transcript_or_teaching_claim": "Paraphrased claim: narration cadence can become a slide density and reveal budget.",
+      "extracted_design_rule": "Map pacing to the six-slide rhythm so proof density rises only after the audience has a clear orientation beat.",
+      "slide_roles": ["cover", "setup", "proof", "climax", "close"],
+      "native_ppt_implication": "Record native editable reveal objects and trace the rhythm decision without embedding raw video or audio.",
+      "anti_copy_boundary": "do not copy source video, audio, transcript, brand, frames, screenshots, or demo sequence.",
+      "qa_probe": "The contact sheet should show a clear rhythm change from setup to proof to climax.",
+      "release_boundary": "public_blocked_until_source_boundary_native_render_and_human_review"
+    },
+    {
+      "id": "mm_2_7_product_surface_interaction_reference",
+      "source_id": "run2_7_figma_design_system_launch_reference",
+      "source_type": "product_surface_interaction_reference",
+      "allowed_use": "derived_rules_only",
+      "anchor": "product surface interaction observed as decision flow",
+      "modalities": ["interaction", "text"],
+      "visual_observation": "The close works when the product surface becomes a decision handoff rather than another feature tour.",
+      "transcript_or_teaching_claim": "Paraphrased claim: interaction cues should clarify what the audience can do next.",
+      "extracted_design_rule": "For close and proof roles, show the handoff as an original native flow with a release gate and trace fields.",
+      "slide_roles": ["proof", "close"],
+      "native_ppt_implication": "Represent interaction with native editable PPT steps, connectors, labels, and traceable workflow ids.",
+      "anti_copy_boundary": "do not copy source UI, source brand, interaction screenshots, product names, icons, or layout patterns.",
+      "qa_probe": "The contact sheet should show an original handoff flow with no source-brand resemblance.",
+      "release_boundary": "public_blocked_until_source_boundary_native_render_and_human_review"
+    }
+  ]
+}

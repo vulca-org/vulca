@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "observations": [
+    {
+      "id": "launch_templates_as_product_onboarding",
+      "source_ids": ["geo_figma_slides", "figma_config_2024"],
+      "principle": "A presentation product launch should show useful starting points, not only a polished hero claim.",
+      "code_generation_rule": "Create editable slide patterns with reusable titles, labels, panels, and proof objects so the deck demonstrates a system users can modify.",
+      "do_not_copy": "Do not copy source templates, screenshots, layouts, brand marks, or product visuals."
+    },
+    {
+      "id": "event_story_before_feature_list",
+      "source_ids": ["figma_config_2024"],
+      "principle": "A product-event narrative works best when a broad workflow shift frames the feature introduction.",
+      "code_generation_rule": "Use editable sequence slides that move from problem to shift to workflow before naming implementation details.",
+      "do_not_copy": "Do not copy source prose, keynote staging, screenshots, or launch layouts."
+    },
+    {
+      "id": "identity_system_with_range",
+      "source_ids": ["figma_config_2025_identity"],
+      "principle": "A flexible identity can stretch across dense and expressive surfaces when it is based on a small set of primitives.",
+      "code_generation_rule": "Use editable primitive shapes, repeated proof badges, and consistent spacing tokens that can vary by slide pattern.",
+      "do_not_copy": "Do not copy Figma glyphs, event identity, colors, photography, layouts, or brand marks."
+    },
+    {
+      "id": "utility_and_expression_balance",
+      "source_ids": ["figma_config_2025_identity", "geo_figma_slides"],
+      "principle": "Expressive marks should support comprehension and should recede on dense information slides.",
+      "code_generation_rule": "Keep editable decorative primitives sparse on text-heavy slides and reserve signal treatments for proof objects and transitions.",
+      "do_not_copy": "Do not copy source glyph placement, event surfaces, template files, or visual motifs."
+    },
+    {
+      "id": "technical_ai_as_steps",
+      "source_ids": ["supervity_ai_keynote"],
+      "principle": "Dense AI capability becomes commercially understandable when it is broken into named steps and visible outcomes.",
+      "code_generation_rule": "Build editable workflow diagrams with short step labels, clear connectors, and one outcome panel per process.",
+      "do_not_copy": "Do not copy Supervity visuals, flow layouts, palette, mockups, or case-study diagrams."
+    },
+    {
+      "id": "proof_objects_over_claim_density",
+      "source_ids": ["supervity_ai_keynote", "figma_config_2024"],
+      "principle": "High-stakes launch decks need proof objects that make abstract product promises inspectable.",
+      "code_generation_rule": "Add editable proof objects such as file maps, artifact grids, score matrices, and QA gates instead of long text blocks.",
+      "do_not_copy": "Do not copy source screenshots, proprietary assets, full prose, or branded proof examples."
+    },
+    {
+      "id": "review_loop_as_product_feature",
+      "source_ids": ["figma_config_2024", "supervity_ai_keynote"],
+      "principle": "The review workflow is part of the product value when teams need reliable launch-grade decks.",
+      "code_generation_rule": "Represent review as editable stages for contact sheet, layout JSON, Gemini critique, repair pass, and human approval.",
+      "do_not_copy": "Do not copy source event workflows, agency process graphics, screenshots, or brand marks."
+    }
+  ]
+}

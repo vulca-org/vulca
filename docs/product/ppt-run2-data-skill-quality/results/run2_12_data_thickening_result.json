@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "run2_12_data_thickening_public_blocked",
+  "run_id": "2.12",
+  "creates_new_ppt_deck": false,
+  "gate_decision": "thick_data_seed_pass_internal_only_public_blocked",
+  "artifacts": [
+    "docs/product/ppt-run2-data-skill-quality/run2_12_thick_multimodal_evidence.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_12_design_memory_seed.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_12_workflow_gate_seed.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_12_data_thickening_result.md"
+  ],
+  "source_classes": [
+    "real commercial platform launch",
+    "real commercial product keynote and demo",
+    "presentation whitespace and hierarchy tutorial",
+    "PowerPoint-specific whitespace tutorial"
+  ],
+  "proven": [
+    "Run 2.12 adds verified public source URLs and accessed-on dates for the thick evidence layer.",
+    "Evidence records now include modality mix, segment locators, paraphrased visual observations, derived design methods, native PPT obligations, and workflow gate obligations.",
+    "Design memory seeds and workflow gate seeds are referentially linked to the thick evidence records.",
+    "The workflow repair trigger now requires these Run 2.12 files before the next four-arm rerun."
+  ],
+  "not_proven": [
+    "No new PPT visual improvement is claimed because no PPT deck is generated in Run 2.12.",
+    "Native render quality, public demo quality, motion execution, and human approval remain blocked."
+  ],
+  "next_required_action": "Use the Run 2.12 evidence, memory, and gate seeds as mandatory inputs for the next four-arm rerun; then inspect whether generated slides visibly change in typography, spacing, demo sequence, and climax composition."
+}

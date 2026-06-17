@@ -1,4 +1,6 @@
-"""VULCA Layers — native layered artwork generation and editing (V2)."""
+"""VULCA Layers -- native layered artwork generation and editing (V2)."""
+
+from typing import Any
 from vulca.layers.types import LayerInfo, LayerResult, LayeredArtwork
 from vulca.layers.analyze import analyze_layers, parse_layer_response
 from vulca.layers.split import split_extract, split_regenerate, split_vlm, crop_layer, chromakey_white, chromakey_black
@@ -17,7 +19,6 @@ from vulca.layers.ops import (
     lock_layer, merge_layers, duplicate_layer, transform_layer,
 )
 from vulca.layers.sam import SAM_AVAILABLE
-from vulca.layers.sam3 import SAM3_AVAILABLE, sam3_split
 from vulca.layers.vlm_mask import generate_vlm_mask, apply_vlm_mask, VLM_MASK_PROMPT
 from vulca.layers.transform import apply_spatial_transform, compute_content_bbox, needs_transform
 from vulca.layers.plan_prompt import build_plan_prompt, get_tradition_layer_order
@@ -37,6 +38,17 @@ from vulca.layers.reconstruction import (
 
 # V1 compat re-exports
 from vulca.layers.manifest import load_manifest as load_artwork
+
+
+def __getattr__(name: str) -> Any:
+    if name in {"SAM3_AVAILABLE", "sam3_split"}:
+        from vulca.layers.sam3 import SAM3_AVAILABLE, sam3_split
+
+        value = {"SAM3_AVAILABLE": SAM3_AVAILABLE, "sam3_split": sam3_split}[name]
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 __all__ = [
     "LayerInfo", "LayerResult", "LayeredArtwork",
