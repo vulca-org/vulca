@@ -16,6 +16,8 @@ function normalizeThreadId(value) {
 
 const threadId = normalizeThreadId(process.env.THREAD_ID);
 const outRoot = path.join(root, "outputs", threadId, "presentations", "ppt-parallel-usecase-pilots");
+const qualityGate = "source-pack-handoff-ready-render-blocked";
+const renderWarning = "Generated PPTX drafts are public-blocked and require a new manual visual pass before presentation use.";
 
 function resolveExistingPath(label, candidates) {
   for (const candidate of candidates.filter(Boolean)) {
@@ -566,23 +568,24 @@ function writeScorecard(workspace, deck, manifest) {
   const lines = [
     `# ${deck.title} QA Scorecard`,
     "",
-    `Profile gate: product-platform draft gate passed for structure; public release remains human-review gated.`,
+    `Quality gate: ${qualityGate}.`,
     "",
-    "| Dimension | Score | Note |",
-    "| --- | ---: | --- |",
-    "| story | 4 | Claims are sourced from the six-slide arc. |",
-    "| specificity | 4 | Deck-specific source boundaries and product objects are visible. |",
-    "| rhythm | 4 | Six macro layouts vary across cover, ledger, workflow, board, matrix, and handoff. |",
-    "| whitespace | 4 | Slides use one dominant proof surface and avoid dense report grids. |",
-    "| chart clarity | 4 | No numeric charts; matrices and boards use direct labels. |",
-    "| typography | 4 | Claim hierarchy is native editable text. |",
-    "| restraint | 4 | No logos, screenshots, decorative badges, or invented metrics. |",
-    "| precision | 4 | Source references remain in notes/footer; no unsupported metrics. |",
-    "| coherence | 4 | One visual system is reused with deck-specific accent color. |",
+    renderWarning,
+    "",
+    "| Dimension | Gate | Note |",
+    "| --- | --- | --- |",
+    "| story | structure-ok | Claims are sourced from the six-slide arc. |",
+    "| specificity | source-pack-ok | Deck-specific source boundaries and product objects are defined. |",
+    "| rhythm | render-blocked | Contact-sheet rhythm must be reviewed after generation. |",
+    "| proof objects | render-blocked | Current renderer may produce schematic placeholders. |",
+    "| typography | structure-ok | Claim hierarchy is native editable text. |",
+    "| restraint | structure-ok | No logos, screenshots, copied layouts, or invented metrics are embedded. |",
+    "| precision | source-pack-ok | Source references remain in notes/footer; no unsupported metrics. |",
+    "| coherence | render-blocked | The shared visual system still needs a usecase-specific redesign. |",
     "",
     `Package checks: ${manifest.slideCount} slides, ${manifest.outputBytes} bytes, previews rendered before delivery QA.`,
     "",
-    `Remaining weak spot: native PowerPoint/Keynote visual fidelity and human review are not completed by this script.`,
+    `Remaining blocker: native PowerPoint/Keynote visual fidelity and human review are not completed by this script.`,
     "",
   ];
   fs.writeFileSync(path.join(workspace, "qa", "comeback-scorecard.txt"), lines.join("\n"));
@@ -704,7 +707,9 @@ async function buildDeck(rawDeck) {
     layoutResults,
     contactSheet,
     publicReady: false,
-    releaseGate: "internal-demo-ok-public-blocked",
+    qualityGate,
+    releaseGate: qualityGate,
+    warning: renderWarning,
   };
   fs.writeFileSync(path.join(workspace, "output", "artifact-build-manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
   writeScorecard(workspace, deck, manifest);
@@ -730,7 +735,9 @@ async function main() {
     path.join(outRoot, "parallel-usecase-pilot-summary.json"),
     `${JSON.stringify(
       {
-        status: "parallel_usecase_ppt_pilots_generated_public_blocked",
+        status: "parallel_usecase_ppt_pilots_generated_render_blocked",
+        qualityGate,
+        warning: renderWarning,
         generatedAt: new Date().toISOString(),
         viewer: viewerPath,
         outputs: results.map((result) => ({
@@ -749,6 +756,8 @@ async function main() {
   console.log(
     JSON.stringify(
       {
+        qualityGate,
+        warning: renderWarning,
         viewer: viewerPath,
         outputs: results.map((result) => ({
           title: result.deck.title,
@@ -768,6 +777,8 @@ if (process.argv.includes("--dry-run")) {
     JSON.stringify(
       {
         status: "dry-run-ok",
+        qualityGate,
+        warning: renderWarning,
         threadId,
         outRoot,
         decks: decks.map((deck) => {

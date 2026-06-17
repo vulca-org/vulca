@@ -1,11 +1,59 @@
 # PPT Parallel Usecase Pilots
 
-Status: prompt-design-ready-public-blocked
+Status: source-pack-handoff-ready-render-blocked
 
-This package defines three parallel PPT pilots. It does not generate PPTX
-files, update the existing viewer, or change Run 2.92. The purpose is to replace
-Run 2.92's internal trace-first story with concrete usecase-first deck briefs
-and prompts.
+This package defines three parallel PPT pilots and the supporting handoff
+materials needed for another contributor to continue the work directly.
+
+The Markdown briefs, claim spines, visual briefs, generation prompts, QA
+prompts, and generator harness are usable. The generated PPTX drafts remain
+public-blocked and should not be treated as presentation candidates without a
+new visual pass.
+
+## Quick Start
+
+Read this package in this order:
+
+1. `deck-briefs.md` for the three deck concepts.
+2. Each deck directory for source boundaries, claims, visual direction, and
+   prompts.
+3. `prompts/superpowers-parallel-deck-prompts.md` for parallel execution.
+4. `prompts/gemini-agent-prompt-pack.md` for critique and review prompts.
+5. `output-templates.md` for the required Markdown output shape.
+
+Run the current generator harness locally with:
+
+```bash
+node --check scripts/generate_ppt_parallel_usecase_pilot_decks.mjs
+node scripts/generate_ppt_parallel_usecase_pilot_decks.mjs --dry-run
+node scripts/generate_ppt_parallel_usecase_pilot_decks.mjs
+```
+
+The generator writes local artifacts under:
+
+```text
+outputs/<THREAD_ID>/presentations/ppt-parallel-usecase-pilots/
+```
+
+Those local artifacts include PPTX files, slide previews, contact sheets, QA
+notes, and an HTML viewer. They are generated outputs, not checked-in product
+deliverables.
+
+## Current Quality State
+
+The content pack is useful as a source-grounded starting point. The current
+PPTX rendering approach is not good enough:
+
+- the three decks share too much of the same visual shell;
+- proof objects read as schematic placeholders instead of persuasive business
+  or product evidence;
+- the scorecard is structural and should not be read as a human visual
+  approval.
+
+Recommended next step: keep this package as the source pack, then replace the
+renderer with one usecase-specific deck pass. Deck C is the best candidate if
+the goal is to demonstrate Vulca's workflow; Deck A is the best candidate if
+the goal is a commercial AI-product case.
 
 ## Why This Exists
 
@@ -19,8 +67,7 @@ next test should start from real usecases and audience-facing product stories.
 - **Deck B:** Vulca Product Strategy.
 - **Deck C:** Vulca Workflow Demo.
 
-Each deck should produce the same six Markdown outputs before any PPT
-generation:
+Each deck contains the same six Markdown outputs before any PPT generation:
 
 - `research_brief.md`
 - `deck_brief.md`
