@@ -1,0 +1,490 @@
+{
+  "schema_version": "vulca_jepa_text_image_audit.v1",
+  "generated_at": "2026-05-10T17:11:50+00:00",
+  "backend": "siglip",
+  "status": "ok",
+  "model": "google/siglip2-base-patch16-224",
+  "manifest": "docs/product/experiments/2026-05-10-vulca-jepa-inventory.json",
+  "audit_set": "core",
+  "samples_total": 21,
+  "text_image_scores_total": 21,
+  "samples": [
+    {
+      "sample_id": "gongbi_baseline_failed_subject",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery/chinese_gongbi.png",
+      "text": "工笔牡丹，细腻勾线，三矾九染",
+      "text_source": "prompt",
+      "logit": -9.363158,
+      "probability": 8.6e-05
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed1",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed1.png",
+      "text": "single large peony flower, close-up centered botanical portrait, Chinese gongbi",
+      "text_source": "prompt",
+      "logit": -4.895043,
+      "probability": 0.007428
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed2",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed2.png",
+      "text": "single large peony flower, close-up centered botanical portrait, Chinese gongbi",
+      "text_source": "prompt",
+      "logit": -6.186129,
+      "probability": 0.002054
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed3",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed3.png",
+      "text": "single large peony flower, close-up centered botanical portrait, Chinese gongbi",
+      "text_source": "prompt",
+      "logit": -3.335701,
+      "probability": 0.034367
+    },
+    {
+      "sample_id": "xieyi_baseline",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery/chinese_xieyi.png",
+      "text": "水墨山水，雨后春山，松间茅屋",
+      "text_source": "prompt",
+      "logit": -4.105999,
+      "probability": 0.016207
+    },
+    {
+      "sample_id": "xieyi_promptfix",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_xieyi.png",
+      "text": "traditional Chinese xieyi freehand ink painting, misty mountains after spring rain",
+      "text_source": "prompt",
+      "logit": 2.084606,
+      "probability": 0.889398
+    },
+    {
+      "sample_id": "japanese_baseline_failed_style",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery/japanese_traditional.png",
+      "text": "京都金閣寺の雪景色、墨絵風",
+      "text_source": "prompt",
+      "logit": -0.337414,
+      "probability": 0.416438
+    },
+    {
+      "sample_id": "japanese_promptfix",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/japanese_traditional.png",
+      "text": "Kinkaku-ji Golden Pavilion, Kyoto, winter snow, sumi-e monochrome ink painting",
+      "text_source": "prompt",
+      "logit": -4.629512,
+      "probability": 0.009665
+    },
+    {
+      "sample_id": "western_academic",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/western_academic.png",
+      "text": "Impressionist garden at golden hour, oil on canvas",
+      "text_source": "prompt",
+      "logit": 3.318409,
+      "probability": 0.965055
+    },
+    {
+      "sample_id": "watercolor",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/watercolor.png",
+      "text": "English countryside cottage, loose wet-on-wet watercolor",
+      "text_source": "prompt",
+      "logit": 2.676229,
+      "probability": 0.935609
+    },
+    {
+      "sample_id": "islamic_geometric",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/islamic_geometric.png",
+      "text": "Alhambra-inspired geometric pattern, turquoise and gold",
+      "text_source": "prompt",
+      "logit": 3.93487,
+      "probability": 0.980826
+    },
+    {
+      "sample_id": "african_traditional",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/african_traditional.png",
+      "text": "Ndebele mural pattern, bold primary colors",
+      "text_source": "prompt",
+      "logit": 2.20705,
+      "probability": 0.900881
+    },
+    {
+      "sample_id": "south_asian",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/south_asian.png",
+      "text": "Mughal miniature, garden scene with lotus pond",
+      "text_source": "prompt",
+      "logit": 5.630674,
+      "probability": 0.996427
+    },
+    {
+      "sample_id": "brand_design",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/brand_design.png",
+      "text": "Premium tea packaging, mountain watermark, Eastern aesthetics",
+      "text_source": "prompt",
+      "logit": 5.903622,
+      "probability": 0.997278
+    },
+    {
+      "sample_id": "photography",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/photography.png",
+      "text": "Misty mountain landscape at dawn, cinematic",
+      "text_source": "prompt",
+      "logit": -0.798439,
+      "probability": 0.31036
+    },
+    {
+      "sample_id": "contemporary_art",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/contemporary_art.png",
+      "text": "Abstract expressionist canvas with bold gestural strokes",
+      "text_source": "prompt",
+      "logit": 1.858772,
+      "probability": 0.865154
+    },
+    {
+      "sample_id": "ui_ux_design",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/ui_ux_design.png",
+      "text": "Clean dashboard UI mockup with card layout and soft shadows",
+      "text_source": "prompt",
+      "logit": 4.821909,
+      "probability": 0.992013
+    },
+    {
+      "sample_id": "inpaint_before",
+      "group": "edit_inpaint",
+      "path": "assets/demo/v3/inpaint/before.png",
+      "text": "Before image for inpaint drift check.",
+      "text_source": "purpose",
+      "logit": -10.456018,
+      "probability": 2.9e-05
+    },
+    {
+      "sample_id": "inpaint_after",
+      "group": "edit_inpaint",
+      "path": "assets/demo/v3/inpaint/after.png",
+      "text": "After image for inpaint drift check.",
+      "text_source": "purpose",
+      "logit": -10.267903,
+      "probability": 3.5e-05
+    },
+    {
+      "sample_id": "fusion_source",
+      "group": "fusion",
+      "path": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/source.png",
+      "text": "Original Scottish street source image for anchor-preservation checks.",
+      "text_source": "purpose",
+      "logit": -4.920557,
+      "probability": 0.007242
+    },
+    {
+      "sample_id": "fusion_iter0",
+      "group": "fusion",
+      "path": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/iters/7/gen_bfbbacd2.png",
+      "text": "Accepted iteration 0 output with strict L2 hard-fail and user override.",
+      "text_source": "purpose",
+      "logit": -8.986714,
+      "probability": 0.000125
+    }
+  ],
+  "text_image_scores": [
+    {
+      "sample_id": "inpaint_before",
+      "group": "edit_inpaint",
+      "path": "assets/demo/v3/inpaint/before.png",
+      "text": "Before image for inpaint drift check.",
+      "text_source": "purpose",
+      "logit": -10.456018,
+      "probability": 2.9e-05
+    },
+    {
+      "sample_id": "inpaint_after",
+      "group": "edit_inpaint",
+      "path": "assets/demo/v3/inpaint/after.png",
+      "text": "After image for inpaint drift check.",
+      "text_source": "purpose",
+      "logit": -10.267903,
+      "probability": 3.5e-05
+    },
+    {
+      "sample_id": "gongbi_baseline_failed_subject",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery/chinese_gongbi.png",
+      "text": "工笔牡丹，细腻勾线，三矾九染",
+      "text_source": "prompt",
+      "logit": -9.363158,
+      "probability": 8.6e-05
+    },
+    {
+      "sample_id": "fusion_iter0",
+      "group": "fusion",
+      "path": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/iters/7/gen_bfbbacd2.png",
+      "text": "Accepted iteration 0 output with strict L2 hard-fail and user override.",
+      "text_source": "purpose",
+      "logit": -8.986714,
+      "probability": 0.000125
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed2",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed2.png",
+      "text": "single large peony flower, close-up centered botanical portrait, Chinese gongbi",
+      "text_source": "prompt",
+      "logit": -6.186129,
+      "probability": 0.002054
+    },
+    {
+      "sample_id": "fusion_source",
+      "group": "fusion",
+      "path": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/source.png",
+      "text": "Original Scottish street source image for anchor-preservation checks.",
+      "text_source": "purpose",
+      "logit": -4.920557,
+      "probability": 0.007242
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed1",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed1.png",
+      "text": "single large peony flower, close-up centered botanical portrait, Chinese gongbi",
+      "text_source": "prompt",
+      "logit": -4.895043,
+      "probability": 0.007428
+    },
+    {
+      "sample_id": "japanese_promptfix",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/japanese_traditional.png",
+      "text": "Kinkaku-ji Golden Pavilion, Kyoto, winter snow, sumi-e monochrome ink painting",
+      "text_source": "prompt",
+      "logit": -4.629512,
+      "probability": 0.009665
+    },
+    {
+      "sample_id": "xieyi_baseline",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery/chinese_xieyi.png",
+      "text": "水墨山水，雨后春山，松间茅屋",
+      "text_source": "prompt",
+      "logit": -4.105999,
+      "probability": 0.016207
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed3",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed3.png",
+      "text": "single large peony flower, close-up centered botanical portrait, Chinese gongbi",
+      "text_source": "prompt",
+      "logit": -3.335701,
+      "probability": 0.034367
+    },
+    {
+      "sample_id": "photography",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/photography.png",
+      "text": "Misty mountain landscape at dawn, cinematic",
+      "text_source": "prompt",
+      "logit": -0.798439,
+      "probability": 0.31036
+    },
+    {
+      "sample_id": "japanese_baseline_failed_style",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery/japanese_traditional.png",
+      "text": "京都金閣寺の雪景色、墨絵風",
+      "text_source": "prompt",
+      "logit": -0.337414,
+      "probability": 0.416438
+    },
+    {
+      "sample_id": "contemporary_art",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/contemporary_art.png",
+      "text": "Abstract expressionist canvas with bold gestural strokes",
+      "text_source": "prompt",
+      "logit": 1.858772,
+      "probability": 0.865154
+    },
+    {
+      "sample_id": "xieyi_promptfix",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_xieyi.png",
+      "text": "traditional Chinese xieyi freehand ink painting, misty mountains after spring rain",
+      "text_source": "prompt",
+      "logit": 2.084606,
+      "probability": 0.889398
+    },
+    {
+      "sample_id": "african_traditional",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/african_traditional.png",
+      "text": "Ndebele mural pattern, bold primary colors",
+      "text_source": "prompt",
+      "logit": 2.20705,
+      "probability": 0.900881
+    },
+    {
+      "sample_id": "watercolor",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/watercolor.png",
+      "text": "English countryside cottage, loose wet-on-wet watercolor",
+      "text_source": "prompt",
+      "logit": 2.676229,
+      "probability": 0.935609
+    },
+    {
+      "sample_id": "western_academic",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/western_academic.png",
+      "text": "Impressionist garden at golden hour, oil on canvas",
+      "text_source": "prompt",
+      "logit": 3.318409,
+      "probability": 0.965055
+    },
+    {
+      "sample_id": "islamic_geometric",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/islamic_geometric.png",
+      "text": "Alhambra-inspired geometric pattern, turquoise and gold",
+      "text_source": "prompt",
+      "logit": 3.93487,
+      "probability": 0.980826
+    },
+    {
+      "sample_id": "ui_ux_design",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/ui_ux_design.png",
+      "text": "Clean dashboard UI mockup with card layout and soft shadows",
+      "text_source": "prompt",
+      "logit": 4.821909,
+      "probability": 0.992013
+    },
+    {
+      "sample_id": "south_asian",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/south_asian.png",
+      "text": "Mughal miniature, garden scene with lotus pond",
+      "text_source": "prompt",
+      "logit": 5.630674,
+      "probability": 0.996427
+    },
+    {
+      "sample_id": "brand_design",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/brand_design.png",
+      "text": "Premium tea packaging, mountain watermark, Eastern aesthetics",
+      "text_source": "prompt",
+      "logit": 5.903622,
+      "probability": 0.997278
+    }
+  ],
+  "excluded_samples": [
+    {
+      "sample_id": "layered_composite",
+      "path": "assets/demo/v3/layered/composite.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "layer_base_xuan_paper",
+      "path": "assets/demo/v3/layered/base_xuan_paper.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact"
+      ]
+    },
+    {
+      "sample_id": "layer_distant_mountains",
+      "path": "assets/demo/v3/layered/distant_haze_mountains.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "layer_midground_river_forest",
+      "path": "assets/demo/v3/layered/midground_river_forest.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "layer_foreground_details_hut",
+      "path": "assets/demo/v3/layered/foreground_details_hut.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "defense_no_ref_composite",
+      "path": "assets/demo/v3/defense3/no_ref/composite.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "defense_with_ref_composite",
+      "path": "assets/demo/v3/defense3/with_ref/composite.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "edit_before",
+      "path": "assets/demo/v3/edit/before.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "edit_after",
+      "path": "assets/demo/v3/edit/after.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "near_black_opaque",
+        "low_information"
+      ]
+    }
+  ]
+}

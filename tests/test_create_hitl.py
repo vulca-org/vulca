@@ -94,3 +94,32 @@ class TestCreateResultFields:
     async def test_repr_includes_status(self):
         result = await acreate("test", provider="mock", mode="local")
         assert "status=" in repr(result)
+
+
+class TestCreateEvalMetadata:
+    """Optional eval metadata is preserved in local create pipeline output."""
+
+    @pytest.mark.asyncio
+    async def test_acreate_local_carries_eval_metadata_in_raw_output(self):
+        metadata = {
+            "schema_version": "vulca_eval_metadata.v1",
+            "guards": {
+                "vulca_jepa_subject_drift": {
+                    "status": "warning",
+                    "non_blocking": True,
+                    "warnings_total": 1,
+                    "warnings": [{"sample_id": "gongbi_baseline_failed_subject"}],
+                }
+            },
+        }
+
+        result = await acreate(
+            "test artwork",
+            provider="mock",
+            mode="local",
+            eval_metadata=metadata,
+        )
+
+        assert result.raw["eval_metadata"] == metadata
+        assert result.rounds[0]["decision"] == "accept"
+        assert result.weighted_total > 0.0

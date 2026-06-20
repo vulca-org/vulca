@@ -7,8 +7,13 @@ import sys
 
 import pytest
 
-# Ensure vulca package is importable from src/
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+# Ensure local packages are importable under both `python -m pytest` and
+# the `pytest` console script used by CI.
+_REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+_SRC_ROOT = os.path.join(_REPO_ROOT, "src")
+for _path in (_REPO_ROOT, _SRC_ROOT):
+    if _path not in sys.path:
+        sys.path.insert(0, _path)
 
 
 def pytest_addoption(parser):

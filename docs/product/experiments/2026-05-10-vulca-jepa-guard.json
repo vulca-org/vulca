@@ -1,0 +1,106 @@
+{
+  "schema_version": "vulca_jepa_guard.v1",
+  "generated_at": "2026-05-10T19:32:16+00:00",
+  "status": "ok",
+  "non_blocking": true,
+  "guard_scope": "gallery_promptfix",
+  "rules": {
+    "subject_drift_warning": {
+      "action": "warn_only",
+      "siglip_probability_max": 0.001,
+      "requires_prompt_text": true,
+      "requires_nearest_family_mismatch": true
+    }
+  },
+  "inputs": {
+    "inventory": "docs/product/experiments/2026-05-10-vulca-jepa-inventory.json",
+    "dinov2_audit": "docs/product/experiments/2026-05-10-vulca-jepa-audit.dinov2.json",
+    "siglip_audit": "docs/product/experiments/2026-05-10-vulca-jepa-audit.siglip.json"
+  },
+  "samples_evaluated": 8,
+  "warnings_total": 1,
+  "warnings": [
+    {
+      "sample_id": "gongbi_baseline_failed_subject",
+      "warning_type": "subject_drift_warning",
+      "severity": "warning",
+      "action": "warn_only",
+      "message": "DINOv2 nearest neighbor points to a different prompt family while SigLIP prompt-image score is very low.",
+      "signals": {
+        "sample_family": "gongbi",
+        "nearest_sample_id": "xieyi_promptfix",
+        "nearest_family": "xieyi",
+        "nearest_distance": 0.623181,
+        "siglip_probability": 8.6e-05,
+        "siglip_logit": -9.363158,
+        "siglip_text_source": "prompt"
+      }
+    }
+  ],
+  "evaluated_samples": [
+    {
+      "sample_id": "gongbi_baseline_failed_subject",
+      "sample_family": "gongbi",
+      "nearest_sample_id": "xieyi_promptfix",
+      "nearest_family": "xieyi",
+      "siglip_probability": 8.6e-05,
+      "siglip_text_source": "prompt"
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed1",
+      "sample_family": "gongbi",
+      "nearest_sample_id": "gongbi_promptfix_seed2",
+      "nearest_family": "gongbi",
+      "siglip_probability": 0.007428,
+      "siglip_text_source": "prompt"
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed2",
+      "sample_family": "gongbi",
+      "nearest_sample_id": "gongbi_promptfix_seed1",
+      "nearest_family": "gongbi",
+      "siglip_probability": 0.002054,
+      "siglip_text_source": "prompt"
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed3",
+      "sample_family": "gongbi",
+      "nearest_sample_id": "gongbi_promptfix_seed1",
+      "nearest_family": "gongbi",
+      "siglip_probability": 0.034367,
+      "siglip_text_source": "prompt"
+    },
+    {
+      "sample_id": "xieyi_baseline",
+      "sample_family": "xieyi",
+      "nearest_sample_id": "inpaint_before",
+      "nearest_family": "inpaint",
+      "siglip_probability": 0.016207,
+      "siglip_text_source": "prompt"
+    },
+    {
+      "sample_id": "xieyi_promptfix",
+      "sample_family": "xieyi",
+      "nearest_sample_id": "gongbi_baseline_failed_subject",
+      "nearest_family": "gongbi",
+      "siglip_probability": 0.889398,
+      "siglip_text_source": "prompt"
+    },
+    {
+      "sample_id": "japanese_baseline_failed_style",
+      "sample_family": "japanese",
+      "nearest_sample_id": "japanese_promptfix",
+      "nearest_family": "japanese",
+      "siglip_probability": 0.416438,
+      "siglip_text_source": "prompt"
+    },
+    {
+      "sample_id": "japanese_promptfix",
+      "sample_family": "japanese",
+      "nearest_sample_id": "japanese_baseline_failed_style",
+      "nearest_family": "japanese",
+      "siglip_probability": 0.009665,
+      "siglip_text_source": "prompt"
+    }
+  ]
+}

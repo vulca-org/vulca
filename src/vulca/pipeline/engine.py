@@ -205,14 +205,17 @@ async def execute(
     if checkpoint:
         from vulca.pipeline.checkpoint import CheckpointStore
         _checkpoint_store = CheckpointStore()
-        _checkpoint_store.save_metadata(session_id, {
+        checkpoint_metadata = {
             "pipeline_name": definition.name,
             "subject": pipeline_input.subject,
             "intent": pipeline_input.intent,
             "tradition": pipeline_input.tradition,
             "provider": pipeline_input.provider,
             "max_rounds": pipeline_input.max_rounds,
-        })
+        }
+        if pipeline_input.eval_metadata:
+            checkpoint_metadata["eval_metadata"] = pipeline_input.eval_metadata
+        _checkpoint_store.save_metadata(session_id, checkpoint_metadata)
 
     api_key = _resolve_api_key(pipeline_input)
 
@@ -323,6 +326,7 @@ async def execute(
                     summary=f"Pipeline paused before '{node_name}' for human review.",
                     original_intent=pipeline_input.intent or pipeline_input.subject,
                     original_provider=pipeline_input.provider,
+                    eval_metadata=pipeline_input.eval_metadata,
                 )
 
             node = node_instances[node_name]
@@ -578,6 +582,7 @@ async def execute(
         original_intent=pipeline_input.intent or pipeline_input.subject,
         original_provider=pipeline_input.provider,
         layered_partial=_layered_partial,
+        eval_metadata=pipeline_input.eval_metadata,
     )
 
     # Emit PIPELINE_COMPLETE hook (non-fatal, before on_complete callback)

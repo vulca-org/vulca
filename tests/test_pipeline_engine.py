@@ -350,6 +350,32 @@ class TestExecute:
         assert isinstance(d["rounds"], list)
 
     @pytest.mark.asyncio
+    async def test_output_carries_opt_in_eval_metadata_without_changing_decision(self):
+        metadata = {
+            "schema_version": "vulca_eval_metadata.v1",
+            "guards": {
+                "vulca_jepa_subject_drift": {
+                    "status": "warning",
+                    "non_blocking": True,
+                    "warnings_total": 1,
+                    "warnings": [{"sample_id": "gongbi_baseline_failed_subject"}],
+                }
+            },
+        }
+        pi = PipelineInput(
+            subject="test artwork",
+            provider="mock",
+            eval_metadata=metadata,
+        )
+
+        result = await execute(DEFAULT, pi)
+
+        assert result.eval_metadata == metadata
+        assert result.to_dict()["eval_metadata"] == metadata
+        assert result.rounds[0].decision == "accept"
+        assert result.weighted_total > 0.0
+
+    @pytest.mark.asyncio
     async def test_critique_only(self):
         pi = PipelineInput(subject="test", provider="mock")
         result = await execute(CRITIQUE_ONLY, pi)
