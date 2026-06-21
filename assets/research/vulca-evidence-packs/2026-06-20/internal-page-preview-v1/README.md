@@ -56,6 +56,23 @@ customer-specific PDF should be regenerated from that corrected basis.
 Only customer-specific details, such as recipient framing, company-specific
 ordering, or a narrow CTA, should live only in the formal variant.
 
+## Current Review Decisions
+
+These decisions are now part of the master-page working logic:
+
+- Keep PROYA as the Lane A public market example.
+- Replace severity-style language in customer-visible evidence cards with
+  field-completion, review-packet, and owner-route language.
+- For Lane B, use version-neutral `Seedream / BytePlus public model context`
+  language instead of selecting one customer-facing model version.
+- Move Kling out of the customer-facing Lane B page; keep it only as an
+  internal video/reference reserve.
+- Keep the Creatify / Alibaba case-study material as internal reference by
+  default. Do not use Alibaba as customer-facing visual proof unless explicitly
+  approved later with source attribution and performance-claim controls.
+- Company names may appear only as public examples, never as VULCA customers,
+  partners, endorsers, authorization sources, or audit targets.
+
 ## Inputs
 
 The source of truth remains:

@@ -8,6 +8,14 @@
     "Do not include raw local paths, filenames, capture-batch ids, or source-log filenames in customer-facing copy.",
     "Named companies are public market examples only, not customer relationships or audit targets."
   ],
+  "confirmed_review_decisions": [
+    "Keep PROYA as the Lane A public market example.",
+    "Use neutral field-completion and owner-route language on customer-visible evidence cards instead of severity scoring.",
+    "Frame Lane B as Seedream / BytePlus public model context without selecting a specific model version in customer-facing copy.",
+    "Move Kling out of the customer-facing Lane B page; retain it only as an internal video/reference reserve.",
+    "Keep the Creatify / Alibaba case study as internal reference by default; do not use it as customer-facing visual proof.",
+    "Company names may appear only as public examples, never as customers, partners, endorsers, or audit targets."
+  ],
   "pages": [
     {
       "page": 7,
@@ -42,6 +50,7 @@
       "page": 8,
       "title": "Evidence pattern: claim, source, representation, owner",
       "lead_example": "PROYA",
+      "customer_copy_decision": "Use field-completion and owner-route language; do not use severity scoring.",
       "source_crops": [
         {
           "id": "proya_detail",
@@ -56,7 +65,8 @@
       "page": 9,
       "title": "Lane B: AI publishability and generated asset context",
       "lead_example": "Seedream / BytePlus",
-      "reserve_example": "Kling AI",
+      "customer_copy_decision": "Use version-neutral public model context; Kling is internal video/reference reserve only.",
+      "internal_reserve_examples": ["Kling AI"],
       "source_crops": [
         {
           "id": "seedream_title",
@@ -85,13 +95,6 @@
           "image_size": [1440, 1100],
           "crop": [900, 480, 285, 120],
           "role": "model capability / input-output / output-format context"
-        },
-        {
-          "id": "kling_reserve",
-          "path": "../capture-batch-02/kling-video-o1-multimodal-reference-guide.jpg",
-          "image_size": [1440, 1100],
-          "crop": [1100, 620, 180, 150],
-          "role": "video/reference workflow reserve only"
         }
       ]
     },
@@ -99,6 +102,7 @@
       "page": 10,
       "title": "Evidence pattern: input, output, label, owner",
       "lead_example": "Seedream / BytePlus",
+      "customer_copy_decision": "Use review-packet and owner-route language; do not use severity scoring.",
       "source_crops": [
         {
           "id": "byteplus_model_page",
@@ -127,6 +131,7 @@
       "page": 11,
       "title": "Lane C: AI ad workflow and creative automation evidence",
       "lead_example": "Creatify",
+      "customer_copy_decision": "Use Creatify URL-to-video as a public workflow example; keep Alibaba case-study material internal by default.",
       "source_crops": [
         {
           "id": "creatify_workflow",
@@ -134,20 +139,23 @@
           "image_size": [1440, 1100],
           "crop": [1440, 870, 0, 140],
           "role": "URL-to-video workflow basis"
-        },
+        }
+      ],
+      "internal_reference_crops": [
         {
           "id": "creatify_case_summary",
           "path": "../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png",
           "image_size": [1440, 1100],
           "crop": [1440, 740, 0, 190],
-          "role": "case-study source-page support"
+          "role": "Alibaba case-study source context; internal reference only by default"
         }
       ]
     },
     {
       "page": 12,
-      "title": "Evidence pattern: workflow step, source, score, handoff",
+      "title": "Evidence pattern: workflow step, source, review context, handoff",
       "lead_example": "Creatify",
+      "customer_copy_decision": "Use review/result context and owner-route wording; keep Alibaba result-strip crop internal unless explicitly approved; do not use severity scoring.",
       "source_crops": [
         {
           "id": "creatify_workflow",
@@ -162,13 +170,15 @@
           "image_size": [1129, 1254],
           "crop": null,
           "role": "hook/body/CTA anatomy cue"
-        },
+        }
+      ],
+      "internal_reference_crops": [
         {
           "id": "creatify_case_result_strip",
           "path": "../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png",
           "image_size": [1440, 1100],
           "crop": [1280, 360, 70, 740],
-          "role": "source-page reported result support"
+          "role": "Alibaba case-study reported result strip; internal reference only by default"
         }
       ]
     }
