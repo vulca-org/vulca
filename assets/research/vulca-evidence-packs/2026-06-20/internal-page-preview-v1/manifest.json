@@ -1,0 +1,176 @@
+{
+  "status": "internal_review_preview_only",
+  "date": "2026-06-21",
+  "scope": "VULCA Solution Pack v1 master PDF pages 7-12 component preview",
+  "external_use_boundary": [
+    "Do not use raw source crops in an external PDF unless cleared.",
+    "Redraw, mask, or crop annotated-safe before external use.",
+    "Do not include raw local paths, filenames, capture-batch ids, or source-log filenames in customer-facing copy.",
+    "Named companies are public market examples only, not customer relationships or audit targets."
+  ],
+  "pages": [
+    {
+      "page": 7,
+      "title": "Lane A: Product-truth and claim evidence",
+      "lead_example": "PROYA",
+      "reserve_example": "Genki Forest",
+      "source_crops": [
+        {
+          "id": "proya_lead_wide",
+          "path": "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
+          "image_size": [5447, 3631],
+          "crop": [5447, 3064, 0, 280],
+          "role": "queue hero / campaign-product display"
+        },
+        {
+          "id": "proya_event",
+          "path": "../real-asset-batch-02/proya/images/11-acef6bb4a2d3.jpg",
+          "image_size": [1920, 1280],
+          "crop": [1500, 840, 210, 150],
+          "role": "offline event / trade-show context"
+        },
+        {
+          "id": "proya_award",
+          "path": "../real-asset-batch-02/proya/images/12-3aa4e2e2d146.jpg",
+          "image_size": [1995, 1334],
+          "crop": [1500, 900, 250, 180],
+          "role": "2026 award/source cue"
+        }
+      ]
+    },
+    {
+      "page": 8,
+      "title": "Evidence pattern: claim, source, representation, owner",
+      "lead_example": "PROYA",
+      "source_crops": [
+        {
+          "id": "proya_detail",
+          "path": "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
+          "image_size": [5447, 3631],
+          "crop": [3850, 2165, 700, 900],
+          "role": "evidence-card annotated visual crop"
+        }
+      ]
+    },
+    {
+      "page": 9,
+      "title": "Lane B: AI publishability and generated asset context",
+      "lead_example": "Seedream / BytePlus",
+      "reserve_example": "Kling AI",
+      "source_crops": [
+        {
+          "id": "seedream_title",
+          "path": "../capture-batch-02/seedream-45-official-page.jpg",
+          "image_size": [1440, 1100],
+          "crop": [1440, 430, 0, 630],
+          "role": "public model/version context"
+        },
+        {
+          "id": "byteplus_model_list",
+          "path": "../capture-batch-02/byteplus-model-list-seedream-5.jpg",
+          "image_size": [1440, 1100],
+          "crop": [930, 420, 270, 120],
+          "role": "model-list / image-generation category context"
+        },
+        {
+          "id": "byteplus_tutorial",
+          "path": "../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg",
+          "image_size": [1440, 1100],
+          "crop": [900, 500, 285, 120],
+          "role": "tutorial / input-mode / prompt-source context"
+        },
+        {
+          "id": "byteplus_model_page",
+          "path": "../capture-batch-02/byteplus-seedream-model-page.jpg",
+          "image_size": [1440, 1100],
+          "crop": [900, 480, 285, 120],
+          "role": "model capability / input-output / output-format context"
+        },
+        {
+          "id": "kling_reserve",
+          "path": "../capture-batch-02/kling-video-o1-multimodal-reference-guide.jpg",
+          "image_size": [1440, 1100],
+          "crop": [1100, 620, 180, 150],
+          "role": "video/reference workflow reserve only"
+        }
+      ]
+    },
+    {
+      "page": 10,
+      "title": "Evidence pattern: input, output, label, owner",
+      "lead_example": "Seedream / BytePlus",
+      "source_crops": [
+        {
+          "id": "byteplus_model_page",
+          "path": "../capture-batch-02/byteplus-seedream-model-page.jpg",
+          "image_size": [1440, 1100],
+          "crop": [900, 480, 285, 120],
+          "role": "primary model/version and output-format source record"
+        },
+        {
+          "id": "byteplus_tutorial",
+          "path": "../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg",
+          "image_size": [1440, 1100],
+          "crop": [900, 500, 285, 120],
+          "role": "prompt/source and input-mode source record"
+        },
+        {
+          "id": "byteplus_model_list",
+          "path": "../capture-batch-02/byteplus-model-list-seedream-5.jpg",
+          "image_size": [1440, 1100],
+          "crop": [930, 420, 270, 120],
+          "role": "model-list support"
+        }
+      ]
+    },
+    {
+      "page": 11,
+      "title": "Lane C: AI ad workflow and creative automation evidence",
+      "lead_example": "Creatify",
+      "source_crops": [
+        {
+          "id": "creatify_workflow",
+          "path": "../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png",
+          "image_size": [1440, 1100],
+          "crop": [1440, 870, 0, 140],
+          "role": "URL-to-video workflow basis"
+        },
+        {
+          "id": "creatify_case_summary",
+          "path": "../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png",
+          "image_size": [1440, 1100],
+          "crop": [1440, 740, 0, 190],
+          "role": "case-study source-page support"
+        }
+      ]
+    },
+    {
+      "page": 12,
+      "title": "Evidence pattern: workflow step, source, score, handoff",
+      "lead_example": "Creatify",
+      "source_crops": [
+        {
+          "id": "creatify_workflow",
+          "path": "../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png",
+          "image_size": [1440, 1100],
+          "crop": [1440, 870, 0, 140],
+          "role": "product-link to generated-ad workflow source record"
+        },
+        {
+          "id": "creatify_anatomy",
+          "path": "../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png",
+          "image_size": [1129, 1254],
+          "crop": null,
+          "role": "hook/body/CTA anatomy cue"
+        },
+        {
+          "id": "creatify_case_result_strip",
+          "path": "../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png",
+          "image_size": [1440, 1100],
+          "crop": [1280, 360, 70, 740],
+          "role": "source-page reported result support"
+        }
+      ]
+    }
+  ]
+}

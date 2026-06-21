@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>VULCA Solution Pack v1 - Internal Page Preview</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17201c;
+      --muted: #66736d;
+      --line: #d9dfdb;
+      --paper: #ffffff;
+      --surface: #f7f8f5;
+      --evidence: #087a74;
+      --evidence-soft: #dff1ee;
+      --risk: #b23a2f;
+      --danger-soft: #f8e3df;
+      --owner: #8a5a00;
+      --owner-soft: #f6ead0;
+      --neutral: #52606a;
+      --neutral-soft: #e8edf0;
+      --shadow: 0 18px 50px rgba(20, 25, 23, .12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #eef2ef;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .shell {
+      width: min(1440px, calc(100vw - 48px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 24px;
+    }
+
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--risk);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(30px, 4vw, 56px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .pill,
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 26px;
+      padding: 5px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .pill.critical,
+    .chip.risk {
+      border-color: #edb9b2;
+      background: var(--danger-soft);
+      color: var(--risk);
+    }
+
+    .chip.evidence {
+      border-color: #b4d9d3;
+      background: var(--evidence-soft);
+      color: var(--evidence);
+    }
+
+    .chip.owner {
+      border-color: #e5cc96;
+      background: var(--owner-soft);
+      color: var(--owner);
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 20px;
+      margin-bottom: 24px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .intro p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      align-content: start;
+    }
+
+    .toc a {
+      min-width: 72px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .page {
+      position: relative;
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 24px;
+      min-height: 720px;
+      margin: 0 0 26px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 7px;
+      background: linear-gradient(90deg, var(--evidence), #a97112 48%, var(--risk));
+    }
+
+    .page-info {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .page-number {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .message {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.58;
+    }
+
+    .lane {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .lane strong {
+      font-size: 13px;
+    }
+
+    .lane span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .component {
+      min-width: 0;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .queue {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .queue.small {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .tile {
+      position: relative;
+      display: grid;
+      gap: 9px;
+      min-height: 170px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .tile.hero {
+      grid-row: span 2;
+      min-height: 354px;
+    }
+
+    .tile h3,
+    .card h3,
+    .module h3 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .tile p,
+    .module p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .clip {
+      position: relative;
+      min-height: 92px;
+      border: 1px solid rgba(23, 32, 28, .16);
+      border-radius: 7px;
+      background: #dce2de;
+      overflow: hidden;
+    }
+
+    .clip img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      max-width: none;
+      transform-origin: top left;
+    }
+
+    .clip .missing {
+      display: grid;
+      height: 100%;
+      min-height: 120px;
+      place-items: center;
+      padding: 12px;
+      color: var(--risk);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .clip-label {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      z-index: 2;
+      max-width: calc(100% - 16px);
+      padding: 5px 7px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .91);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .internal-ribbon {
+      position: absolute;
+      z-index: 3;
+      top: 8px;
+      right: 8px;
+      max-width: calc(100% - 16px);
+      padding: 5px 7px;
+      border-radius: 5px;
+      background: var(--risk);
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .drawn {
+      position: relative;
+      min-height: 116px;
+      border: 1px dashed #b7c2bc;
+      border-radius: 7px;
+      background:
+        linear-gradient(135deg, rgba(8, 122, 116, .14), rgba(138, 90, 0, .12)),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, .55) 0 18px, rgba(255, 255, 255, .18) 18px 36px);
+      overflow: hidden;
+    }
+
+    .drawn::before,
+    .drawn::after {
+      content: "";
+      position: absolute;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .78);
+      border: 1px solid rgba(23, 32, 28, .10);
+    }
+
+    .drawn::before {
+      left: 14px;
+      top: 16px;
+      width: 42%;
+      height: 56%;
+    }
+
+    .drawn::after {
+      right: 14px;
+      top: 22px;
+      width: 28%;
+      height: 38%;
+    }
+
+    .source-row,
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .step {
+      position: relative;
+      display: grid;
+      gap: 8px;
+      min-height: 120px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .step:not(:last-child)::after {
+      content: ">";
+      position: absolute;
+      right: -9px;
+      top: 46%;
+      z-index: 2;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: white;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 18px;
+      text-align: center;
+    }
+
+    .step b {
+      color: var(--evidence);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .step span {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .card {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 600px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .card-head,
+    .card-foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .card-foot {
+      border-top: 1px solid var(--line);
+      border-bottom: 0;
+      justify-content: flex-start;
+    }
+
+    .card-body {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 16px;
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .annotated {
+      position: relative;
+      min-width: 0;
+    }
+
+    .callout-dot {
+      position: absolute;
+      z-index: 4;
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border: 2px solid white;
+      border-radius: 50%;
+      background: var(--risk);
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .22);
+    }
+
+    .panel {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .finding {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .finding h4 {
+      margin: 0 0 7px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .finding p,
+    .finding li {
+      margin: 0;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .finding ul {
+      display: grid;
+      gap: 7px;
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .heatmap {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .heat {
+      display: grid;
+      gap: 6px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper);
+    }
+
+    .bar {
+      height: 7px;
+      border-radius: 999px;
+      background: var(--neutral-soft);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      background: var(--risk);
+    }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .source-card {
+      display: grid;
+      gap: 9px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .footer-note {
+      position: absolute;
+      right: 24px;
+      bottom: 16px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 1100px) {
+      .shell {
+        width: min(100vw - 24px, 900px);
+      }
+
+      .topbar,
+      .intro,
+      .page,
+      .card-body {
+        grid-template-columns: 1fr;
+      }
+
+      .meta,
+      .toc {
+        justify-content: flex-start;
+      }
+
+      .queue,
+      .queue.small,
+      .source-grid,
+      .workflow {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .tile.hero {
+        grid-row: auto;
+      }
+
+      .step:not(:last-child)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100vw - 16px, 560px);
+      }
+
+      .page {
+        padding: 18px;
+      }
+
+      .queue,
+      .queue.small,
+      .source-grid,
+      .workflow,
+      .heatmap {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="kicker">Internal source-backed preview - not for external use</p>
+        <h1>VULCA Solution Pack v1 page components</h1>
+      </div>
+      <div class="meta">
+        <span class="pill critical">raw crops are internal only</span>
+        <span class="pill">Pages 7-12</span>
+        <span class="pill">2026-06-21</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>
+        This preview turns the accepted storyboard into reviewable page
+        components. It uses true source-backed crops to check composition,
+        case-packet logic, callouts, and field language. Customer-facing export
+        still requires redraw, masking, clearance, and the final safety gate.
+      </p>
+      <nav class="toc" aria-label="Page links">
+        <a href="#p7">Page 7</a>
+        <a href="#p8">Page 8</a>
+        <a href="#p9">Page 9</a>
+        <a href="#p10">Page 10</a>
+        <a href="#p11">Page 11</a>
+        <a href="#p12">Page 12</a>
+      </nav>
+    </section>
+
+    <section class="page" id="p7">
+      <aside class="page-info">
+        <span class="page-number">Page 7 / Lane A</span>
+        <h2>Product-truth and claim evidence</h2>
+        <p class="message">
+          This lane turns campaign claims, product representation, award or
+          collaboration language, and ecommerce reuse into a source-backed
+          evidence queue.
+        </p>
+        <div class="lane">
+          <strong>Production decision</strong>
+          <span>PROYA leads with current source-backed material. Genki Forest stays reserve and should not compete with the lead packet.</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip evidence">2026 source priority</span>
+          <span class="chip owner">owner route visible</span>
+          <span class="chip risk">no negative finding</span>
+        </div>
+      </aside>
+
+      <div class="component">
+        <div class="queue">
+          <article class="tile hero">
+            <span class="internal-ribbon">internal crop</span>
+            <div class="clip" data-src="../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg" data-crop="5447,3064,0,280" data-label="PROYA lead source crop"></div>
+            <h3>PROYA lead: campaign-product display</h3>
+            <p>Use as the redrawn queue hero after masking and source-safe annotation.</p>
+          </article>
+          <article class="tile">
+            <span class="internal-ribbon">internal crop</span>
+            <div class="clip" data-src="../real-asset-batch-02/proya/images/11-acef6bb4a2d3.jpg" data-crop="1500,840,210,150" data-label="event support crop"></div>
+            <h3>Offline event cue</h3>
+            <p>Secondary source-context chip; not a hero.</p>
+          </article>
+          <article class="tile">
+            <span class="internal-ribbon">internal crop</span>
+            <div class="clip" data-src="../real-asset-batch-02/proya/images/12-3aa4e2e2d146.jpg" data-crop="1500,900,250,180" data-label="award support crop"></div>
+            <h3>Award/source cue</h3>
+            <p>Use only as a public source cue, not as a performance claim.</p>
+          </article>
+          <article class="tile">
+            <div class="drawn"></div>
+            <h3>Genki reserve</h3>
+            <p>Small comparator from product-page context if Page 7 needs category width.</p>
+          </article>
+          <article class="tile">
+            <div class="drawn"></div>
+            <h3>PDP / source record</h3>
+            <p>Neutral redrawn record chip; no local filename in final PDF.</p>
+          </article>
+          <article class="tile">
+            <div class="drawn"></div>
+            <h3>Owner route</h3>
+            <p>Claim cue to review question to evidence card to release owner.</p>
+          </article>
+        </div>
+        <div class="source-row">
+          <span class="chip evidence">public product/campaign surface</span>
+          <span class="chip evidence">award or news source</span>
+          <span class="chip owner">brand / ecommerce owner</span>
+          <span class="chip risk">external redraw required</span>
+        </div>
+      </div>
+      <span class="footer-note">Sample preview - not legal advice</span>
+    </section>
+
+    <section class="page" id="p8">
+      <aside class="page-info">
+        <span class="page-number">Page 8 / Evidence Card</span>
+        <h2>Claim, source, representation, owner</h2>
+        <p class="message">
+          The card asks what should be confirmed before reuse. It does not say
+          the public example has a defect.
+        </p>
+        <div class="lane">
+          <strong>Finding style</strong>
+          <span>The claim, product visual, source material, approval owner, and reuse context should be connected before cross-channel use.</span>
+        </div>
+      </aside>
+
+      <div class="component">
+        <article class="card">
+          <div class="card-head">
+            <h3>Product-Truth evidence card</h3>
+            <div class="chip-row">
+              <span class="chip risk">state: needs_review</span>
+              <span class="chip owner">severity: 2</span>
+              <span class="chip evidence">public source basis</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="annotated">
+              <span class="internal-ribbon">internal crop</span>
+              <div class="clip" data-src="../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg" data-crop="3850,2165,700,900" data-label="detail crop for redraw"></div>
+              <span class="callout-dot" style="left:18%;top:18%;" aria-label="Callout 1: campaign and source text cue" title="Callout 1: campaign and source text cue">1</span>
+              <span class="callout-dot" style="left:56%;top:45%;" aria-label="Callout 2: product representation and packshot area" title="Callout 2: product representation and packshot area">2</span>
+              <span class="callout-dot" style="left:8%;top:67%;" aria-label="Callout 3: public source record and capture date" title="Callout 3: public source record and capture date">3</span>
+              <span class="callout-dot" style="left:78%;top:70%;" aria-label="Callout 4: channel reuse and owner route question" title="Callout 4: channel reuse and owner route question">4</span>
+            </div>
+            <div class="panel">
+              <div class="finding">
+                <h4>Callouts</h4>
+                <ul>
+                  <li>Campaign/source text cue</li>
+                  <li>Product representation / packshot area</li>
+                  <li>Public source record and capture date</li>
+                  <li>Channel reuse / owner route question</li>
+                </ul>
+              </div>
+              <div class="finding">
+                <h4>Suggested action</h4>
+                <p>Attach source material, claim owner, channel variants, and release decision owner before reuse.</p>
+              </div>
+              <div class="heatmap">
+                <div class="heat"><b>claim/source</b><div class="bar"><span style="width:72%"></span></div></div>
+                <div class="heat"><b>representation</b><div class="bar"><span style="width:62%"></span></div></div>
+                <div class="heat"><b>IP/context</b><div class="bar"><span style="width:54%"></span></div></div>
+                <div class="heat"><b>channel reuse</b><div class="bar"><span style="width:68%"></span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-foot">
+            <span class="chip evidence">official public page + downloaded image + page screenshot</span>
+            <span class="chip owner">brand / ecommerce release owner</span>
+            <span class="chip risk">does not claim legal approval, rights ownership, compliance, customer relationship, or defect</span>
+          </div>
+        </article>
+      </div>
+      <span class="footer-note">Sample preview - not legal advice</span>
+    </section>
+
+    <section class="page" id="p9">
+      <aside class="page-info">
+        <span class="page-number">Page 9 / Lane B</span>
+        <h2>AI publishability and generated asset context</h2>
+        <p class="message">
+          This lane turns prompt/reference context, model or tool context, output
+          state, AI labeling posture, and export/share states into a reviewable
+          publishability record.
+        </p>
+        <div class="lane">
+          <strong>Production decision</strong>
+          <span>Seedream / BytePlus is the lead packet. Kling is reserve for video/reference workflow context only.</span>
+        </div>
+      </aside>
+
+      <div class="component">
+        <div class="queue small">
+          <article class="tile">
+            <span class="internal-ribbon">internal crop</span>
+            <div class="clip" data-src="../capture-batch-02/seedream-45-official-page.jpg" data-crop="1440,430,0,630" data-label="model/version context"></div>
+            <h3>Model/version</h3>
+            <p>Public source-page context; not a VULCA model-quality claim.</p>
+          </article>
+          <article class="tile">
+            <span class="internal-ribbon">internal crop</span>
+            <div class="clip" data-src="../capture-batch-02/byteplus-model-list-seedream-5.jpg" data-crop="930,420,270,120" data-label="model-list context"></div>
+            <h3>Category context</h3>
+            <p>Image-generation model list as source basis, not ranking evidence.</p>
+          </article>
+          <article class="tile">
+            <span class="internal-ribbon">internal crop</span>
+            <div class="clip" data-src="../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg" data-crop="900,500,285,120" data-label="tutorial source"></div>
+            <h3>Input mode</h3>
+            <p>Tutorial/prompt source context for evidence-card requirements.</p>
+          </article>
+          <article class="tile">
+            <span class="internal-ribbon">internal crop</span>
+            <div class="clip" data-src="../capture-batch-02/byteplus-seedream-model-page.jpg" data-crop="900,480,285,120" data-label="output-format context"></div>
+            <h3>Output context</h3>
+            <p>Use as source-record basis for output state and format questions.</p>
+          </article>
+          <article class="tile">
+            <div class="drawn"></div>
+            <h3>Label / disclosure</h3>
+            <p>Neutral chip asks whether AI labeling posture is visible or required.</p>
+          </article>
+          <article class="tile">
+            <span class="internal-ribbon">reserve crop</span>
+            <div class="clip" data-src="../capture-batch-02/kling-video-o1-multimodal-reference-guide.jpg" data-crop="1100,620,180,150" data-label="Kling reserve"></div>
+            <h3>Kling reserve</h3>
+            <p>Small video/reference comparator only; visually document-heavy for lead.</p>
+          </article>
+        </div>
+        <div class="source-row">
+          <span class="chip evidence">model/version page</span>
+          <span class="chip evidence">tutorial workflow surface</span>
+          <span class="chip owner">product / platform owner</span>
+          <span class="chip risk">no model quality or safety claim</span>
+        </div>
+      </div>
+      <span class="footer-note">Sample preview - not legal advice</span>
+    </section>
+
+    <section class="page" id="p10">
+      <aside class="page-info">
+        <span class="page-number">Page 10 / Evidence Card</span>
+        <h2>Input, output, label, owner</h2>
+        <p class="message">
+          Generated examples need visible input/reference context, output state,
+          label posture, and human release ownership before gallery, demo,
+          export, or campaign reuse.
+        </p>
+        <div class="lane">
+          <strong>Boundary</strong>
+          <span>No model quality, copyright-clearance, platform-policy, safety-certification, or customer-relationship claim.</span>
+        </div>
+      </aside>
+
+      <div class="component">
+        <article class="card">
+          <div class="card-head">
+            <h3>AI Publishability evidence card</h3>
+            <div class="chip-row">
+              <span class="chip risk">state: needs_review</span>
+              <span class="chip owner">severity: 3</span>
+              <span class="chip evidence">source records</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="panel">
+              <div class="source-grid">
+                <div class="source-card">
+                  <span class="internal-ribbon">internal</span>
+                  <div class="clip" data-src="../capture-batch-02/byteplus-seedream-model-page.jpg" data-crop="900,480,285,120" data-label="model page"></div>
+                  <h3>1. Model/version context</h3>
+                </div>
+                <div class="source-card">
+                  <span class="internal-ribbon">internal</span>
+                  <div class="clip" data-src="../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg" data-crop="900,500,285,120" data-label="tutorial"></div>
+                  <h3>2. Input/source requirement</h3>
+                </div>
+                <div class="source-card">
+                  <span class="internal-ribbon">internal</span>
+                  <div class="clip" data-src="../capture-batch-02/byteplus-model-list-seedream-5.jpg" data-crop="930,420,270,120" data-label="model list"></div>
+                  <h3>3. Output context</h3>
+                </div>
+              </div>
+              <div class="workflow">
+                <div class="step"><b>Trace</b><span>prompt/reference</span></div>
+                <div class="step"><b>Context</b><span>model or mode</span></div>
+                <div class="step"><b>State</b><span>output / demo</span></div>
+                <div class="step"><b>Posture</b><span>label / disclosure</span></div>
+                <div class="step"><b>Owner</b><span>release decision</span></div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="finding">
+                <h4>Callouts</h4>
+                <ul>
+                  <li>Model/version context</li>
+                  <li>Input or reference requirement</li>
+                  <li>Output state / output format</li>
+                  <li>Label/disclosure and human owner route</li>
+                </ul>
+              </div>
+              <div class="finding">
+                <h4>Suggested action</h4>
+                <p>Provide prompt/result pairs, source references, label posture, export/share state, and release owner.</p>
+              </div>
+              <div class="finding">
+                <h4>Does not claim</h4>
+                <p>Model quality, copyright clearance, platform approval, policy compliance, safety certification, or customer relationship.</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-foot">
+            <span class="chip evidence">public model page + tutorial capture + model-list capture</span>
+            <span class="chip owner">product / platform release owner</span>
+          </div>
+        </article>
+      </div>
+      <span class="footer-note">Sample preview - not legal advice</span>
+    </section>
+
+    <section class="page" id="p11">
+      <aside class="page-info">
+        <span class="page-number">Page 11 / Lane C</span>
+        <h2>AI ad workflow and creative automation evidence</h2>
+        <p class="message">
+          This lane turns ad generation, product-to-video workflows, creative
+          scoring, shop flows, campaign reuse, and evidence handoff into a
+          release queue.
+        </p>
+        <div class="lane">
+          <strong>Production decision</strong>
+          <span>Creatify leads because the product-link-to-video workflow gives the clearest commercial story.</span>
+        </div>
+      </aside>
+
+      <div class="component">
+        <div class="annotated">
+          <span class="internal-ribbon">internal crop</span>
+          <div class="clip" data-src="../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png" data-crop="1440,870,0,140" data-label="Creatify workflow source basis"></div>
+        </div>
+        <div class="workflow">
+          <div class="step"><b>1</b><span>product URL / source input</span></div>
+          <div class="step"><b>2</b><span>generated video candidates</span></div>
+          <div class="step"><b>3</b><span>edit / review state</span></div>
+          <div class="step"><b>4</b><span>export or campaign handoff</span></div>
+          <div class="step"><b>5</b><span>evidence owner</span></div>
+        </div>
+        <div class="source-row">
+          <span class="chip evidence">product-to-video workflow</span>
+          <span class="chip evidence">case-study source context</span>
+          <span class="chip owner">creative operations owner</span>
+          <span class="chip risk">not a vendor critique</span>
+        </div>
+      </div>
+      <span class="footer-note">Sample preview - not legal advice</span>
+    </section>
+
+    <section class="page" id="p12">
+      <aside class="page-info">
+        <span class="page-number">Page 12 / Evidence Card</span>
+        <h2>Workflow step, source, score, handoff</h2>
+        <p class="message">
+          Ad-generation workflows need visible source inputs, scoring context,
+          edit/export state, campaign reuse context, and human handoff ownership
+          before a campaign decision.
+        </p>
+        <div class="lane">
+          <strong>Closing role</strong>
+          <span>This page closes the three-lane case group before the safety boundary and pilot CTA.</span>
+        </div>
+      </aside>
+
+      <div class="component">
+        <article class="card">
+          <div class="card-head">
+            <h3>AI Ad Workflow evidence card</h3>
+            <div class="chip-row">
+              <span class="chip risk">state: needs_review</span>
+              <span class="chip owner">severity: 3</span>
+              <span class="chip evidence">handoff evidence</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="panel">
+              <div class="annotated">
+                <span class="internal-ribbon">internal crop</span>
+                <div class="clip" data-src="../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png" data-crop="1440,870,0,140" data-label="workflow crop for redraw"></div>
+                <span class="callout-dot" style="left:12%;top:24%;" aria-label="Callout 1: product or input source" title="Callout 1: product or input source">1</span>
+                <span class="callout-dot" style="left:32%;top:42%;" aria-label="Callout 2: template or reference context" title="Callout 2: template or reference context">2</span>
+                <span class="callout-dot" style="left:52%;top:26%;" aria-label="Callout 3: creative score or review context" title="Callout 3: creative score or review context">3</span>
+                <span class="callout-dot" style="left:70%;top:55%;" aria-label="Callout 4: edit or export state" title="Callout 4: edit or export state">4</span>
+                <span class="callout-dot" style="left:86%;top:72%;" aria-label="Callout 5: campaign reuse and evidence handoff" title="Callout 5: campaign reuse and evidence handoff">5</span>
+              </div>
+              <div class="source-grid">
+                <div class="source-card">
+                  <span class="internal-ribbon">internal</span>
+                  <div class="clip" data-src="../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png" data-label="Hook / Body / CTA anatomy"></div>
+                  <h3>Anatomy cue</h3>
+                </div>
+                <div class="source-card">
+                  <span class="internal-ribbon">internal</span>
+                  <div class="clip" data-src="../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png" data-crop="1280,360,70,740" data-label="source-page result strip"></div>
+                  <h3>Source-page support</h3>
+                </div>
+                <div class="source-card">
+                  <div class="drawn"></div>
+                  <h3>Redrawn final target</h3>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="finding">
+                <h4>Callouts</h4>
+                <ul>
+                  <li>Product/input source</li>
+                  <li>Template or reference context</li>
+                  <li>Creative score or review context</li>
+                  <li>Edit/export state</li>
+                  <li>Campaign reuse and evidence handoff</li>
+                </ul>
+              </div>
+              <div class="finding">
+                <h4>Suggested action</h4>
+                <p>Attach product inputs, reference context, score meaning, export state, reuse target, and owner route.</p>
+              </div>
+              <div class="finding">
+                <h4>Does not claim</h4>
+                <p>Vendor critique, ad-performance prediction, replacement of existing checkers, or generated-ad approval.</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-foot">
+            <span class="chip evidence">product-to-video workflow</span>
+            <span class="chip evidence">creative scoring context</span>
+            <span class="chip owner">growth / creative ops owner</span>
+          </div>
+        </article>
+      </div>
+      <span class="footer-note">Sample preview - not legal advice</span>
+    </section>
+  </main>
+
+  <script>
+    function renderClip(node) {
+      const src = node.dataset.src;
+      const cropText = node.dataset.crop;
+      const label = node.dataset.label || "source crop";
+      const img = new Image();
+      const labelNode = document.createElement("span");
+      labelNode.className = "clip-label";
+      labelNode.textContent = label;
+      img.alt = label;
+      node.setAttribute("role", "img");
+      node.setAttribute("aria-label", label);
+
+      function applyCrop() {
+        const crop = cropText ? cropText.split(",").map(Number) : null;
+        const width = node.clientWidth || 300;
+
+        if (!crop) {
+          node.style.aspectRatio = "4 / 3";
+          img.style.width = "100%";
+          img.style.height = "100%";
+          img.style.objectFit = "cover";
+          img.style.transform = "none";
+          return;
+        }
+
+        const [cw, ch, x, y] = crop;
+        const scale = width / cw;
+        node.style.aspectRatio = `${cw} / ${ch}`;
+        img.style.width = `${img.naturalWidth * scale}px`;
+        img.style.height = `${img.naturalHeight * scale}px`;
+        img.style.transform = `translate(${-x * scale}px, ${-y * scale}px)`;
+      }
+
+      img.onload = applyCrop;
+      img.onerror = function () {
+        node.innerHTML = "";
+        const missing = document.createElement("div");
+        missing.className = "missing";
+        missing.textContent = `Missing source: ${src}`;
+        node.appendChild(missing);
+      };
+
+      img.src = src;
+      node.appendChild(img);
+      node.appendChild(labelNode);
+
+      let resizeFrame = 0;
+      window.addEventListener("resize", function () {
+        cancelAnimationFrame(resizeFrame);
+        resizeFrame = requestAnimationFrame(applyCrop);
+      });
+    }
+
+    document.querySelectorAll(".clip[data-src]").forEach(renderClip);
+  </script>
+</body>
+</html>
