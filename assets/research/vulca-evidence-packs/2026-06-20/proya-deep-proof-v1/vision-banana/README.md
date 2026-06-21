@@ -27,6 +27,10 @@ Vision Banana endpoint result and not a SAM/DINO layer split.
   human-tightened VULCA field overlay derived from mask components.
 - `proya-vision-banana-tight-semantic-overlay-v3.json`:
   field manifest for the v3 overlay.
+- `proya-source-safe-distilled-card-v1.png`:
+  customer-view candidate distilled from the internal proof.
+- `proya-source-safe-distilled-card-v1.json`:
+  manifest and external-use boundary for the distilled card.
 
 ## Use
 
@@ -40,3 +44,7 @@ Use the v3 overlay to review the Page 7/8 PROYA evidence-card logic:
 
 Do not use the raw annotated image in a customer-facing PDF. Customer variants
 should use a source-safe crop, simplified evidence card, mask, or redraw.
+
+The distilled card is the current source-safe candidate for that customer
+variant. It keeps the public-example frame and VULCA field structure while
+removing the raw source photo, people, store crop, and debug labels.

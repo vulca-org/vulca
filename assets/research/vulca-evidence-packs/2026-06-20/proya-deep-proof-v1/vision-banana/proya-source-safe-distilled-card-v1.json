@@ -1,0 +1,34 @@
+{
+  "status": "internal_review_only",
+  "artifact": "proya-source-safe-distilled-card-v1.png",
+  "purpose": "Source-safe distilled customer-view candidate derived from the PROYA Vision Banana fallback proof.",
+  "derived_from": [
+    "proya-vision-banana-contact-sheet.png",
+    "proya-vision-banana-tight-semantic-overlay-v3.png",
+    "proya-vision-banana-tight-semantic-overlay-v3.json"
+  ],
+  "customer_visible_candidate": true,
+  "contains_raw_source_photo": false,
+  "contains_raw_people_or_store_crop": false,
+  "company_name_policy": "PROYA may appear only as a public example, not as a customer, partner, endorser, or authorization source.",
+  "fields": [
+    "claim.source_text",
+    "representation.product_surface",
+    "source_context.channel_cue",
+    "review.likeness_question",
+    "reuse_context.offer_mechanic",
+    "owner_route.release_owner"
+  ],
+  "external_use_boundary": [
+    "Company names appear as public examples only.",
+    "No customer, partner, endorser, or authorization claim.",
+    "No legal, rights, compliance, platform, or release-readiness conclusion.",
+    "Raw proof stays internal; customer PDF gets source-safe treatment."
+  ],
+  "readability_revision": "Regenerated at 1500x900 with larger minimum text and shorter field copy after design review flagged small text density.",
+  "next_review_questions": [
+    "Should the customer PDF lead with this distilled card or a lighter diagram?",
+    "Should the public example name remain visible on the card header?",
+    "Which source URL and capture date should be attached before export?"
+  ]
+}

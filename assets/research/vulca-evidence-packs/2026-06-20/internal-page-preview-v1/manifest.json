@@ -23,7 +23,8 @@
             "local_assets": [
                 "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
                 "../proya-deep-proof-v1/vision-banana/proya-vision-banana-contact-sheet.png",
-                "../proya-deep-proof-v1/vision-banana/proya-vision-banana-tight-semantic-overlay-v3.png"
+                "../proya-deep-proof-v1/vision-banana/proya-vision-banana-tight-semantic-overlay-v3.png",
+                "../proya-deep-proof-v1/vision-banana/proya-source-safe-distilled-card-v1.png"
             ],
       "public_sources": [
         {
@@ -266,6 +267,14 @@
                     "provider_requested": "vision-banana",
                     "provider_resolved": "palette-mask",
                     "role": "human-tightened VULCA field overlay derived from Vision Banana fallback masks"
+                },
+                {
+                    "id": "proya_source_safe_distilled_card_v1",
+                    "path": "../proya-deep-proof-v1/vision-banana/proya-source-safe-distilled-card-v1.png",
+                    "manifest_path": "../proya-deep-proof-v1/vision-banana/proya-source-safe-distilled-card-v1.json",
+                    "provider_requested": "manual-distillation-from-vulca-fields",
+                    "provider_resolved": "source-safe-diagram",
+                    "role": "customer-facing candidate distilled from the internal proof; contains no raw source photo"
                 }
             ]
         },

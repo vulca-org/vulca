@@ -37,6 +37,16 @@ a human-reviewed VULCA annotation built from those mask components, not a SAM or
 DINO layer split. This is intentional for the current review pass: it is more
 legible for source, representation, review-question, and owner-route discussion.
 
+Page 8 also includes a source-safe distilled card candidate:
+
+```text
+../proya-deep-proof-v1/vision-banana/proya-source-safe-distilled-card-v1.png
+```
+
+That distilled card is the bridge from internal proof to customer-facing PDF:
+it removes the raw source photo, people, store crop, and debug labels while
+preserving the VULCA field logic.
+
 Customer-facing exports should not use the raw annotated image. They should use
 a source-safe crop, redraw, or simplified evidence-card visual derived from the
 fields.

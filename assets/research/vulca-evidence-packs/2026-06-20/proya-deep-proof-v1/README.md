@@ -77,6 +77,8 @@ Current outputs:
 - `vision-banana/proya-vision-banana-perception.json`
 - `vision-banana/proya-vision-banana-tight-semantic-overlay-v3.png`
 - `vision-banana/proya-vision-banana-tight-semantic-overlay-v3.json`
+- `vision-banana/proya-source-safe-distilled-card-v1.png`
+- `vision-banana/proya-source-safe-distilled-card-v1.json`
 
 Interpretation:
 
@@ -89,6 +91,10 @@ Interpretation:
   cues.
 - It is not a legal, rights, platform, model-safety, or release-readiness
   conclusion.
+
+The source-safe distilled card is a manually composed customer-view candidate
+derived from the VULCA fields. It contains no raw source photo, people, store
+crop, or debug overlay.
 
 ## Next Technical Step
 

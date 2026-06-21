@@ -666,9 +666,27 @@
       height: auto;
     }
 
+    .artifact-figure figcaption {
+      padding: 9px 11px;
+      border-top: 1px solid rgba(23, 32, 28, .14);
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
     .artifact-figure.compact img {
       aspect-ratio: 4 / 3;
       object-fit: cover;
+    }
+
+    .distilled-preview {
+      margin-top: 12px;
+    }
+
+    .distilled-full {
+      margin: 0 16px 16px;
     }
 
     .proof-summary {
@@ -1049,6 +1067,7 @@
             <li>这页回答“客户拿到 VULCA 后会看到什么”：不是一堆截图，而是一张可执行的 evidence card。</li>
             <li>图上的 1a/1b/2/3/4/5/6 标注对应 source text、product representation、source context、review question 和 owner route。</li>
             <li>这一版不是 SAM/DINO 输出，而是 Vision Banana fallback mask 加人工收紧框，用来验证字段读法是否足够清晰。</li>
+            <li>下面的蒸馏图展示客户版应看到的 source-safe 形态：抽象 source surface、字段读取、evidence card 和 handoff。</li>
             <li>正式 PDF 需要把来源 URL、capture date、source type 和 release owner 补齐。</li>
           </ul>
         </div>
@@ -1103,6 +1122,10 @@
               <div class="readiness-note">Expression target: internal page shows the technical proof; final customer page should show the distilled field-completion card, not this raw annotated source image.</div>
             </div>
           </div>
+          <figure class="artifact-figure distilled-full" aria-label="Source-safe distilled customer-facing evidence card candidate">
+            <img src="../proya-deep-proof-v1/vision-banana/proya-source-safe-distilled-card-v1.png" alt="Source-safe distilled customer-facing evidence card candidate">
+            <figcaption>Customer-facing distillation candidate: no raw source photo, no people or store crop, company name only as public example.</figcaption>
+          </figure>
           <div class="card-foot">
             <span class="chip evidence">official public page + downloaded image + page screenshot</span>
             <span class="chip owner">brand / ecommerce release owner</span>
