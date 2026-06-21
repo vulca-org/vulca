@@ -26,6 +26,9 @@ The page sequence is paired:
   source fields, review fields, owner routing, and handoff fields.
 - The Chinese `读法` notes in `index.html` are internal reviewer aids. They
   should be removed or rewritten before a customer-facing export.
+- The Chinese `解释` boxes add the internal reasoning for each page: why the
+  page exists, how to read the visuals, and what still needs source-safe
+  treatment before customer-facing PDF production.
 
 ## Boundary
 

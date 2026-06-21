@@ -199,6 +199,36 @@
       color: var(--evidence);
     }
 
+    .explain-box {
+      display: grid;
+      gap: 9px;
+      padding: 13px;
+      border: 1px solid #d4c6ab;
+      border-radius: 8px;
+      background: #fff8e8;
+    }
+
+    .explain-box b {
+      color: var(--owner);
+      font-size: 12px;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .explain-box ul {
+      display: grid;
+      gap: 7px;
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .explain-box li {
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
     .page {
       position: relative;
       display: grid;
@@ -861,6 +891,14 @@
           <b>读法</b>
           <span>这是一个美妆品牌商业案例页：同一组 campaign 素材会进入零售、活动、奖项、PDP 和 release owner 流程。</span>
         </div>
+        <div class="explain-box">
+          <b>解释</b>
+          <ul>
+            <li>这页不是在说 PROYA 有问题，而是在展示“公开市场素材一旦跨渠道复用，就需要 source trail”。</li>
+            <li>右侧三张真实图分别代表 retail campaign、event context、award/source cue，下面的小图代表未来正式页要补的 source record 和 owner route。</li>
+            <li>正式 PDF 要把 raw crop 改成 source-safe redraw，并保留“public example”边界。</li>
+          </ul>
+        </div>
         <div class="lane">
           <strong>Production decision</strong>
           <span>PROYA leads with current source-backed material. Genki Forest stays reserve and should not compete with the lead packet.</span>
@@ -972,6 +1010,14 @@
           <b>读法</b>
           <span>这是 Page 7 的 VULCA 交付形态：把 claim、source、product representation 和 owner route 放进一张证据卡。</span>
         </div>
+        <div class="explain-box">
+          <b>解释</b>
+          <ul>
+            <li>这页回答“客户拿到 VULCA 后会看到什么”：不是一堆截图，而是一张可执行的 evidence card。</li>
+            <li>图上的 1/2 标注对应 claim 和 product representation；右侧字段补上 source 和 owner。</li>
+            <li>正式 PDF 需要把来源 URL、capture date、source type 和 release owner 补齐。</li>
+          </ul>
+        </div>
         <div class="lane">
           <strong>Review structure</strong>
           <span>The claim, product visual, source material, approval owner, and reuse context should be connected before cross-channel use.</span>
@@ -1040,6 +1086,14 @@
         <div class="read-cue">
           <b>读法</b>
           <span>这是一个 AI 生成素材案例页：重点不是评价模型好不好，而是判断生成素材能不能被发布和复用。</span>
+        </div>
+        <div class="explain-box">
+          <b>解释</b>
+          <ul>
+            <li>这页把 Seedream / BytePlus 作为 public model context，不写成客户、合作方或模型背书。</li>
+            <li>右侧截图代表 model context、category context、tutorial/input mode、output context。</li>
+            <li>正式 PDF 要把这些截图改成 clean recapture 或 redrawn docs strip，并保持版本中性。</li>
+          </ul>
         </div>
         <div class="lane">
           <strong>Production decision</strong>
@@ -1138,6 +1192,14 @@
           <b>读法</b>
           <span>这是 Page 9 的 VULCA 交付形态：把 prompt/source、model context、output state、label posture 和 release owner 放进一个包。</span>
         </div>
+        <div class="explain-box">
+          <b>解释</b>
+          <ul>
+            <li>这页回答 AI 生成图的发布前资料包应该包含什么：input、output、label、owner。</li>
+            <li>左侧来源截图只证明“这个上下文存在”；最终卡片还需要真实或 redrawn 的 prompt/result pair。</li>
+            <li>VULCA 只做 evidence-assisted review，不做版权、平台政策、模型安全或法律认证。</li>
+          </ul>
+        </div>
         <div class="lane">
           <strong>Boundary</strong>
           <span>No model quality, copyright-clearance, platform-policy, safety-certification, or customer-relationship claim.</span>
@@ -1233,6 +1295,14 @@
           <b>读法</b>
           <span>这是一个 AI 广告工作流案例页：产品链接生成候选广告后，人类 campaign owner 需要 review 和 handoff evidence。</span>
         </div>
+        <div class="explain-box">
+          <b>解释</b>
+          <ul>
+            <li>这页展示的是商业流程：product URL 或 listing 进入 AI ad workflow，产出 candidate creatives。</li>
+            <li>右侧大图只作为 workflow source basis；正式页应该把它抽象成 product input -> candidate -> review -> campaign handoff。</li>
+            <li>这里不引用第三方案例作为客户证明；相关 case material 只保留内部参考。</li>
+          </ul>
+        </div>
         <div class="lane">
           <strong>Production decision</strong>
           <span>Creatify leads because the product-link-to-video workflow gives the clearest commercial story: source input becomes candidate creative, then review and campaign handoff.</span>
@@ -1279,6 +1349,14 @@
         <div class="read-cue">
           <b>读法</b>
           <span>这是 Page 11 的 VULCA 交付形态：把广告工作流截图变成 source、review、export 和 owner 字段齐全的 handoff packet。</span>
+        </div>
+        <div class="explain-box">
+          <b>解释</b>
+          <ul>
+            <li>这页是三组案例的收束：从 campaign/product truth，到 AI-generated asset，再到 AI-ad workflow handoff。</li>
+            <li>左侧截图负责说明工作流来源；右侧字段说明 VULCA 最终要记录 input、review、export、handoff。</li>
+            <li>正式 PDF 要把 raw vendor screenshot 改为 neutral workflow/evidence card，避免 vendor endorsement 或 performance claim。</li>
+          </ul>
         </div>
         <div class="lane">
           <strong>Closing role</strong>
