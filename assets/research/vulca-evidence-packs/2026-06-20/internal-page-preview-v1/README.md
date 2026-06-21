@@ -273,11 +273,22 @@ These decisions are now part of the master-page working logic:
 
 ## Inputs
 
-The source of truth remains:
+Planning inputs and expected canonical production notes:
 
 - `docs/product/2026-06-20-vulca-solution-pack-v1-pdf-storyboard.md`
 - `docs/product/2026-06-20-vulca-solution-pack-v1-master-pdf-production-plan.md`
 - `docs/product/2026-06-20-vulca-solution-pack-v1-master-pdf-asset-inventory.md`
 
+Customer narrative and research inputs currently checked into this branch:
+
+- `docs/product/2026-06-21-vulca-solution-pack-v1-customer-narrative-and-copy-brief.md`
+- `docs/product/2026-06-21-vulca-solution-pack-v1-customer-narrative-and-copy-brief-cn.md`
+- `docs/product/2026-06-21-vulca-reference-company-deep-research-brief.md`
+
 `manifest.json` lists the exact image sources and crop boxes used by the
 preview renderer.
+
+The narrative and reference-company briefs are customer-version planning
+inputs. They should inform the future formal PDF opening, short outreach note,
+CTA, terminology, and buyer framing. They do not override the source matrix,
+external-use boundaries, or internal proof manifests.
