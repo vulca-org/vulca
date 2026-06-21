@@ -25,6 +25,25 @@ output/pdf/vulca-solution-pack-v1-internal-preview.pdf
 This PDF is generated from the current `index.html` preview for internal review
 only. It is not the customer-facing PDF.
 
+Formal public-example customer sample PDF output:
+
+```text
+output/pdf/vulca-solution-pack-v1-customer-sample-public-examples.pdf
+```
+
+This PDF was generated after explicit user approval on 2026-06-21 as a review
+sample only. It is not emailed or sent by default. It uses the default customer
+reader profile: brand, ecommerce, or AI ad workflow owner; Lane C before/after
+first, then Lane A and Lane B supporting proof. Named companies appear only as
+public examples for workflow discussion, not as customers, partners, endorsers,
+authorization sources, or validated findings.
+
+The sample is derived from this internal master preview and the source-safe
+evidence cards already recorded in the Lane A/B/C proof folders. Any issue found
+in the formal sample should be fixed at the master/source-card level first, then
+the same customer sample path should be regenerated. Do not create exploratory
+extra PDFs for the same review pass.
+
 ## Three-Lane Purpose Map
 
 Use this map to keep Lane B and Lane C separate:
