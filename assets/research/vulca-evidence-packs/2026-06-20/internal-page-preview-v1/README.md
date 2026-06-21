@@ -51,6 +51,35 @@ Customer-facing exports should not use the raw annotated image. They should use
 a source-safe crop, redraw, or simplified evidence-card visual derived from the
 fields.
 
+## Page 9/10 Seedream / BytePlus Technical Proof Upgrade
+
+Page 9/10 now include the Lane B deep proof from:
+
+```text
+../seedream-byteplus-deep-proof-v1/
+```
+
+The current proof uses true local screenshots from public Seedream / BytePlus
+model and documentation pages. It is a manual VULCA source-field annotation,
+not a SAM/DINO/Vision Banana segmentation output.
+
+Current outputs:
+
+```text
+../seedream-byteplus-deep-proof-v1/annotations/seedream-byteplus-field-overlay-v1.png
+../seedream-byteplus-deep-proof-v1/source-safe/seedream-byteplus-source-safe-distilled-card-v1.png
+```
+
+The Page 9 overlay is for internal review: it shows how real source pages are
+read into source, model, input, output, label, and owner fields. The Page 10
+distilled card is the customer-facing candidate: it removes raw UI screenshots,
+cookie overlays, debug labels, and local capture details while preserving the
+publishability evidence-card logic.
+
+Customer-facing exports should use the distilled card, a clean recapture, or a
+redrawn docs strip. Do not use the raw screenshots as external proof by
+default.
+
 ## Reading Map
 
 The page sequence is paired:
@@ -121,7 +150,8 @@ Current source status:
 - PROYA CBE event/award context source pages are identified, but exact image
   URLs and capture timestamps still need local source-log recording.
 - Seedream / BytePlus official pages are identified; current screenshots should
-  be refreshed or redrawn before customer-facing use.
+  be refreshed or redrawn before customer-facing use. Page 9/10 now include a
+  completed internal field overlay and a source-safe distilled card candidate.
 - Creatify URL-to-video official pages are identified; raw screenshots should
   be redrawn into workflow strips before customer-facing use.
 - Creatify / Alibaba case-study material remains internal-only by default.

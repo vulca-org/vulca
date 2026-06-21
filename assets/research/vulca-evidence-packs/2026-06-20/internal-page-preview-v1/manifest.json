@@ -91,7 +91,9 @@
         "../capture-batch-02/seedream-45-official-page.jpg",
         "../capture-batch-02/byteplus-model-list-seedream-5.jpg",
         "../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg",
-        "../capture-batch-02/byteplus-seedream-model-page.jpg"
+        "../capture-batch-02/byteplus-seedream-model-page.jpg",
+        "../seedream-byteplus-deep-proof-v1/annotations/seedream-byteplus-field-overlay-v1.png",
+        "../seedream-byteplus-deep-proof-v1/source-safe/seedream-byteplus-source-safe-distilled-card-v1.png"
       ],
       "public_sources": [
         {
@@ -135,7 +137,7 @@
           ]
         }
       ],
-      "source_status": "Current official source pages identified. Existing screenshots may contain overlays and should be refreshed or redrawn before customer-facing export.",
+      "source_status": "Current official source pages identified. Lane B field overlay and source-safe distilled card completed. Existing screenshots may contain cookie/feedback overlays and should be refreshed, masked, or redrawn before customer-facing export.",
       "customer_visible_use": "Version-neutral AI publishability example: input/source, model/workflow context, output state, label posture, and owner route.",
       "external_treatment": "Use clean recapture or redrawn documentation strips. Keep as context around generated assets, not proof of model quality or safety.",
       "must_not_claim": [
@@ -313,6 +315,16 @@
           "crop": [900, 480, 285, 120],
           "role": "model capability / input-output / output-format context"
         }
+      ],
+      "technical_artifacts": [
+        {
+          "id": "seedream_byteplus_field_overlay_v1",
+          "path": "../seedream-byteplus-deep-proof-v1/annotations/seedream-byteplus-field-overlay-v1.png",
+          "manifest_path": "../seedream-byteplus-deep-proof-v1/annotations/seedream-byteplus-field-overlay-v1.json",
+          "provider_requested": "manual-vulca-field-annotation",
+          "provider_resolved": "source-field-overlay",
+          "role": "internal proof overlay mapping real public screenshots to VULCA source/model/input/output/label/owner fields"
+        }
       ]
     },
     {
@@ -341,6 +353,16 @@
           "image_size": [1440, 1100],
           "crop": [930, 420, 270, 120],
           "role": "model-list support"
+        }
+      ],
+      "technical_artifacts": [
+        {
+          "id": "seedream_byteplus_source_safe_distilled_card_v1",
+          "path": "../seedream-byteplus-deep-proof-v1/source-safe/seedream-byteplus-source-safe-distilled-card-v1.png",
+          "manifest_path": "../seedream-byteplus-deep-proof-v1/source-safe/seedream-byteplus-source-safe-distilled-card-v1.json",
+          "provider_requested": "manual-distillation-from-vulca-fields",
+          "provider_resolved": "source-safe-diagram",
+          "role": "customer-facing candidate distilled from Lane B source-field overlay; contains no raw UI screenshot"
         }
       ]
     },

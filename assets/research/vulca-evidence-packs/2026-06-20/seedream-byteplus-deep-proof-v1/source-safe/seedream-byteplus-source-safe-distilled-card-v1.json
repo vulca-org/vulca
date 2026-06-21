@@ -1,0 +1,36 @@
+{
+  "status": "source_safe_customer_candidate",
+  "date": "2026-06-21",
+  "image": "seedream-byteplus-source-safe-distilled-card-v1.png",
+  "image_size": [1800, 1240],
+  "derived_from": [
+    "../annotations/seedream-byteplus-field-overlay-v1.png",
+    "../../capture-batch-02/seedream-45-official-page.jpg",
+    "../../capture-batch-02/byteplus-model-list-seedream-5.jpg",
+    "../../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg",
+    "../../capture-batch-02/byteplus-seedream-model-page.jpg"
+  ],
+  "customer_visible_fields": [
+    "public source records",
+    "VULCA normalized fields",
+    "review packet output",
+    "source-safe visual treatment"
+  ],
+  "removed_for_customer_safety": [
+    "raw UI screenshots",
+    "cookie overlays",
+    "feedback widgets",
+    "debug labels",
+    "local capture paths"
+  ],
+  "allowed_claim": "VULCA can structure public AI-model/tool context into a source-backed publishability packet for human review.",
+  "must_not_claim": [
+    "model quality certification",
+    "model safety certification",
+    "copyright clearance",
+    "platform-policy approval",
+    "benchmark superiority",
+    "legal approval",
+    "customer, partner, endorsement, or authorization relationship"
+  ]
+}
