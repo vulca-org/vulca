@@ -308,7 +308,9 @@ session:
 5. Copy boundary: no legal advice, compliance certification, model-safety
    certification, platform approval, performance guarantee, customer
    relationship, endorsement, authorization source, or finding.
-6. Output path: use one clear customer-specific filename and record that it was
+6. Preflight scan: run `python3 scripts/customer_pdf_preflight.py <artifact>`
+   on the customer-visible PDF, markdown, HTML, or text export before sharing.
+7. Output path: use one clear customer-specific filename and record that it was
    derived from this master preview. Do not create exploratory extra PDFs.
 
 ## Inputs

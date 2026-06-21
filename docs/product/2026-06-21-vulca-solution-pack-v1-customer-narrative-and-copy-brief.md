@@ -627,7 +627,10 @@ Use this gate before making any customer-facing PDF, deck, or email attachment:
 7. **Run the visual gate:** render the PDF pages to images and inspect layout,
    text fit, source-safe visuals, boundary copy, and absence of raw internal
    labels before sharing.
-8. **Preserve lineage:** if review finds a master-level problem, fix this
+8. **Run the preflight scanner:** use
+   `python3 scripts/customer_pdf_preflight.py <artifact>` on the
+   customer-visible PDF, markdown, HTML, or text export.
+9. **Preserve lineage:** if review finds a master-level problem, fix this
    master source and regenerate the customer variant instead of patching only
    the customer file.
 
