@@ -80,6 +80,46 @@ Customer-facing exports should use the distilled card, a clean recapture, or a
 redrawn docs strip. Do not use the raw screenshots as external proof by
 default.
 
+## Page 11/12 Creatify Technical Proof Upgrade
+
+Page 11/12 now include the Lane C deep proof from:
+
+```text
+../creatify-deep-proof-v1/
+```
+
+The current proof uses true local screenshots from public Creatify workflow
+pages and a creative-anatomy cue. It is a manual VULCA workflow-field
+annotation, not a SAM/DINO/Vision Banana segmentation output.
+
+Current outputs:
+
+```text
+../creatify-deep-proof-v1/annotations/creatify-workflow-field-overlay-v1.png
+../creatify-deep-proof-v1/source-safe/creatify-source-safe-workflow-card-v1.png
+```
+
+The Page 11 overlay is for internal review: it shows how product-link input,
+generated candidates, hook/body/CTA anatomy, export state, campaign handoff,
+and internal reserve material become VULCA fields. The Page 12 distilled card
+is the customer-facing candidate: it removes raw vendor UI, people/ad example
+thumbnails, local capture details, and Alibaba case-study proof.
+
+Customer-facing exports should use the distilled card, a clean redraw, or a
+masked source cue. Do not use raw vendor UI or Alibaba case-study material as
+default external proof.
+
+## Redraw And Masking State
+
+For this review preview, source-safe cards are manually distilled from VULCA
+fields. They prove the expected customer-facing structure and safety boundary.
+
+Automated redraw, automatic screenshot masking, and automatic vendor-UI
+sanitization are not represented as completed production capabilities in this
+directory. If those features are implemented later, they should write their own
+machine-output artifact and manifest instead of replacing the current manual
+distillation record.
+
 ## Reading Map
 
 The page sequence is paired:
@@ -153,7 +193,9 @@ Current source status:
   be refreshed or redrawn before customer-facing use. Page 9/10 now include a
   completed internal field overlay and a source-safe distilled card candidate.
 - Creatify URL-to-video official pages are identified; raw screenshots should
-  be redrawn into workflow strips before customer-facing use.
+  be redrawn into workflow strips before customer-facing use. Page 11/12 now
+  include a completed workflow-field overlay and source-safe handoff card
+  candidate.
 - Creatify / Alibaba case-study material remains internal-only by default.
 
 ## Version Lineage And Feedback Loop

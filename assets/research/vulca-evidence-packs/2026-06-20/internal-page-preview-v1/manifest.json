@@ -151,7 +151,9 @@
       "pages": [11, 12],
       "local_assets": [
         "../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png",
-        "../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png"
+        "../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png",
+        "../creatify-deep-proof-v1/annotations/creatify-workflow-field-overlay-v1.png",
+        "../creatify-deep-proof-v1/source-safe/creatify-source-safe-workflow-card-v1.png"
       ],
       "public_sources": [
         {
@@ -172,7 +174,7 @@
           ]
         }
       ],
-      "source_status": "Official workflow source pages identified. Raw screenshots should remain internal and be converted to redrawn workflow strips before customer-facing export.",
+      "source_status": "Official workflow source pages identified. Lane C workflow overlay and source-safe handoff card completed. Raw screenshots should remain internal and be converted to redrawn workflow strips or source-safe cards before customer-facing export.",
       "customer_visible_use": "Lane C commercial workflow example and Page 12 workflow evidence-card basis.",
       "external_treatment": "Redraw the URL-to-video flow and mask faces, product thumbnails, ratings, and vendor UI chrome.",
       "must_not_claim": [
@@ -380,6 +382,16 @@
           "role": "URL-to-video workflow basis"
         }
       ],
+      "technical_artifacts": [
+        {
+          "id": "creatify_workflow_field_overlay_v1",
+          "path": "../creatify-deep-proof-v1/annotations/creatify-workflow-field-overlay-v1.png",
+          "manifest_path": "../creatify-deep-proof-v1/annotations/creatify-workflow-field-overlay-v1.json",
+          "provider_requested": "manual-vulca-workflow-field-annotation",
+          "provider_resolved": "workflow-field-overlay",
+          "role": "internal proof overlay mapping public workflow screenshot and anatomy cue to VULCA source/input/candidate/review/export/handoff fields"
+        }
+      ],
       "internal_reference_crops": [
         {
           "id": "creatify_case_summary",
@@ -409,6 +421,16 @@
           "image_size": [1129, 1254],
           "crop": null,
           "role": "hook/body/CTA anatomy cue"
+        }
+      ],
+      "technical_artifacts": [
+        {
+          "id": "creatify_source_safe_workflow_card_v1",
+          "path": "../creatify-deep-proof-v1/source-safe/creatify-source-safe-workflow-card-v1.png",
+          "manifest_path": "../creatify-deep-proof-v1/source-safe/creatify-source-safe-workflow-card-v1.json",
+          "provider_requested": "manual-distillation-from-vulca-workflow-fields",
+          "provider_resolved": "source-safe-diagram",
+          "role": "customer-facing candidate distilled from Lane C workflow-field overlay; contains no raw vendor UI or Alibaba case-study proof"
         }
       ],
       "internal_reference_crops": [

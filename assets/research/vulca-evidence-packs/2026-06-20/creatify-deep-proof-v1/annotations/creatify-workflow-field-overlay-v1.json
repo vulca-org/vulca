@@ -1,0 +1,52 @@
+{
+  "status": "internal_workflow_overlay",
+  "date": "2026-06-21",
+  "image": "creatify-workflow-field-overlay-v1.png",
+  "image_size": [2400, 1500],
+  "source_images": [
+    "../../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png",
+    "../../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png"
+  ],
+  "internal_reference_images": [
+    "../../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png"
+  ],
+  "annotation_method": "manual VULCA workflow-field overlay on true public-source screenshots",
+  "fields": [
+    {
+      "id": "source.input",
+      "visual_cues": ["product link input", "workflow promise", "public feature page"],
+      "customer_value": "Shows which product/listing/source material should be preserved before generation."
+    },
+    {
+      "id": "candidate.creative",
+      "visual_cues": ["generated ad carousel", "candidate examples"],
+      "customer_value": "Separates generated candidate state from source and approval state."
+    },
+    {
+      "id": "review.anatomy",
+      "visual_cues": ["hook/body/CTA anatomy cue", "scene/product/offer review areas"],
+      "customer_value": "Turns ad anatomy into reviewable fields for a human campaign owner."
+    },
+    {
+      "id": "edit.export.state",
+      "visual_cues": ["generate CTA", "candidate carousel", "workflow field panel"],
+      "customer_value": "Names draft, edit, export, channel, and campaign reuse state."
+    },
+    {
+      "id": "campaign.handoff",
+      "visual_cues": ["CTA route", "workflow field panel"],
+      "customer_value": "Routes unresolved questions to growth, creative ops, marketplace, or campaign owners."
+    },
+    {
+      "id": "internal.reserve",
+      "visual_cues": ["internal reserve field only"],
+      "customer_value": "Keeps third-party case-study material out of default customer proof."
+    }
+  ],
+  "known_limitations": [
+    "The raw feature-page screenshot includes people, product, and ad-example imagery.",
+    "The Alibaba case-study screenshot is recorded only as internal reserve.",
+    "The overlay is not a SAM/DINO/Vision Banana segmentation output.",
+    "Customer-facing PDFs should use a source-safe distilled card, masked crop, or redrawn workflow strip."
+  ]
+}

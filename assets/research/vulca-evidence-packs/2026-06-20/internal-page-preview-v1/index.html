@@ -1372,6 +1372,7 @@
           <ul>
             <li>这页展示的是商业流程：product URL 或 listing 进入 AI ad workflow，产出 candidate creatives。</li>
             <li>右侧大图只作为 workflow source basis；正式页应该把它抽象成 product input -> candidate -> review -> campaign handoff。</li>
+            <li>新增的 workflow overlay 说明 VULCA 如何把真实工作流读成 source input、candidate creative、review anatomy、export state 和 handoff 字段。</li>
             <li>这里不引用第三方案例作为客户证明；相关 case material 只保留内部参考。</li>
           </ul>
         </div>
@@ -1393,6 +1394,10 @@
           <div class="step"><b>4</b><span>export or campaign handoff</span></div>
           <div class="step"><b>5</b><span>evidence owner</span></div>
         </div>
+        <figure class="artifact-figure" aria-label="Creatify internal workflow-field overlay">
+          <img src="../creatify-deep-proof-v1/annotations/creatify-workflow-field-overlay-v1.png" alt="Creatify internal workflow-field overlay">
+          <figcaption>Internal workflow proof: true public workflow screenshot and anatomy cue are read into VULCA source input, candidate, review, export, handoff, and internal-reserve fields.</figcaption>
+        </figure>
         <div class="case-chain" aria-label="Lane C commercial chain">
           <div class="case-point"><b>1. Source input</b><span>Product URL, listing, image, or brief anchors the generated ad.</span></div>
           <div class="case-point"><b>2. Candidate</b><span>Generated scripts/videos become reviewable campaign candidates.</span></div>
@@ -1427,6 +1432,7 @@
           <ul>
             <li>这页是三组案例的收束：从 campaign/product truth，到 AI-generated asset，再到 AI-ad workflow handoff。</li>
             <li>左侧截图负责说明工作流来源；右侧字段说明 VULCA 最终要记录 input、review、export、handoff。</li>
+            <li>下面的蒸馏卡展示客户页可以看到的 source-safe handoff packet：不展示 raw vendor UI，也不使用 Alibaba case 作为默认 proof。</li>
             <li>正式 PDF 要把 raw vendor screenshot 改为 neutral workflow/evidence card，避免 vendor endorsement 或 performance claim。</li>
           </ul>
         </div>
@@ -1487,9 +1493,7 @@
                     <div class="mini-row">
                       <span class="mini-box">input</span>
                       <span class="mini-arrow">></span>
-                      <span class="mini-box">candidate</span>
-                      <span class="mini-arrow">></span>
-                      <span class="mini-box">handoff</span>
+                      <span class="mini-box">ad</span>
                     </div>
                     <div class="mini-row">
                       <span class="mini-chip">source-safe</span>
@@ -1529,6 +1533,10 @@
               </div>
             </div>
           </div>
+          <figure class="artifact-figure distilled-full" aria-label="Creatify source-safe AI ad workflow evidence card">
+            <img src="../creatify-deep-proof-v1/source-safe/creatify-source-safe-workflow-card-v1.png" alt="Creatify source-safe AI ad workflow evidence card">
+            <figcaption>Customer-facing distillation candidate: no raw vendor UI, no Alibaba proof, no ad-performance prediction, and no generated-ad approval claim.</figcaption>
+          </figure>
           <div class="card-foot">
             <span class="chip evidence">product-to-video workflow</span>
             <span class="chip evidence">review/result context</span>
