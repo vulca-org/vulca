@@ -16,6 +16,15 @@ Open `index.html` locally to review:
 - Page 11: AI Ad Workflow lane strip
 - Page 12: AI Ad Workflow evidence-card pattern
 
+Canonical internal review PDF output:
+
+```text
+output/pdf/vulca-solution-pack-v1-internal-preview.pdf
+```
+
+This PDF is generated from the current `index.html` preview for internal review
+only. It is not the customer-facing PDF.
+
 ## Three-Lane Purpose Map
 
 Use this map to keep Lane B and Lane C separate:
