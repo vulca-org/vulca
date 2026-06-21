@@ -271,6 +271,27 @@ These decisions are now part of the master-page working logic:
 - Company names may appear only as public examples, never as VULCA customers,
   partners, endorsers, authorization sources, or audit targets.
 
+## Customer Variant Default
+
+The narrative branch has been folded into the master preview as a planning
+input, not as a ready-to-send artifact.
+
+Current default for the first customer-specific formal PDF:
+
+1. Lead with brand, ecommerce, and AI ad workflow owners.
+2. Use named companies only as public examples, with source-safe visuals and
+   explicit boundary copy.
+3. Use Lane C as the clearest before/after customer story, supported by Lane A
+   product-truth proof and Lane B AI-publishability proof.
+4. Keep the first email as a feedback request. Bounded pilot discussion is a
+   follow-on step, not the opening ask.
+5. Keep full source matrices, raw crops, crop boxes, local paths, debug labels,
+   and treatment ledgers internal.
+
+Do not generate a separate customer-facing PDF without explicit user approval.
+When approved, derive it from this master source and regenerate the formal
+variant after any master-level fix.
+
 ## Inputs
 
 Planning inputs and expected canonical production notes:

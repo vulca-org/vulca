@@ -16,6 +16,13 @@
     "Keep the Creatify / Alibaba case study as internal reference by default; do not use it as customer-facing visual proof.",
     "Company names may appear only as public examples, never as customers, partners, endorsers, or audit targets."
   ],
+  "customer_variant_defaults": {
+    "default_reader": "brand, ecommerce, and AI ad workflow owners",
+    "named_company_rule": "Names may appear only as public examples with source-safe visuals and explicit boundary copy.",
+    "story_weighting": "Lane C is the clearest before/after customer story; Lane A and Lane B support the same source-backed method across claims and generated assets.",
+    "first_email_posture": "Ask for practical feedback on the sample pack first; bounded pilot discussion is a follow-on step.",
+    "generation_gate": "Do not create a separate customer-facing PDF until the user explicitly approves it."
+  },
   "source_matrix": [
     {
       "id": "proya_guardian_malaysia_campaign",

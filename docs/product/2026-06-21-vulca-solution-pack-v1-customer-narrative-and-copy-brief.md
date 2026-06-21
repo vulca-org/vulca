@@ -580,19 +580,29 @@ Still keep internal-only:
 - any claim that a named public company is a VULCA customer, partner, endorser,
   authorization source, or audit target.
 
-## Review Questions For Main Session
+## Mainline Review Decisions
 
-1. Should the first customer PDF lead with brand/ecommerce teams, AI ad
-   workflow teams, or AI creative platform teams?
-2. Should named public examples appear in the first customer PDF, or should the
-   first version use redrawn neutral workflow examples with source notes kept in
-   appendix?
-3. For the short email, should we ask for feedback on the sample pack first, or
-   frame it as a bounded pilot discussion from the start?
-4. Should Lane C be the hero example, with Lane A/B as supporting proof, or
-   should the PDF keep all three lanes equal?
-5. How much of the source-safe card language should appear in the PDF itself
-   versus an internal appendix?
+These points reflect the current main-thread default after the internal proof
+work and user review:
+
+1. **Default reader:** lead with brand, ecommerce, and AI ad workflow owners.
+   AI creative platforms remain a secondary reader, not the only framing.
+2. **Named examples:** named companies may appear only as public examples.
+   The first customer PDF can use names when they are treated with source-safe
+   visuals and explicit public-example language.
+3. **Email posture:** first contact should ask for practical feedback on the
+   sample pack. Bounded pilot discussion can be the next step if the workflow
+   maps to their real bottleneck.
+4. **Lane weighting:** use Lane C as the clearest before/after workflow example
+   for the customer story, with Lane A and Lane B as supporting evidence that
+   the same source-backed method works across claims and generated assets.
+5. **Field language:** keep the PDF body concise. Put only the fields needed for
+   reader comprehension in the formal PDF; keep full source matrix, crop logic,
+   raw proof notes, and treatment ledger in the internal master.
+
+Still ask the user before generating a new customer-facing PDF file. The
+current internal PDF remains the master review source, and any customer variant
+must be regenerated from that corrected basis rather than patched separately.
 
 ## Copy Rules
 

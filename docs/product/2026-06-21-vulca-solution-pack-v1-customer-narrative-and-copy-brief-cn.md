@@ -656,16 +656,26 @@ final copy review 和 recipient-specific framing。
 - 任何把命名公开公司写成 VULCA 客户、合作方、背书方、授权来源或 audit target
   的说法。
 
-## 主会话需要 review 的问题
+## 主线已确认口径
 
-1. 第一版客户 PDF 默认读者应该是 brand/ecommerce teams、AI ad workflow teams，
-   还是 AI creative platform teams？
-2. 第一版客户 PDF 是否允许出现命名 public examples，还是优先使用 redrawn
-   neutral workflow examples，把 source notes 放到 appendix？
-3. 短邮件是先请求 feedback，还是直接提出 bounded pilot discussion？
-4. Lane C 是否作为 hero example，Lane A/B 作为 supporting proof，还是三条 lane
-   在 PDF 中保持同等权重？
-5. Source-safe card 的字段语言应该有多少进入 PDF 正文，多少只放内部 appendix？
+这些点反映当前主线内部 proof 和用户 review 之后的默认口径：
+
+1. **默认读者：** 第一版先打 brand、ecommerce 和 AI ad workflow owner。
+   AI creative platform 仍然是次级读者，不作为唯一 framing。
+2. **命名案例：** 公司名字可以出现，但只能写成 public example。第一版客户
+   PDF 可以出现名字，前提是视觉已经 source-safe 处理，并且文字明确不是客户、
+   合作方、背书方、授权来源或发现对象。
+3. **邮件姿态：** 第一封先请求对 sample pack 的实际反馈；如果对方确认这个
+   workflow 是真实 bottleneck，再进入 bounded pilot discussion。
+4. **Lane 权重：** Lane C 最适合做客户叙事里的 before/after 主例子；Lane A
+   和 Lane B 作为 supporting proof，证明同一套 source-backed 方法可以覆盖
+   product claim、generated asset 和 workflow handoff。
+5. **字段语言：** 正式客户 PDF 正文保持简洁，只放客户理解必需的字段。完整
+   source matrix、crop 逻辑、raw proof notes 和 treatment ledger 留在内部主线。
+
+仍然必须在生成新的客户正式 PDF 文件前询问用户。当前 internal PDF 是 master
+review source；客户版如果发现问题，先回到 master 规则、资产和页面组件修正，
+再从修正后的基础重新生成，不单独 patch 客户版。
 
 ## 中文文案规则
 
