@@ -89,6 +89,7 @@ async function main() {
   );
 
   run("node", [scratchBuilderPath, configPath], { cwd: TMP_DIR, stdio: "inherit" });
+  await fsp.rm(`${OUTPUT_PPTX}.inspect.ndjson`, { force: true });
   run(
     "osascript",
     [
