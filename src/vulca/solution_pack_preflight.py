@@ -6,9 +6,11 @@ import json
 import re
 import shutil
 import subprocess
+import zipfile
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable, Sequence
+from xml.etree import ElementTree
 
 
 @dataclass(frozen=True)
@@ -143,9 +145,39 @@ def _read_pdf_text(path: Path) -> str:
     return "\n".join(page.extract_text() or "" for page in reader.pages)
 
 
+def _read_pptx_text(path: Path) -> str:
+    slide_pattern = re.compile(r"ppt/slides/slide(\d+)\.xml$")
+    pieces: list[str] = []
+    try:
+        with zipfile.ZipFile(path) as archive:
+            slide_names = []
+            for name in archive.namelist():
+                match = slide_pattern.match(name)
+                if match:
+                    slide_names.append((int(match.group(1)), name))
+
+            for _index, slide_name in sorted(slide_names):
+                root = ElementTree.fromstring(archive.read(slide_name))
+                runs = [
+                    node.text or ""
+                    for node in root.iter()
+                    if node.tag.endswith("}t") and (node.text or "").strip()
+                ]
+                if runs:
+                    pieces.append(" ".join(runs))
+    except zipfile.BadZipFile as exc:
+        raise RuntimeError(f"Could not open PPTX archive {path}: {exc}") from exc
+    except ElementTree.ParseError as exc:
+        raise RuntimeError(f"Could not parse PPTX slide XML in {path}: {exc}") from exc
+    return "\n".join(pieces)
+
+
 def read_artifact_text(path: Path) -> str:
-    if path.suffix.lower() == ".pdf":
+    suffix = path.suffix.lower()
+    if suffix == ".pdf":
         return _read_pdf_text(path)
+    if suffix == ".pptx":
+        return _read_pptx_text(path)
     return path.read_text(encoding="utf-8", errors="replace")
 
 

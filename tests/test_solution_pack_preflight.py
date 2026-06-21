@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 import vulca.solution_pack_preflight as preflight
@@ -119,3 +120,55 @@ def test_scan_paths_reports_missing_file_as_read_error(tmp_path: Path) -> None:
     assert report.issues[0].rule_id == "read_error"
     assert report.issues[0].line == 0
     assert str(missing) in report.issues[0].match
+
+
+def test_read_artifact_text_extracts_pptx_slide_text(tmp_path: Path) -> None:
+    pptx = tmp_path / "candidate.pptx"
+    slide_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+       xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld>
+    <p:spTree>
+      <p:sp>
+        <p:txBody>
+          <a:p><a:r><a:t>Named companies are public examples only.</a:t></a:r></a:p>
+          <a:p><a:r><a:t>No VULCA customer or partner claim.</a:t></a:r></a:p>
+        </p:txBody>
+      </p:sp>
+    </p:spTree>
+  </p:cSld>
+</p:sld>
+"""
+    with zipfile.ZipFile(pptx, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("ppt/slides/slide1.xml", slide_xml)
+
+    text = read_artifact_text(pptx)
+
+    assert "Named companies are public examples only." in text
+    assert "No VULCA customer or partner claim." in text
+
+
+def test_scan_paths_flags_forbidden_text_inside_pptx(tmp_path: Path) -> None:
+    pptx = tmp_path / "unsafe.pptx"
+    slide_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+       xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld>
+    <p:spTree>
+      <p:sp>
+        <p:txBody>
+          <a:p><a:r><a:t>Keep /Users/example/raw.png out of the deck.</a:t></a:r></a:p>
+          <a:p><a:r><a:t>This still says debug overlay.</a:t></a:r></a:p>
+        </p:txBody>
+      </p:sp>
+    </p:spTree>
+  </p:cSld>
+</p:sld>
+"""
+    with zipfile.ZipFile(pptx, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("ppt/slides/slide1.xml", slide_xml)
+
+    report = scan_paths([pptx])[0]
+
+    assert report.ok is False
+    assert {issue.rule_id for issue in report.issues} == {"local_path", "debug_overlay"}
