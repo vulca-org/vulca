@@ -16,6 +16,27 @@ Open `index.html` locally to review:
 - Page 11: AI Ad Workflow lane strip
 - Page 12: AI Ad Workflow evidence-card pattern
 
+## Three-Lane Purpose Map
+
+Use this map to keep Lane B and Lane C separate:
+
+| Lane | Unit of review | Core question | Evidence-card output |
+| --- | --- | --- | --- |
+| A / Product-truth | Existing commercial material and product claim | Does the campaign, product representation, source, channel reuse, and owner route connect? | Product-truth evidence card |
+| B / AI publishability | One generated asset or generated asset set | Can this AI output be published or reused with source, prompt/reference, model context, label posture, and owner route attached? | AI publishability evidence card |
+| C / AI ad workflow | Product-to-ad workflow and campaign handoff | How does product URL/listing/brief become candidate creative, review state, export state, and campaign owner handoff? | AI ad workflow handoff card |
+
+Short rule:
+
+```text
+Lane A = claim/material level
+Lane B = generated-asset level
+Lane C = workflow/handoff level
+```
+
+Lane C can contain many Lane B-style generated assets, but its main proof is
+the workflow and handoff path, not a single generated image or video.
+
 ## Page 7/8 PROYA Technical Proof Upgrade
 
 Page 7/8 now include the PROYA Vision Banana fallback proof from:
