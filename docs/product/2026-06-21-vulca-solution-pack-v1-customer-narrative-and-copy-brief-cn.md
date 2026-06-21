@@ -35,14 +35,14 @@ CTA、术语口径和安全边界
 - 主线 PROYA、Seedream / BytePlus、Creatify 三张 source-safe card 的逻辑：
   commits `ef9cd2b3`、`c9b292fc`、`519e26a6`
 
-本 worktree 当前没有读到：
+当前 review branch 仍未包含：
 
 - `docs/product/2026-06-20-vulca-solution-pack-v1-pdf-storyboard.md`
 - `docs/product/2026-06-20-vulca-solution-pack-v1-master-pdf-production-plan.md`
 - 已 checkout 的 `docs/product/lane-work/*production-brief.md`
 
-所以上述缺失文件不能被当作本分支的直接事实来源；如果主会话后续导入，
-再按主线版本更新中文稿。
+所以上述缺失文件不能被当作当前分支的 canonical input；只有后续真正导入
+当前 review branch 后，才能按导入版本更新中文稿。
 
 ## 客户第一眼需要理解什么
 
@@ -676,6 +676,31 @@ final copy review 和 recipient-specific framing。
 仍然必须在生成新的客户正式 PDF 文件前询问用户。当前 internal PDF 是 master
 review source；客户版如果发现问题，先回到 master 规则、资产和页面组件修正，
 再从修正后的基础重新生成，不单独 patch 客户版。
+
+## 正式客户 PDF 生产 Gate
+
+在制作任何客户可见 PDF、deck 或邮件附件前，必须过这个 gate：
+
+1. **先问用户是否明确批准生成：** 普通的“继续”不能自动理解成允许生成新的
+   customer PDF。
+2. **确认收件人 framing：** brand/ecommerce owner、AI ad workflow owner、
+   AI creative platform，还是某个具体公司的定制收件人。
+3. **确认案例处理方式：** 命名 public example 可以出现，但必须配 public
+   example 口径和 source-safe visual；否则使用 neutral redrawn workflow
+   examples，把 source notes 放成辅助信息。
+4. **默认故事顺序：** Lane C before/after workflow 先讲，Lane A product-truth
+   proof 第二，Lane B AI-publishability proof 第三，最后是 safety boundary
+   和 feedback CTA。除非用户另行批准，否则按这个顺序。
+5. **移除内部材料：** raw crops、untreated screenshots、debug overlays、local
+   paths、crop boxes、source-log filenames、full source matrix、internal
+   reserves、Alibaba case-study material 都不能进入默认客户版。
+6. **限制 claim：** 不写 legal、rights、platform、policy、model-safety、
+   release-readiness、performance、ROI、CPA、CTR、ROAS、customer relationship、
+   endorsement、authorization 或 audit-target claim。
+7. **跑视觉 gate：** 把 PDF 渲染成图片检查 layout、text fit、source-safe
+   visuals、boundary copy，以及是否还残留 raw internal labels。
+8. **保持 lineage：** 如果 review 发现 master-level 问题，先修正 internal
+   master source，再重新生成客户版，不只 patch 客户文件。
 
 ## 中文文案规则
 

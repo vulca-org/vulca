@@ -37,13 +37,13 @@ Reviewed in this branch:
 - Mainline PROYA, Seedream / BytePlus, and Creatify source-safe card logic from
   commits `ef9cd2b3`, `c9b292fc`, and `519e26a6`
 
-Not present in this worktree at review time:
+Still not present in the current review branch:
 
 - `docs/product/2026-06-20-vulca-solution-pack-v1-pdf-storyboard.md`
 - `docs/product/2026-06-20-vulca-solution-pack-v1-master-pdf-production-plan.md`
 - checked-in `docs/product/lane-work/*production-brief.md` files
 
-Those missing files should be treated as main-thread inputs only if the main
+Those missing files should not be treated as canonical inputs unless this
 review branch imports them later.
 
 ## Core Customer Narrative
@@ -603,6 +603,33 @@ work and user review:
 Still ask the user before generating a new customer-facing PDF file. The
 current internal PDF remains the master review source, and any customer variant
 must be regenerated from that corrected basis rather than patched separately.
+
+## Formal Customer PDF Production Gate
+
+Use this gate before making any customer-facing PDF, deck, or email attachment:
+
+1. **Ask for explicit approval to generate:** do not treat a general "continue"
+   as permission to produce a new customer PDF.
+2. **Confirm recipient framing:** brand/ecommerce owner, AI ad workflow owner,
+   AI creative platform, or named company-specific recipient.
+3. **Confirm example treatment:** named public examples may appear only with
+   public-example wording and source-safe visuals; otherwise use neutral redrawn
+   workflow examples and keep source notes smaller.
+4. **Use the default story order unless changed:** Lane C before/after workflow
+   first, Lane A product-truth proof second, Lane B AI-publishability proof
+   third, then safety boundary and feedback CTA.
+5. **Strip internal material:** remove raw crops, untreated screenshots, debug
+   overlays, local paths, crop boxes, source-log filenames, full source matrix,
+   internal reserves, and Alibaba case-study material.
+6. **Keep claims bounded:** no legal, rights, platform, policy, model-safety,
+   release-readiness, performance, ROI, CPA, CTR, ROAS, customer relationship,
+   endorsement, authorization, or audit-target claim.
+7. **Run the visual gate:** render the PDF pages to images and inspect layout,
+   text fit, source-safe visuals, boundary copy, and absence of raw internal
+   labels before sharing.
+8. **Preserve lineage:** if review finds a master-level problem, fix this
+   master source and regenerate the customer variant instead of patching only
+   the customer file.
 
 ## Copy Rules
 

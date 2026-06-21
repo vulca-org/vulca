@@ -292,22 +292,47 @@ Do not generate a separate customer-facing PDF without explicit user approval.
 When approved, derive it from this master source and regenerate the formal
 variant after any master-level fix.
 
+## Formal Customer PDF Gate
+
+Before creating a formal customer PDF, confirm these items in the main review
+session:
+
+1. Recipient type: brand/ecommerce owner, AI ad workflow owner, AI creative
+   platform, or a named company-specific recipient.
+2. Example strategy: named public examples in the body, or neutral redrawn
+   workflow examples with source notes in a smaller supporting section.
+3. Lane order: default is Lane C first, with Lane A and Lane B as supporting
+   proof unless the recipient needs a different order.
+4. Visual treatment: every customer-visible visual must be source-safe: redraw,
+   clean recapture, crop, mask, or semantic evidence card.
+5. Copy boundary: no legal advice, compliance certification, model-safety
+   certification, platform approval, performance guarantee, customer
+   relationship, endorsement, authorization source, or finding.
+6. Output path: use one clear customer-specific filename and record that it was
+   derived from this master preview. Do not create exploratory extra PDFs.
+
 ## Inputs
 
-Planning inputs and expected canonical production notes:
-
-- `docs/product/2026-06-20-vulca-solution-pack-v1-pdf-storyboard.md`
-- `docs/product/2026-06-20-vulca-solution-pack-v1-master-pdf-production-plan.md`
-- `docs/product/2026-06-20-vulca-solution-pack-v1-master-pdf-asset-inventory.md`
-
-Customer narrative and research inputs currently checked into this branch:
+Current canonical inputs checked into this branch:
 
 - `docs/product/2026-06-21-vulca-solution-pack-v1-customer-narrative-and-copy-brief.md`
 - `docs/product/2026-06-21-vulca-solution-pack-v1-customer-narrative-and-copy-brief-cn.md`
 - `docs/product/2026-06-21-vulca-reference-company-deep-research-brief.md`
+- `assets/research/vulca-evidence-packs/2026-06-20/internal-page-preview-v1/README.md`
+- `assets/research/vulca-evidence-packs/2026-06-20/internal-page-preview-v1/manifest.json`
+- `assets/research/vulca-evidence-packs/2026-06-20/internal-page-preview-v1/index.html`
 
 `manifest.json` lists the exact image sources and crop boxes used by the
 preview renderer.
+
+Earlier planning branches referenced these filenames, but they are not present
+in this current branch and should not be treated as canonical unless imported
+later:
+
+- `docs/product/2026-06-20-vulca-solution-pack-v1-pdf-storyboard.md`
+- `docs/product/2026-06-20-vulca-solution-pack-v1-master-pdf-production-plan.md`
+- `docs/product/2026-06-20-vulca-solution-pack-v1-master-pdf-asset-inventory.md`
+- checked-in `docs/product/lane-work/*production-brief.md` files
 
 The narrative and reference-company briefs are customer-version planning
 inputs. They should inform the future formal PDF opening, short outreach note,
