@@ -1,0 +1,103 @@
+{
+  "kind": "design_perception",
+  "run_id": "20260621T000002Z-proyaVB3",
+  "provider": "palette-mask",
+  "source": ".gemini-agent/design/proya-lead-1600-clean.png",
+  "regions": [
+    {
+      "id": "campaign_claim_text",
+      "label": "campaign_claim_text",
+      "role": "target",
+      "importance": 1,
+      "bbox": null,
+      "mask_ref": "layers/campaign_claim_text.png",
+      "confidence": null
+    },
+    {
+      "id": "product_packshot_group",
+      "label": "product_packshot_group",
+      "role": "target",
+      "importance": 0.5,
+      "bbox": null,
+      "mask_ref": "layers/product_packshot_group.png",
+      "confidence": null
+    },
+    {
+      "id": "retail_channel_context",
+      "label": "retail_channel_context",
+      "role": "target",
+      "importance": 0.5,
+      "bbox": null,
+      "mask_ref": "layers/retail_channel_context.png",
+      "confidence": null
+    },
+    {
+      "id": "people_likeness_sensitive_area",
+      "label": "people_likeness_sensitive_area",
+      "role": "target",
+      "importance": 0.5,
+      "bbox": null,
+      "mask_ref": "layers/people_likeness_sensitive_area.png",
+      "confidence": null
+    },
+    {
+      "id": "promotion_cue",
+      "label": "promotion_cue",
+      "role": "target",
+      "importance": 0.5,
+      "bbox": null,
+      "mask_ref": "layers/promotion_cue.png",
+      "confidence": null
+    },
+    {
+      "id": "owner_route_trigger",
+      "label": "owner_route_trigger",
+      "role": "target",
+      "importance": 0.5,
+      "bbox": null,
+      "mask_ref": "layers/owner_route_trigger.png",
+      "confidence": null
+    }
+  ],
+  "hierarchy": [
+    "campaign_claim_text",
+    "product_packshot_group",
+    "retail_channel_context",
+    "people_likeness_sensitive_area",
+    "promotion_cue",
+    "owner_route_trigger"
+  ],
+  "layout_observations": [
+    "Comparison between the original PROYA retail display image and its multi-class semantic segmentation breakdown.",
+    "The segmentation masks successfully isolate key visual components including the model, product display shelf, text, and background.",
+    "The yellow mask isolates the main model graphic on the front counter wrap.",
+    "The green mask isolates the product tester display area on top of the counter.",
+    "The visual hierarchy is dominated by the large blue counter wrap and the tall vertical roll-up banner.",
+    "Color contrast between the white text and blue background provides excellent legibility for the primary brand message.",
+    "Strong brand consistency with a unified blue, white, and orange color palette.",
+    "Highly effective segmentation of the primary promotional model and product display."
+  ],
+  "implementation_constraints": [
+    "Use the isolated masks to train or validate retail shelf-monitoring and compliance algorithms.",
+    "Ensure edge-refinement techniques are applied to the green mask to better capture transparent and reflective cosmetic bottles.",
+    "Increase the font size and contrast of secondary promotional labels on the counter.",
+    "Apply a bilateral filter or edge-detection pre-processing step to improve mask boundaries around glass bottles."
+  ],
+  "confidence": 0.8,
+  "warnings": [
+    "Vision Banana endpoint missing; used palette-mask fallback.",
+    "Some small promotional text labels on the counter are omitted or merged into larger masks.",
+    "Ambiguity in whether the background store elements are fully excluded from the primary analysis masks.",
+    "Low legibility of small promotional text labels on the counter shelf.",
+    "Reflective surfaces on product packaging cause slight boundary blurring in segmentation.",
+    "The contact sheet provides low-resolution previews, limiting the ability to assess pixel-level mask accuracy.",
+    "No ground-truth labels or class names are explicitly provided for the color-coded masks."
+  ],
+  "metadata": {
+    "requested_provider": "vision-banana",
+    "resolved_provider": "palette-mask",
+    "provider_fallback_used": true,
+    "provider_fallback_reason": "missing_vision_banana_endpoint",
+    "perception_enrichment": "visual-review"
+  }
+}

@@ -20,9 +20,11 @@
     {
       "id": "proya_guardian_malaysia_campaign",
       "pages": [7, 8],
-      "local_assets": [
-        "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg"
-      ],
+            "local_assets": [
+                "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
+                "../proya-deep-proof-v1/vision-banana/proya-vision-banana-contact-sheet.png",
+                "../proya-deep-proof-v1/vision-banana/proya-vision-banana-tight-semantic-overlay-v3.png"
+            ],
       "public_sources": [
         {
           "url": "https://proya-group.com/en/news-info/2028",
@@ -35,7 +37,7 @@
           ]
         }
       ],
-      "source_status": "Source page identified. Exact downloaded-image URL and capture timestamp still need to be recorded before customer-facing export.",
+            "source_status": "Source page identified. Vision Banana compatible fallback mask review completed for internal Page 7/8 proof. Exact downloaded-image URL and capture timestamp still need to be recorded before customer-facing export.",
       "customer_visible_use": "Lane A lead visual and Page 8 product-truth evidence-card basis.",
       "external_treatment": "Use redrawn or masked crop with source-safe annotation. Do not use raw people, retail, promotion, or local capture details.",
       "must_not_claim": [
@@ -209,10 +211,10 @@
       "title": "Lane A: Product-truth and claim evidence",
       "lead_example": "PROYA",
       "reserve_example": "Genki Forest",
-      "source_crops": [
-        {
-          "id": "proya_lead_wide",
-          "path": "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
+            "source_crops": [
+                {
+                    "id": "proya_lead_wide",
+                    "path": "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
           "image_size": [5447, 3631],
           "crop": [5447, 3064, 0, 280],
           "role": "queue hero / campaign-product display"
@@ -229,25 +231,44 @@
           "path": "../real-asset-batch-02/proya/images/12-3aa4e2e2d146.jpg",
           "image_size": [1995, 1334],
           "crop": [1500, 900, 250, 180],
-          "role": "2026 award/source cue"
-        }
-      ]
-    },
+                    "role": "2026 award/source cue"
+                }
+            ],
+            "technical_artifacts": [
+                {
+                    "id": "proya_vision_banana_contact_sheet",
+                    "path": "../proya-deep-proof-v1/vision-banana/proya-vision-banana-contact-sheet.png",
+                    "provider_requested": "vision-banana",
+                    "provider_resolved": "palette-mask",
+                    "role": "machine mask contact sheet for internal semantic-region review"
+                }
+            ]
+        },
     {
       "page": 8,
       "title": "Evidence pattern: claim, source, representation, owner",
       "lead_example": "PROYA",
       "customer_copy_decision": "Use field-completion and owner-route language; do not use severity scoring.",
-      "source_crops": [
-        {
-          "id": "proya_detail",
-          "path": "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
+            "source_crops": [
+                {
+                    "id": "proya_detail",
+                    "path": "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
           "image_size": [5447, 3631],
           "crop": [3850, 2165, 700, 900],
-          "role": "evidence-card annotated visual crop"
-        }
-      ]
-    },
+                    "role": "evidence-card annotated visual crop"
+                }
+            ],
+            "technical_artifacts": [
+                {
+                    "id": "proya_vision_banana_tight_overlay_v3",
+                    "path": "../proya-deep-proof-v1/vision-banana/proya-vision-banana-tight-semantic-overlay-v3.png",
+                    "manifest_path": "../proya-deep-proof-v1/vision-banana/proya-vision-banana-tight-semantic-overlay-v3.json",
+                    "provider_requested": "vision-banana",
+                    "provider_resolved": "palette-mask",
+                    "role": "human-tightened VULCA field overlay derived from Vision Banana fallback masks"
+                }
+            ]
+        },
     {
       "page": 9,
       "title": "Lane B: AI publishability and generated asset context",

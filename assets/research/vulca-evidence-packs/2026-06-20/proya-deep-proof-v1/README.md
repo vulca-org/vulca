@@ -34,6 +34,9 @@ make any finding against PROYA, Guardian, CBE, or any source publisher.
   full-frame internal source map.
 - `annotations/proya-page8-evidence-crop-annotated.jpg`:
   Page 8 candidate evidence-card crop.
+- `vision-banana/`:
+  Vision Banana compatible fallback mask review, contact sheet, perception
+  output, and human-tightened VULCA field overlay.
 - `decompose/`:
   reserved for the attempted VULCA decompose result.
 
@@ -60,6 +63,32 @@ Customer pages can use the resulting pattern, not the raw internal proof:
 - avoid severity scoring;
 - prefer field-completion and owner-route language;
 - attach source note and capture date before external export.
+
+## Vision Banana Fallback Review
+
+The PROYA lead image was run through `gemini-agent design perceive` with
+`--provider vision-banana` and explicit VULCA-oriented targets. This local
+environment does not have a dedicated `VISION_BANANA_ENDPOINT`, so the run used
+the compatible `palette-mask` fallback and visual-review enrichment.
+
+Current outputs:
+
+- `vision-banana/proya-vision-banana-contact-sheet.png`
+- `vision-banana/proya-vision-banana-perception.json`
+- `vision-banana/proya-vision-banana-tight-semantic-overlay-v3.png`
+- `vision-banana/proya-vision-banana-tight-semantic-overlay-v3.json`
+
+Interpretation:
+
+- The contact sheet is the machine mask output.
+- The v3 overlay is a human-reviewed VULCA annotation built from mask
+  components and visual inspection.
+- It is more suitable than the earlier single-bounding-box overlay because it
+  separates repeated claim surfaces, product representation, retail/source
+  context, likeness-sensitive content, promotion mechanics, and owner-route
+  cues.
+- It is not a legal, rights, platform, model-safety, or release-readiness
+  conclusion.
 
 ## Next Technical Step
 

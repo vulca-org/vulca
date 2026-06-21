@@ -647,6 +647,44 @@
       align-self: start;
     }
 
+    .proof-card .card-body {
+      grid-template-columns: 1.35fr .65fr;
+    }
+
+    .artifact-figure {
+      position: relative;
+      margin: 0;
+      border: 1px solid rgba(23, 32, 28, .16);
+      border-radius: 8px;
+      background: #eef2ef;
+      overflow: hidden;
+    }
+
+    .artifact-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .artifact-figure.compact img {
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+
+    .proof-summary {
+      display: grid;
+      gap: 7px;
+      margin-top: 10px;
+      padding: 11px;
+      border: 1px solid #b4d9d3;
+      border-radius: 8px;
+      background: var(--evidence-soft);
+      color: var(--evidence);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
     .callout-dot {
       position: absolute;
       z-index: 4;
@@ -782,7 +820,8 @@
       .topbar,
       .intro,
       .page,
-      .card-body {
+      .card-body,
+      .proof-card .card-body {
         grid-template-columns: 1fr;
       }
 
@@ -896,6 +935,7 @@
           <ul>
             <li>这页不是在说 PROYA 有问题，而是在展示“公开市场素材一旦跨渠道复用，就需要 source trail”。</li>
             <li>右侧三张真实图分别代表 retail campaign、event context、award/source cue，下面的小图代表未来正式页要补的 source record 和 owner route。</li>
+            <li>Vision Banana fallback 的 mask 结果现在作为内部技术 proof：机器给出候选语义区，VULCA 再收紧为可审核字段框。</li>
             <li>正式 PDF 要把 raw crop 改成 source-safe redraw，并保留“public example”边界。</li>
           </ul>
         </div>
@@ -906,6 +946,7 @@
         <div class="chip-row">
           <span class="chip evidence">2026 source priority</span>
           <span class="chip owner">owner route visible</span>
+          <span class="chip evidence">mask-reviewed proof</span>
           <span class="chip risk">no negative finding</span>
         </div>
       </aside>
@@ -931,20 +972,12 @@
             <p>Supports award/news wording as a source-record need; do not turn it into ranking, efficacy, or performance proof.</p>
           </article>
           <article class="tile">
-            <div class="drawn drawn-reserve" aria-label="Reserve public example placeholder">
-              <span class="drawn-title">Reserve comparator</span>
-              <div class="mini-row">
-                <span class="mini-box">product page</span>
-                <span class="mini-arrow">></span>
-                <span class="mini-box">category cue</span>
-              </div>
-              <div class="mini-row">
-                <span class="mini-chip">optional</span>
-                <span class="mini-chip risk">do not lead</span>
-              </div>
-            </div>
-            <h3>Genki reserve</h3>
-            <p>Optional category-width placeholder only; omit from a first customer draft if PROYA remains the cleanest lead story.</p>
+            <span class="internal-ribbon">internal proof</span>
+            <figure class="artifact-figure compact" aria-label="Vision Banana fallback contact sheet">
+              <img src="../proya-deep-proof-v1/vision-banana/proya-vision-banana-contact-sheet.png" alt="Vision Banana fallback contact sheet for the PROYA source image">
+            </figure>
+            <h3>Vision Banana mask review</h3>
+            <p>Machine masks isolate candidate regions; Page 8 uses human-tightened VULCA fields derived from this proof.</p>
           </article>
           <article class="tile">
             <div class="drawn drawn-record" aria-label="PDP and source record diagram">
@@ -1014,7 +1047,8 @@
           <b>解释</b>
           <ul>
             <li>这页回答“客户拿到 VULCA 后会看到什么”：不是一堆截图，而是一张可执行的 evidence card。</li>
-            <li>图上的 1/2 标注对应 claim 和 product representation；右侧字段补上 source 和 owner。</li>
+            <li>图上的 1a/1b/2/3/4/5/6 标注对应 source text、product representation、source context、review question 和 owner route。</li>
+            <li>这一版不是 SAM/DINO 输出，而是 Vision Banana fallback mask 加人工收紧框，用来验证字段读法是否足够清晰。</li>
             <li>正式 PDF 需要把来源 URL、capture date、source type 和 release owner 补齐。</li>
           </ul>
         </div>
@@ -1025,7 +1059,7 @@
       </aside>
 
       <div class="component">
-        <article class="card">
+        <article class="card proof-card">
           <div class="card-head">
             <h3>Product-Truth evidence card</h3>
             <div class="chip-row">
@@ -1036,19 +1070,24 @@
           </div>
           <div class="card-body">
             <div class="annotated">
-              <span class="internal-ribbon">internal crop</span>
-              <div class="clip" data-src="../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg" data-crop="3850,2165,700,900" data-label="detail crop for redraw"></div>
-              <span class="callout-dot" style="left:18%;top:18%;" aria-label="Callout 1: campaign and source text cue" title="Callout 1: campaign and source text cue">1</span>
-              <span class="callout-dot" style="left:56%;top:45%;" aria-label="Callout 2: product representation and packshot area" title="Callout 2: product representation and packshot area">2</span>
+              <span class="internal-ribbon">internal proof</span>
+              <figure class="artifact-figure" aria-label="PROYA Vision Banana fallback mask review with VULCA field boxes">
+                <img src="../proya-deep-proof-v1/vision-banana/proya-vision-banana-tight-semantic-overlay-v3.png" alt="PROYA Vision Banana fallback mask review with human-tightened VULCA field boxes">
+              </figure>
+              <div class="proof-summary">
+                <span>Machine mask result is preserved as the color overlay; VULCA fields are human-tightened into reviewable boxes.</span>
+                <span>Use this page for internal technical review only. Customer export should use a source-safe crop or redraw.</span>
+              </div>
             </div>
             <div class="panel">
               <div class="finding">
                 <h4>Callouts</h4>
                 <ul>
-                  <li>Campaign/source text cue</li>
-                  <li>Product representation / packshot area</li>
-                  <li>Source record field in the card</li>
-                  <li>Owner route field in the card</li>
+                  <li>1a/1b: claim/source text surfaces</li>
+                  <li>2: product representation / packshot area</li>
+                  <li>3a/3b: retail and source-context cues</li>
+                  <li>4/5: likeness and promotion review questions</li>
+                  <li>6: owner-route cue with inset</li>
                 </ul>
               </div>
               <div class="finding">
@@ -1056,12 +1095,12 @@
                 <p>Attach source material, claim owner, channel variants, and release decision owner before reuse.</p>
               </div>
               <div class="field-grid">
-                <div class="field-card"><b>1. Claim</b><span>Visible campaign/product language is identified as a source item, not judged here.</span></div>
-                <div class="field-card"><b>2. Representation</b><span>Packshot, retail display, event cue, or award cue is named before reuse.</span></div>
-                <div class="field-card"><b>3. Source</b><span>URL, capture date, source type, and channel role are attached to the record.</span></div>
-                <div class="field-card"><b>4. Owner</b><span>Brand, ecommerce, channel, or release owner receives the handoff.</span></div>
+                <div class="field-card"><b>Claim</b><span>Visible language is captured as source text across repeated campaign surfaces.</span></div>
+                <div class="field-card"><b>Representation</b><span>Product display, packshot group, and offer row are separated from the scene.</span></div>
+                <div class="field-card"><b>Source</b><span>Retail channel and promotion cues require URL, capture date, and source type.</span></div>
+                <div class="field-card"><b>Owner</b><span>Brand, ecommerce, channel, or release owner receives unresolved review questions.</span></div>
               </div>
-              <div class="readiness-note">Expression target: the final customer page should read as a reusable field-completion card, not a finding against the public example.</div>
+              <div class="readiness-note">Expression target: internal page shows the technical proof; final customer page should show the distilled field-completion card, not this raw annotated source image.</div>
             </div>
           </div>
           <div class="card-foot">

@@ -16,6 +16,31 @@ Open `index.html` locally to review:
 - Page 11: AI Ad Workflow lane strip
 - Page 12: AI Ad Workflow evidence-card pattern
 
+## Page 7/8 PROYA Technical Proof Upgrade
+
+Page 7/8 now include the PROYA Vision Banana fallback proof from:
+
+```text
+../proya-deep-proof-v1/vision-banana/
+```
+
+The current proof uses the configured Vision Banana compatible fallback:
+
+```text
+requested_provider: vision-banana
+resolved_provider: palette-mask
+fallback_reason: missing_vision_banana_endpoint
+```
+
+The contact sheet is treated as the machine mask output. The Page 8 overlay is
+a human-reviewed VULCA annotation built from those mask components, not a SAM or
+DINO layer split. This is intentional for the current review pass: it is more
+legible for source, representation, review-question, and owner-route discussion.
+
+Customer-facing exports should not use the raw annotated image. They should use
+a source-safe crop, redraw, or simplified evidence-card visual derived from the
+fields.
+
 ## Reading Map
 
 The page sequence is paired:
