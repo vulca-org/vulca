@@ -335,7 +335,11 @@
 
     .drawn {
       position: relative;
+      display: grid;
+      gap: 8px;
+      align-content: center;
       min-height: 116px;
+      padding: 14px;
       border: 1px dashed #b7c2bc;
       border-radius: 7px;
       background:
@@ -344,27 +348,73 @@
       overflow: hidden;
     }
 
-    .drawn::before,
-    .drawn::after {
-      content: "";
-      position: absolute;
+    .drawn-title {
+      position: relative;
+      z-index: 1;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .mini-row {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .mini-box,
+    .mini-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 26px;
+      padding: 5px 7px;
+      border: 1px solid rgba(23, 32, 28, .16);
       border-radius: 6px;
-      background: rgba(255, 255, 255, .78);
-      border: 1px solid rgba(23, 32, 28, .10);
+      background: rgba(255, 255, 255, .82);
+      color: var(--ink);
+      font-size: 10px;
+      font-weight: 850;
+      line-height: 1.2;
+      text-align: center;
     }
 
-    .drawn::before {
-      left: 14px;
-      top: 16px;
-      width: 42%;
-      height: 56%;
+    .mini-chip {
+      min-height: 22px;
+      background: rgba(8, 122, 116, .12);
+      color: var(--evidence);
     }
 
-    .drawn::after {
-      right: 14px;
-      top: 22px;
-      width: 28%;
-      height: 38%;
+    .mini-chip.owner {
+      background: rgba(138, 90, 0, .15);
+      color: var(--owner);
+    }
+
+    .mini-chip.risk {
+      background: rgba(178, 58, 47, .12);
+      color: var(--risk);
+    }
+
+    .mini-arrow {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .drawn-record .mini-row,
+    .drawn-label .mini-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .drawn-route .mini-row,
+    .drawn-redraw .mini-row {
+      flex-wrap: nowrap;
     }
 
     .source-row,
@@ -775,17 +825,53 @@
             <p>Supports award/news wording as a source-record need; do not turn it into ranking, efficacy, or performance proof.</p>
           </article>
           <article class="tile">
-            <div class="drawn"></div>
+            <div class="drawn drawn-reserve" aria-label="Reserve public example placeholder">
+              <span class="drawn-title">Reserve comparator</span>
+              <div class="mini-row">
+                <span class="mini-box">product page</span>
+                <span class="mini-arrow">></span>
+                <span class="mini-box">category cue</span>
+              </div>
+              <div class="mini-row">
+                <span class="mini-chip">optional</span>
+                <span class="mini-chip risk">do not lead</span>
+              </div>
+            </div>
             <h3>Genki reserve</h3>
             <p>Optional category-width placeholder only; omit from a first customer draft if PROYA remains the cleanest lead story.</p>
           </article>
           <article class="tile">
-            <div class="drawn"></div>
+            <div class="drawn drawn-record" aria-label="PDP and source record diagram">
+              <span class="drawn-title">Source record</span>
+              <div class="mini-row">
+                <span class="mini-box">URL</span>
+                <span class="mini-box">date</span>
+                <span class="mini-box">type</span>
+                <span class="mini-box">role</span>
+              </div>
+              <div class="mini-row">
+                <span class="mini-chip">PDP</span>
+                <span class="mini-chip">campaign page</span>
+              </div>
+            </div>
             <h3>PDP / source record</h3>
             <p>Final PDF needs URL, capture date, source type, and channel role; no local filenames or capture-batch IDs.</p>
           </article>
           <article class="tile">
-            <div class="drawn"></div>
+            <div class="drawn drawn-route" aria-label="Owner route diagram">
+              <span class="drawn-title">Owner route</span>
+              <div class="mini-row">
+                <span class="mini-box">claim</span>
+                <span class="mini-arrow">></span>
+                <span class="mini-box">PDP</span>
+                <span class="mini-arrow">></span>
+                <span class="mini-box">release</span>
+              </div>
+              <div class="mini-row">
+                <span class="mini-chip owner">brand</span>
+                <span class="mini-chip owner">ecommerce</span>
+              </div>
+            </div>
             <h3>Owner route</h3>
             <p>Maps claim owner to product/PDP owner to release owner; this is the practical handoff VULCA creates.</p>
           </article>
@@ -912,12 +998,37 @@
             <p>Source-record basis for output state, format, and export-context questions.</p>
           </article>
           <article class="tile">
-            <div class="drawn"></div>
+            <div class="drawn drawn-label" aria-label="AI label and disclosure decision diagram">
+              <span class="drawn-title">Label decision</span>
+              <div class="mini-row">
+                <span class="mini-box">internal</span>
+                <span class="mini-box">public</span>
+                <span class="mini-box">channel</span>
+                <span class="mini-box">none</span>
+              </div>
+              <div class="mini-row">
+                <span class="mini-chip">decision field</span>
+                <span class="mini-chip risk">not legal ruling</span>
+              </div>
+            </div>
             <h3>Label / disclosure</h3>
             <p>Neutral decision field: visible label, internal mark, channel disclosure, or no label after owner review.</p>
           </article>
           <article class="tile">
-            <div class="drawn"></div>
+            <div class="drawn drawn-route" aria-label="Generated asset owner route diagram">
+              <span class="drawn-title">Release route</span>
+              <div class="mini-row">
+                <span class="mini-box">prompt</span>
+                <span class="mini-arrow">></span>
+                <span class="mini-box">output</span>
+                <span class="mini-arrow">></span>
+                <span class="mini-box">owner</span>
+              </div>
+              <div class="mini-row">
+                <span class="mini-chip owner">product</span>
+                <span class="mini-chip owner">platform</span>
+              </div>
+            </div>
             <h3>Owner route</h3>
             <p>Human reviewer route for prompt/source, output state, label posture, and reuse decision.</p>
           </article>
@@ -1116,12 +1227,37 @@
                   <p>Use as structure reference for hook, body, CTA review; not as performance proof.</p>
                 </div>
                 <div class="source-card">
-                  <div class="drawn"></div>
+                  <div class="drawn drawn-internal" aria-label="Internal-only case-study treatment diagram">
+                    <span class="drawn-title">Internal only</span>
+                    <div class="mini-row">
+                      <span class="mini-box">case study</span>
+                      <span class="mini-arrow">></span>
+                      <span class="mini-box">mask</span>
+                      <span class="mini-arrow">></span>
+                      <span class="mini-box">redraw</span>
+                    </div>
+                    <div class="mini-row">
+                      <span class="mini-chip risk">no proof use</span>
+                    </div>
+                  </div>
                   <h3>Source-safe note</h3>
                   <p>Third-party case-study material stays internal unless explicitly approved.</p>
                 </div>
                 <div class="source-card">
-                  <div class="drawn"></div>
+                  <div class="drawn drawn-redraw" aria-label="Final redrawn workflow target diagram">
+                    <span class="drawn-title">Final redraw</span>
+                    <div class="mini-row">
+                      <span class="mini-box">input</span>
+                      <span class="mini-arrow">></span>
+                      <span class="mini-box">candidate</span>
+                      <span class="mini-arrow">></span>
+                      <span class="mini-box">handoff</span>
+                    </div>
+                    <div class="mini-row">
+                      <span class="mini-chip">source-safe</span>
+                      <span class="mini-chip owner">owner visible</span>
+                    </div>
+                  </div>
                   <h3>Redrawn final target</h3>
                   <p>Final page should be a neutral workflow/evidence card, not a raw vendor screenshot.</p>
                 </div>

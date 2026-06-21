@@ -47,6 +47,10 @@ Each page should make these points visible without extra verbal explanation:
 4. The external-use boundary: no raw crop export, no customer/partner/endorser
    implication, no legal/compliance/certification claim, and no unsupported
    performance claim.
+5. Empty image placeholders are not acceptable in the review preview. If a
+   source-safe final visual is not available yet, use a labeled semantic diagram
+   that shows the intended source record, owner route, label decision, or redraw
+   target.
 
 ## Source Matrix Status
 
