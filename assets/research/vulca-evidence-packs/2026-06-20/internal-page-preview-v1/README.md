@@ -48,6 +48,31 @@ Each page should make these points visible without extra verbal explanation:
    implication, no legal/compliance/certification claim, and no unsupported
    performance claim.
 
+## Source Matrix Status
+
+`manifest.json` now includes a `source_matrix` section. Use it as the working
+source/treatment ledger before any customer-facing export.
+
+The matrix records:
+
+1. Local asset paths and the pages where they appear.
+2. Public source candidates or verified source pages, with dates where known.
+3. The intended customer-visible use of each source group.
+4. Required external treatment: redraw, mask, crop, recapture, or internal-only.
+5. Claims that must not be made in customer-facing copy.
+
+Current source status:
+
+- PROYA Guardian Malaysia campaign source page is identified, but exact image
+  URL and capture timestamp still need local source-log recording.
+- PROYA CBE event/award context source pages are identified, but exact image
+  URLs and capture timestamps still need local source-log recording.
+- Seedream / BytePlus official pages are identified; current screenshots should
+  be refreshed or redrawn before customer-facing use.
+- Creatify URL-to-video official pages are identified; raw screenshots should
+  be redrawn into workflow strips before customer-facing use.
+- Creatify / Alibaba case-study material remains internal-only by default.
+
 ## Version Lineage And Feedback Loop
 
 Use this directory as an internal page-component preview for the master PDF,

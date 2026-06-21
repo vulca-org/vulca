@@ -16,6 +16,193 @@
     "Keep the Creatify / Alibaba case study as internal reference by default; do not use it as customer-facing visual proof.",
     "Company names may appear only as public examples, never as customers, partners, endorsers, or audit targets."
   ],
+  "source_matrix": [
+    {
+      "id": "proya_guardian_malaysia_campaign",
+      "pages": [7, 8],
+      "local_assets": [
+        "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg"
+      ],
+      "public_sources": [
+        {
+          "url": "https://proya-group.com/en/news-info/2028",
+          "source_type": "official company news",
+          "source_date": "2026-05-15",
+          "supports": [
+            "No Skin Drama, Just PROYA campaign context",
+            "Guardian Malaysia flagship-store campaign context",
+            "Advanced Original Repair Series retail/channel context"
+          ]
+        }
+      ],
+      "source_status": "Source page identified. Exact downloaded-image URL and capture timestamp still need to be recorded before customer-facing export.",
+      "customer_visible_use": "Lane A lead visual and Page 8 product-truth evidence-card basis.",
+      "external_treatment": "Use redrawn or masked crop with source-safe annotation. Do not use raw people, retail, promotion, or local capture details.",
+      "must_not_claim": [
+        "PROYA or Guardian is a VULCA customer, partner, endorser, or authorization source.",
+        "VULCA has confirmed claim accuracy, rights ownership, legal approval, or release readiness.",
+        "The campaign has a defect or negative finding."
+      ]
+    },
+    {
+      "id": "proya_cbe_event_and_award_context",
+      "pages": [7],
+      "local_assets": [
+        "../real-asset-batch-02/proya/images/11-acef6bb4a2d3.jpg",
+        "../real-asset-batch-02/proya/images/12-3aa4e2e2d146.jpg"
+      ],
+      "public_sources": [
+        {
+          "url": "https://www.proya-group.com/news-info/2027",
+          "source_type": "official company news",
+          "source_date": "2026-05-15",
+          "supports": [
+            "30th CBE participation context",
+            "PROYA booth/event context",
+            "CBE award and brand-recognition context"
+          ]
+        },
+        {
+          "url": "https://www.chinabeautyexpo.com/may-12-14-redefining-the-future-of-beauty/",
+          "source_type": "event organizer context",
+          "source_date": "2026 event page",
+          "supports": [
+            "CBE 2026 May 12-14 event timing",
+            "CBE 30th edition context"
+          ]
+        }
+      ],
+      "source_status": "Source pages identified. Exact image URLs and capture timestamps still need local source-log recording.",
+      "customer_visible_use": "Small event/source and award/source cue tiles only; not a hero proof point.",
+      "external_treatment": "Crop, blur, or redraw crowd and trophy details. Keep only source-safe event/award cues needed for the source-record story.",
+      "must_not_claim": [
+        "Attendance, ranking, market leadership, efficacy, or performance beyond the cited source wording.",
+        "CBE or award organizers endorse VULCA.",
+        "VULCA independently validates the award or event claim."
+      ]
+    },
+    {
+      "id": "seedream_byteplus_public_model_context",
+      "pages": [9, 10],
+      "local_assets": [
+        "../capture-batch-02/seedream-45-official-page.jpg",
+        "../capture-batch-02/byteplus-model-list-seedream-5.jpg",
+        "../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg",
+        "../capture-batch-02/byteplus-seedream-model-page.jpg"
+      ],
+      "public_sources": [
+        {
+          "url": "https://seed.bytedance.com/en/seedream4_5",
+          "source_type": "official model page",
+          "source_date": "2026 page",
+          "supports": [
+            "Seedream 4.5 public model context"
+          ]
+        },
+        {
+          "url": "https://seed.bytedance.com/en/seedream5_0_lite",
+          "source_type": "official model page",
+          "source_date": "2026 page",
+          "supports": [
+            "Seedream 5.0 Lite current public model context"
+          ]
+        },
+        {
+          "url": "https://docs.byteplus.com/en/docs/ModelArk/1330310",
+          "source_type": "official documentation",
+          "source_date": "Last updated 2026-06-17",
+          "supports": [
+            "ModelArk model-list / category context"
+          ]
+        },
+        {
+          "url": "https://docs.byteplus.com/en/docs/ModelArk/1824121",
+          "source_type": "official documentation",
+          "source_date": "Last updated 2026-06-17",
+          "supports": [
+            "Seedream 4.0-5.0 tutorial / input-mode context"
+          ]
+        },
+        {
+          "url": "https://docs.byteplus.com/en/docs/ModelArk/1829186",
+          "source_type": "official documentation",
+          "source_date": "Last updated 2026-06-16",
+          "supports": [
+            "Seedream 4.0-4.5 prompt-guide context"
+          ]
+        }
+      ],
+      "source_status": "Current official source pages identified. Existing screenshots may contain overlays and should be refreshed or redrawn before customer-facing export.",
+      "customer_visible_use": "Version-neutral AI publishability example: input/source, model/workflow context, output state, label posture, and owner route.",
+      "external_treatment": "Use clean recapture or redrawn documentation strips. Keep as context around generated assets, not proof of model quality or safety.",
+      "must_not_claim": [
+        "Seedream or BytePlus is a VULCA customer, partner, endorser, or authorization source.",
+        "VULCA certifies model quality, safety, copyright clearance, policy compliance, or platform approval.",
+        "A specific model version is the final customer-facing recommendation unless explicitly selected later."
+      ]
+    },
+    {
+      "id": "creatify_url_to_video_workflow",
+      "pages": [11, 12],
+      "local_assets": [
+        "../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png",
+        "../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png"
+      ],
+      "public_sources": [
+        {
+          "url": "https://creatify.ai/features/url-to-video",
+          "source_type": "official feature page",
+          "source_date": "current page checked 2026-06-21",
+          "supports": [
+            "product-link to video-ad workflow"
+          ]
+        },
+        {
+          "url": "https://creatify.ai/features",
+          "source_type": "official feature index",
+          "source_date": "current page checked 2026-06-21",
+          "supports": [
+            "URL-to-video feature listing",
+            "ad workflow context"
+          ]
+        }
+      ],
+      "source_status": "Official workflow source pages identified. Raw screenshots should remain internal and be converted to redrawn workflow strips before customer-facing export.",
+      "customer_visible_use": "Lane C commercial workflow example and Page 12 workflow evidence-card basis.",
+      "external_treatment": "Redraw the URL-to-video flow and mask faces, product thumbnails, ratings, and vendor UI chrome.",
+      "must_not_claim": [
+        "Creatify is a VULCA customer, partner, endorser, or authorization source.",
+        "VULCA predicts ad performance or approves generated ads.",
+        "G2 ratings, case-study metrics, or vendor marketing claims are independently verified by VULCA."
+      ]
+    },
+    {
+      "id": "creatify_alibaba_internal_reference",
+      "pages": [11, 12],
+      "local_assets": [
+        "../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png"
+      ],
+      "public_sources": [
+        {
+          "url": "https://creatify.ai/case-study/alibaba",
+          "source_type": "official case-study page",
+          "source_date": "current page checked 2026-06-21",
+          "supports": [
+            "embedded seller workflow context",
+            "Creatify-reported case-study metrics"
+          ]
+        }
+      ],
+      "source_status": "Internal reference only by default. Customer-facing use requires explicit approval and attribution controls.",
+      "customer_visible_use": "Do not use as visual proof in the default customer page. It may inform the redraw concept only.",
+      "external_treatment": "Remove from default customer page. If later approved, cite as Creatify-reported public case-study context and mask paired logos/metrics as needed.",
+      "must_not_claim": [
+        "Alibaba is a VULCA customer, partner, endorser, or authorization source.",
+        "Creatify-reported case-study metrics are VULCA proof.",
+        "VULCA guarantees adoption growth, campaign usage, ROI, CPA, CTR, or ROAS."
+      ]
+    }
+  ],
   "pages": [
     {
       "page": 7,
