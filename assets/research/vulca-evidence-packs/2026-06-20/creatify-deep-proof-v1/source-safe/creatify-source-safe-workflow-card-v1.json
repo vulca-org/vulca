@@ -1,0 +1,37 @@
+{
+  "status": "source_safe_customer_candidate",
+  "date": "2026-06-21",
+  "image": "creatify-source-safe-workflow-card-v1.png",
+  "image_size": [1800, 1240],
+  "derived_from": [
+    "../annotations/creatify-workflow-field-overlay-v1.png",
+    "../../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png",
+    "../../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png"
+  ],
+  "excluded_by_default": [
+    "../../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png"
+  ],
+  "customer_visible_fields": [
+    "public workflow source",
+    "VULCA workflow fields",
+    "campaign handoff output",
+    "source-safe visual treatment"
+  ],
+  "removed_for_customer_safety": [
+    "raw vendor UI screenshots",
+    "people/ad example thumbnails",
+    "third-party case-study metrics",
+    "Alibaba visual proof",
+    "local capture paths"
+  ],
+  "allowed_claim": "VULCA can structure a public product-to-video workflow into a source-backed campaign handoff packet for human review.",
+  "must_not_claim": [
+    "ad-performance prediction",
+    "ROI, CPA, CTR, ROAS, adoption growth, or campaign outcome",
+    "generated-ad approval",
+    "platform-policy approval",
+    "legal approval",
+    "vendor endorsement",
+    "customer, partner, endorsement, or authorization relationship"
+  ]
+}

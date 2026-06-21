@@ -1,0 +1,454 @@
+{
+  "status": "internal_review_preview_only",
+  "date": "2026-06-21",
+  "scope": "VULCA Solution Pack v1 master PDF pages 7-12 component preview",
+  "external_use_boundary": [
+    "Do not use raw source crops in an external PDF unless cleared.",
+    "Redraw, mask, or crop annotated-safe before external use.",
+    "Do not include raw local paths, filenames, capture-batch ids, or source-log filenames in customer-facing copy.",
+    "Named companies are public market examples only, not customer relationships or audit targets."
+  ],
+  "confirmed_review_decisions": [
+    "Keep PROYA as the Lane A public market example.",
+    "Use neutral field-completion and owner-route language on customer-visible evidence cards instead of severity scoring.",
+    "Frame Lane B as Seedream / BytePlus public model context without selecting a specific model version in customer-facing copy.",
+    "Move Kling out of the customer-facing Lane B page; retain it only as an internal video/reference reserve.",
+    "Keep the Creatify / Alibaba case study as internal reference by default; do not use it as customer-facing visual proof.",
+    "Company names may appear only as public examples, never as customers, partners, endorsers, or audit targets."
+  ],
+  "customer_variant_defaults": {
+    "default_reader": "brand, ecommerce, and AI ad workflow owners",
+    "named_company_rule": "Names may appear only as public examples with source-safe visuals and explicit boundary copy.",
+    "story_weighting": "Lane C is the clearest before/after customer story; Lane A and Lane B support the same source-backed method across claims and generated assets.",
+    "first_email_posture": "Ask for practical feedback on the sample pack first; bounded pilot discussion is a follow-on step.",
+    "generation_gate": "Do not create a separate customer-facing PDF until the user explicitly approves it."
+  },
+  "source_matrix": [
+    {
+      "id": "proya_guardian_malaysia_campaign",
+      "pages": [7, 8],
+            "local_assets": [
+                "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
+                "../proya-deep-proof-v1/vision-banana/proya-vision-banana-contact-sheet.png",
+                "../proya-deep-proof-v1/vision-banana/proya-vision-banana-tight-semantic-overlay-v3.png",
+                "../proya-deep-proof-v1/vision-banana/proya-source-safe-distilled-card-v1.png"
+            ],
+      "public_sources": [
+        {
+          "url": "https://proya-group.com/en/news-info/2028",
+          "source_type": "official company news",
+          "source_date": "2026-05-15",
+          "supports": [
+            "No Skin Drama, Just PROYA campaign context",
+            "Guardian Malaysia flagship-store campaign context",
+            "Advanced Original Repair Series retail/channel context"
+          ]
+        }
+      ],
+            "source_status": "Source page identified. Vision Banana compatible fallback mask review completed for internal Page 7/8 proof. Exact downloaded-image URL and capture timestamp still need to be recorded before customer-facing export.",
+      "customer_visible_use": "Lane A lead visual and Page 8 product-truth evidence-card basis.",
+      "external_treatment": "Use redrawn or masked crop with source-safe annotation. Do not use raw people, retail, promotion, or local capture details.",
+      "must_not_claim": [
+        "PROYA or Guardian is a VULCA customer, partner, endorser, or authorization source.",
+        "VULCA has confirmed claim accuracy, rights ownership, legal approval, or release readiness.",
+        "The campaign has a defect or negative finding."
+      ]
+    },
+    {
+      "id": "proya_cbe_event_and_award_context",
+      "pages": [7],
+      "local_assets": [
+        "../real-asset-batch-02/proya/images/11-acef6bb4a2d3.jpg",
+        "../real-asset-batch-02/proya/images/12-3aa4e2e2d146.jpg"
+      ],
+      "public_sources": [
+        {
+          "url": "https://www.proya-group.com/news-info/2027",
+          "source_type": "official company news",
+          "source_date": "2026-05-15",
+          "supports": [
+            "30th CBE participation context",
+            "PROYA booth/event context",
+            "CBE award and brand-recognition context"
+          ]
+        },
+        {
+          "url": "https://www.chinabeautyexpo.com/may-12-14-redefining-the-future-of-beauty/",
+          "source_type": "event organizer context",
+          "source_date": "2026 event page",
+          "supports": [
+            "CBE 2026 May 12-14 event timing",
+            "CBE 30th edition context"
+          ]
+        }
+      ],
+      "source_status": "Source pages identified. Exact image URLs and capture timestamps still need local source-log recording.",
+      "customer_visible_use": "Small event/source and award/source cue tiles only; not a hero proof point.",
+      "external_treatment": "Crop, blur, or redraw crowd and trophy details. Keep only source-safe event/award cues needed for the source-record story.",
+      "must_not_claim": [
+        "Attendance, ranking, market leadership, efficacy, or performance beyond the cited source wording.",
+        "CBE or award organizers endorse VULCA.",
+        "VULCA independently validates the award or event claim."
+      ]
+    },
+    {
+      "id": "seedream_byteplus_public_model_context",
+      "pages": [9, 10],
+      "local_assets": [
+        "../capture-batch-02/seedream-45-official-page.jpg",
+        "../capture-batch-02/byteplus-model-list-seedream-5.jpg",
+        "../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg",
+        "../capture-batch-02/byteplus-seedream-model-page.jpg",
+        "../seedream-byteplus-deep-proof-v1/annotations/seedream-byteplus-field-overlay-v1.png",
+        "../seedream-byteplus-deep-proof-v1/source-safe/seedream-byteplus-source-safe-distilled-card-v1.png"
+      ],
+      "public_sources": [
+        {
+          "url": "https://seed.bytedance.com/en/seedream4_5",
+          "source_type": "official model page",
+          "source_date": "2026 page",
+          "supports": [
+            "Seedream 4.5 public model context"
+          ]
+        },
+        {
+          "url": "https://seed.bytedance.com/en/seedream5_0_lite",
+          "source_type": "official model page",
+          "source_date": "2026 page",
+          "supports": [
+            "Seedream 5.0 Lite current public model context"
+          ]
+        },
+        {
+          "url": "https://docs.byteplus.com/en/docs/ModelArk/1330310",
+          "source_type": "official documentation",
+          "source_date": "Last updated 2026-06-17",
+          "supports": [
+            "ModelArk model-list / category context"
+          ]
+        },
+        {
+          "url": "https://docs.byteplus.com/en/docs/ModelArk/1824121",
+          "source_type": "official documentation",
+          "source_date": "Last updated 2026-06-17",
+          "supports": [
+            "Seedream 4.0-5.0 tutorial / input-mode context"
+          ]
+        },
+        {
+          "url": "https://docs.byteplus.com/en/docs/ModelArk/1829186",
+          "source_type": "official documentation",
+          "source_date": "Last updated 2026-06-16",
+          "supports": [
+            "Seedream 4.0-4.5 prompt-guide context"
+          ]
+        }
+      ],
+      "source_status": "Current official source pages identified. Lane B field overlay and source-safe distilled card completed. Existing screenshots may contain cookie/feedback overlays and should be refreshed, masked, or redrawn before customer-facing export.",
+      "customer_visible_use": "Version-neutral AI publishability example: input/source, model/workflow context, output state, label posture, and owner route.",
+      "external_treatment": "Use clean recapture or redrawn documentation strips. Keep as context around generated assets, not proof of model quality or safety.",
+      "must_not_claim": [
+        "Seedream or BytePlus is a VULCA customer, partner, endorser, or authorization source.",
+        "VULCA certifies model quality, safety, copyright clearance, policy compliance, or platform approval.",
+        "A specific model version is the final customer-facing recommendation unless explicitly selected later."
+      ]
+    },
+    {
+      "id": "creatify_url_to_video_workflow",
+      "pages": [11, 12],
+      "local_assets": [
+        "../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png",
+        "../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png",
+        "../creatify-deep-proof-v1/annotations/creatify-workflow-field-overlay-v1.png",
+        "../creatify-deep-proof-v1/source-safe/creatify-source-safe-workflow-card-v1.png"
+      ],
+      "public_sources": [
+        {
+          "url": "https://creatify.ai/features/url-to-video",
+          "source_type": "official feature page",
+          "source_date": "current page checked 2026-06-21",
+          "supports": [
+            "product-link to video-ad workflow"
+          ]
+        },
+        {
+          "url": "https://creatify.ai/features",
+          "source_type": "official feature index",
+          "source_date": "current page checked 2026-06-21",
+          "supports": [
+            "URL-to-video feature listing",
+            "ad workflow context"
+          ]
+        }
+      ],
+      "source_status": "Official workflow source pages identified. Lane C workflow overlay and source-safe handoff card completed. Raw screenshots should remain internal and be converted to redrawn workflow strips or source-safe cards before customer-facing export.",
+      "customer_visible_use": "Lane C commercial workflow example and Page 12 workflow evidence-card basis.",
+      "external_treatment": "Redraw the URL-to-video flow and mask faces, product thumbnails, ratings, and vendor UI chrome.",
+      "must_not_claim": [
+        "Creatify is a VULCA customer, partner, endorser, or authorization source.",
+        "VULCA predicts ad performance or approves generated ads.",
+        "G2 ratings, case-study metrics, or vendor marketing claims are independently verified by VULCA."
+      ]
+    },
+    {
+      "id": "creatify_alibaba_internal_reference",
+      "pages": [11, 12],
+      "local_assets": [
+        "../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png"
+      ],
+      "public_sources": [
+        {
+          "url": "https://creatify.ai/case-study/alibaba",
+          "source_type": "official case-study page",
+          "source_date": "current page checked 2026-06-21",
+          "supports": [
+            "embedded seller workflow context",
+            "Creatify-reported case-study metrics"
+          ]
+        }
+      ],
+      "source_status": "Internal reference only by default. Customer-facing use requires explicit approval and attribution controls.",
+      "customer_visible_use": "Do not use as visual proof in the default customer page. It may inform the redraw concept only.",
+      "external_treatment": "Remove from default customer page. If later approved, cite as Creatify-reported public case-study context and mask paired logos/metrics as needed.",
+      "must_not_claim": [
+        "Alibaba is a VULCA customer, partner, endorser, or authorization source.",
+        "Creatify-reported case-study metrics are VULCA proof.",
+        "VULCA guarantees adoption growth, campaign usage, ROI, CPA, CTR, or ROAS."
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "page": 7,
+      "title": "Lane A: Product-truth and claim evidence",
+      "lead_example": "PROYA",
+      "reserve_example": "Genki Forest",
+            "source_crops": [
+                {
+                    "id": "proya_lead_wide",
+                    "path": "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
+          "image_size": [5447, 3631],
+          "crop": [5447, 3064, 0, 280],
+          "role": "queue hero / campaign-product display"
+        },
+        {
+          "id": "proya_event",
+          "path": "../real-asset-batch-02/proya/images/11-acef6bb4a2d3.jpg",
+          "image_size": [1920, 1280],
+          "crop": [1500, 840, 210, 150],
+          "role": "offline event / trade-show context"
+        },
+        {
+          "id": "proya_award",
+          "path": "../real-asset-batch-02/proya/images/12-3aa4e2e2d146.jpg",
+          "image_size": [1995, 1334],
+          "crop": [1500, 900, 250, 180],
+                    "role": "2026 award/source cue"
+                }
+            ],
+            "technical_artifacts": [
+                {
+                    "id": "proya_vision_banana_contact_sheet",
+                    "path": "../proya-deep-proof-v1/vision-banana/proya-vision-banana-contact-sheet.png",
+                    "provider_requested": "vision-banana",
+                    "provider_resolved": "palette-mask",
+                    "role": "machine mask contact sheet for internal semantic-region review"
+                }
+            ]
+        },
+    {
+      "page": 8,
+      "title": "Evidence pattern: claim, source, representation, owner",
+      "lead_example": "PROYA",
+      "customer_copy_decision": "Use field-completion and owner-route language; do not use severity scoring.",
+            "source_crops": [
+                {
+                    "id": "proya_detail",
+                    "path": "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
+          "image_size": [5447, 3631],
+          "crop": [3850, 2165, 700, 900],
+                    "role": "evidence-card annotated visual crop"
+                }
+            ],
+            "technical_artifacts": [
+                {
+                    "id": "proya_vision_banana_tight_overlay_v3",
+                    "path": "../proya-deep-proof-v1/vision-banana/proya-vision-banana-tight-semantic-overlay-v3.png",
+                    "manifest_path": "../proya-deep-proof-v1/vision-banana/proya-vision-banana-tight-semantic-overlay-v3.json",
+                    "provider_requested": "vision-banana",
+                    "provider_resolved": "palette-mask",
+                    "role": "human-tightened VULCA field overlay derived from Vision Banana fallback masks"
+                },
+                {
+                    "id": "proya_source_safe_distilled_card_v1",
+                    "path": "../proya-deep-proof-v1/vision-banana/proya-source-safe-distilled-card-v1.png",
+                    "manifest_path": "../proya-deep-proof-v1/vision-banana/proya-source-safe-distilled-card-v1.json",
+                    "provider_requested": "manual-distillation-from-vulca-fields",
+                    "provider_resolved": "source-safe-diagram",
+                    "role": "customer-facing candidate distilled from the internal proof; contains no raw source photo"
+                }
+            ]
+        },
+    {
+      "page": 9,
+      "title": "Lane B: AI publishability and generated asset context",
+      "lead_example": "Seedream / BytePlus",
+      "customer_copy_decision": "Use version-neutral public model context; Kling is internal video/reference reserve only.",
+      "internal_reserve_examples": ["Kling AI"],
+      "source_crops": [
+        {
+          "id": "seedream_title",
+          "path": "../capture-batch-02/seedream-45-official-page.jpg",
+          "image_size": [1440, 1100],
+          "crop": [1440, 430, 0, 630],
+          "role": "public model/version context"
+        },
+        {
+          "id": "byteplus_model_list",
+          "path": "../capture-batch-02/byteplus-model-list-seedream-5.jpg",
+          "image_size": [1440, 1100],
+          "crop": [930, 420, 270, 120],
+          "role": "model-list / image-generation category context"
+        },
+        {
+          "id": "byteplus_tutorial",
+          "path": "../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg",
+          "image_size": [1440, 1100],
+          "crop": [900, 500, 285, 120],
+          "role": "tutorial / input-mode / prompt-source context"
+        },
+        {
+          "id": "byteplus_model_page",
+          "path": "../capture-batch-02/byteplus-seedream-model-page.jpg",
+          "image_size": [1440, 1100],
+          "crop": [900, 480, 285, 120],
+          "role": "model capability / input-output / output-format context"
+        }
+      ],
+      "technical_artifacts": [
+        {
+          "id": "seedream_byteplus_field_overlay_v1",
+          "path": "../seedream-byteplus-deep-proof-v1/annotations/seedream-byteplus-field-overlay-v1.png",
+          "manifest_path": "../seedream-byteplus-deep-proof-v1/annotations/seedream-byteplus-field-overlay-v1.json",
+          "provider_requested": "manual-vulca-field-annotation",
+          "provider_resolved": "source-field-overlay",
+          "role": "internal proof overlay mapping real public screenshots to VULCA source/model/input/output/label/owner fields"
+        }
+      ]
+    },
+    {
+      "page": 10,
+      "title": "Evidence pattern: input, output, label, owner",
+      "lead_example": "Seedream / BytePlus",
+      "customer_copy_decision": "Use review-packet and owner-route language; do not use severity scoring.",
+      "source_crops": [
+        {
+          "id": "byteplus_model_page",
+          "path": "../capture-batch-02/byteplus-seedream-model-page.jpg",
+          "image_size": [1440, 1100],
+          "crop": [900, 480, 285, 120],
+          "role": "primary model/version and output-format source record"
+        },
+        {
+          "id": "byteplus_tutorial",
+          "path": "../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg",
+          "image_size": [1440, 1100],
+          "crop": [900, 500, 285, 120],
+          "role": "prompt/source and input-mode source record"
+        },
+        {
+          "id": "byteplus_model_list",
+          "path": "../capture-batch-02/byteplus-model-list-seedream-5.jpg",
+          "image_size": [1440, 1100],
+          "crop": [930, 420, 270, 120],
+          "role": "model-list support"
+        }
+      ],
+      "technical_artifacts": [
+        {
+          "id": "seedream_byteplus_source_safe_distilled_card_v1",
+          "path": "../seedream-byteplus-deep-proof-v1/source-safe/seedream-byteplus-source-safe-distilled-card-v1.png",
+          "manifest_path": "../seedream-byteplus-deep-proof-v1/source-safe/seedream-byteplus-source-safe-distilled-card-v1.json",
+          "provider_requested": "manual-distillation-from-vulca-fields",
+          "provider_resolved": "source-safe-diagram",
+          "role": "customer-facing candidate distilled from Lane B source-field overlay; contains no raw UI screenshot"
+        }
+      ]
+    },
+    {
+      "page": 11,
+      "title": "Lane C: AI ad workflow and creative automation evidence",
+      "lead_example": "Creatify",
+      "customer_copy_decision": "Use Creatify URL-to-video as a public workflow example; keep Alibaba case-study material internal by default.",
+      "source_crops": [
+        {
+          "id": "creatify_workflow",
+          "path": "../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png",
+          "image_size": [1440, 1100],
+          "crop": [1440, 870, 0, 140],
+          "role": "URL-to-video workflow basis"
+        }
+      ],
+      "technical_artifacts": [
+        {
+          "id": "creatify_workflow_field_overlay_v1",
+          "path": "../creatify-deep-proof-v1/annotations/creatify-workflow-field-overlay-v1.png",
+          "manifest_path": "../creatify-deep-proof-v1/annotations/creatify-workflow-field-overlay-v1.json",
+          "provider_requested": "manual-vulca-workflow-field-annotation",
+          "provider_resolved": "workflow-field-overlay",
+          "role": "internal proof overlay mapping public workflow screenshot and anatomy cue to VULCA source/input/candidate/review/export/handoff fields"
+        }
+      ],
+      "internal_reference_crops": [
+        {
+          "id": "creatify_case_summary",
+          "path": "../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png",
+          "image_size": [1440, 1100],
+          "crop": [1440, 740, 0, 190],
+          "role": "Alibaba case-study source context; internal reference only by default"
+        }
+      ]
+    },
+    {
+      "page": 12,
+      "title": "Evidence pattern: workflow step, source, review context, handoff",
+      "lead_example": "Creatify",
+      "customer_copy_decision": "Use review/result context and owner-route wording; keep Alibaba result-strip crop internal unless explicitly approved; do not use severity scoring.",
+      "source_crops": [
+        {
+          "id": "creatify_workflow",
+          "path": "../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png",
+          "image_size": [1440, 1100],
+          "crop": [1440, 870, 0, 140],
+          "role": "product-link to generated-ad workflow source record"
+        },
+        {
+          "id": "creatify_anatomy",
+          "path": "../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png",
+          "image_size": [1129, 1254],
+          "crop": null,
+          "role": "hook/body/CTA anatomy cue"
+        }
+      ],
+      "technical_artifacts": [
+        {
+          "id": "creatify_source_safe_workflow_card_v1",
+          "path": "../creatify-deep-proof-v1/source-safe/creatify-source-safe-workflow-card-v1.png",
+          "manifest_path": "../creatify-deep-proof-v1/source-safe/creatify-source-safe-workflow-card-v1.json",
+          "provider_requested": "manual-distillation-from-vulca-workflow-fields",
+          "provider_resolved": "source-safe-diagram",
+          "role": "customer-facing candidate distilled from Lane C workflow-field overlay; contains no raw vendor UI or Alibaba case-study proof"
+        }
+      ],
+      "internal_reference_crops": [
+        {
+          "id": "creatify_case_result_strip",
+          "path": "../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png",
+          "image_size": [1440, 1100],
+          "crop": [1280, 360, 70, 740],
+          "role": "Alibaba case-study reported result strip; internal reference only by default"
+        }
+      ]
+    }
+  ]
+}

@@ -65,3 +65,4 @@ docs/tool-audit-logs/
 /x-posted-verify*.png
 /xhs-*.png
 /yt-*.jpeg
+.gemini-agent/
