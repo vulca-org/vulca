@@ -1,0 +1,19 @@
+{
+  "status": "error",
+  "error_type": "FileNotFoundError",
+  "error": "[Errno 2] No such file or directory: '/tmp/sam_vit_l.pth'",
+  "traceback_tail": [
+    "    return sam_model_registry[\"vit_l\"](checkpoint=SAM_CKPT).to(device)",
+    "           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^",
+    "  File \"/opt/homebrew/lib/python3.14/site-packages/segment_anything/build_sam.py\", line 28, in build_sam_vit_l",
+    "    return _build_sam(",
+    "        encoder_embed_dim=1024,",
+    "    ...<3 lines>...",
+    "        checkpoint=checkpoint,",
+    "    )",
+    "  File \"/opt/homebrew/lib/python3.14/site-packages/segment_anything/build_sam.py\", line 104, in _build_sam",
+    "    with open(checkpoint, \"rb\") as f:",
+    "         ~~~~^^^^^^^^^^^^^^^^^^",
+    "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/sam_vit_l.pth'"
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "status": "internal_deep_proof_v1",
+  "date": "2026-06-21",
+  "scope": "PROYA Lane A public example: source-backed visual annotation and evidence-card field extraction",
+  "external_use_boundary": [
+    "Raw PROYA crops and screenshots are internal evidence basis only.",
+    "Customer-facing pages must use source-safe crop, redraw, masking, or neutral annotation.",
+    "PROYA, Guardian, CBE, and source publishers are public examples only, not VULCA customers, partners, endorsers, or authorization sources.",
+    "This ledger does not judge claim accuracy, rights ownership, public-release state, or legal/platform status."
+  ],
+  "local_assets": [
+    {
+      "id": "proya_lead_campaign_product_display",
+      "path": "../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg",
+      "sha256": "9b8dd65d5aa4b639b2ecefc497da9ef1ecf5892f622dd766f28805a494eb38c7",
+      "image_size": [5447, 3631],
+      "current_preview_pages": [7, 8],
+      "role": "lead retail/campaign/product display source image",
+      "recommended_internal_use": "deep proof source map, Page 8 evidence-card crop, decompose candidate",
+      "recommended_customer_use": "redrawn or masked public-example visual only"
+    },
+    {
+      "id": "proya_cbe_event_context",
+      "path": "../real-asset-batch-02/proya/images/11-acef6bb4a2d3.jpg",
+      "sha256": "acef6bb4a2d306dcd1f259167107dd2a551993c0e84f774e1c3713fa0d9314bf",
+      "image_size": [1920, 1280],
+      "current_preview_pages": [7],
+      "role": "event / trade-show context cue",
+      "recommended_internal_use": "supporting source cue",
+      "recommended_customer_use": "small redrawn event-context chip only"
+    },
+    {
+      "id": "proya_award_source_cue",
+      "path": "../real-asset-batch-02/proya/images/12-3aa4e2e2d146.jpg",
+      "sha256": "3aa4e2e2d14691d95c29388c1ac23ac0808bd48e693a5311f8fdfdf0f7c28697",
+      "image_size": [1995, 1334],
+      "current_preview_pages": [7],
+      "role": "award / source cue",
+      "recommended_internal_use": "supporting source cue",
+      "recommended_customer_use": "small redrawn award/source chip only"
+    }
+  ],
+  "source_candidates": [
+    {
+      "id": "proya_linkedin_guardian_campaign",
+      "url": "https://www.linkedin.com/posts/proyacosmetics_proya-brandglobalization-guardianmalaysia-activity-7460222340266635264-Jbe_",
+      "source_type": "public social post by Proya Cosmetics",
+      "observed_date_context": "1mo relative at retrieval on 2026-06-21",
+      "supports": [
+        "No Skin Drama, Just PROYA campaign at Guardian Malaysia",
+        "Advanced Original Repair Series campaign context",
+        "Guardian Malaysia flagship-store retail/channel context"
+      ],
+      "use_limit": "Use as campaign/source context only; do not reuse performance or ranking language in customer-facing copy."
+    },
+    {
+      "id": "the_sun_malaysia_launch",
+      "url": "https://thesun.my/spotlight/proya-makes-malaysia-debut/",
+      "source_type": "public media article",
+      "observed_date_context": "published 2026-04-25",
+      "supports": [
+        "PROYA Malaysia market entry",
+        "Original Repair Range, Double Effect Brightening Range, Advanced Firming Nourishing Range",
+        "Guardian Health and Beauty Malaysia / Livingstone Healthcare market-channel context"
+      ],
+      "use_limit": "Use as market/context source. Do not convert article wording into VULCA-validated product efficacy."
+    },
+    {
+      "id": "proya_cbe_2026_news",
+      "url": "https://www.proya-group.com/news-info/2027",
+      "source_type": "official company news",
+      "observed_date_context": "published 2026-05-15",
+      "supports": [
+        "30th CBE China Beauty Expo participation context",
+        "event/source cue for Lane A",
+        "award/news-language source trail need"
+      ],
+      "use_limit": "Use as event/source context only; do not make ranking, efficacy, or organizer-validation claims."
+    },
+    {
+      "id": "guardian_pdp_candidate",
+      "url": "https://guardian.com.my/proya-ori-rpair-light-crm-50g-121128548.html",
+      "source_type": "retailer PDP candidate",
+      "observed_date_context": "candidate page identified 2026-06-21",
+      "supports": [
+        "possible PDP/source-record field for PROYA Original Repair product family"
+      ],
+      "use_limit": "Needs manual/browser confirmation before customer-facing use."
+    }
+  ],
+  "generated_internal_artifacts": [
+    {
+      "id": "proya_lead_source_map_annotated",
+      "path": "annotations/proya-lead-source-map-annotated.jpg",
+      "role": "full-frame annotation map for internal review"
+    },
+    {
+      "id": "proya_page8_evidence_crop_annotated",
+      "path": "annotations/proya-page8-evidence-crop-annotated.jpg",
+      "role": "Page 8 candidate crop annotation for evidence-card fields"
+    }
+  ],
+  "visual_annotations": [
+    {
+      "id": "A1",
+      "label": "Claim text / campaign surface",
+      "source_image": "proya_lead_campaign_product_display",
+      "bbox_pct": [0.624, 0.116, 0.918, 0.270],
+      "observed_visual_cue": "Visible PROYA campaign text and claim-like creative surface.",
+      "vulca_field": "claim",
+      "internal_interpretation": "Record the visible campaign line as a source item, not as a judged finding.",
+      "customer_treatment": "May become a source-safe claim/source text cue in Page 8."
+    },
+    {
+      "id": "A2",
+      "label": "Product representation / packshot",
+      "source_image": "proya_lead_campaign_product_display",
+      "bbox_pct": [0.532, 0.380, 0.812, 0.843],
+      "observed_visual_cue": "Product family, display units, packshot, and campaign display are visible together.",
+      "vulca_field": "representation",
+      "internal_interpretation": "Separate product representation from campaign wording and channel context.",
+      "customer_treatment": "Use a masked/redrawn packshot-family region, not raw retail crop."
+    },
+    {
+      "id": "A3",
+      "label": "Retail / Guardian channel context",
+      "source_image": "proya_lead_campaign_product_display",
+      "bbox_pct": [0.222, 0.270, 0.611, 0.435],
+      "observed_visual_cue": "Guardian retail signage and store/display context are visible.",
+      "vulca_field": "source_context",
+      "internal_interpretation": "This cue supports channel/source context, not a relationship or authorization claim.",
+      "customer_treatment": "Use as channel-context chip after source note is attached."
+    },
+    {
+      "id": "A4",
+      "label": "Promotion / reuse cue",
+      "source_image": "proya_lead_campaign_product_display",
+      "bbox_pct": [0.776, 0.248, 0.927, 0.361],
+      "observed_visual_cue": "Promotion / prize / event-style copy appears near the campaign surface.",
+      "vulca_field": "reuse_context",
+      "internal_interpretation": "Promotion-like visual language should carry source and owner routing before cross-channel reuse.",
+      "customer_treatment": "Prefer generic redraw; do not expose raw promotion mechanics externally."
+    },
+    {
+      "id": "A5",
+      "label": "People / likeness sensitive area",
+      "source_image": "proya_lead_campaign_product_display",
+      "bbox_pct": [0.119, 0.617, 0.519, 0.925],
+      "observed_visual_cue": "A large human/model image appears in the campaign display.",
+      "vulca_field": "rights_or_likeness_review_question",
+      "internal_interpretation": "This is a review-routing cue only; no rights conclusion is made.",
+      "customer_treatment": "Remove, mask, or redraw for customer-facing use unless explicitly cleared."
+    },
+    {
+      "id": "A6",
+      "label": "Owner route trigger",
+      "source_image": "proya_lead_campaign_product_display",
+      "bbox_pct": [0.551, 0.837, 0.716, 0.986],
+      "observed_visual_cue": "Product/PDP-like lower display region combines product, retailer, and source context.",
+      "vulca_field": "owner_route",
+      "internal_interpretation": "Route unresolved questions to brand, ecommerce/PDP, channel, and release owners.",
+      "customer_treatment": "Represent as an owner-route diagram rather than raw crop."
+    }
+  ],
+  "evidence_card_draft": {
+    "card_id": "PROYA-PT-001",
+    "title": "Product-truth source trail for a public campaign display",
+    "public_example_label": "Public example only",
+    "fields": {
+      "claim": {
+        "value": "Visible PROYA campaign/product language is identified as a source item.",
+        "state": "observed_not_judged"
+      },
+      "source": {
+        "value": "Campaign/source candidates identified; exact downloaded-image source and capture timestamp still need final recording.",
+        "state": "needs_source_completion"
+      },
+      "representation": {
+        "value": "Retail display combines product family, packshot, channel context, and campaign creative.",
+        "state": "described"
+      },
+      "owner": {
+        "value": "Brand, ecommerce/PDP, retail/channel, or release owner receives unresolved source/reuse questions.",
+        "state": "route_defined"
+      }
+    },
+    "does_not_claim": [
+      "PROYA or Guardian is a VULCA customer, partner, endorser, or authorization source.",
+      "VULCA confirms claim truth, rights ownership, legal or platform status, or release approval.",
+      "The public example has a defect or problem."
+    ],
+    "next_action": [
+      "Complete exact image-source provenance.",
+      "Run or attempt source image decompose.",
+      "Convert raw crop into source-safe customer visual treatment.",
+      "Upgrade Page 8 with a worked evidence-card example only after human review."
+    ]
+  }
+}
