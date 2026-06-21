@@ -16,6 +16,17 @@ Open `index.html` locally to review:
 - Page 11: AI Ad Workflow lane strip
 - Page 12: AI Ad Workflow evidence-card pattern
 
+## Reading Map
+
+The page sequence is paired:
+
+- Pages 7, 9, and 11 are commercial case pages. They show why a type of
+  company, asset, or workflow needs VULCA.
+- Pages 8, 10, and 12 are evidence-card pages. They show what VULCA outputs:
+  source fields, review fields, owner routing, and handoff fields.
+- The Chinese `读法` notes in `index.html` are internal reviewer aids. They
+  should be removed or rewritten before a customer-facing export.
+
 ## Boundary
 
 This preview intentionally uses source-backed crops as internal evidence

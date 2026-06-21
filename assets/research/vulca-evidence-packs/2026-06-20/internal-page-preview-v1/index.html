@@ -152,6 +152,53 @@
       text-decoration: none;
     }
 
+    .read-guide {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 0 24px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .guide-card,
+    .read-cue {
+      display: grid;
+      gap: 8px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .guide-card b,
+    .read-cue b {
+      color: var(--evidence);
+      font-size: 12px;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .guide-card span,
+    .read-cue span {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.45;
+    }
+
+    .read-cue {
+      background: var(--evidence-soft);
+      border-color: #b4d9d3;
+    }
+
+    .read-cue b {
+      color: var(--evidence);
+    }
+
     .page {
       position: relative;
       display: grid;
@@ -717,6 +764,7 @@
       .queue,
       .queue.small,
       .source-grid,
+      .read-guide,
       .case-chain,
       .field-grid,
       .workflow {
@@ -744,6 +792,7 @@
       .queue,
       .queue.small,
       .source-grid,
+      .read-guide,
       .case-chain,
       .field-grid,
       .workflow,
@@ -784,6 +833,21 @@
       </nav>
     </section>
 
+    <section class="read-guide" aria-label="How to read this internal preview">
+      <div class="guide-card">
+        <b>怎么读</b>
+        <span>Page 7、9、11 是商业案例页：先看某类公司或某类工作流为什么需要 VULCA。</span>
+      </div>
+      <div class="guide-card">
+        <b>VULCA 做什么</b>
+        <span>Page 8、10、12 是 evidence card：看 VULCA 如何把素材变成 source、review、owner 和 handoff 字段。</span>
+      </div>
+      <div class="guide-card">
+        <b>什么还不是最终版</b>
+        <span>红色标记和小图是内部生产说明。正式客户 PDF 还需要 redraw、mask、clean recapture 和安全检查。</span>
+      </div>
+    </section>
+
     <section class="page" id="p7">
       <aside class="page-info">
         <span class="page-number">Page 7 / Lane A</span>
@@ -793,6 +857,10 @@
           collaboration language, and ecommerce reuse into a source-backed
           evidence queue.
         </p>
+        <div class="read-cue">
+          <b>读法</b>
+          <span>这是一个美妆品牌商业案例页：同一组 campaign 素材会进入零售、活动、奖项、PDP 和 release owner 流程。</span>
+        </div>
         <div class="lane">
           <strong>Production decision</strong>
           <span>PROYA leads with current source-backed material. Genki Forest stays reserve and should not compete with the lead packet.</span>
@@ -900,6 +968,10 @@
           The card asks what should be confirmed before reuse. It does not say
           the public example has a defect.
         </p>
+        <div class="read-cue">
+          <b>读法</b>
+          <span>这是 Page 7 的 VULCA 交付形态：把 claim、source、product representation 和 owner route 放进一张证据卡。</span>
+        </div>
         <div class="lane">
           <strong>Review structure</strong>
           <span>The claim, product visual, source material, approval owner, and reuse context should be connected before cross-channel use.</span>
@@ -965,6 +1037,10 @@
           state, AI labeling posture, and export/share states into a reviewable
           publishability record.
         </p>
+        <div class="read-cue">
+          <b>读法</b>
+          <span>这是一个 AI 生成素材案例页：重点不是评价模型好不好，而是判断生成素材能不能被发布和复用。</span>
+        </div>
         <div class="lane">
           <strong>Production decision</strong>
           <span>Seedream / BytePlus public model context is the lead packet. Video/reference examples remain outside this customer-facing lane.</span>
@@ -1058,6 +1134,10 @@
           label posture, and human release ownership before gallery, demo,
           export, or campaign reuse.
         </p>
+        <div class="read-cue">
+          <b>读法</b>
+          <span>这是 Page 9 的 VULCA 交付形态：把 prompt/source、model context、output state、label posture 和 release owner 放进一个包。</span>
+        </div>
         <div class="lane">
           <strong>Boundary</strong>
           <span>No model quality, copyright-clearance, platform-policy, safety-certification, or customer-relationship claim.</span>
@@ -1149,6 +1229,10 @@
           review context, shop flows, campaign reuse, and evidence handoff into a
           release queue.
         </p>
+        <div class="read-cue">
+          <b>读法</b>
+          <span>这是一个 AI 广告工作流案例页：产品链接生成候选广告后，人类 campaign owner 需要 review 和 handoff evidence。</span>
+        </div>
         <div class="lane">
           <strong>Production decision</strong>
           <span>Creatify leads because the product-link-to-video workflow gives the clearest commercial story: source input becomes candidate creative, then review and campaign handoff.</span>
@@ -1192,6 +1276,10 @@
           edit/export state, campaign reuse context, and human handoff ownership
           before a campaign decision.
         </p>
+        <div class="read-cue">
+          <b>读法</b>
+          <span>这是 Page 11 的 VULCA 交付形态：把广告工作流截图变成 source、review、export 和 owner 字段齐全的 handoff packet。</span>
+        </div>
         <div class="lane">
           <strong>Closing role</strong>
           <span>This page closes the three-lane case group before the safety boundary and pilot CTA.</span>
