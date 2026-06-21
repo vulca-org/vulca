@@ -557,6 +557,30 @@
       background: var(--surface);
     }
 
+    .source-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .evidence-strip {
+      gap: 8px;
+    }
+
+    .evidence-strip .source-card {
+      padding: 9px;
+    }
+
+    .evidence-strip .clip {
+      min-height: 72px;
+    }
+
+    .evidence-strip .source-card h3 {
+      font-size: 12px;
+      line-height: 1.18;
+    }
+
     .footer-note {
       position: absolute;
       right: 24px;
@@ -697,12 +721,12 @@
           <article class="tile">
             <div class="drawn"></div>
             <h3>PDP / source record</h3>
-            <p>Neutral redrawn record chip; no local filename in final PDF.</p>
+            <p>URL, capture date, source type, and channel role; no local filename in final PDF.</p>
           </article>
           <article class="tile">
             <div class="drawn"></div>
             <h3>Owner route</h3>
-            <p>Claim cue to review question to evidence card to release owner.</p>
+            <p>Claim owner to product/PDP owner to release owner; this is the handoff VULCA creates.</p>
           </article>
         </div>
         <div class="source-row">
@@ -745,8 +769,6 @@
               <div class="clip" data-src="../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg" data-crop="3850,2165,700,900" data-label="detail crop for redraw"></div>
               <span class="callout-dot" style="left:18%;top:18%;" aria-label="Callout 1: campaign and source text cue" title="Callout 1: campaign and source text cue">1</span>
               <span class="callout-dot" style="left:56%;top:45%;" aria-label="Callout 2: product representation and packshot area" title="Callout 2: product representation and packshot area">2</span>
-              <span class="callout-dot" style="left:8%;top:67%;" aria-label="Callout 3: public source record and capture date" title="Callout 3: public source record and capture date">3</span>
-              <span class="callout-dot" style="left:78%;top:70%;" aria-label="Callout 4: channel reuse and owner route question" title="Callout 4: channel reuse and owner route question">4</span>
             </div>
             <div class="panel">
               <div class="finding">
@@ -754,8 +776,8 @@
                 <ul>
                   <li>Campaign/source text cue</li>
                   <li>Product representation / packshot area</li>
-                  <li>Public source record and capture date</li>
-                  <li>Channel reuse / owner route question</li>
+                  <li>Source record field in the card</li>
+                  <li>Owner route field in the card</li>
                 </ul>
               </div>
               <div class="finding">
@@ -763,10 +785,10 @@
                 <p>Attach source material, claim owner, channel variants, and release decision owner before reuse.</p>
               </div>
               <div class="heatmap">
-                <div class="heat"><b>claim linked</b><div class="bar"><span style="width:72%"></span></div></div>
-                <div class="heat"><b>source attached</b><div class="bar"><span style="width:62%"></span></div></div>
-                <div class="heat"><b>representation described</b><div class="bar"><span style="width:54%"></span></div></div>
-                <div class="heat"><b>owner routed</b><div class="bar"><span style="width:68%"></span></div></div>
+                <div class="heat"><b>1 claim linked</b><div class="bar"><span style="width:72%"></span></div></div>
+                <div class="heat"><b>3 source attached</b><div class="bar"><span style="width:62%"></span></div></div>
+                <div class="heat"><b>2 representation described</b><div class="bar"><span style="width:54%"></span></div></div>
+                <div class="heat"><b>4 owner routed</b><div class="bar"><span style="width:68%"></span></div></div>
               </div>
             </div>
           </div>
@@ -869,7 +891,7 @@
           </div>
           <div class="card-body">
             <div class="panel">
-              <div class="source-grid">
+              <div class="source-grid evidence-strip">
                 <div class="source-card">
                   <span class="internal-ribbon">internal</span>
                   <div class="clip" data-src="../capture-batch-02/byteplus-seedream-model-page.jpg" data-crop="900,480,285,120" data-label="model page"></div>
@@ -929,7 +951,7 @@
         <h2>AI ad workflow and creative automation evidence</h2>
         <p class="message">
           This lane turns ad generation, product-to-video workflows, creative
-          scoring, shop flows, campaign reuse, and evidence handoff into a
+          review context, shop flows, campaign reuse, and evidence handoff into a
           release queue.
         </p>
         <div class="lane">
@@ -1004,7 +1026,8 @@
                 </div>
                 <div class="source-card">
                   <div class="drawn"></div>
-                  <h3>Internal case note</h3>
+                  <h3>Source-safe note</h3>
+                  <p>Third-party case-study material stays internal unless explicitly approved.</p>
                 </div>
                 <div class="source-card">
                   <div class="drawn"></div>
