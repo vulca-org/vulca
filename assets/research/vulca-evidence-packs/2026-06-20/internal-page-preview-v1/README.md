@@ -30,6 +30,32 @@ Before any exported PDF or external use:
 3. Re-run the PDF safety gate in the canonical storyboard.
 4. Keep named companies framed as public market examples only.
 
+## Version Lineage And Feedback Loop
+
+Use this directory as an internal page-component preview for the master PDF,
+not as the customer-facing PDF itself.
+
+The expected production path is:
+
+```text
+internal master PDF / source-backed visual component preview
+-> reviewed master pages and asset decisions
+-> customer-specific formal PDF variant
+-> customer/version review
+-> fixes flow back into the master PDF rules, assets, and page components
+-> regenerate the affected formal PDF variant
+```
+
+If a customer-specific formal PDF has a problem, do not patch only that formal
+PDF in isolation. First decide whether the issue is a master-level issue
+(storyline, source policy, visual treatment, evidence-card schema, safety
+boundary, or reusable copy). Master-level issues must be corrected in the
+internal master PDF/source preview and related production notes, then the
+customer-specific PDF should be regenerated from that corrected basis.
+
+Only customer-specific details, such as recipient framing, company-specific
+ordering, or a narrow CTA, should live only in the formal variant.
+
 ## Inputs
 
 The source of truth remains:
