@@ -30,6 +30,24 @@ Before any exported PDF or external use:
 3. Re-run the PDF safety gate in the canonical storyboard.
 4. Keep named companies framed as public market examples only.
 
+## Review Completion Standard
+
+For this internal preview, "100%" means the page is ready for human review as
+the master source for later customer-specific PDFs. It does not mean the raw
+images are externally cleared.
+
+Each page should make these points visible without extra verbal explanation:
+
+1. The commercial role of the page: case story, evidence-card pattern, or
+   closing handoff.
+2. The role of each image: lead visual, source cue, source record, workflow
+   context, or redraw target.
+3. The evidence chain: source input, claim or generated output, review context,
+   owner route, and final handoff.
+4. The external-use boundary: no raw crop export, no customer/partner/endorser
+   implication, no legal/compliance/certification claim, and no unsupported
+   performance claim.
+
 ## Version Lineage And Feedback Loop
 
 Use this directory as an internal page-component preview for the master PDF,

@@ -381,6 +381,62 @@
       align-items: stretch;
     }
 
+    .case-chain,
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .case-chain {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .case-point,
+    .field-card {
+      display: grid;
+      gap: 7px;
+      min-height: 86px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .case-point b,
+    .field-card b {
+      color: var(--evidence);
+      font-size: 12px;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .case-point span,
+    .field-card span {
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .panel .field-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .readiness-note {
+      padding: 12px;
+      border: 1px solid #e5cc96;
+      border-radius: 8px;
+      background: var(--owner-soft);
+      color: var(--owner);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
     .step {
       position: relative;
       display: grid;
@@ -461,6 +517,7 @@
     .annotated {
       position: relative;
       min-width: 0;
+      align-self: start;
     }
 
     .callout-dot {
@@ -610,6 +667,8 @@
       .queue,
       .queue.small,
       .source-grid,
+      .case-chain,
+      .field-grid,
       .workflow {
         grid-template-columns: 1fr 1fr;
       }
@@ -635,6 +694,8 @@
       .queue,
       .queue.small,
       .source-grid,
+      .case-chain,
+      .field-grid,
       .workflow,
       .heatmap {
         grid-template-columns: 1fr;
@@ -699,35 +760,41 @@
             <span class="internal-ribbon">internal crop</span>
             <div class="clip" data-src="../real-asset-batch-02/proya/images/05-9b8dd65d5aa4.jpg" data-crop="5447,3064,0,280" data-label="PROYA lead source crop"></div>
             <h3>PROYA lead: campaign-product display</h3>
-            <p>Use as the redrawn queue hero after masking and source-safe annotation.</p>
+            <p>Primary visual basis for the redrawn hero: claim-bearing campaign surface, product representation, and retail/channel context in one frame.</p>
           </article>
           <article class="tile">
             <span class="internal-ribbon">internal crop</span>
             <div class="clip" data-src="../real-asset-batch-02/proya/images/11-acef6bb4a2d3.jpg" data-crop="1500,840,210,150" data-label="event support crop"></div>
             <h3>Offline event cue</h3>
-            <p>Secondary source-context chip; not a hero.</p>
+            <p>Shows that the same product story can move into event/trade-show contexts; use as a small source-cue tile.</p>
           </article>
           <article class="tile">
             <span class="internal-ribbon">internal crop</span>
             <div class="clip" data-src="../real-asset-batch-02/proya/images/12-3aa4e2e2d146.jpg" data-crop="1500,900,250,180" data-label="award support crop"></div>
             <h3>Award/source cue</h3>
-            <p>Use only as a public source cue, not as a performance claim.</p>
+            <p>Supports award/news wording as a source-record need; do not turn it into ranking, efficacy, or performance proof.</p>
           </article>
           <article class="tile">
             <div class="drawn"></div>
             <h3>Genki reserve</h3>
-            <p>Small comparator from product-page context if Page 7 needs category width.</p>
+            <p>Optional category-width placeholder only; omit from a first customer draft if PROYA remains the cleanest lead story.</p>
           </article>
           <article class="tile">
             <div class="drawn"></div>
             <h3>PDP / source record</h3>
-            <p>URL, capture date, source type, and channel role; no local filename in final PDF.</p>
+            <p>Final PDF needs URL, capture date, source type, and channel role; no local filenames or capture-batch IDs.</p>
           </article>
           <article class="tile">
             <div class="drawn"></div>
             <h3>Owner route</h3>
-            <p>Claim owner to product/PDP owner to release owner; this is the handoff VULCA creates.</p>
+            <p>Maps claim owner to product/PDP owner to release owner; this is the practical handoff VULCA creates.</p>
           </article>
+        </div>
+        <div class="case-chain" aria-label="Lane A commercial chain">
+          <div class="case-point"><b>1. Surface</b><span>Campaign display or PDP copy carries the visible product claim.</span></div>
+          <div class="case-point"><b>2. Source</b><span>Public page, image, event, or award cue gets captured with date and role.</span></div>
+          <div class="case-point"><b>3. Reuse</b><span>Retail, marketplace, social, and event variants inherit the same source trail.</span></div>
+          <div class="case-point"><b>4. Owner</b><span>Brand/ecommerce owner receives unresolved questions before release.</span></div>
         </div>
         <div class="source-row">
           <span class="chip evidence">public product/campaign surface</span>
@@ -784,12 +851,13 @@
                 <h4>Suggested action</h4>
                 <p>Attach source material, claim owner, channel variants, and release decision owner before reuse.</p>
               </div>
-              <div class="heatmap">
-                <div class="heat"><b>1 claim linked</b><div class="bar"><span style="width:72%"></span></div></div>
-                <div class="heat"><b>3 source attached</b><div class="bar"><span style="width:62%"></span></div></div>
-                <div class="heat"><b>2 representation described</b><div class="bar"><span style="width:54%"></span></div></div>
-                <div class="heat"><b>4 owner routed</b><div class="bar"><span style="width:68%"></span></div></div>
+              <div class="field-grid">
+                <div class="field-card"><b>1. Claim</b><span>Visible campaign/product language is identified as a source item, not judged here.</span></div>
+                <div class="field-card"><b>2. Representation</b><span>Packshot, retail display, event cue, or award cue is named before reuse.</span></div>
+                <div class="field-card"><b>3. Source</b><span>URL, capture date, source type, and channel role are attached to the record.</span></div>
+                <div class="field-card"><b>4. Owner</b><span>Brand, ecommerce, channel, or release owner receives the handoff.</span></div>
               </div>
+              <div class="readiness-note">Expression target: the final customer page should read as a reusable field-completion card, not a finding against the public example.</div>
             </div>
           </div>
           <div class="card-foot">
@@ -823,36 +891,42 @@
             <span class="internal-ribbon">internal crop</span>
             <div class="clip" data-src="../capture-batch-02/seedream-45-official-page.jpg" data-crop="1440,430,0,630" data-label="model/version context"></div>
             <h3>Public model context</h3>
-            <p>Version-neutral source-page context; not a VULCA model-quality claim.</p>
+            <p>Version-neutral source-page context for the generated-asset packet; not a VULCA model-quality claim.</p>
           </article>
           <article class="tile">
             <span class="internal-ribbon">internal crop</span>
             <div class="clip" data-src="../capture-batch-02/byteplus-model-list-seedream-5.jpg" data-crop="930,420,270,120" data-label="model-list context"></div>
             <h3>Category context</h3>
-            <p>Image-generation model list as source basis, not ranking evidence.</p>
+            <p>Image-generation model list as category/source basis, not ranking, benchmark, or endorsement evidence.</p>
           </article>
           <article class="tile">
             <span class="internal-ribbon">internal crop</span>
             <div class="clip" data-src="../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg" data-crop="900,500,285,120" data-label="tutorial source"></div>
             <h3>Input mode</h3>
-            <p>Tutorial/prompt source context for evidence-card requirements.</p>
+            <p>Tutorial/prompt source context showing why input and reference records need to travel with the output.</p>
           </article>
           <article class="tile">
             <span class="internal-ribbon">internal crop</span>
             <div class="clip" data-src="../capture-batch-02/byteplus-seedream-model-page.jpg" data-crop="900,480,285,120" data-label="output-format context"></div>
             <h3>Output context</h3>
-            <p>Use as source-record basis for output state and format questions.</p>
+            <p>Source-record basis for output state, format, and export-context questions.</p>
           </article>
           <article class="tile">
             <div class="drawn"></div>
             <h3>Label / disclosure</h3>
-            <p>Neutral chip asks whether AI labeling posture is visible or required.</p>
+            <p>Neutral decision field: visible label, internal mark, channel disclosure, or no label after owner review.</p>
           </article>
           <article class="tile">
             <div class="drawn"></div>
             <h3>Owner route</h3>
-            <p>Human reviewer route for prompt/source, output state, label posture, and reuse.</p>
+            <p>Human reviewer route for prompt/source, output state, label posture, and reuse decision.</p>
           </article>
+        </div>
+        <div class="case-chain" aria-label="Lane B publishability chain">
+          <div class="case-point"><b>1. Input</b><span>Prompt, reference, product source, or tutorial surface is recorded.</span></div>
+          <div class="case-point"><b>2. Context</b><span>Model/workflow context stays visible without claiming model quality.</span></div>
+          <div class="case-point"><b>3. Output</b><span>Generated state, format, demo/export status, and label posture are separated.</span></div>
+          <div class="case-point"><b>4. Release</b><span>Product, platform, or creative owner decides what can be reused.</span></div>
         </div>
         <div class="source-row">
           <span class="chip evidence">model/version page</span>
@@ -896,16 +970,19 @@
                   <span class="internal-ribbon">internal</span>
                   <div class="clip" data-src="../capture-batch-02/byteplus-seedream-model-page.jpg" data-crop="900,480,285,120" data-label="model page"></div>
                   <h3>1. Model/version context</h3>
+                  <p>Current public-source context for the generated output, kept version-neutral in customer copy.</p>
                 </div>
                 <div class="source-card">
                   <span class="internal-ribbon">internal</span>
                   <div class="clip" data-src="../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg" data-crop="900,500,285,120" data-label="tutorial"></div>
                   <h3>2. Input/source requirement</h3>
+                  <p>Shows why prompt, reference, or product-source material must be attached to the output.</p>
                 </div>
                 <div class="source-card">
                   <span class="internal-ribbon">internal</span>
                   <div class="clip" data-src="../capture-batch-02/byteplus-model-list-seedream-5.jpg" data-crop="930,420,270,120" data-label="model list"></div>
                   <h3>3. Output context</h3>
+                  <p>Supports category/output context only; the actual prompt-result pair still needs to be supplied.</p>
                 </div>
               </div>
               <div class="workflow">
@@ -915,6 +992,7 @@
                 <div class="step"><b>Posture</b><span>label / disclosure</span></div>
                 <div class="step"><b>Owner</b><span>release decision</span></div>
               </div>
+              <div class="readiness-note">Expression target: final customer art should show a redrawn prompt-result-label-owner packet. These screenshots provide source context, not a finished generated asset record.</div>
             </div>
             <div class="panel">
               <div class="finding">
@@ -929,6 +1007,12 @@
               <div class="finding">
                 <h4>Suggested action</h4>
                 <p>Provide prompt/result pairs, source references, label posture, export/share state, and release owner.</p>
+              </div>
+              <div class="field-grid">
+                <div class="field-card"><b>Input</b><span>Prompt/reference or product source is attached.</span></div>
+                <div class="field-card"><b>Output</b><span>Generated state and export format are named.</span></div>
+                <div class="field-card"><b>Label</b><span>AI labeling posture is a decision field, not a legal ruling.</span></div>
+                <div class="field-card"><b>Owner</b><span>Human release owner receives unresolved questions.</span></div>
               </div>
               <div class="finding">
                 <h4>Does not claim</h4>
@@ -956,7 +1040,7 @@
         </p>
         <div class="lane">
           <strong>Production decision</strong>
-          <span>Creatify leads because the product-link-to-video workflow gives the clearest commercial story.</span>
+          <span>Creatify leads because the product-link-to-video workflow gives the clearest commercial story: source input becomes candidate creative, then review and campaign handoff.</span>
         </div>
       </aside>
 
@@ -971,6 +1055,12 @@
           <div class="step"><b>3</b><span>edit / review state</span></div>
           <div class="step"><b>4</b><span>export or campaign handoff</span></div>
           <div class="step"><b>5</b><span>evidence owner</span></div>
+        </div>
+        <div class="case-chain" aria-label="Lane C commercial chain">
+          <div class="case-point"><b>1. Source input</b><span>Product URL, listing, image, or brief anchors the generated ad.</span></div>
+          <div class="case-point"><b>2. Candidate</b><span>Generated scripts/videos become reviewable campaign candidates.</span></div>
+          <div class="case-point"><b>3. Review</b><span>Hook, body, CTA, brand fit, source fit, and channel fit are checked.</span></div>
+          <div class="case-point"><b>4. Handoff</b><span>Creative ops or growth owner decides export and campaign route.</span></div>
         </div>
         <div class="source-row">
           <span class="chip evidence">product-to-video workflow</span>
@@ -1023,6 +1113,7 @@
                   <span class="internal-ribbon">internal</span>
                   <div class="clip" data-src="../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png" data-label="Hook / Body / CTA anatomy"></div>
                   <h3>Anatomy cue</h3>
+                  <p>Use as structure reference for hook, body, CTA review; not as performance proof.</p>
                 </div>
                 <div class="source-card">
                   <div class="drawn"></div>
@@ -1032,8 +1123,10 @@
                 <div class="source-card">
                   <div class="drawn"></div>
                   <h3>Redrawn final target</h3>
+                  <p>Final page should be a neutral workflow/evidence card, not a raw vendor screenshot.</p>
                 </div>
               </div>
+              <div class="readiness-note">Expression target: this page should close the case group by showing how ad workflow evidence becomes a handoff packet for a human campaign owner.</div>
             </div>
             <div class="panel">
               <div class="finding">
@@ -1049,6 +1142,12 @@
               <div class="finding">
                 <h4>Suggested action</h4>
                 <p>Attach product inputs, reference context, review context, export state, reuse target, and owner route.</p>
+              </div>
+              <div class="field-grid">
+                <div class="field-card"><b>Input</b><span>Product URL, listing, image, or brief is preserved.</span></div>
+                <div class="field-card"><b>Review</b><span>Hook, body, CTA, brand fit, and result context are noted.</span></div>
+                <div class="field-card"><b>Export</b><span>Draft, edit, export, campaign, or seller-flow state is visible.</span></div>
+                <div class="field-card"><b>Handoff</b><span>Growth, creative ops, or campaign owner receives the release route.</span></div>
               </div>
               <div class="finding">
                 <h4>Does not claim</h4>
