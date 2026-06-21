@@ -1,18 +1,18 @@
 # Customer Solution Pack Deck Canonical Source Design
 
-**Status:** proposed for user review
+**Status:** accepted and implemented
 **Date:** 2026-06-21
 **Decision:** use a real PPTX/deck as the canonical source for formal customer-facing VULCA Solution Pack material, then export PDF from that deck.
 
 ## Context
 
-The current VULCA Solution Pack work has three different presentation paths:
+Before the deck migration, the VULCA Solution Pack work had three different presentation paths:
 
 1. `assets/research/vulca-evidence-packs/2026-06-20/internal-page-preview-v1/index.html`
    is a static HTML/CSS internal master preview for page components and proof review.
 2. `output/pdf/vulca-solution-pack-v1-internal-preview.pdf` is generated from that HTML preview for internal review.
-3. `output/pdf/vulca-solution-pack-v1-customer-sample-public-examples.pdf` is generated directly with ReportLab by
-   `scripts/build_customer_solution_pack_pdf.py`.
+3. `output/pdf/vulca-solution-pack-v1-customer-sample-public-examples.pdf` was generated directly by
+   the legacy ReportLab builder.
 
 The ReportLab customer sample proved the content direction, but it exposes a structural problem:
 page balance, density, and slide-to-slide rhythm are being controlled by fixed PDF coordinates rather
@@ -44,15 +44,15 @@ presentation layout. The PDF becomes a generated delivery artifact.
 
 ## Output Artifacts
 
-Canonical future artifacts:
+Canonical artifacts:
 
 - PPTX source:
   `output/pptx/vulca-solution-pack-v1-customer-sample-public-examples.pptx`
 - Exported PDF:
   `output/pdf/vulca-solution-pack-v1-customer-sample-public-examples.pdf`
 
-The current ReportLab PDF at the PDF path is treated as a transition sample until the PPTX source is
-created and the exported PDF replaces it.
+The ReportLab PDF route is retained only as a transition reference. The checked-in PPTX is now the
+customer-material source of truth, and the PDF path is replaced by the exported deck output.
 
 ## Tooling
 
@@ -132,8 +132,8 @@ Forbidden customer-visible claims:
 
 Generating or replacing the customer-facing PPTX/PDF requires explicit main-review approval.
 
-The generation command should preserve an approval marker equivalent to the existing
-`--approval-recorded` gate in `scripts/build_customer_solution_pack_pdf.py`.
+The generation command preserves the `--approval-recorded` gate in
+`scripts/build_customer_solution_pack_deck.mjs`.
 
 Ordinary "continue" instructions are not enough to generate a new formal customer artifact unless the
 conversation already contains explicit approval for that artifact type and path.
@@ -147,22 +147,22 @@ Before a PPTX/PDF is presented as ready for user review:
 3. Inspect a full contact sheet and key full-size slides.
 4. Fix all unintended overlap, clipping, wrapping, and density problems in the PPTX source.
 5. Export the PDF from the PPTX.
-6. Run `python3 scripts/customer_pdf_preflight.py --json output/pdf/vulca-solution-pack-v1-customer-sample-public-examples.pdf`.
+6. Run `python3 scripts/customer_pdf_preflight.py --json output/pptx/vulca-solution-pack-v1-customer-sample-public-examples.pptx output/pdf/vulca-solution-pack-v1-customer-sample-public-examples.pdf`.
 7. Run `pdfinfo` on the exported PDF.
 8. Render the exported PDF with `pdftoppm`.
 9. Confirm the PDF render matches the reviewed deck layout.
 10. Commit the PPTX source, exported PDF, generation script, and docs together as a coherent change.
 
-## Migration Plan Shape
+## Migration Shape
 
-The implementation should happen in three coherent phases:
+The implementation follows three coherent phases:
 
 1. Add the PPTX builder and generation gate.
 2. Port the current 7-page customer sample content into a balanced deck layout.
 3. Export and verify the PDF, then retire the ReportLab route from canonical status.
 
-The existing ReportLab script can remain temporarily as a reference, but README language should make the
-PPTX route canonical once the deck exists.
+The existing ReportLab script can remain temporarily as a reference, but README language makes the PPTX
+route canonical now that the deck exists.
 
 ## Success Criteria
 

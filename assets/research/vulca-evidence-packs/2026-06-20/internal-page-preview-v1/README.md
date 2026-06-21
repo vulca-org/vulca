@@ -2,10 +2,10 @@
 
 **Status:** internal review preview only; not a final PDF
 **Date:** 2026-06-21
-**Scope:** pages 7-12 component preview for the master PDF
+**Scope:** pages 7-12 component preview for the solution pack source system
 
 This directory contains a static HTML preview for the first case-led visual
-components in the VULCA Solution Pack v1 master PDF.
+components in the VULCA Solution Pack v1 source system.
 
 Open `index.html` locally to review:
 
@@ -25,32 +25,41 @@ output/pdf/vulca-solution-pack-v1-internal-preview.pdf
 This PDF is generated from the current `index.html` preview for internal review
 only. It is not the customer-facing PDF.
 
+Formal public-example customer sample source:
+
+```text
+output/pptx/vulca-solution-pack-v1-customer-sample-public-examples.pptx
+```
+
 Formal public-example customer sample PDF output:
 
 ```text
 output/pdf/vulca-solution-pack-v1-customer-sample-public-examples.pdf
 ```
 
-This PDF was generated after explicit user approval on 2026-06-21 as a review
-sample only. It is not emailed or sent by default. It uses the default customer
-reader profile: brand, ecommerce, or AI ad workflow owner; Lane C before/after
-first, then Lane A and Lane B supporting proof. Named companies appear only as
-public examples for workflow discussion, not as customers, partners, endorsers,
-authorization sources, or validated findings.
+The PPTX is the canonical customer-facing source. The PDF is exported from that
+PPTX after explicit user approval on 2026-06-21 as a review sample only. It is
+not emailed or sent by default. It uses the default customer reader profile:
+brand, ecommerce, or AI ad workflow owner; Lane C before/after first, then Lane
+A and Lane B supporting proof. Named companies appear only as public examples
+for workflow discussion, not as customers, partners, endorsers, authorization
+sources, or validated findings.
 
 The sample is derived from this internal master preview and the source-safe
 evidence cards already recorded in the Lane A/B/C proof folders. Any issue found
-in the formal sample should be fixed at the master/source-card level first, then
-the same customer sample path should be regenerated. Do not create exploratory
-extra PDFs for the same review pass.
+in the formal sample should be fixed at the master/source-card/deck level first,
+then the same PPTX and PDF paths should be regenerated. Do not create
+exploratory extra PPTX or PDF files for the same review pass.
 
-Regenerate the sample with a Python environment that includes `reportlab`:
+Regenerate the formal customer sample only after approval:
 
 ```bash
-python3 scripts/build_customer_solution_pack_pdf.py --approval-recorded
+node scripts/build_customer_solution_pack_deck.mjs --approval-recorded
 ```
 
-The script writes to the canonical customer sample path above by default.
+The script writes the canonical PPTX and exported PDF paths above by default.
+The ReportLab PDF builder is retained only as a transition reference and is not
+the formal customer-material source.
 
 ## Three-Lane Purpose Map
 
@@ -100,7 +109,8 @@ Page 8 also includes a source-safe distilled card candidate:
 ../proya-deep-proof-v1/vision-banana/proya-source-safe-distilled-card-v1.png
 ```
 
-That distilled card is the bridge from internal proof to customer-facing PDF:
+That distilled card is the bridge from internal proof to customer-facing
+deck/PDF:
 it removes the raw source photo, people, store crop, and debug labels while
 preserving the VULCA field logic.
 
@@ -189,27 +199,27 @@ The page sequence is paired:
   should be removed or rewritten before a customer-facing export.
 - The Chinese `解释` boxes add the internal reasoning for each page: why the
   page exists, how to read the visuals, and what still needs source-safe
-  treatment before customer-facing PDF production.
+  treatment before customer-facing deck/PDF production.
 
 ## Boundary
 
 This preview intentionally uses source-backed crops as internal evidence
 material. It is not customer-facing.
 
-Before any exported PDF or external use:
+Before any exported customer deck/PDF or external use:
 
 1. Replace raw source crops with redrawn, masked, cropped annotated-safe, or
    explicitly cleared visuals.
 2. Remove raw local paths, filenames, and capture-batch identifiers from
    customer-facing pages.
-3. Re-run the PDF safety gate in the canonical storyboard.
+3. Re-run the customer preflight gate on both the PPTX source and exported PDF.
 4. Keep named companies framed as public market examples only.
 
 ## Review Completion Standard
 
 For this internal preview, "100%" means the page is ready for human review as
-the master source for later customer-specific PDFs. It does not mean the raw
-images are externally cleared.
+the source basis for later customer-specific formal variants. It does not mean
+the raw images are externally cleared.
 
 Each page should make these points visible without extra verbal explanation:
 
@@ -257,26 +267,27 @@ Current source status:
 
 ## Version Lineage And Feedback Loop
 
-Use this directory as an internal page-component preview for the master PDF,
-not as the customer-facing PDF itself.
+Use this directory as an internal page-component preview and proof lab, not as
+the customer-facing deck/PDF itself.
 
 The expected production path is:
 
 ```text
-internal master PDF / source-backed visual component preview
+internal source-backed visual component preview
 -> reviewed master pages and asset decisions
--> customer-specific formal PDF variant
+-> formal customer PPTX source
+-> exported customer PDF variant
 -> customer/version review
--> fixes flow back into the master PDF rules, assets, and page components
--> regenerate the affected formal PDF variant
+-> fixes flow back into source rules, assets, deck source, and page components
+-> regenerate the affected PPTX/PDF variant
 ```
 
-If a customer-specific formal PDF has a problem, do not patch only that formal
-PDF in isolation. First decide whether the issue is a master-level issue
-(storyline, source policy, visual treatment, evidence-card schema, safety
+If a customer-specific formal deck/PDF has a problem, do not patch only that
+formal artifact in isolation. First decide whether the issue is a master-level
+issue (storyline, source policy, visual treatment, evidence-card schema, safety
 boundary, or reusable copy). Master-level issues must be corrected in the
-internal master PDF/source preview and related production notes, then the
-customer-specific PDF should be regenerated from that corrected basis.
+internal source preview, deck source, and related production notes, then the
+customer-specific PPTX/PDF should be regenerated from that corrected basis.
 
 Only customer-specific details, such as recipient framing, company-specific
 ordering, or a narrow CTA, should live only in the formal variant.
@@ -303,7 +314,7 @@ These decisions are now part of the master-page working logic:
 The narrative branch has been folded into the master preview as a planning
 input, not as a ready-to-send artifact.
 
-Current default for the first customer-specific formal PDF:
+Current default for the first customer-specific formal deck/PDF:
 
 1. Lead with brand, ecommerce, and AI ad workflow owners.
 2. Use named companies only as public examples, with source-safe visuals and
@@ -315,14 +326,14 @@ Current default for the first customer-specific formal PDF:
 5. Keep full source matrices, raw crops, crop boxes, local paths, debug labels,
    and treatment ledgers internal.
 
-Do not generate a separate customer-facing PDF without explicit user approval.
-When approved, derive it from this master source and regenerate the formal
-variant after any master-level fix.
+Do not generate a separate customer-facing PPTX or PDF without explicit user
+approval. When approved, derive it from this master source and regenerate the
+formal variant after any master-level fix.
 
-## Formal Customer PDF Gate
+## Formal Customer Deck/PDF Gate
 
-Before creating a formal customer PDF, confirm these items in the main review
-session:
+Before creating a formal customer deck/PDF, confirm these items in the main
+review session:
 
 1. Recipient type: brand/ecommerce owner, AI ad workflow owner, AI creative
    platform, or a named company-specific recipient.
@@ -335,10 +346,11 @@ session:
 5. Copy boundary: no legal advice, compliance certification, model-safety
    certification, platform approval, performance guarantee, customer
    relationship, endorsement, authorization source, or finding.
-6. Preflight scan: run `python3 scripts/customer_pdf_preflight.py <artifact>`
-   on the customer-visible PDF, markdown, HTML, or text export before sharing.
+6. Preflight scan: run `python3 scripts/customer_pdf_preflight.py <pptx> <pdf>`
+   on the customer-visible PPTX source and exported PDF before sharing.
 7. Output path: use one clear customer-specific filename and record that it was
-   derived from this master preview. Do not create exploratory extra PDFs.
+   derived from this master preview. Do not create exploratory extra PPTX/PDF
+   files.
 
 ## Inputs
 
@@ -364,6 +376,6 @@ later:
 - checked-in `docs/product/lane-work/*production-brief.md` files
 
 The narrative and reference-company briefs are customer-version planning
-inputs. They should inform the future formal PDF opening, short outreach note,
-CTA, terminology, and buyer framing. They do not override the source matrix,
-external-use boundaries, or internal proof manifests.
+inputs. They should inform the future formal deck/PDF opening, short outreach
+note, CTA, terminology, and buyer framing. They do not override the source
+matrix, external-use boundaries, or internal proof manifests.
