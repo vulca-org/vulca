@@ -44,6 +44,14 @@ in the formal sample should be fixed at the master/source-card level first, then
 the same customer sample path should be regenerated. Do not create exploratory
 extra PDFs for the same review pass.
 
+Regenerate the sample with a Python environment that includes `reportlab`:
+
+```bash
+python3 scripts/build_customer_solution_pack_pdf.py --approval-recorded
+```
+
+The script writes to the canonical customer sample path above by default.
+
 ## Three-Lane Purpose Map
 
 Use this map to keep Lane B and Lane C separate:
