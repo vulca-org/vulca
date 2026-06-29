@@ -20,7 +20,10 @@
 - Do not archive commercial source code, private assets, paid 3D models, fonts, or textures without explicit permission.
 - Cases with unclear rights use `rights_status: source_link_only` and cannot be treated as direct implementation sources.
 - Every generated HTML page must redact API-key-like strings before embedding JSON.
-- v0.1 target: 12 seed cases, 12 cases at Level 0, at least clear capture coverage/failure status for every case, 6 cases with technical anatomy, 3 cases with rebuild exercise metadata.
+- v0.1 target: 12 seed cases; every case must have screenshot and video coverage marked `complete` or `partial`, never `missing`.
+- `complete` coverage means a local evidence capture exists. `partial` coverage means the case has an explicit capture-failure evidence record explaining why capture is not yet available.
+- Seed cases may use explicit capture-failure records instead of claiming Level 2 completeness, but the HTML and review JSON must expose those gaps as partial evidence, not hide them.
+- At least 6 cases must include technical anatomy notes with primitive and technique detail; at least 3 cases must include rebuild exercise metadata.
 
 ---
 
@@ -207,13 +210,96 @@ def test_case_to_review_dict_redacts_secret_like_values(tmp_path: Path):
     case_dir = write_case(tmp_path)
     metadata_path = case_dir / "metadata.json"
     payload = json.loads(metadata_path.read_text(encoding="utf-8"))
-    payload["summary"] = "accidental key sk-proj-abc123"
+    payload["summary"] = "accidental keys sk-proj-abc123 github_pat_abcdef1234567890 token=abcdef1234567890"
     metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
     review = case_to_review_dict(validate_case_folder(case_dir))
 
     assert "sk-proj" not in json.dumps(review)
+    assert "github_pat_" not in json.dumps(review)
+    assert "abcdef1234567890" not in json.dumps(review)
     assert "[redacted]" in json.dumps(review)
+
+
+def test_validate_case_folder_rejects_non_https_url(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["canonical_url"] = "http://meshline.makio.io/"
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="canonical_url must start with https://"):
+        validate_case_folder(case_dir)
+
+
+def test_validate_case_folder_rejects_out_of_range_score(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["quality_scores"]["aesthetic_relevance"] = 4
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="quality score aesthetic_relevance"):
+        validate_case_folder(case_dir)
+
+
+def test_capture_failure_counts_as_partial_not_complete(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["captures"].append(
+        {
+            "id": "video-capture-failure",
+            "evidence_type": "video",
+            "path_or_url": "https://meshline.makio.io/",
+            "capture_method": "manual_browser",
+            "viewport": "none",
+            "interaction": "capture_failed",
+            "captured_at": "2026-06-29",
+            "source_url": "https://meshline.makio.io/",
+            "confidence": "medium",
+            "rights_status": "source_link_only",
+            "notes": "Autoplay blocked in automated capture.",
+        }
+    )
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    record = validate_case_folder(case_dir)
+
+    assert record.coverage["video"] == "partial"
+
+
+def test_validate_case_folder_rejects_missing_local_capture_file(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["captures"].append(
+        {
+            "id": "desktop-idle",
+            "evidence_type": "screenshot",
+            "path_or_url": "screenshots/missing.png",
+            "capture_method": "manual_browser",
+            "viewport": "1440x900",
+            "interaction": "idle",
+            "captured_at": "2026-06-29",
+            "source_url": "https://meshline.makio.io/",
+            "confidence": "medium",
+            "rights_status": "local_capture",
+            "notes": "This local file should be present before validation succeeds.",
+        }
+    )
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(FileNotFoundError, match="screenshots/missing.png"):
+        validate_case_folder(case_dir)
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -293,6 +379,7 @@ ALLOWED_MODULE_REVIEW_STATUS = {"complete", "partial", "missing", "not_applicabl
 ALLOWED_CAPTURE_TYPES = {"screenshot", "video", "trace", "code_note", "asset_manifest", "external_doc"}
 ALLOWED_CAPTURE_METHODS = {"playwright", "manual_browser", "downloaded_metadata", "source_read", "user_supplied"}
 ALLOWED_RIGHTS_STATUS = {"local_capture", "source_link_only", "open_asset", "unclear"}
+LOCAL_CAPTURE_TYPES = {"screenshot", "video", "trace", "code_note", "asset_manifest"}
 QUALITY_SCORE_FIELDS = {
     "aesthetic_relevance",
     "technical_learnability",
@@ -301,7 +388,12 @@ QUALITY_SCORE_FIELDS = {
     "vulca_transfer_value",
     "license_safety",
 }
-SECRET_PATTERNS = [re.compile(r"sk-[A-Za-z0-9_-]+")]
+SECRET_PATTERNS = [
+    re.compile(r"sk-[A-Za-z0-9_-]+"),
+    re.compile(r"github_pat_[A-Za-z0-9_]+"),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"(?i)(token|secret|api[_-]?key)\s*[:=]\s*[A-Za-z0-9_./+=-]{12,}"),
+]
 
 
 @dataclass(frozen=True)
@@ -365,7 +457,7 @@ def _validate_modules(modules: list[dict[str, Any]]) -> None:
             raise ValueError(f"module payload missing learning_primitive for {module_type}")
 
 
-def _validate_captures(captures: list[dict[str, Any]]) -> None:
+def _validate_captures(captures: list[dict[str, Any]], case_dir: Path) -> None:
     required = {
         "id",
         "evidence_type",
@@ -389,19 +481,36 @@ def _validate_captures(captures: list[dict[str, Any]]) -> None:
             raise ValueError(f"invalid capture confidence: {capture['confidence']}")
         if capture["rights_status"] not in ALLOWED_RIGHTS_STATUS:
             raise ValueError(f"invalid rights_status: {capture['rights_status']}")
+        if capture["rights_status"] == "local_capture" and capture["evidence_type"] in LOCAL_CAPTURE_TYPES:
+            local_path = case_dir / str(capture["path_or_url"])
+            if not local_path.exists():
+                raise FileNotFoundError(str(capture["path_or_url"]))
+
+
+def _capture_coverage(captures: list[dict[str, Any]], evidence_type: str, *, missing: str = "missing") -> str:
+    matching = [capture for capture in captures if capture.get("evidence_type") == evidence_type]
+    if not matching:
+        return missing
+    if any(
+        capture.get("interaction") != "capture_failed" and capture.get("rights_status") == "local_capture"
+        for capture in matching
+    ):
+        return "complete"
+    if any(capture.get("interaction") == "capture_failed" for capture in matching):
+        return "partial"
+    return "partial"
 
 
 def coverage_for_case(record: CaseRecord) -> dict[str, str]:
     captures = record.metadata.get("captures", [])
-    evidence_types = {capture.get("evidence_type") for capture in captures}
     modules = record.metadata.get("modules", [])
     module_types = {module.get("module_type") for module in modules}
     license_score = record.metadata["quality_scores"]["license_safety"]
     return {
         "metadata": "complete",
-        "screenshots": "complete" if "screenshot" in evidence_types else "missing",
-        "video": "complete" if "video" in evidence_types else "missing",
-        "trace": "complete" if "trace" in evidence_types else "not_applicable",
+        "screenshots": _capture_coverage(captures, "screenshot"),
+        "video": _capture_coverage(captures, "video"),
+        "trace": _capture_coverage(captures, "trace", missing="not_applicable"),
         "code_anatomy": "complete" if record.anatomy.strip() else "missing",
         "asset_manifest": "complete" if "asset_pipeline" in module_types else "missing",
         "license_review": "clear" if license_score >= 2 else "unclear",
@@ -426,7 +535,7 @@ def validate_case_folder(case_dir: Path) -> CaseRecord:
         raise ValueError("canonical_url must start with https://")
     total = _validate_quality_scores(metadata["quality_scores"])
     _validate_modules(metadata["modules"])
-    _validate_captures(metadata["captures"])
+    _validate_captures(metadata["captures"], case_dir)
 
     anatomy = (case_dir / "anatomy.md").read_text(encoding="utf-8") if (case_dir / "anatomy.md").exists() else ""
     lesson = (case_dir / "lesson.md").read_text(encoding="utf-8") if (case_dir / "lesson.md").exists() else ""
@@ -489,7 +598,7 @@ Run:
 PYTHONPATH=src pytest tests/test_vector_aesthetics_schema.py -q
 ```
 
-Expected: `4 passed`.
+Expected: `8 passed`.
 
 - [ ] **Step 5: Commit**
 
@@ -521,6 +630,7 @@ Create `tests/test_vector_aesthetics_seed_cases.py` with:
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 
@@ -536,6 +646,10 @@ def test_seed_cases_write_twelve_valid_case_folders(tmp_path: Path):
     records = [validate_case_folder(path) for path in written]
     assert {record.metadata["review_status"] for record in records} == {"candidate"}
     assert all(record.coverage["metadata"] == "complete" for record in records)
+    assert all(record.coverage["screenshots"] in {"complete", "partial"} for record in records)
+    assert all(record.coverage["video"] in {"complete", "partial"} for record in records)
+    assert sum("Primitive:" in record.anatomy and "Technique:" in record.anatomy for record in records) >= 6
+    assert sum("minimal_rebuild_exercise" in record.lesson for record in records) >= 3
 
 
 def test_seed_cases_use_source_link_only_for_unclear_assets(tmp_path: Path):
@@ -547,6 +661,12 @@ def test_seed_cases_use_source_link_only_for_unclear_assets(tmp_path: Path):
         metadata = json.loads((case_dir / "metadata.json").read_text(encoding="utf-8"))
         for capture in metadata["captures"]:
             assert capture["rights_status"] in {"source_link_only", "open_asset", "local_capture", "unclear"}
+        failure_types = {
+            capture["evidence_type"]
+            for capture in metadata["captures"]
+            if capture["interaction"] == "capture_failed"
+        }
+        assert {"screenshot", "video"} <= failure_types
         assert "/Users/" not in json.dumps(metadata)
         assert "private://local_path/" not in json.dumps(metadata)
 
@@ -814,9 +934,75 @@ def _metadata(case: dict[str, Any]) -> dict[str, Any]:
                 "confidence": "high",
                 "rights_status": "source_link_only",
                 "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+            },
+            {
+                "id": "screenshot-capture-failure",
+                "evidence_type": "screenshot",
+                "path_or_url": case["canonical_url"],
+                "capture_method": "manual_browser",
+                "viewport": "none",
+                "interaction": "capture_failed",
+                "captured_at": "2026-06-29",
+                "source_url": case["canonical_url"],
+                "confidence": "medium",
+                "rights_status": "source_link_only",
+                "notes": "Seed requires visual capture. No local screenshot archived yet.",
+            },
+            {
+                "id": "video-capture-failure",
+                "evidence_type": "video",
+                "path_or_url": case["canonical_url"],
+                "capture_method": "manual_browser",
+                "viewport": "none",
+                "interaction": "capture_failed",
+                "captured_at": "2026-06-29",
+                "source_url": case["canonical_url"],
+                "confidence": "medium",
+                "rights_status": "source_link_only",
+                "notes": "Seed requires motion capture. No local interaction clip archived yet.",
             }
         ],
     }
+
+
+TECHNICAL_ANATOMY_CASE_IDS = {
+    "makio-meshline",
+    "interactive-text-destruction-webgpu-tsl",
+    "webgpu-gommage-msdf-dissolve",
+    "webgpu-scanning-depth-maps",
+    "matrix-sentinels-particle-trails-tsl",
+    "phantom-land-interactive-grid",
+}
+
+REBUILD_EXERCISE_CASE_IDS = {
+    "makio-meshline",
+    "interactive-text-destruction-webgpu-tsl",
+    "webgpu-scanning-depth-maps",
+}
+
+
+def _anatomy_text(case: dict[str, Any]) -> str:
+    if case["id"] not in TECHNICAL_ANATOMY_CASE_IDS:
+        return f"# Anatomy: {case['title']}\n\nSeed anatomy. Ingestion must identify scenes, moments, primitives, and techniques.\n"
+    return (
+        f"# Anatomy: {case['title']}\n\n"
+        f"Primitive: {case['visual_families'][0]} technical form.\n\n"
+        f"Technique: map the public reference into one reusable browser-native 3D vector construction.\n\n"
+        "Moment: idle state plus one interaction or motion transition must be reviewed before shortlist promotion.\n"
+    )
+
+
+def _lesson_text(case: dict[str, Any]) -> str:
+    if case["id"] not in REBUILD_EXERCISE_CASE_IDS:
+        return f"# Lesson: {case['title']}\n\nSeed lesson. Ingestion must define a minimal rebuild exercise before shortlist promotion.\n"
+    return (
+        f"# Lesson: {case['title']}\n\n"
+        "lesson_goal: Rebuild the core primitive without copying brand, assets, or proprietary shader code.\n\n"
+        f"minimal_rebuild_exercise: Build a small {case['visual_families'][0]} study using generated geometry and placeholder labels.\n\n"
+        "runtime_target: local_vite_three\n"
+        "verified_status: described\n"
+        "verification_command: none\n"
+    )
 
 
 def write_seed_cases(root: Path) -> list[Path]:
@@ -832,14 +1018,8 @@ def write_seed_cases(root: Path) -> list[Path]:
             json.dumps(_metadata(case), indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
-        (case_dir / "anatomy.md").write_text(
-            f"# Anatomy: {case['title']}\n\nSeed anatomy. Ingestion must identify scenes, moments, primitives, and techniques.\n",
-            encoding="utf-8",
-        )
-        (case_dir / "lesson.md").write_text(
-            f"# Lesson: {case['title']}\n\nSeed lesson. Ingestion must define a minimal rebuild exercise before shortlist promotion.\n",
-            encoding="utf-8",
-        )
+        (case_dir / "anatomy.md").write_text(_anatomy_text(case), encoding="utf-8")
+        (case_dir / "lesson.md").write_text(_lesson_text(case), encoding="utf-8")
         (case_dir / "vulca_translation.md").write_text(
             f"# VULCA Translation: {case['title']}\n\nSeed translation. Review must map this case to source trail, evidence layer, review gap, route decision, or uncertainty.\n",
             encoding="utf-8",
@@ -961,7 +1141,7 @@ def test_compile_database_writes_case_and_module_rows(tmp_path: Path):
     with sqlite3.connect(sqlite_path) as conn:
         assert conn.execute("select count(*) from cases").fetchone()[0] == 12
         assert conn.execute("select count(*) from module_payloads").fetchone()[0] >= 12
-        assert conn.execute("select count(*) from captures").fetchone()[0] == 12
+        assert conn.execute("select count(*) from captures").fetchone()[0] == 36
 
 
 def test_export_review_json_is_bounded_and_sorted(tmp_path: Path):
@@ -994,6 +1174,29 @@ def test_compile_database_is_deterministic_for_same_case_folders(tmp_path: Path)
     second_json = export_review_json(second_records, tmp_path / "second.json").read_text(encoding="utf-8")
 
     assert first_json == second_json
+
+
+def test_compile_database_keeps_existing_sqlite_when_validation_fails(tmp_path: Path):
+    from vulca.vector_aesthetics.compiler import compile_database
+    from vulca.vector_aesthetics.seeds import write_seed_cases
+
+    root = tmp_path / "vector-aesthetics"
+    write_seed_cases(root)
+    sqlite_path = root / "references.sqlite"
+    compile_database(root, sqlite_path)
+    before = sqlite_path.read_bytes()
+    bad_case = root / "cases" / "bad-case"
+    bad_case.mkdir()
+    (bad_case / "metadata.json").write_text("{}", encoding="utf-8")
+
+    try:
+        compile_database(root, sqlite_path)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("invalid case unexpectedly compiled")
+
+    assert sqlite_path.read_bytes() == before
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -1071,62 +1274,70 @@ def _case_dirs(root: Path) -> list[Path]:
 def compile_database(root: Path, sqlite_path: Path) -> list[CaseRecord]:
     records = [validate_case_folder(path) for path in _case_dirs(root)]
     sqlite_path.parent.mkdir(parents=True, exist_ok=True)
-    with sqlite3.connect(sqlite_path) as conn:
-        conn.executescript(SCHEMA_SQL)
-        for record in records:
-            conn.execute(
-                """
-                insert into cases values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    record.id,
-                    record.metadata["title"],
-                    record.metadata["canonical_url"],
-                    record.metadata["source_type"],
-                    int(record.metadata["year"]),
-                    record.metadata["author_or_studio"],
-                    record.metadata["currentness"],
-                    record.metadata["review_status"],
-                    record.quality_score_total,
-                    json.dumps(record.coverage, sort_keys=True),
-                    json.dumps(record.metadata, sort_keys=True),
-                ),
-            )
-            for module in record.metadata["modules"]:
+    tmp_sqlite_path = sqlite_path.with_name(f".{sqlite_path.name}.tmp")
+    if tmp_sqlite_path.exists():
+        tmp_sqlite_path.unlink()
+    try:
+        with sqlite3.connect(tmp_sqlite_path) as conn:
+            conn.executescript(SCHEMA_SQL)
+            for record in records:
                 conn.execute(
                     """
-                    insert into module_payloads
-                    (case_id, module_type, payload_json, evidence_refs_json, confidence, review_status, review_notes)
-                    values (?, ?, ?, ?, ?, ?, ?)
+                    insert into cases values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         record.id,
-                        module["module_type"],
-                        json.dumps(module["payload"], sort_keys=True),
-                        json.dumps(module.get("evidence_refs", []), sort_keys=True),
-                        module["confidence"],
-                        module["review_status"],
-                        module.get("review_notes", ""),
+                        record.metadata["title"],
+                        record.metadata["canonical_url"],
+                        record.metadata["source_type"],
+                        int(record.metadata["year"]),
+                        record.metadata["author_or_studio"],
+                        record.metadata["currentness"],
+                        record.metadata["review_status"],
+                        record.quality_score_total,
+                        json.dumps(record.coverage, sort_keys=True),
+                        json.dumps(record.metadata, sort_keys=True),
                     ),
                 )
-            for capture in record.metadata["captures"]:
-                conn.execute(
-                    """
-                    insert into captures
-                    (id, case_id, evidence_type, path_or_url, capture_method, rights_status, confidence, notes)
-                    values (?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (
-                        capture["id"],
-                        record.id,
-                        capture["evidence_type"],
-                        capture["path_or_url"],
-                        capture["capture_method"],
-                        capture["rights_status"],
-                        capture["confidence"],
-                        capture["notes"],
-                    ),
-                )
+                for module in record.metadata["modules"]:
+                    conn.execute(
+                        """
+                        insert into module_payloads
+                        (case_id, module_type, payload_json, evidence_refs_json, confidence, review_status, review_notes)
+                        values (?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            record.id,
+                            module["module_type"],
+                            json.dumps(module["payload"], sort_keys=True),
+                            json.dumps(module.get("evidence_refs", []), sort_keys=True),
+                            module["confidence"],
+                            module["review_status"],
+                            module.get("review_notes", ""),
+                        ),
+                    )
+                for capture in record.metadata["captures"]:
+                    conn.execute(
+                        """
+                        insert into captures
+                        (id, case_id, evidence_type, path_or_url, capture_method, rights_status, confidence, notes)
+                        values (?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            capture["id"],
+                            record.id,
+                            capture["evidence_type"],
+                            capture["path_or_url"],
+                            capture["capture_method"],
+                            capture["rights_status"],
+                            capture["confidence"],
+                            capture["notes"],
+                        ),
+                    )
+        tmp_sqlite_path.replace(sqlite_path)
+    finally:
+        if tmp_sqlite_path.exists():
+            tmp_sqlite_path.unlink()
     return records
 
 
@@ -1154,7 +1365,7 @@ Run:
 PYTHONPATH=src pytest tests/test_vector_aesthetics_compiler.py -q
 ```
 
-Expected: `2 passed`.
+Expected: `4 passed`.
 
 - [ ] **Step 5: Commit**
 
@@ -1240,6 +1451,88 @@ def test_write_review_html_redacts_secret_like_json(tmp_path: Path):
 
     assert "sk-proj-secret" not in html_path.read_text(encoding="utf-8")
     assert "[redacted]" in html_path.read_text(encoding="utf-8")
+
+
+def test_write_review_html_escapes_case_metadata(tmp_path: Path):
+    from vulca.vector_aesthetics.review_html import write_review_html
+
+    review_json = tmp_path / "references.json"
+    review_json.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "summary": {"case_count": 1},
+                "cases": [
+                    {
+                        "id": "xss-case",
+                        "title": "<script>alert(1)</script>",
+                        "summary": "<img src=x onerror=alert(1)>",
+                        "visual_families": ["<svg onload=alert(1)>"],
+                        "coverage": {"metadata": "complete"},
+                        "quality_score_total": 0,
+                        "review_status": "candidate",
+                        "canonical_url": "https://example.com/?q=<bad>",
+                        "modules": [],
+                        "captures": [],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    html_text = write_review_html(review_json, tmp_path / "index.html").read_text(encoding="utf-8")
+
+    visible_html = html_text.split("<script id=\"review-data\"", 1)[0]
+    assert "<script>alert(1)</script>" not in visible_html
+    assert "<img src=x onerror=alert(1)>" not in visible_html
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in visible_html
+
+
+def test_write_review_html_resolves_local_capture_links(tmp_path: Path):
+    from vulca.vector_aesthetics.review_html import write_review_html
+
+    case_dir = tmp_path / "vector-aesthetics" / "cases" / "local-case"
+    (case_dir / "screenshots").mkdir(parents=True)
+    (case_dir / "screenshots" / "idle.png").write_text("capture placeholder", encoding="utf-8")
+    output_dir = tmp_path / "output" / "review"
+    review_json = tmp_path / "references.json"
+    review_json.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "summary": {"case_count": 1},
+                "cases": [
+                    {
+                        "id": "local-case",
+                        "title": "Local Case",
+                        "summary": "Local capture link test.",
+                        "visual_families": [],
+                        "coverage": {"screenshots": "complete"},
+                        "quality_score_total": 0,
+                        "review_status": "candidate",
+                        "canonical_url": "https://example.com",
+                        "case_rel": case_dir.as_posix(),
+                        "modules": [],
+                        "captures": [
+                            {
+                                "id": "desktop-idle",
+                                "evidence_type": "screenshot",
+                                "path_or_url": "screenshots/idle.png",
+                                "rights_status": "local_capture",
+                            }
+                        ],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    html_text = write_review_html(review_json, output_dir / "index.html").read_text(encoding="utf-8")
+    expected = os.path.relpath(case_dir / "screenshots" / "idle.png", output_dir).replace(os.sep, "/")
+
+    assert f'href="{expected}"' in html_text
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -1261,12 +1554,18 @@ from __future__ import annotations
 
 import html
 import json
+import os
 from pathlib import Path
 import re
 from typing import Any
 
 
-SECRET_PATTERNS = [re.compile(r"sk-[A-Za-z0-9_-]+")]
+SECRET_PATTERNS = [
+    re.compile(r"sk-[A-Za-z0-9_-]+"),
+    re.compile(r"github_pat_[A-Za-z0-9_]+"),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"(?i)(token|secret|api[_-]?key)\s*[:=]\s*[A-Za-z0-9_./+=-]{12,}"),
+]
 
 
 def _escape(value: Any) -> str:
@@ -1295,10 +1594,21 @@ def _coverage(coverage: dict[str, str]) -> str:
     return "<ul class=\"coverage-list\">" + "".join(rows) + "</ul>"
 
 
-def _case_card(case: dict[str, Any]) -> str:
+def _capture_href(case: dict[str, Any], capture: dict[str, Any], output_dir: Path) -> str:
+    path_or_url = str(capture.get("path_or_url", ""))
+    if path_or_url.startswith(("https://", "http://", "#", "mailto:")):
+        return path_or_url
+    case_rel = str(case.get("case_rel", ""))
+    if not case_rel:
+        return path_or_url
+    target = Path(case_rel) / path_or_url
+    return os.path.relpath(target, output_dir).replace(os.sep, "/")
+
+
+def _case_card(case: dict[str, Any], output_dir: Path) -> str:
     captures = case.get("captures", [])
     capture_links = "".join(
-        f"<a href=\"{_escape(capture.get('path_or_url', ''))}\">{_escape(capture.get('evidence_type', 'capture'))}</a>"
+        f"<a href=\"{_escape(_capture_href(case, capture, output_dir))}\">{_escape(capture.get('evidence_type', 'capture'))}</a>"
         for capture in captures[:4]
     )
     modules = [module.get("module_type", "") for module in case.get("modules", [])]
@@ -1320,9 +1630,9 @@ def _case_card(case: dict[str, Any]) -> str:
     )
 
 
-def _html(payload: dict[str, Any]) -> str:
+def _html(payload: dict[str, Any], output_dir: Path) -> str:
     cases = payload.get("cases", [])
-    cards = "\n".join(_case_card(case) for case in cases)
+    cards = "\n".join(_case_card(case, output_dir) for case in cases)
     return "\n".join(
         [
             "<!doctype html>",
@@ -1371,7 +1681,7 @@ def _html(payload: dict[str, Any]) -> str:
 def write_review_html(review_json_path: Path, html_path: Path) -> Path:
     payload = json.loads(review_json_path.read_text(encoding="utf-8"))
     html_path.parent.mkdir(parents=True, exist_ok=True)
-    html_path.write_text(_html(payload), encoding="utf-8")
+    html_path.write_text(_html(payload, html_path.parent), encoding="utf-8")
     return html_path
 ```
 
@@ -1383,7 +1693,7 @@ Run:
 PYTHONPATH=src pytest tests/test_vector_aesthetics_review_html.py -q
 ```
 
-Expected: `2 passed`.
+Expected: `4 passed`.
 
 - [ ] **Step 5: Commit**
 
@@ -1433,7 +1743,7 @@ def test_record_capture_failure_adds_explicit_missing_evidence(tmp_path: Path):
 
     metadata = json.loads((case_dir / "metadata.json").read_text(encoding="utf-8"))
     assert any(capture["evidence_type"] == "video" for capture in metadata["captures"])
-    assert validate_case_folder(case_dir).coverage["video"] == "complete"
+    assert validate_case_folder(case_dir).coverage["video"] == "partial"
 
 
 def test_add_capture_rejects_missing_local_file(tmp_path: Path):
@@ -1665,6 +1975,10 @@ def test_build_review_cli_writes_sqlite_json_and_html(tmp_path: Path, capsys):
     assert (root / "references.sqlite").exists()
     assert (output / "data" / "references.json").exists()
     assert (output / "index.html").exists()
+    review_payload = json.loads((output / "data" / "references.json").read_text(encoding="utf-8"))
+    assert all(case["coverage"]["screenshots"] in {"complete", "partial"} for case in review_payload["cases"])
+    assert all(case["coverage"]["video"] in {"complete", "partial"} for case in review_payload["cases"])
+    assert any("capture_failed" in json.dumps(case["captures"]) for case in review_payload["cases"])
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -1843,6 +2157,7 @@ Verify that it shows:
 
 - 12 seed cases;
 - visible score and coverage state for each case;
+- screenshot and video coverage for every case is either complete or partial, never missing;
 - canonical source links;
 - module badges;
 - capture links or explicit capture status;
