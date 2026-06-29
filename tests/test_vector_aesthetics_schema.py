@@ -254,6 +254,48 @@ def test_validate_case_folder_rejects_out_of_range_score(tmp_path: Path):
         validate_case_folder(case_dir)
 
 
+@pytest.mark.parametrize(
+    ("path_or_url", "expected_exception", "match"),
+    [
+        ("../outside.png", ValueError, "escapes case_dir"),
+        ("/tmp/outside.png", ValueError, "relative to case_dir"),
+        ("screenshots", FileNotFoundError, "screenshots"),
+    ],
+)
+def test_validate_case_folder_rejects_invalid_local_capture_paths(
+    tmp_path: Path,
+    path_or_url: str,
+    expected_exception: type[Exception],
+    match: str,
+):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    if path_or_url == "screenshots":
+        (case_dir / "screenshots").mkdir(parents=True)
+    payload["captures"].append(
+        {
+            "id": f"local-{path_or_url.replace('/', '-')}",
+            "evidence_type": "screenshot",
+            "path_or_url": path_or_url,
+            "capture_method": "manual_browser",
+            "viewport": "1440x900",
+            "interaction": "idle",
+            "captured_at": "2026-06-29",
+            "source_url": "https://meshline.makio.io/",
+            "confidence": "medium",
+            "rights_status": "local_capture",
+            "notes": "Regression coverage for local capture path validation.",
+        }
+    )
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(expected_exception, match=match):
+        validate_case_folder(case_dir)
+
+
 def test_capture_failure_counts_as_partial_not_complete(tmp_path: Path):
     from vulca.vector_aesthetics.schema import validate_case_folder
 

@@ -123,6 +123,21 @@ def _validate_modules(modules: list[dict[str, Any]]) -> None:
             raise ValueError(f"module payload missing learning_primitive for {module_type}")
 
 
+def resolve_local_capture_path(case_dir: Path, path_or_url: str) -> Path:
+    capture_path = Path(path_or_url)
+    if capture_path.is_absolute():
+        raise ValueError(f"local capture path must be relative to case_dir: {path_or_url!r}")
+    case_root = case_dir.resolve()
+    resolved_path = (case_dir / capture_path).resolve()
+    try:
+        resolved_path.relative_to(case_root)
+    except ValueError as exc:
+        raise ValueError(f"local capture path escapes case_dir: {path_or_url!r}") from exc
+    if not resolved_path.is_file():
+        raise FileNotFoundError(f"local capture file not found: {path_or_url!r}")
+    return resolved_path
+
+
 def _validate_captures(captures: list[dict[str, Any]], case_dir: Path) -> None:
     required = {
         "id",
@@ -148,9 +163,7 @@ def _validate_captures(captures: list[dict[str, Any]], case_dir: Path) -> None:
         if capture["rights_status"] not in ALLOWED_RIGHTS_STATUS:
             raise ValueError(f"invalid rights_status: {capture['rights_status']}")
         if capture["rights_status"] == "local_capture" and capture["evidence_type"] in LOCAL_CAPTURE_TYPES:
-            local_path = case_dir / str(capture["path_or_url"])
-            if not local_path.exists():
-                raise FileNotFoundError(str(capture["path_or_url"]))
+            resolve_local_capture_path(case_dir, str(capture["path_or_url"]))
 
 
 def _capture_coverage(captures: list[dict[str, Any]], evidence_type: str, *, missing: str = "missing") -> str:

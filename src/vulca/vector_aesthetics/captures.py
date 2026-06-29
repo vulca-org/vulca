@@ -4,10 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .schema import validate_case_folder
-
-
-LOCAL_EVIDENCE_TYPES = {"screenshot", "video", "trace", "code_note", "asset_manifest"}
+from .schema import LOCAL_CAPTURE_TYPES, resolve_local_capture_path, validate_case_folder
 
 
 def _metadata_path(case_dir: Path) -> Path:
@@ -33,11 +30,9 @@ def _write(case_dir: Path, payload: dict[str, Any]) -> dict[str, Any]:
 def _assert_local_file(case_dir: Path, capture: dict[str, str]) -> None:
     if capture["rights_status"] != "local_capture":
         return
-    if capture["evidence_type"] not in LOCAL_EVIDENCE_TYPES:
+    if capture["evidence_type"] not in LOCAL_CAPTURE_TYPES:
         return
-    local_path = case_dir / capture["path_or_url"]
-    if not local_path.exists():
-        raise FileNotFoundError(capture["path_or_url"])
+    resolve_local_capture_path(case_dir, capture["path_or_url"])
 
 
 def add_capture(case_dir: Path, capture: dict[str, str]) -> dict[str, Any]:
