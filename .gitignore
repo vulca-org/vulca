@@ -68,5 +68,5 @@ docs/tool-audit-logs/
 .gemini-agent/
 
 # 3D vector aesthetics learning DB local build outputs
-data/vector-aesthetics/references.sqlite
-output/review/3d-vector-aesthetics-learning-db/
+/data/vector-aesthetics/references.sqlite
+/output/review/3d-vector-aesthetics-learning-db/
