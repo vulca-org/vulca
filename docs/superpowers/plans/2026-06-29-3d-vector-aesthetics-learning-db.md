@@ -23,7 +23,8 @@
 - v0.1 target: 12 seed cases; every case must have screenshot and video coverage marked `complete` or `partial`, never `missing`.
 - `complete` coverage means a local evidence capture exists. `partial` coverage means the case has an explicit capture-failure evidence record explaining why capture is not yet available.
 - Seed cases may use explicit capture-failure records instead of claiming Level 2 completeness, but the HTML and review JSON must expose those gaps as partial evidence, not hide them.
-- At least 6 cases must include technical anatomy notes with primitive and technique detail; at least 3 cases must include rebuild exercise metadata.
+- All 12 cases must include the minimum learning structure required by the design: at least one module, `Primitive:` and `Technique:` anatomy markers, and a `minimal_rebuild_exercise` or `Minimal rebuild` lesson marker.
+- At least 6 cases must include richer technical anatomy notes beyond the minimum; at least 3 cases must include richer rebuild exercise metadata with runtime target fields.
 
 ---
 
@@ -630,7 +631,6 @@ Create `tests/test_vector_aesthetics_seed_cases.py` with:
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 
 
@@ -648,8 +648,10 @@ def test_seed_cases_write_twelve_valid_case_folders(tmp_path: Path):
     assert all(record.coverage["metadata"] == "complete" for record in records)
     assert all(record.coverage["screenshots"] in {"complete", "partial"} for record in records)
     assert all(record.coverage["video"] in {"complete", "partial"} for record in records)
-    assert sum("Primitive:" in record.anatomy and "Technique:" in record.anatomy for record in records) >= 6
-    assert sum("minimal_rebuild_exercise" in record.lesson for record in records) >= 3
+    assert all("Primitive:" in record.anatomy and "Technique:" in record.anatomy for record in records)
+    assert all("minimal_rebuild_exercise" in record.lesson for record in records)
+    assert sum("Moment:" in record.anatomy for record in records) >= 6
+    assert sum("runtime_target:" in record.lesson for record in records) >= 3
 
 
 def test_seed_cases_use_source_link_only_for_unclear_assets(tmp_path: Path):
@@ -983,7 +985,11 @@ REBUILD_EXERCISE_CASE_IDS = {
 
 def _anatomy_text(case: dict[str, Any]) -> str:
     if case["id"] not in TECHNICAL_ANATOMY_CASE_IDS:
-        return f"# Anatomy: {case['title']}\n\nSeed anatomy. Ingestion must identify scenes, moments, primitives, and techniques.\n"
+        return (
+            f"# Anatomy: {case['title']}\n\n"
+            f"Primitive: {case['visual_families'][0]} reference primitive.\n\n"
+            "Technique: seed-level public-source review; deeper implementation anatomy is pending.\n"
+        )
     return (
         f"# Anatomy: {case['title']}\n\n"
         f"Primitive: {case['visual_families'][0]} technical form.\n\n"
@@ -994,7 +1000,10 @@ def _anatomy_text(case: dict[str, Any]) -> str:
 
 def _lesson_text(case: dict[str, Any]) -> str:
     if case["id"] not in REBUILD_EXERCISE_CASE_IDS:
-        return f"# Lesson: {case['title']}\n\nSeed lesson. Ingestion must define a minimal rebuild exercise before shortlist promotion.\n"
+        return (
+            f"# Lesson: {case['title']}\n\n"
+            f"minimal_rebuild_exercise: Describe a small {case['visual_families'][0]} rebuild using generated placeholders before shortlist promotion.\n"
+        )
     return (
         f"# Lesson: {case['title']}\n\n"
         "lesson_goal: Rebuild the core primitive without copying brand, assets, or proprietary shader code.\n\n"
