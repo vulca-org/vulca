@@ -60,14 +60,14 @@ def _safe_href(value: Any, output_dir: Path, *, case_rel: str | None = None) -> 
 
     parsed = urlsplit(raw)
     if parsed.scheme:
-        return raw if parsed.scheme in SAFE_HREF_SCHEMES else "#"
+        return _redact(raw) if parsed.scheme in SAFE_HREF_SCHEMES else "#"
     if parsed.netloc:
         return "#"
     if not case_rel:
         return "#"
 
     target = Path(case_rel) / raw
-    return os.path.relpath(target, output_dir).replace(os.sep, "/")
+    return _redact(os.path.relpath(target, output_dir).replace(os.sep, "/"))
 
 
 def _capture_details(capture: dict[str, Any]) -> str:

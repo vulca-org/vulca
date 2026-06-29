@@ -143,6 +143,48 @@ def test_write_review_html_resolves_local_capture_links(tmp_path: Path):
     assert f'href="{expected}"' in html_text
 
 
+def test_write_review_html_redacts_secret_like_href_values(tmp_path: Path):
+    from vulca.vector_aesthetics.review_html import write_review_html
+
+    review_json = tmp_path / "references.json"
+    review_json.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "summary": {"case_count": 1},
+                "cases": [
+                    {
+                        "id": "secret-href-case",
+                        "title": "Secret Href Case",
+                        "summary": "href redaction test",
+                        "visual_families": [],
+                        "coverage": {},
+                        "quality_score_total": 0,
+                        "review_status": "candidate",
+                        "canonical_url": "https://example.com/?api_key=abcdef1234567890",
+                        "modules": [],
+                        "captures": [
+                            {
+                                "id": "capture-secret-href",
+                                "evidence_type": "screenshot",
+                                "path_or_url": "https://cdn.example.com/capture.png?token=abcdef1234567890",
+                                "rights_status": "source_link_only",
+                            }
+                        ],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    html_text = write_review_html(review_json, tmp_path / "index.html").read_text(encoding="utf-8")
+
+    assert "api_key=abcdef1234567890" not in html_text
+    assert "token=abcdef1234567890" not in html_text
+    assert "[redacted]" in html_text
+
+
 def test_write_review_html_renders_capture_status_details(tmp_path: Path):
     from vulca.vector_aesthetics.review_html import write_review_html
 

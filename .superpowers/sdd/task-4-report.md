@@ -59,6 +59,32 @@ Result after implementation:
 - The renderer currently assumes the review JSON already follows the Task 3 schema shape used by the tests.
 - Pytest still emits an existing `asyncio_mode` config warning and a couple of dependency deprecation warnings, but they do not affect the task result.
 
+## Fix 2
+
+Command:
+
+```bash
+PYTHONPATH=src pytest tests/test_vector_aesthetics_review_html.py -q
+```
+
+Output:
+
+```text
+.......                                                                  [100%]
+=============================== warnings summary ===============================
+../../../../../../opt/homebrew/lib/python3.14/site-packages/_pytest/config/__init__.py:1434
+  /opt/homebrew/lib/python3.14/site-packages/_pytest/config/__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+
+tests/test_vector_aesthetics_review_html.py::test_write_review_html_renders_required_views
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+tests/test_vector_aesthetics_review_html.py::test_write_review_html_renders_required_views
+  <frozen importlib._bootstrap>:491: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+7 passed, 3 warnings in 3.08s
+```
+
 ## Fix
 
 Command:
