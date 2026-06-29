@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from pathlib import Path
 import sys
 
@@ -49,6 +50,16 @@ def test_seed_cases_use_source_link_only_for_unclear_assets(tmp_path: Path):
         assert "private://local_path/" not in json.dumps(metadata)
 
 
+def test_seed_cases_default_capture_date_is_today(tmp_path: Path):
+    from vulca.vector_aesthetics.seeds import write_seed_cases
+
+    written = write_seed_cases(tmp_path)
+
+    for case_dir in written:
+        metadata = json.loads((case_dir / "metadata.json").read_text(encoding="utf-8"))
+        assert {capture["captured_at"] for capture in metadata["captures"]} == {date.today().isoformat()}
+
+
 def test_seed_script_writes_requested_root(tmp_path: Path, capsys):
     from scripts.vector_aesthetics_seed_cases import main
 
@@ -58,3 +69,15 @@ def test_seed_script_writes_requested_root(tmp_path: Path, capsys):
     assert rc == 0
     assert '"status": "written"' in captured
     assert len(list((tmp_path / "cases").iterdir())) == 12
+
+
+def test_seed_script_accepts_explicit_capture_date(tmp_path: Path, capsys):
+    from scripts.vector_aesthetics_seed_cases import main
+
+    rc = main(["--root", str(tmp_path), "--captured-at", "2026-06-29"])
+
+    assert rc == 0
+    capsys.readouterr()
+    metadata_path = next((tmp_path / "cases").iterdir()) / "metadata.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    assert {capture["captured_at"] for capture in metadata["captures"]} == {"2026-06-29"}

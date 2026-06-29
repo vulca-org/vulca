@@ -202,9 +202,43 @@ def _case_card(case: dict[str, Any], output_dir: Path) -> str:
     )
 
 
+def _compare_matrix(cases: list[dict[str, Any]]) -> str:
+    rows = []
+    for case in cases:
+        modules = ", ".join(module.get("module_type", "") for module in case.get("modules", []))
+        families = ", ".join(str(item) for item in case.get("visual_families", []))
+        coverage = case.get("coverage", {})
+        rows.append(
+            "\n".join(
+                [
+                    "<tr>",
+                    f"<th>{_visible(case.get('title', 'Untitled'))}</th>",
+                    f"<td>{_visible(case.get('source_type', ''))}</td>",
+                    f"<td>{_visible(families)}</td>",
+                    f"<td>{_visible(modules)}</td>",
+                    f"<td>{_visible(str(case.get('quality_score_total', 0)) + '/18')}</td>",
+                    f"<td>{_visible(str(coverage.get('screenshots', '')) + ' / ' + str(coverage.get('video', '')))}</td>",
+                    "</tr>",
+                ]
+            )
+        )
+    return "\n".join(
+        [
+            '<section class="compare-matrix">',
+            "<h2>Compare Matrix</h2>",
+            "<table>",
+            "<thead><tr><th>Case</th><th>Source</th><th>Family</th><th>Modules</th><th>Score</th><th>Screenshot / Video</th></tr></thead>",
+            f"<tbody>{''.join(rows)}</tbody>",
+            "</table>",
+            "</section>",
+        ]
+    )
+
+
 def _html(payload: dict[str, Any], output_dir: Path) -> str:
     cases = payload.get("cases", [])
     cards = "\n".join(_case_card(case, output_dir) for case in cases)
+    compare = _compare_matrix(cases)
     return "\n".join(
         [
             "<!doctype html>",
@@ -228,6 +262,7 @@ def _html(payload: dict[str, Any], output_dir: Path) -> str:
             ".badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.badges span{font:12px/1.2 monospace;background:#1e2a36;border:1px solid #32404f;border-radius:999px;padding:5px 7px}",
             ".muted-badges span{color:#b3bcc6}.coverage-list{list-style:none;padding:0;margin:12px 0;display:grid;gap:5px}.coverage-list li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #222b35;padding-top:5px}",
             ".manifest-state{font:12px/1.4 monospace;color:#d7c98d;margin:8px 0 0}.learning-path{display:grid;gap:10px;margin:12px 0}.learning-panel,.module-card{border-top:1px solid #222b35;padding-top:10px}.learning-panel h3{font-size:13px;margin:0 0 6px;color:#d8e4ef}.learning-panel pre{white-space:pre-wrap;word-break:break-word;margin:0;color:#aeb8c4;font:12px/1.45 monospace}.module-list{display:grid;gap:8px}.module-head{display:flex;justify-content:space-between;gap:10px;color:#d8e4ef;font:12px/1.4 monospace}.module-field{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:10px;font:12px/1.4 monospace;color:#aeb8c4}",
+            ".compare-matrix{margin:22px 0;overflow:auto}.compare-matrix h2{margin:0 0 10px}.compare-matrix table{width:100%;border-collapse:collapse;font-size:12px}.compare-matrix th,.compare-matrix td{border-top:1px solid #27313d;padding:8px;text-align:left;vertical-align:top}.compare-matrix th{color:#e8edf2}.compare-matrix td{color:#aeb8c4}",
             "a{color:#8ed7ff}.capture-list{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}.capture-item{border-top:1px solid #222b35;padding-top:10px}.capture-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.capture-path{color:#9aa7b4;font:12px/1.3 monospace;word-break:break-word}.capture-details{display:grid;gap:6px;margin-top:8px}.capture-field{display:grid;grid-template-columns:minmax(112px,auto) 1fr;gap:10px}.capture-label{font:12px/1.3 monospace;color:#9aa7b4;text-transform:lowercase}",
             "</style>",
             "</head>",
@@ -241,6 +276,7 @@ def _html(payload: dict[str, Any], output_dir: Path) -> str:
             '<div class="view-pill">Coverage View</div>',
             '<div class="view-pill">Lesson Path View</div>',
             "</section>",
+            compare,
             f'<section class="grid">{cards}</section>',
             f'<script id="review-data" type="application/json">{_safe_json_script(payload)}</script>',
             "</main>",

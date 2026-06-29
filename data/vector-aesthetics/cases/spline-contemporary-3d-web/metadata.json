@@ -7,7 +7,7 @@
   "captures": [
     {
       "capture_method": "source_read",
-      "captured_at": "2026-06-29",
+      "captured_at": "2026-06-30",
       "confidence": "high",
       "evidence_type": "external_doc",
       "id": "canonical-source",
@@ -20,7 +20,7 @@
     },
     {
       "capture_method": "manual_browser",
-      "captured_at": "2026-06-29",
+      "captured_at": "2026-06-30",
       "confidence": "medium",
       "evidence_type": "screenshot",
       "id": "screenshot-capture-failure",
@@ -33,7 +33,7 @@
     },
     {
       "capture_method": "manual_browser",
-      "captured_at": "2026-06-29",
+      "captured_at": "2026-06-30",
       "confidence": "medium",
       "evidence_type": "video",
       "id": "video-capture-failure",

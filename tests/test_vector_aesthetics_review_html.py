@@ -21,6 +21,8 @@ def test_write_review_html_renders_required_views(tmp_path: Path):
     assert "Atlas View" in html_text
     assert "Anatomy View" in html_text
     assert "Compare View" in html_text
+    assert "Compare Matrix" in html_text
+    assert "Screenshot / Video" in html_text
     assert "Coverage View" in html_text
     assert "Lesson Path View" in html_text
     assert "Makio MeshLine" in html_text

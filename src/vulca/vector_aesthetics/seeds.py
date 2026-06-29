@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -193,7 +194,7 @@ def _module_payload(module_type: str) -> dict[str, Any]:
     return {"learning_primitive": f"{module_type} learning primitive", "seed_status": "metadata_only"}
 
 
-def _metadata(case: dict[str, Any]) -> dict[str, Any]:
+def _metadata(case: dict[str, Any], captured_at: str) -> dict[str, Any]:
     return {
         "id": case["id"],
         "title": case["title"],
@@ -227,7 +228,7 @@ def _metadata(case: dict[str, Any]) -> dict[str, Any]:
                 "capture_method": "source_read",
                 "viewport": "none",
                 "interaction": "none",
-                "captured_at": "2026-06-29",
+                "captured_at": captured_at,
                 "source_url": case["canonical_url"],
                 "confidence": "high",
                 "rights_status": "source_link_only",
@@ -240,7 +241,7 @@ def _metadata(case: dict[str, Any]) -> dict[str, Any]:
                 "capture_method": "manual_browser",
                 "viewport": "none",
                 "interaction": "capture_failed",
-                "captured_at": "2026-06-29",
+                "captured_at": captured_at,
                 "source_url": case["canonical_url"],
                 "confidence": "medium",
                 "rights_status": "source_link_only",
@@ -253,7 +254,7 @@ def _metadata(case: dict[str, Any]) -> dict[str, Any]:
                 "capture_method": "manual_browser",
                 "viewport": "none",
                 "interaction": "capture_failed",
-                "captured_at": "2026-06-29",
+                "captured_at": captured_at,
                 "source_url": case["canonical_url"],
                 "confidence": "medium",
                 "rights_status": "source_link_only",
@@ -310,9 +311,10 @@ def _lesson_text(case: dict[str, Any]) -> str:
     )
 
 
-def write_seed_cases(root: Path) -> list[Path]:
+def write_seed_cases(root: Path, *, captured_at: str | None = None) -> list[Path]:
     cases_root = root / "cases"
     cases_root.mkdir(parents=True, exist_ok=True)
+    capture_date = captured_at or date.today().isoformat()
     written: list[Path] = []
     for case in SEED_CASES:
         case_dir = cases_root / str(case["id"])
@@ -320,7 +322,7 @@ def write_seed_cases(root: Path) -> list[Path]:
         for child in ["screenshots", "videos", "traces", "code", "assets"]:
             (case_dir / child).mkdir(exist_ok=True)
         (case_dir / "metadata.json").write_text(
-            json.dumps(_metadata(case), indent=2, sort_keys=True) + "\n",
+            json.dumps(_metadata(case, capture_date), indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
         (case_dir / "anatomy.md").write_text(_anatomy_text(case), encoding="utf-8")
@@ -346,4 +348,3 @@ def write_seed_cases(root: Path) -> list[Path]:
         )
         written.append(case_dir)
     return written
-
