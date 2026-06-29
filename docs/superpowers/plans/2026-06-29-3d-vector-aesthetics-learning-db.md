@@ -1783,6 +1783,39 @@ def test_add_capture_rejects_missing_local_file(tmp_path: Path):
         assert "screenshots/missing.png" in str(exc)
     else:
         raise AssertionError("missing local file was accepted")
+
+
+def test_add_capture_restores_metadata_when_validation_fails(tmp_path: Path):
+    from vulca.vector_aesthetics.captures import add_capture
+    from vulca.vector_aesthetics.seeds import write_seed_cases
+
+    case_dir = write_seed_cases(tmp_path)[0]
+    metadata_path = case_dir / "metadata.json"
+    before = metadata_path.read_text(encoding="utf-8")
+
+    try:
+        add_capture(
+            case_dir,
+            {
+                "id": "bad-confidence",
+                "evidence_type": "screenshot",
+                "path_or_url": "https://meshline.makio.io/",
+                "capture_method": "manual_browser",
+                "viewport": "none",
+                "interaction": "capture_failed",
+                "captured_at": "2026-06-29",
+                "source_url": "https://meshline.makio.io/",
+                "confidence": "certain",
+                "rights_status": "source_link_only",
+                "notes": "Invalid confidence should not persist.",
+            },
+        )
+    except ValueError as exc:
+        assert "invalid capture confidence" in str(exc)
+    else:
+        raise AssertionError("invalid capture was accepted")
+
+    assert metadata_path.read_text(encoding="utf-8") == before
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -1821,8 +1854,14 @@ def _load(case_dir: Path) -> dict[str, Any]:
 
 
 def _write(case_dir: Path, payload: dict[str, Any]) -> dict[str, Any]:
-    _metadata_path(case_dir).write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    validate_case_folder(case_dir)
+    metadata_path = _metadata_path(case_dir)
+    before = metadata_path.read_text(encoding="utf-8")
+    try:
+        metadata_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        validate_case_folder(case_dir)
+    except Exception:
+        metadata_path.write_text(before, encoding="utf-8")
+        raise
     return payload
 
 
@@ -1931,7 +1970,7 @@ Run:
 PYTHONPATH=src pytest tests/test_vector_aesthetics_captures.py -q
 ```
 
-Expected: `2 passed`.
+Expected: `3 passed`.
 
 - [ ] **Step 5: Commit**
 
