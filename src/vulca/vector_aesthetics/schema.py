@@ -164,10 +164,15 @@ def _capture_coverage(captures: list[dict[str, Any]], evidence_type: str, *, mis
     return "partial"
 
 
+def _asset_manifest_coverage(record: CaseRecord) -> str:
+    captures = record.metadata.get("captures", [])
+    if (record.case_dir / "assets" / "asset_manifest.json").exists():
+        return "complete"
+    return _capture_coverage(captures, "asset_manifest")
+
+
 def coverage_for_case(record: CaseRecord) -> dict[str, str]:
     captures = record.metadata.get("captures", [])
-    modules = record.metadata.get("modules", [])
-    module_types = {module.get("module_type") for module in modules}
     license_score = record.metadata["quality_scores"]["license_safety"]
     return {
         "metadata": "complete",
@@ -175,7 +180,7 @@ def coverage_for_case(record: CaseRecord) -> dict[str, str]:
         "video": _capture_coverage(captures, "video"),
         "trace": _capture_coverage(captures, "trace", missing="not_applicable"),
         "code_anatomy": "complete" if record.anatomy.strip() else "missing",
-        "asset_manifest": "complete" if "asset_pipeline" in module_types else "missing",
+        "asset_manifest": _asset_manifest_coverage(record),
         "license_review": "clear" if license_score >= 2 else "unclear",
         "lesson": "complete" if record.lesson.strip() else "missing",
         "vulca_translation": "complete" if record.vulca_translation.strip() else "missing",
@@ -214,6 +219,12 @@ def validate_case_folder(case_dir: Path) -> CaseRecord:
         coverage={},
         quality_score_total=total,
     )
+    coverage = coverage_for_case(draft)
+    if coverage["screenshots"] == "missing" or coverage["video"] == "missing":
+        raise ValueError(
+            "case folder must include screenshot and video coverage; "
+            f"screenshots={coverage['screenshots']} video={coverage['video']}"
+        )
     return CaseRecord(
         id=draft.id,
         case_dir=draft.case_dir,
@@ -221,7 +232,7 @@ def validate_case_folder(case_dir: Path) -> CaseRecord:
         anatomy=draft.anatomy,
         lesson=draft.lesson,
         vulca_translation=draft.vulca_translation,
-        coverage=coverage_for_case(draft),
+        coverage=coverage,
         quality_score_total=draft.quality_score_total,
     )
 

@@ -50,6 +50,32 @@ def write_case(root: Path, *, case_id: str = "makio-meshline") -> Path:
                 ],
                 "captures": [
                     {
+                        "id": "screenshot-capture-failure",
+                        "evidence_type": "screenshot",
+                        "path_or_url": "https://meshline.makio.io/",
+                        "capture_method": "manual_browser",
+                        "viewport": "1440x900",
+                        "interaction": "capture_failed",
+                        "captured_at": "2026-06-29",
+                        "source_url": "https://meshline.makio.io/",
+                        "confidence": "medium",
+                        "rights_status": "source_link_only",
+                        "notes": "Screenshot capture failed because the page was still rendering.",
+                    },
+                    {
+                        "id": "video-capture-failure",
+                        "evidence_type": "video",
+                        "path_or_url": "https://meshline.makio.io/",
+                        "capture_method": "manual_browser",
+                        "viewport": "none",
+                        "interaction": "capture_failed",
+                        "captured_at": "2026-06-29",
+                        "source_url": "https://meshline.makio.io/",
+                        "confidence": "medium",
+                        "rights_status": "source_link_only",
+                        "notes": "Video capture failed because autoplay and timing blocked automation.",
+                    },
+                    {
                         "id": "metadata-source",
                         "evidence_type": "external_doc",
                         "path_or_url": "https://meshline.makio.io/",
@@ -94,6 +120,8 @@ def test_validate_case_folder_accepts_complete_seed(tmp_path: Path):
     assert record.metadata["visual_families"] == ["meshline", "data_tunnel"]
     assert record.coverage["metadata"] == "complete"
     assert record.coverage["lesson"] == "complete"
+    assert record.coverage["screenshots"] == "partial"
+    assert record.coverage["video"] == "partial"
 
 
 def test_validate_case_folder_rejects_unknown_module(tmp_path: Path):
@@ -106,6 +134,23 @@ def test_validate_case_folder_rejects_unknown_module(tmp_path: Path):
     metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
     with pytest.raises(ValueError, match="unknown module_type"):
+        validate_case_folder(case_dir)
+
+
+def test_validate_case_folder_rejects_missing_screenshot_and_video_coverage(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["captures"] = [
+        capture
+        for capture in payload["captures"]
+        if capture["evidence_type"] not in {"screenshot", "video"}
+    ]
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="case folder must include screenshot and video coverage"):
         validate_case_folder(case_dir)
 
 
@@ -191,6 +236,67 @@ def test_capture_failure_counts_as_partial_not_complete(tmp_path: Path):
     record = validate_case_folder(case_dir)
 
     assert record.coverage["video"] == "partial"
+
+
+def test_asset_manifest_coverage_comes_from_evidence_not_module_presence(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["modules"].append(
+        {
+            "module_type": "asset_pipeline",
+            "payload": {
+                "learning_primitive": "asset manifest authoring",
+            },
+            "evidence_refs": [],
+            "confidence": "medium",
+            "review_status": "partial",
+            "review_notes": "Pipeline exists, but no manifest evidence yet.",
+        }
+    )
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    record = validate_case_folder(case_dir)
+
+    assert record.coverage["asset_manifest"] == "missing"
+
+    manifest_path = case_dir / "assets" / "asset_manifest.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text("{\n  \"assets\": []\n}\n", encoding="utf-8")
+
+    record = validate_case_folder(case_dir)
+
+    assert record.coverage["asset_manifest"] == "complete"
+
+
+def test_asset_manifest_capture_failure_counts_as_partial(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["captures"].append(
+        {
+            "id": "asset-manifest-capture-failure",
+            "evidence_type": "asset_manifest",
+            "path_or_url": "assets/asset_manifest.json",
+            "capture_method": "manual_browser",
+            "viewport": "none",
+            "interaction": "capture_failed",
+            "captured_at": "2026-06-29",
+            "source_url": "https://meshline.makio.io/",
+            "confidence": "medium",
+            "rights_status": "source_link_only",
+            "notes": "Manifest capture failed because the asset pipeline output was not published yet.",
+        }
+    )
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    record = validate_case_folder(case_dir)
+
+    assert record.coverage["asset_manifest"] == "partial"
 
 
 def test_validate_case_folder_rejects_missing_local_capture_file(tmp_path: Path):
