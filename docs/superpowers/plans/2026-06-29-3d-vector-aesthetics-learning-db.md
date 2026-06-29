@@ -2028,6 +2028,8 @@ def test_build_review_cli_writes_sqlite_json_and_html(tmp_path: Path, capsys):
     assert all(case["coverage"]["screenshots"] in {"complete", "partial"} for case in review_payload["cases"])
     assert all(case["coverage"]["video"] in {"complete", "partial"} for case in review_payload["cases"])
     assert any("capture_failed" in json.dumps(case["captures"]) for case in review_payload["cases"])
+    with (root / "references.sqlite").open("rb") as handle:
+        assert handle.read(16).startswith(b"SQLite format 3")
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -2058,7 +2060,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", default="output/review/3d-vector-aesthetics-learning-db")
     args = parser.parse_args(argv)
 
-    from vulca.vector_aesthetics.compiler import compile_database, export_review_json
+    from vulca.vector_aesthetics.compiler import compile_database, export_review_json_from_sqlite
     from vulca.vector_aesthetics.review_html import write_review_html
 
     root = Path(args.root)
@@ -2067,7 +2069,7 @@ def main(argv: list[str] | None = None) -> int:
     review_json = output / "data" / "references.json"
     html_path = output / "index.html"
     records = compile_database(root, sqlite_path)
-    export_review_json(records, review_json)
+    export_review_json_from_sqlite(sqlite_path, review_json)
     write_review_html(review_json, html_path)
     print(
         json.dumps(
