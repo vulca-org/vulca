@@ -238,6 +238,38 @@ def test_capture_failure_counts_as_partial_not_complete(tmp_path: Path):
     assert record.coverage["video"] == "partial"
 
 
+def test_local_screenshot_capture_takes_precedence_over_failure_record(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    screenshot_path = case_dir / "screenshots" / "desktop-idle.png"
+    screenshot_path.parent.mkdir(parents=True, exist_ok=True)
+    screenshot_path.write_bytes(b"not a real png, just a fixture file")
+
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["captures"].append(
+        {
+            "id": "desktop-idle",
+            "evidence_type": "screenshot",
+            "path_or_url": "screenshots/desktop-idle.png",
+            "capture_method": "manual_browser",
+            "viewport": "1440x900",
+            "interaction": "idle",
+            "captured_at": "2026-06-29",
+            "source_url": "https://meshline.makio.io/",
+            "confidence": "medium",
+            "rights_status": "local_capture",
+            "notes": "Local screenshot captured from the case folder.",
+        }
+    )
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    record = validate_case_folder(case_dir)
+
+    assert record.coverage["screenshots"] == "complete"
+
+
 def test_asset_manifest_coverage_comes_from_evidence_not_module_presence(tmp_path: Path):
     from vulca.vector_aesthetics.schema import validate_case_folder
 

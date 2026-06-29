@@ -157,10 +157,10 @@ def _capture_coverage(captures: list[dict[str, Any]], evidence_type: str, *, mis
     matching = [capture for capture in captures if capture.get("evidence_type") == evidence_type]
     if not matching:
         return missing
-    if any(capture.get("interaction") == "capture_failed" for capture in matching):
-        return "partial"
     if any(capture.get("rights_status") == "local_capture" for capture in matching):
         return "complete"
+    if any(capture.get("interaction") == "capture_failed" for capture in matching):
+        return "partial"
     return "partial"
 
 
