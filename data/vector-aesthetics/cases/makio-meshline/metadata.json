@@ -1,0 +1,115 @@
+{
+  "author_or_studio": "Makio64",
+  "canonical_sources": [
+    "https://meshline.makio.io/",
+    "https://github.com/Makio64/makio-meshline"
+  ],
+  "canonical_url": "https://meshline.makio.io/",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-29",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "path_or_url": "https://meshline.makio.io/",
+      "rights_status": "source_link_only",
+      "source_url": "https://meshline.makio.io/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "manual_browser",
+      "captured_at": "2026-06-29",
+      "confidence": "medium",
+      "evidence_type": "screenshot",
+      "id": "screenshot-capture-failure",
+      "interaction": "capture_failed",
+      "notes": "Seed requires visual capture. No local screenshot archived yet.",
+      "path_or_url": "https://meshline.makio.io/",
+      "rights_status": "source_link_only",
+      "source_url": "https://meshline.makio.io/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "manual_browser",
+      "captured_at": "2026-06-29",
+      "confidence": "medium",
+      "evidence_type": "video",
+      "id": "video-capture-failure",
+      "interaction": "capture_failed",
+      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
+      "path_or_url": "https://meshline.makio.io/",
+      "rights_status": "source_link_only",
+      "source_url": "https://meshline.makio.io/",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "still_current",
+  "id": "makio-meshline",
+  "modules": [
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "meshline",
+      "payload": {
+        "learning_primitive": "meshline learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "shader_material",
+      "payload": {
+        "learning_primitive": "shader_material learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "performance_runtime",
+      "payload": {
+        "learning_primitive": "performance_runtime learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "vulca_translation",
+      "payload": {
+        "learning_primitive": "vulca_translation learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 1,
+    "license_safety": 1,
+    "multimodal_completeness": 0,
+    "technical_learnability": 2,
+    "vulca_transfer_value": 2
+  },
+  "review_status": "candidate",
+  "source_type": "demo",
+  "summary": "Modern Three.js/WebGPU-oriented wide-line reference for route-like vector forms.",
+  "title": "Makio MeshLine",
+  "visual_families": [
+    "meshline",
+    "data_tunnel"
+  ],
+  "why_relevant": "Core learning source for thick 3D vector routes, animated trails, gradients, and dash behavior.",
+  "year": 2025
+}

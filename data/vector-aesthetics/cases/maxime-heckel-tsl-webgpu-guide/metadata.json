@@ -1,0 +1,91 @@
+{
+  "author_or_studio": "Maxime Heckel",
+  "canonical_sources": [
+    "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/"
+  ],
+  "canonical_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-29",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "path_or_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
+      "rights_status": "source_link_only",
+      "source_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "manual_browser",
+      "captured_at": "2026-06-29",
+      "confidence": "medium",
+      "evidence_type": "screenshot",
+      "id": "screenshot-capture-failure",
+      "interaction": "capture_failed",
+      "notes": "Seed requires visual capture. No local screenshot archived yet.",
+      "path_or_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
+      "rights_status": "source_link_only",
+      "source_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "manual_browser",
+      "captured_at": "2026-06-29",
+      "confidence": "medium",
+      "evidence_type": "video",
+      "id": "video-capture-failure",
+      "interaction": "capture_failed",
+      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
+      "path_or_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
+      "rights_status": "source_link_only",
+      "source_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "still_current",
+  "id": "maxime-heckel-tsl-webgpu-guide",
+  "modules": [
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "shader_material",
+      "payload": {
+        "learning_primitive": "shader_material learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "performance_runtime",
+      "payload": {
+        "learning_primitive": "performance_runtime learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 1,
+    "license_safety": 2,
+    "multimodal_completeness": 0,
+    "technical_learnability": 2,
+    "vulca_transfer_value": 2
+  },
+  "review_status": "candidate",
+  "source_type": "tutorial",
+  "summary": "Teaching reference for TSL and WebGPU mental models.",
+  "title": "Field Guide to TSL and WebGPU",
+  "visual_families": [
+    "shader_material"
+  ],
+  "why_relevant": "Best seed for lesson-path explanations and implementation risk notes.",
+  "year": 2025
+}

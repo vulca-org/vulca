@@ -1,0 +1,104 @@
+{
+  "author_or_studio": "Codrops / featured creative technologists",
+  "canonical_sources": [
+    "https://tympanus.net/codrops/hub/tag/three-js/"
+  ],
+  "canonical_url": "https://tympanus.net/codrops/hub/tag/three-js/",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-29",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "path_or_url": "https://tympanus.net/codrops/hub/tag/three-js/",
+      "rights_status": "source_link_only",
+      "source_url": "https://tympanus.net/codrops/hub/tag/three-js/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "manual_browser",
+      "captured_at": "2026-06-29",
+      "confidence": "medium",
+      "evidence_type": "screenshot",
+      "id": "screenshot-capture-failure",
+      "interaction": "capture_failed",
+      "notes": "Seed requires visual capture. No local screenshot archived yet.",
+      "path_or_url": "https://tympanus.net/codrops/hub/tag/three-js/",
+      "rights_status": "source_link_only",
+      "source_url": "https://tympanus.net/codrops/hub/tag/three-js/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "manual_browser",
+      "captured_at": "2026-06-29",
+      "confidence": "medium",
+      "evidence_type": "video",
+      "id": "video-capture-failure",
+      "interaction": "capture_failed",
+      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
+      "path_or_url": "https://tympanus.net/codrops/hub/tag/three-js/",
+      "rights_status": "source_link_only",
+      "source_url": "https://tympanus.net/codrops/hub/tag/three-js/",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "2025_plus",
+  "id": "codrops-threejs-meshline-family",
+  "modules": [
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "meshline",
+      "payload": {
+        "learning_primitive": "meshline learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "shader_material",
+      "payload": {
+        "learning_primitive": "shader_material learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "performance_runtime",
+      "payload": {
+        "learning_primitive": "performance_runtime learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 1,
+    "license_safety": 2,
+    "multimodal_completeness": 0,
+    "technical_learnability": 2,
+    "vulca_transfer_value": 2
+  },
+  "review_status": "candidate",
+  "source_type": "tutorial",
+  "summary": "2025+ Three.js demo family containing contemporary line-sculpture and WebGPU/TSL directions.",
+  "title": "Codrops Three.js MeshLines Demo Family",
+  "visual_families": [
+    "meshline",
+    "wire_grid",
+    "shader_material"
+  ],
+  "why_relevant": "Useful as a source for selecting meshline sculpture and vector-space motion cases.",
+  "year": 2025
+}

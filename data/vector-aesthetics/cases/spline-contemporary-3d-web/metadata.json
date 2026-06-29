@@ -1,0 +1,102 @@
+{
+  "author_or_studio": "Spline",
+  "canonical_sources": [
+    "https://spline.design/"
+  ],
+  "canonical_url": "https://spline.design/",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-29",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "path_or_url": "https://spline.design/",
+      "rights_status": "source_link_only",
+      "source_url": "https://spline.design/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "manual_browser",
+      "captured_at": "2026-06-29",
+      "confidence": "medium",
+      "evidence_type": "screenshot",
+      "id": "screenshot-capture-failure",
+      "interaction": "capture_failed",
+      "notes": "Seed requires visual capture. No local screenshot archived yet.",
+      "path_or_url": "https://spline.design/",
+      "rights_status": "source_link_only",
+      "source_url": "https://spline.design/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "manual_browser",
+      "captured_at": "2026-06-29",
+      "confidence": "medium",
+      "evidence_type": "video",
+      "id": "video-capture-failure",
+      "interaction": "capture_failed",
+      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
+      "path_or_url": "https://spline.design/",
+      "rights_status": "source_link_only",
+      "source_url": "https://spline.design/",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "still_current",
+  "id": "spline-contemporary-3d-web",
+  "modules": [
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "ui_sculpture",
+      "payload": {
+        "learning_primitive": "ui_sculpture learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "interaction_state",
+      "payload": {
+        "learning_primitive": "interaction_state learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "vulca_translation",
+      "payload": {
+        "learning_primitive": "vulca_translation learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 1,
+    "license_safety": 1,
+    "multimodal_completeness": 0,
+    "technical_learnability": 2,
+    "vulca_transfer_value": 2
+  },
+  "review_status": "candidate",
+  "source_type": "product_ref",
+  "summary": "Contemporary 3D web design aesthetic reference for spatial UI sculpture.",
+  "title": "Spline Contemporary 3D Web References",
+  "visual_families": [
+    "ui_sculpture"
+  ],
+  "why_relevant": "Aesthetic reference only; implementation should remain code-native in this repo.",
+  "year": 2025
+}

@@ -1,0 +1,115 @@
+{
+  "author_or_studio": "Phantom.land / Codrops",
+  "canonical_sources": [
+    "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/"
+  ],
+  "canonical_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-29",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "path_or_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "rights_status": "source_link_only",
+      "source_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "manual_browser",
+      "captured_at": "2026-06-29",
+      "confidence": "medium",
+      "evidence_type": "screenshot",
+      "id": "screenshot-capture-failure",
+      "interaction": "capture_failed",
+      "notes": "Seed requires visual capture. No local screenshot archived yet.",
+      "path_or_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "rights_status": "source_link_only",
+      "source_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "manual_browser",
+      "captured_at": "2026-06-29",
+      "confidence": "medium",
+      "evidence_type": "video",
+      "id": "video-capture-failure",
+      "interaction": "capture_failed",
+      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
+      "path_or_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "rights_status": "source_link_only",
+      "source_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "2025_plus",
+  "id": "phantom-land-interactive-grid",
+  "modules": [
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "wire_grid",
+      "payload": {
+        "learning_primitive": "wire_grid learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "particle_vector",
+      "payload": {
+        "learning_primitive": "particle_vector learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "interaction_state",
+      "payload": {
+        "learning_primitive": "interaction_state learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    },
+    {
+      "confidence": "low",
+      "evidence_refs": [],
+      "module_type": "vulca_translation",
+      "payload": {
+        "learning_primitive": "vulca_translation learning primitive",
+        "seed_status": "metadata_only"
+      },
+      "review_notes": "Seed module; requires ingestion review.",
+      "review_status": "partial"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 1,
+    "license_safety": 1,
+    "multimodal_completeness": 0,
+    "technical_learnability": 2,
+    "vulca_transfer_value": 2
+  },
+  "review_status": "candidate",
+  "source_type": "case_study",
+  "summary": "Interactive grid and 3D particle system case study with contemporary technical atmosphere.",
+  "title": "Phantom.land Interactive Grid and 3D Face Particle System",
+  "visual_families": [
+    "wire_grid",
+    "particle_vector",
+    "ui_sculpture"
+  ],
+  "why_relevant": "Good reference for spatial technical surfaces and interactive distortion.",
+  "year": 2025
+}
