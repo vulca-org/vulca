@@ -22,7 +22,8 @@ create table cases (
   review_status text not null,
   quality_score_total integer not null,
   coverage_json text not null,
-  metadata_json text not null
+  metadata_json text not null,
+  review_json text not null
 );
 create table module_payloads (
   id integer primary key autoincrement,
@@ -50,9 +51,12 @@ create table captures (
 
 def _case_dirs(root: Path) -> list[Path]:
     cases_root = root / "cases"
-    if not cases_root.exists():
-        return []
-    return sorted(path for path in cases_root.iterdir() if path.is_dir())
+    if not cases_root.is_dir():
+        raise ValueError(f"cases folder missing: {cases_root}")
+    case_dirs = sorted(path for path in cases_root.iterdir() if path.is_dir())
+    if not case_dirs:
+        raise ValueError(f"no case folders found under {cases_root}")
+    return case_dirs
 
 
 def _sqlite_tmp_path(sqlite_path: Path) -> Path:
@@ -72,8 +76,8 @@ def _write_sqlite(records: list[CaseRecord], sqlite_path: Path) -> None:
                     """
                     insert into cases
                     (id, title, canonical_url, source_type, year, author_or_studio, currentness,
-                     review_status, quality_score_total, coverage_json, metadata_json)
-                    values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     review_status, quality_score_total, coverage_json, metadata_json, review_json)
+                    values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         record.id,
@@ -87,6 +91,7 @@ def _write_sqlite(records: list[CaseRecord], sqlite_path: Path) -> None:
                         record.quality_score_total,
                         json.dumps(record.coverage, sort_keys=True),
                         json.dumps(record.metadata, sort_keys=True),
+                        json.dumps(case_to_review_dict(record), sort_keys=True),
                     ),
                 )
                 for module in record.metadata["modules"]:
@@ -137,8 +142,7 @@ def compile_database(root: Path, sqlite_path: Path) -> list[CaseRecord]:
     return records
 
 
-def export_review_json(records: list[CaseRecord], output_path: Path) -> Path:
-    cases = [case_to_review_dict(record) for record in sorted(records, key=lambda item: item.id)]
+def _review_payload(cases: list[dict[str, object]]) -> dict[str, object]:
     payload = {
         "schema_version": 1,
         "summary": {
@@ -148,6 +152,26 @@ def export_review_json(records: list[CaseRecord], output_path: Path) -> Path:
         },
         "cases": cases,
     }
+    return payload
+
+
+def _review_cases_from_sqlite(sqlite_path: Path) -> list[dict[str, object]]:
+    with sqlite3.connect(sqlite_path) as conn:
+        rows = conn.execute("select review_json from cases order by id").fetchall()
+    return [json.loads(row[0]) for row in rows]
+
+
+def export_review_json(records: list[CaseRecord], output_path: Path) -> Path:
+    cases = [case_to_review_dict(record) for record in sorted(records, key=lambda item: item.id)]
+    payload = _review_payload(cases)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return output_path
+
+
+def export_review_json_from_sqlite(sqlite_path: Path, output_path: Path) -> Path:
+    cases = _review_cases_from_sqlite(sqlite_path)
+    payload = _review_payload(cases)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return output_path

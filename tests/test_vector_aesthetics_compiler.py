@@ -18,26 +18,34 @@ def test_compile_database_writes_case_and_module_rows(tmp_path: Path):
     assert len(records) == 12
     with sqlite3.connect(sqlite_path) as conn:
         assert conn.execute("select count(*) from cases").fetchone()[0] == 12
-        assert conn.execute("select count(*) from module_payloads").fetchone()[0] >= 12
+        assert conn.execute("select count(*) from module_payloads").fetchone()[0] == 40
         assert conn.execute("select count(*) from captures").fetchone()[0] == 36
 
 
 def test_export_review_json_is_bounded_and_sorted(tmp_path: Path):
-    from vulca.vector_aesthetics.compiler import compile_database, export_review_json
+    from vulca.vector_aesthetics.compiler import (
+        compile_database,
+        export_review_json,
+        export_review_json_from_sqlite,
+    )
     from vulca.vector_aesthetics.seeds import write_seed_cases
 
     root = tmp_path / "vector-aesthetics"
     write_seed_cases(root)
-    records = compile_database(root, root / "references.sqlite")
+    sqlite_path = root / "references.sqlite"
+    records = compile_database(root, sqlite_path)
     output_path = tmp_path / "references.json"
+    sqlite_output_path = tmp_path / "references-from-sqlite.json"
 
     export_review_json(records, output_path)
+    export_review_json_from_sqlite(sqlite_path, sqlite_output_path)
     payload = json.loads(output_path.read_text(encoding="utf-8"))
 
     assert payload["schema_version"] == 1
     assert payload["summary"]["case_count"] == 12
     assert [case["id"] for case in payload["cases"]] == sorted(case["id"] for case in payload["cases"])
     assert "sk-" not in json.dumps(payload)
+    assert output_path.read_text(encoding="utf-8") == sqlite_output_path.read_text(encoding="utf-8")
 
 
 def test_compile_database_is_deterministic_for_same_case_folders(tmp_path: Path):
@@ -73,5 +81,27 @@ def test_compile_database_keeps_existing_sqlite_when_validation_fails(tmp_path: 
         pass
     else:
         raise AssertionError("invalid case unexpectedly compiled")
+
+    assert sqlite_path.read_bytes() == before
+
+
+def test_compile_database_raises_when_cases_root_missing_and_preserves_sqlite(tmp_path: Path):
+    from vulca.vector_aesthetics.compiler import compile_database
+    from vulca.vector_aesthetics.seeds import write_seed_cases
+
+    root = tmp_path / "vector-aesthetics"
+    write_seed_cases(root)
+    sqlite_path = root / "references.sqlite"
+    compile_database(root, sqlite_path)
+    before = sqlite_path.read_bytes()
+
+    missing_root = tmp_path / "missing-root"
+
+    try:
+        compile_database(missing_root, sqlite_path)
+    except ValueError as exc:
+        assert "cases" in str(exc)
+    else:
+        raise AssertionError("missing cases root unexpectedly compiled")
 
     assert sqlite_path.read_bytes() == before
