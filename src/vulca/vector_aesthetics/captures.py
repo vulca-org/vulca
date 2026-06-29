@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -50,6 +51,7 @@ def record_capture_failure(
     evidence_type: str,
     notes: str,
     source_url: str,
+    captured_at: str | None = None,
 ) -> dict[str, Any]:
     capture = {
         "id": f"{evidence_type}-capture-failure",
@@ -58,7 +60,7 @@ def record_capture_failure(
         "capture_method": "manual_browser",
         "viewport": "none",
         "interaction": "capture_failed",
-        "captured_at": "2026-06-29",
+        "captured_at": captured_at or date.today().isoformat(),
         "source_url": source_url,
         "confidence": "medium",
         "rights_status": "source_link_only",

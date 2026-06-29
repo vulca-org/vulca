@@ -42,6 +42,17 @@ def _badge_list(items: list[str]) -> str:
     return "".join(f"<span>{_visible(item)}</span>" for item in items)
 
 
+def _asset_manifest_label(status: Any) -> str:
+    labels = {
+        "present_empty": "Manifest present, no archived assets",
+        "present_with_assets": "Manifest present with archived assets",
+        "present_unknown": "Manifest present, asset list unknown",
+        "present_unreadable": "Manifest present but unreadable",
+        "missing": "No asset manifest",
+    }
+    return labels.get(str(status), str(status or "unknown"))
+
+
 def _coverage(coverage: dict[str, str]) -> str:
     rows = []
     for key, value in sorted(coverage.items()):
@@ -49,7 +60,7 @@ def _coverage(coverage: dict[str, str]) -> str:
     return '<ul class="coverage-list">' + "".join(rows) + "</ul>"
 
 
-def _safe_href(value: Any, output_dir: Path, *, case_rel: str | None = None) -> str:
+def _safe_href(value: Any, output_dir: Path, *, case_path: str | None = None) -> str:
     raw = str(value or "").strip()
     if not raw:
         return "#"
@@ -63,10 +74,10 @@ def _safe_href(value: Any, output_dir: Path, *, case_rel: str | None = None) -> 
         return _redact(raw) if parsed.scheme in SAFE_HREF_SCHEMES else "#"
     if parsed.netloc:
         return "#"
-    if not case_rel:
+    if not case_path:
         return "#"
 
-    target = Path(case_rel) / raw
+    target = Path(case_path) / raw
     return _redact(os.path.relpath(target, output_dir).replace(os.sep, "/"))
 
 
@@ -95,7 +106,8 @@ def _capture_details(capture: dict[str, Any]) -> str:
 
 
 def _capture_card(case: dict[str, Any], capture: dict[str, Any], output_dir: Path) -> str:
-    href = _safe_href(capture.get("path_or_url", ""), output_dir, case_rel=str(case.get("case_rel", "")) or None)
+    case_path = str(case.get("local_case_path") or case.get("case_rel", "")) or None
+    href = _safe_href(capture.get("path_or_url", ""), output_dir, case_path=case_path)
     return "\n".join(
         [
             '<li class="capture-item">',
@@ -107,6 +119,56 @@ def _capture_card(case: dict[str, Any], capture: dict[str, Any], output_dir: Pat
             "</li>",
         ]
     )
+
+
+def _text_panel(title: str, body: Any) -> str:
+    if body in ("", None):
+        return ""
+    return "\n".join(
+        [
+            '<section class="learning-panel">',
+            f"<h3>{_visible(title)}</h3>",
+            f"<pre>{_visible(body)}</pre>",
+            "</section>",
+        ]
+    )
+
+
+def _payload_value(value: Any) -> str:
+    if isinstance(value, list):
+        return ", ".join(str(item) for item in value)
+    if isinstance(value, dict):
+        return json.dumps(value, ensure_ascii=False, sort_keys=True)
+    return str(value)
+
+
+def _module_details(modules: list[dict[str, Any]]) -> str:
+    rows = []
+    for module in modules:
+        payload = module.get("payload", {})
+        payload_rows = []
+        if isinstance(payload, dict):
+            for key, value in sorted(payload.items()):
+                payload_rows.append(
+                    '<div class="module-field">'
+                    f"<span>{_visible(key)}</span><span>{_visible(_payload_value(value))}</span>"
+                    "</div>"
+                )
+        rows.append(
+            "\n".join(
+                [
+                    '<section class="module-card">',
+                    '<div class="module-head">',
+                    f"<strong>{_visible(module.get('module_type', 'module'))}</strong>",
+                    f"<span>{_visible(module.get('review_status', ''))} / {_visible(module.get('confidence', ''))}</span>",
+                    "</div>",
+                    "".join(payload_rows),
+                    _text_panel("review_notes", module.get("review_notes", "")),
+                    "</section>",
+                ]
+            )
+        )
+    return '<div class="module-list">' + "".join(rows) + "</div>"
 
 
 def _case_card(case: dict[str, Any], output_dir: Path) -> str:
@@ -126,7 +188,14 @@ def _case_card(case: dict[str, Any], output_dir: Path) -> str:
             f'<p><a href="{_escape(canonical_href)}">{_visible(canonical_url)}</a></p>',
             f'<div class="badges">{_badge_list(case.get("visual_families", []))}</div>',
             f'<div class="badges muted-badges">{_badge_list(modules)}</div>',
+            f'<p class="manifest-state">{_visible(_asset_manifest_label(case.get("asset_manifest_status")))}</p>',
             _coverage(case.get("coverage", {})),
+            '<div class="learning-path">',
+            _text_panel("Anatomy", case.get("anatomy_excerpt", "")),
+            _text_panel("Lesson Path", case.get("lesson_excerpt", "")),
+            _text_panel("VULCA Translation", case.get("vulca_translation_excerpt", "")),
+            _module_details(case.get("modules", [])),
+            "</div>",
             f'<ul class="capture-list">{capture_cards}</ul>',
             "</article>",
         ]
@@ -158,6 +227,7 @@ def _html(payload: dict[str, Any], output_dir: Path) -> str:
             ".score{font:12px/1.2 monospace;border:1px solid #415061;border-radius:999px;padding:5px 8px;color:#c9f3ff}",
             ".badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.badges span{font:12px/1.2 monospace;background:#1e2a36;border:1px solid #32404f;border-radius:999px;padding:5px 7px}",
             ".muted-badges span{color:#b3bcc6}.coverage-list{list-style:none;padding:0;margin:12px 0;display:grid;gap:5px}.coverage-list li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #222b35;padding-top:5px}",
+            ".manifest-state{font:12px/1.4 monospace;color:#d7c98d;margin:8px 0 0}.learning-path{display:grid;gap:10px;margin:12px 0}.learning-panel,.module-card{border-top:1px solid #222b35;padding-top:10px}.learning-panel h3{font-size:13px;margin:0 0 6px;color:#d8e4ef}.learning-panel pre{white-space:pre-wrap;word-break:break-word;margin:0;color:#aeb8c4;font:12px/1.45 monospace}.module-list{display:grid;gap:8px}.module-head{display:flex;justify-content:space-between;gap:10px;color:#d8e4ef;font:12px/1.4 monospace}.module-field{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:10px;font:12px/1.4 monospace;color:#aeb8c4}",
             "a{color:#8ed7ff}.capture-list{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}.capture-item{border-top:1px solid #222b35;padding-top:10px}.capture-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.capture-path{color:#9aa7b4;font:12px/1.3 monospace;word-break:break-word}.capture-details{display:grid;gap:6px;margin-top:8px}.capture-field{display:grid;grid-template-columns:minmax(112px,auto) 1fr;gap:10px}.capture-label{font:12px/1.3 monospace;color:#9aa7b4;text-transform:lowercase}",
             "</style>",
             "</head>",

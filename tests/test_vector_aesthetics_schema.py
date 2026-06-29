@@ -138,6 +138,19 @@ def test_validate_case_folder_rejects_unknown_module(tmp_path: Path):
         validate_case_folder(case_dir)
 
 
+def test_validate_case_folder_rejects_id_that_does_not_match_folder(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["id"] = "different-id"
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="metadata id must match case folder name"):
+        validate_case_folder(case_dir)
+
+
 def test_validate_case_folder_rejects_missing_screenshot_and_video_coverage(tmp_path: Path):
     from vulca.vector_aesthetics.schema import validate_case_folder
 
@@ -361,6 +374,19 @@ def test_source_link_only_capture_without_failure_does_not_satisfy_coverage(tmp_
     metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
     with pytest.raises(ValueError, match="case folder must include screenshot and video coverage"):
+        validate_case_folder(case_dir)
+
+
+def test_capture_failure_requires_explanatory_notes(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["captures"][0]["notes"] = "  "
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="capture_failed must include non-empty notes"):
         validate_case_folder(case_dir)
 
 

@@ -24,6 +24,13 @@ def test_write_review_html_renders_required_views(tmp_path: Path):
     assert "Coverage View" in html_text
     assert "Lesson Path View" in html_text
     assert "Makio MeshLine" in html_text
+    assert "Primitive:" in html_text
+    assert "Technique:" in html_text
+    assert "minimal_rebuild_exercise" in html_text
+    assert "VULCA Translation" in html_text
+    assert "learning_primitive" in html_text
+    assert "meshline learning primitive" in html_text
+    assert "Manifest present, no archived assets" in html_text
     assert '<script id="review-data" type="application/json">' in html_text
 
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import date
 from pathlib import Path
 
 
@@ -18,18 +19,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--id", default="")
     parser.add_argument("--viewport", default="none")
     parser.add_argument("--interaction", default="none")
-    parser.add_argument("--captured-at", default="2026-06-29")
+    parser.add_argument("--captured-at")
     args = parser.parse_args(argv)
 
     from vulca.vector_aesthetics.captures import add_capture, record_capture_failure
 
     case_dir = Path(args.case_dir)
+    captured_at = args.captured_at or date.today().isoformat()
     if args.failure:
         payload = record_capture_failure(
             case_dir,
             evidence_type=args.evidence_type,
             notes=args.notes,
             source_url=args.source_url,
+            captured_at=captured_at,
         )
     else:
         if not args.path_or_url:
@@ -43,7 +46,7 @@ def main(argv: list[str] | None = None) -> int:
                 "capture_method": "manual_browser",
                 "viewport": args.viewport,
                 "interaction": args.interaction,
-                "captured_at": args.captured_at,
+                "captured_at": captured_at,
                 "source_url": args.source_url,
                 "confidence": "medium",
                 "rights_status": "local_capture",

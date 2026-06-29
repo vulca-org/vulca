@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -21,7 +22,8 @@ def test_record_capture_failure_adds_explicit_missing_evidence(tmp_path: Path):
     )
 
     metadata = json.loads((case_dir / "metadata.json").read_text(encoding="utf-8"))
-    assert any(capture["evidence_type"] == "video" for capture in metadata["captures"])
+    video_capture = next(capture for capture in metadata["captures"] if capture["evidence_type"] == "video")
+    assert video_capture["captured_at"] == date.today().isoformat()
     assert validate_case_folder(case_dir).coverage["video"] == "partial"
 
 
@@ -52,6 +54,21 @@ def test_add_capture_rejects_missing_local_file(tmp_path: Path):
         assert "screenshots/missing.png" in str(exc)
     else:
         raise AssertionError("missing local file was accepted")
+
+
+def test_record_capture_failure_rejects_empty_notes(tmp_path: Path):
+    from vulca.vector_aesthetics.captures import record_capture_failure
+    from vulca.vector_aesthetics.seeds import write_seed_cases
+
+    case_dir = write_seed_cases(tmp_path)[0]
+
+    with pytest.raises(ValueError, match="capture_failed must include non-empty notes"):
+        record_capture_failure(
+            case_dir,
+            evidence_type="video",
+            notes=" ",
+            source_url="https://meshline.makio.io/",
+        )
 
 
 @pytest.mark.parametrize(

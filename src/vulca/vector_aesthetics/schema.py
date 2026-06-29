@@ -109,7 +109,11 @@ def _validate_quality_scores(scores: dict[str, Any]) -> int:
 
 
 def _validate_modules(modules: list[dict[str, Any]]) -> None:
+    if not isinstance(modules, list):
+        raise ValueError("modules must be a list")
     for module in modules:
+        if not isinstance(module, dict):
+            raise ValueError("module entries must be objects")
         module_type = module.get("module_type")
         if module_type not in ALLOWED_MODULE_TYPES:
             raise ValueError(f"unknown module_type: {module_type}")
@@ -139,6 +143,8 @@ def resolve_local_capture_path(case_dir: Path, path_or_url: str) -> Path:
 
 
 def _validate_captures(captures: list[dict[str, Any]], case_dir: Path) -> None:
+    if not isinstance(captures, list):
+        raise ValueError("captures must be a list")
     required = {
         "id",
         "evidence_type",
@@ -153,6 +159,8 @@ def _validate_captures(captures: list[dict[str, Any]], case_dir: Path) -> None:
         "notes",
     }
     for capture in captures:
+        if not isinstance(capture, dict):
+            raise ValueError("capture entries must be objects")
         _require_keys(capture, required, "capture")
         if capture["evidence_type"] not in ALLOWED_CAPTURE_TYPES:
             raise ValueError(f"invalid evidence_type: {capture['evidence_type']}")
@@ -162,6 +170,8 @@ def _validate_captures(captures: list[dict[str, Any]], case_dir: Path) -> None:
             raise ValueError(f"invalid capture confidence: {capture['confidence']}")
         if capture["rights_status"] not in ALLOWED_RIGHTS_STATUS:
             raise ValueError(f"invalid rights_status: {capture['rights_status']}")
+        if capture["interaction"] == "capture_failed" and not str(capture["notes"]).strip():
+            raise ValueError("capture_failed must include non-empty notes")
         if capture["rights_status"] == "local_capture" and capture["evidence_type"] in LOCAL_CAPTURE_TYPES:
             resolve_local_capture_path(case_dir, str(capture["path_or_url"]))
 
@@ -196,6 +206,22 @@ def _asset_manifest_coverage(record: CaseRecord) -> str:
     return _capture_coverage(captures, "asset_manifest")
 
 
+def asset_manifest_status(record: CaseRecord) -> str:
+    manifest_path = record.case_dir / "assets" / "asset_manifest.json"
+    if not manifest_path.exists():
+        return "missing"
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return "present_unreadable"
+    assets = payload.get("assets")
+    if isinstance(assets, list) and not assets:
+        return "present_empty"
+    if isinstance(assets, list):
+        return "present_with_assets"
+    return "present_unknown"
+
+
 def coverage_for_case(record: CaseRecord) -> dict[str, str]:
     captures = record.metadata.get("captures", [])
     license_score = record.metadata["quality_scores"]["license_safety"]
@@ -218,6 +244,8 @@ def validate_case_folder(case_dir: Path) -> CaseRecord:
         raise ValueError(f"metadata.json missing for {case_dir}")
     metadata = _read_json(metadata_path)
     _require_keys(metadata, REQUIRED_METADATA_FIELDS, "metadata")
+    if str(metadata["id"]) != case_dir.name:
+        raise ValueError("metadata id must match case folder name")
     if metadata["source_type"] not in ALLOWED_SOURCE_TYPES:
         raise ValueError(f"invalid source_type: {metadata['source_type']}")
     if metadata["currentness"] not in ALLOWED_CURRENTNESS:
@@ -226,6 +254,12 @@ def validate_case_folder(case_dir: Path) -> CaseRecord:
         raise ValueError(f"invalid review_status: {metadata['review_status']}")
     if not str(metadata["canonical_url"]).startswith("https://"):
         raise ValueError("canonical_url must start with https://")
+    if not isinstance(metadata["quality_scores"], dict):
+        raise ValueError("quality_scores must be an object")
+    if not isinstance(metadata["visual_families"], list) or not all(
+        isinstance(item, str) for item in metadata["visual_families"]
+    ):
+        raise ValueError("visual_families must be a list of strings")
     total = _validate_quality_scores(metadata["quality_scores"])
     anatomy = (case_dir / "anatomy.md").read_text(encoding="utf-8") if (case_dir / "anatomy.md").exists() else ""
     lesson = (case_dir / "lesson.md").read_text(encoding="utf-8") if (case_dir / "lesson.md").exists() else ""
@@ -263,7 +297,27 @@ def validate_case_folder(case_dir: Path) -> CaseRecord:
     )
 
 
-def case_to_review_dict(record: CaseRecord) -> dict[str, Any]:
+def _dataset_relative_case_path(record: CaseRecord, dataset_root: Path | None = None) -> str:
+    if dataset_root is None and record.case_dir.parent.name == "cases":
+        dataset_root = record.case_dir.parent.parent
+    if dataset_root is not None:
+        try:
+            return record.case_dir.resolve().relative_to(dataset_root.resolve()).as_posix()
+        except ValueError:
+            pass
+    return f"cases/{record.case_dir.name}"
+
+
+def _local_case_path(record: CaseRecord, dataset_root: Path | None = None) -> str:
+    if not record.case_dir.is_absolute():
+        return record.case_dir.as_posix()
+    try:
+        return record.case_dir.resolve().relative_to(Path.cwd().resolve()).as_posix()
+    except ValueError:
+        return _dataset_relative_case_path(record, dataset_root)
+
+
+def case_to_review_dict(record: CaseRecord, *, dataset_root: Path | None = None) -> dict[str, Any]:
     return _redact(
         {
             "id": record.id,
@@ -285,6 +339,8 @@ def case_to_review_dict(record: CaseRecord) -> dict[str, Any]:
             "anatomy_excerpt": record.anatomy[:1200],
             "lesson_excerpt": record.lesson[:1200],
             "vulca_translation_excerpt": record.vulca_translation[:1200],
-            "case_rel": record.case_dir.as_posix(),
+            "asset_manifest_status": asset_manifest_status(record),
+            "case_rel": _dataset_relative_case_path(record, dataset_root),
+            "local_case_path": _local_case_path(record, dataset_root),
         }
     )

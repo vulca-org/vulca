@@ -48,6 +48,25 @@ def test_export_review_json_is_bounded_and_sorted(tmp_path: Path):
     assert output_path.read_text(encoding="utf-8") == sqlite_output_path.read_text(encoding="utf-8")
 
 
+def test_compile_database_exports_stable_non_absolute_case_paths(tmp_path: Path):
+    from vulca.vector_aesthetics.compiler import compile_database, export_review_json_from_sqlite
+    from vulca.vector_aesthetics.seeds import write_seed_cases
+
+    root = (tmp_path / "vector-aesthetics").resolve()
+    write_seed_cases(root)
+    sqlite_path = root / "references.sqlite"
+    output_path = tmp_path / "references.json"
+
+    compile_database(root, sqlite_path)
+    export_review_json_from_sqlite(sqlite_path, output_path)
+
+    payload_text = output_path.read_text(encoding="utf-8")
+    payload = json.loads(payload_text)
+    assert str(tmp_path) not in payload_text
+    assert all(case["case_rel"].startswith("cases/") for case in payload["cases"])
+    assert all(not Path(case["case_rel"]).is_absolute() for case in payload["cases"])
+
+
 def test_compile_database_is_deterministic_for_same_case_folders(tmp_path: Path):
     from vulca.vector_aesthetics.compiler import compile_database, export_review_json
     from vulca.vector_aesthetics.seeds import write_seed_cases

@@ -63,7 +63,7 @@ def _sqlite_tmp_path(sqlite_path: Path) -> Path:
     return sqlite_path.with_name(f".{sqlite_path.name}.tmp")
 
 
-def _write_sqlite(records: list[CaseRecord], sqlite_path: Path) -> None:
+def _write_sqlite(records: list[CaseRecord], sqlite_path: Path, dataset_root: Path) -> None:
     tmp_sqlite_path = _sqlite_tmp_path(sqlite_path)
     if tmp_sqlite_path.exists():
         tmp_sqlite_path.unlink()
@@ -91,7 +91,7 @@ def _write_sqlite(records: list[CaseRecord], sqlite_path: Path) -> None:
                         record.quality_score_total,
                         json.dumps(record.coverage, sort_keys=True),
                         json.dumps(record.metadata, sort_keys=True),
-                        json.dumps(case_to_review_dict(record), sort_keys=True),
+                        json.dumps(case_to_review_dict(record, dataset_root=dataset_root), sort_keys=True),
                     ),
                 )
                 for module in record.metadata["modules"]:
@@ -137,8 +137,16 @@ def _write_sqlite(records: list[CaseRecord], sqlite_path: Path) -> None:
 
 def compile_database(root: Path, sqlite_path: Path) -> list[CaseRecord]:
     records = [validate_case_folder(case_dir) for case_dir in _case_dirs(root)]
+    seen_ids: set[str] = set()
+    duplicate_ids: set[str] = set()
+    for record in records:
+        if record.id in seen_ids:
+            duplicate_ids.add(record.id)
+        seen_ids.add(record.id)
+    if duplicate_ids:
+        raise ValueError(f"duplicate case ids: {sorted(duplicate_ids)}")
     sqlite_path.parent.mkdir(parents=True, exist_ok=True)
-    _write_sqlite(records, sqlite_path)
+    _write_sqlite(records, sqlite_path, root)
     return records
 
 
