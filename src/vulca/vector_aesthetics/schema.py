@@ -157,11 +157,23 @@ def _capture_coverage(captures: list[dict[str, Any]], evidence_type: str, *, mis
     matching = [capture for capture in captures if capture.get("evidence_type") == evidence_type]
     if not matching:
         return missing
-    if any(capture.get("rights_status") == "local_capture" for capture in matching):
+    if any(
+        capture.get("rights_status") == "local_capture" and capture.get("interaction") != "capture_failed"
+        for capture in matching
+    ):
         return "complete"
     if any(capture.get("interaction") == "capture_failed" for capture in matching):
         return "partial"
-    return "partial"
+    return missing
+
+
+def _validate_learning_minimums(modules: list[dict[str, Any]], anatomy: str, lesson: str) -> None:
+    if not modules:
+        raise ValueError("case folder must include at least one module")
+    if not re.search(r"(?m)^\s*Primitive\s*:", anatomy) or not re.search(r"(?m)^\s*Technique\s*:", anatomy):
+        raise ValueError("anatomy must include Primitive: and Technique:")
+    if "minimal_rebuild_exercise" not in lesson and "Minimal rebuild" not in lesson:
+        raise ValueError("lesson must include minimal_rebuild_exercise or Minimal rebuild")
 
 
 def _asset_manifest_coverage(record: CaseRecord) -> str:
@@ -202,11 +214,12 @@ def validate_case_folder(case_dir: Path) -> CaseRecord:
     if not str(metadata["canonical_url"]).startswith("https://"):
         raise ValueError("canonical_url must start with https://")
     total = _validate_quality_scores(metadata["quality_scores"])
+    anatomy = (case_dir / "anatomy.md").read_text(encoding="utf-8") if (case_dir / "anatomy.md").exists() else ""
+    lesson = (case_dir / "lesson.md").read_text(encoding="utf-8") if (case_dir / "lesson.md").exists() else ""
+    _validate_learning_minimums(metadata["modules"], anatomy, lesson)
     _validate_modules(metadata["modules"])
     _validate_captures(metadata["captures"], case_dir)
 
-    anatomy = (case_dir / "anatomy.md").read_text(encoding="utf-8") if (case_dir / "anatomy.md").exists() else ""
-    lesson = (case_dir / "lesson.md").read_text(encoding="utf-8") if (case_dir / "lesson.md").exists() else ""
     translation_path = case_dir / "vulca_translation.md"
     vulca_translation = translation_path.read_text(encoding="utf-8") if translation_path.exists() else ""
     draft = CaseRecord(

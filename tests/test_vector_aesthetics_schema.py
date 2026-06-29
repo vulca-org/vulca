@@ -97,7 +97,8 @@ def write_case(root: Path, *, case_id: str = "makio-meshline") -> Path:
         encoding="utf-8",
     )
     (case_dir / "anatomy.md").write_text(
-        "# Anatomy\n\nPrimitive: animated 3D route line.\n", encoding="utf-8"
+        "# Anatomy\n\nPrimitive: animated 3D route line.\nTechnique: layered sweep motion.\n",
+        encoding="utf-8",
     )
     (case_dir / "lesson.md").write_text(
         "# Lesson\n\nMinimal rebuild: 12 nodes connected by animated thick lines.\n",
@@ -164,6 +165,49 @@ def test_validate_case_folder_rejects_missing_core_field(tmp_path: Path):
     metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
     with pytest.raises(ValueError, match="missing required metadata fields"):
+        validate_case_folder(case_dir)
+
+
+def test_validate_case_folder_rejects_empty_modules(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["modules"] = []
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="at least one module"):
+        validate_case_folder(case_dir)
+
+
+@pytest.mark.parametrize(
+    ("anatomy_text", "match"),
+    [
+        ("# Anatomy\n\nTechnique: layered sweep motion.\n", "Primitive: and Technique:"),
+        ("# Anatomy\n\nPrimitive: animated 3D route line.\n", "Primitive: and Technique:"),
+    ],
+)
+def test_validate_case_folder_rejects_incomplete_anatomy(tmp_path: Path, anatomy_text: str, match: str):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    (case_dir / "anatomy.md").write_text(anatomy_text, encoding="utf-8")
+
+    with pytest.raises(ValueError, match=match):
+        validate_case_folder(case_dir)
+
+
+def test_validate_case_folder_rejects_lesson_without_minimal_rebuild(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    (case_dir / "lesson.md").write_text(
+        "# Lesson\n\nBuild notes only. No exercise provided.\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="minimal_rebuild_exercise or Minimal rebuild"):
         validate_case_folder(case_dir)
 
 
@@ -236,6 +280,46 @@ def test_capture_failure_counts_as_partial_not_complete(tmp_path: Path):
     record = validate_case_folder(case_dir)
 
     assert record.coverage["video"] == "partial"
+
+
+def test_source_link_only_capture_without_failure_does_not_satisfy_coverage(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["captures"] = [
+        {
+            "id": "screenshot-source-link-only",
+            "evidence_type": "screenshot",
+            "path_or_url": "https://meshline.makio.io/",
+            "capture_method": "manual_browser",
+            "viewport": "1440x900",
+            "interaction": "none",
+            "captured_at": "2026-06-29",
+            "source_url": "https://meshline.makio.io/",
+            "confidence": "medium",
+            "rights_status": "source_link_only",
+            "notes": "Reference link only.",
+        },
+        {
+            "id": "video-source-link-only",
+            "evidence_type": "video",
+            "path_or_url": "https://meshline.makio.io/",
+            "capture_method": "manual_browser",
+            "viewport": "none",
+            "interaction": "none",
+            "captured_at": "2026-06-29",
+            "source_url": "https://meshline.makio.io/",
+            "confidence": "medium",
+            "rights_status": "source_link_only",
+            "notes": "Reference link only.",
+        },
+    ]
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="case folder must include screenshot and video coverage"):
+        validate_case_folder(case_dir)
 
 
 def test_local_screenshot_capture_takes_precedence_over_failure_record(tmp_path: Path):

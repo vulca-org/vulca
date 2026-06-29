@@ -108,3 +108,22 @@ PYTHONPATH=src pytest tests/test_vector_aesthetics_schema.py -q
 ```text
 12 passed, 3 warnings in 2.79s
 ```
+
+## Fix 3
+
+Tightened capture precedence and the case-folder learning minimums:
+- local screenshot/video coverage now requires `rights_status == "local_capture"` and a non-`capture_failed` interaction
+- placeholder `source_link_only` screenshot/video records no longer satisfy coverage
+- reviewed case folders now require at least one module, `Primitive:` and `Technique:` in anatomy, and a minimal rebuild exercise in the lesson
+
+### Tests run
+
+```bash
+PYTHONPATH=src pytest tests/test_vector_aesthetics_schema.py -q
+```
+
+### Result
+
+```text
+17 passed, 3 warnings in 2.74s
+```
