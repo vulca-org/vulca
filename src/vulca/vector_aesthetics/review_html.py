@@ -6,6 +6,7 @@ import os
 import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 
 SECRET_PATTERNS = [
@@ -14,6 +15,8 @@ SECRET_PATTERNS = [
     re.compile(r"AKIA[0-9A-Z]{16}"),
     re.compile(r"(?i)(token|secret|api[_-]?key)\s*[:=]\s*[A-Za-z0-9_./+=-]{12,}"),
 ]
+
+SAFE_HREF_SCHEMES = {"http", "https", "mailto"}
 
 
 def _escape(value: Any) -> str:
@@ -46,30 +49,72 @@ def _coverage(coverage: dict[str, str]) -> str:
     return '<ul class="coverage-list">' + "".join(rows) + "</ul>"
 
 
-def _capture_href(case: dict[str, Any], capture: dict[str, Any], output_dir: Path) -> str:
-    path_or_url = str(capture.get("path_or_url", ""))
-    if path_or_url.startswith(("https://", "http://", "#", "mailto:")):
-        return path_or_url
+def _safe_href(value: Any, output_dir: Path, *, case_rel: str | None = None) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return "#"
+    if raw.startswith("#"):
+        return raw
+    if raw.startswith(("/", "\\")):
+        return "#"
 
-    case_rel = str(case.get("case_rel", ""))
-    if case_rel:
-        target = Path(case_rel) / path_or_url
-        return os.path.relpath(target, output_dir).replace(os.sep, "/")
+    parsed = urlsplit(raw)
+    if parsed.scheme:
+        return raw if parsed.scheme in SAFE_HREF_SCHEMES else "#"
+    if parsed.netloc:
+        return "#"
+    if not case_rel:
+        return "#"
 
-    return path_or_url
+    target = Path(case_rel) / raw
+    return os.path.relpath(target, output_dir).replace(os.sep, "/")
+
+
+def _capture_details(capture: dict[str, Any]) -> str:
+    fields = [
+        ("evidence_type", capture.get("evidence_type", "")),
+        ("interaction", capture.get("interaction", "")),
+        ("rights_status", capture.get("rights_status", "")),
+        ("capture_method", capture.get("capture_method", "")),
+        ("confidence", capture.get("confidence", "")),
+    ]
+    optional = [
+        ("notes", capture.get("notes", "")),
+        ("source_url", capture.get("source_url", "")),
+    ]
+    detail_rows = [
+        f'<div class="capture-field"><span class="capture-label">{_escape(label)}</span><span>{_visible(value)}</span></div>'
+        for label, value in fields
+    ]
+    detail_rows.extend(
+        f'<div class="capture-field"><span class="capture-label">{_escape(label)}</span><span>{_visible(value)}</span></div>'
+        for label, value in optional
+        if value not in ("", None)
+    )
+    return '<div class="capture-details">' + "".join(detail_rows) + "</div>"
+
+
+def _capture_card(case: dict[str, Any], capture: dict[str, Any], output_dir: Path) -> str:
+    href = _safe_href(capture.get("path_or_url", ""), output_dir, case_rel=str(case.get("case_rel", "")) or None)
+    return "\n".join(
+        [
+            '<li class="capture-item">',
+            '<div class="capture-head">',
+            f'<a href="{_escape(href)}">{_visible(capture.get("evidence_type", "capture"))}</a>',
+            f'<span class="capture-path">{_visible(capture.get("path_or_url", ""))}</span>',
+            "</div>",
+            _capture_details(capture),
+            "</li>",
+        ]
+    )
 
 
 def _case_card(case: dict[str, Any], output_dir: Path) -> str:
     captures = case.get("captures", [])
-    capture_links = "".join(
-        (
-            f'<a href="{_escape(_capture_href(case, capture, output_dir))}">'
-            f"{_escape(capture.get('evidence_type', 'capture'))}</a>"
-        )
-        for capture in captures[:4]
-    )
+    capture_cards = "".join(_capture_card(case, capture, output_dir) for capture in captures)
     modules = [module.get("module_type", "") for module in case.get("modules", [])]
     canonical_url = str(case.get("canonical_url", ""))
+    canonical_href = _safe_href(canonical_url, output_dir)
     return "\n".join(
         [
             '<article class="case-card">',
@@ -78,11 +123,11 @@ def _case_card(case: dict[str, Any], output_dir: Path) -> str:
             f'<span class="score">{_escape(case.get("quality_score_total", 0))}/18</span>',
             "</div>",
             f"<p>{_visible(case.get('summary', ''))}</p>",
-            f'<p><a href="{_visible(canonical_url)}">{_visible(canonical_url)}</a></p>',
+            f'<p><a href="{_escape(canonical_href)}">{_visible(canonical_url)}</a></p>',
             f'<div class="badges">{_badge_list(case.get("visual_families", []))}</div>',
             f'<div class="badges muted-badges">{_badge_list(modules)}</div>',
             _coverage(case.get("coverage", {})),
-            f'<div class="links">{capture_links}</div>',
+            f'<ul class="capture-list">{capture_cards}</ul>',
             "</article>",
         ]
     )
@@ -113,7 +158,7 @@ def _html(payload: dict[str, Any], output_dir: Path) -> str:
             ".score{font:12px/1.2 monospace;border:1px solid #415061;border-radius:999px;padding:5px 8px;color:#c9f3ff}",
             ".badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.badges span{font:12px/1.2 monospace;background:#1e2a36;border:1px solid #32404f;border-radius:999px;padding:5px 7px}",
             ".muted-badges span{color:#b3bcc6}.coverage-list{list-style:none;padding:0;margin:12px 0;display:grid;gap:5px}.coverage-list li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #222b35;padding-top:5px}",
-            "a{color:#8ed7ff}.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}",
+            "a{color:#8ed7ff}.capture-list{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}.capture-item{border-top:1px solid #222b35;padding-top:10px}.capture-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.capture-path{color:#9aa7b4;font:12px/1.3 monospace;word-break:break-word}.capture-details{display:grid;gap:6px;margin-top:8px}.capture-field{display:grid;grid-template-columns:minmax(112px,auto) 1fr;gap:10px}.capture-label{font:12px/1.3 monospace;color:#9aa7b4;text-transform:lowercase}",
             "</style>",
             "</head>",
             "<body>",

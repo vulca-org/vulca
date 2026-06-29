@@ -141,3 +141,112 @@ def test_write_review_html_resolves_local_capture_links(tmp_path: Path):
     expected = os.path.relpath(case_dir / "screenshots" / "idle.png", output_dir).replace(os.sep, "/")
 
     assert f'href="{expected}"' in html_text
+
+
+def test_write_review_html_renders_capture_status_details(tmp_path: Path):
+    from vulca.vector_aesthetics.review_html import write_review_html
+
+    review_json = tmp_path / "references.json"
+    review_json.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "summary": {"case_count": 1},
+                "cases": [
+                    {
+                        "id": "capture-case",
+                        "title": "Capture Case",
+                        "summary": "Capture detail test.",
+                        "visual_families": [],
+                        "coverage": {"screenshots": "partial"},
+                        "quality_score_total": 0,
+                        "review_status": "candidate",
+                        "canonical_url": "https://example.com",
+                        "modules": [],
+                        "captures": [
+                            {
+                                "id": "capture-1",
+                                "evidence_type": "screenshot",
+                                "path_or_url": "captures/shot.png",
+                                "capture_method": "manual_browser",
+                                "viewport": "desktop",
+                                "interaction": "capture_failed",
+                                "captured_at": "2026-06-29",
+                                "source_url": "https://example.com/source",
+                                "confidence": "medium",
+                                "rights_status": "source_link_only",
+                                "notes": "No local screenshot archived yet.",
+                            }
+                        ],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    html_text = write_review_html(review_json, tmp_path / "index.html").read_text(encoding="utf-8")
+
+    for expected in [
+        "capture_failed",
+        "source_link_only",
+        "manual_browser",
+        "medium",
+        "No local screenshot archived yet.",
+        "source_url",
+        "evidence_type",
+        "capture_method",
+    ]:
+        assert expected in html_text
+
+
+def test_write_review_html_blocks_unsafe_href_and_hardens_script_json(tmp_path: Path):
+    from vulca.vector_aesthetics.review_html import write_review_html
+
+    review_json = tmp_path / "references.json"
+    review_json.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "summary": {"case_count": 1},
+                "cases": [
+                    {
+                        "id": "unsafe-case",
+                        "title": "</script><script>alert(1)</script>",
+                        "summary": "unsafe href test",
+                        "visual_families": [],
+                        "coverage": {},
+                        "quality_score_total": 0,
+                        "review_status": "candidate",
+                        "canonical_url": "javascript:alert(1)",
+                        "modules": [],
+                        "captures": [
+                            {
+                                "id": "capture-unsafe",
+                                "evidence_type": "screenshot",
+                                "path_or_url": "javascript:alert(1)",
+                                "capture_method": "manual_browser",
+                                "viewport": "desktop",
+                                "interaction": "capture_failed",
+                                "captured_at": "2026-06-29",
+                                "source_url": "javascript:alert(1)",
+                                "confidence": "medium",
+                                "rights_status": "source_link_only",
+                                "notes": "unsafe capture link",
+                            }
+                        ],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    html_text = write_review_html(review_json, tmp_path / "index.html").read_text(encoding="utf-8")
+    script_body = html_text.split('<script id="review-data" type="application/json">', 1)[1].split("</script>", 1)[0]
+
+    assert 'href="javascript:' not in html_text
+    assert "</script>" not in script_body
+
+    parsed = json.loads(script_body.replace("<\\/", "</"))
+    assert parsed["cases"][0]["title"] == "</script><script>alert(1)</script>"
