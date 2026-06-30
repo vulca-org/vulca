@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stage 02 Central Object Candidates</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --bg: #050706;
+      --bg-2: #0b1110;
+      --panel: rgba(14, 20, 18, 0.78);
+      --panel-strong: rgba(20, 27, 24, 0.92);
+      --line: rgba(224, 218, 196, 0.14);
+      --ink: #f1ead7;
+      --muted: #9b9a8b;
+      --cyan: #6dd9cf;
+      --amber: #d8955d;
+      --moss: #8da66f;
+      --rose: #c97877;
+      --shadow: rgba(0, 0, 0, 0.5);
+      color-scheme: dark;
+      font-family:
+        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      font-size: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% 12%, rgba(109, 217, 207, 0.12), transparent 28%),
+        radial-gradient(circle at 82% 72%, rgba(216, 149, 93, 0.12), transparent 30%),
+        linear-gradient(135deg, var(--bg), var(--bg-2) 56%, #080807);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(250px, 320px) minmax(420px, 1fr) minmax(280px, 360px);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.04), transparent 24%, transparent 76%, rgba(255,255,255,0.035)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.018) 0, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 84px);
+    }
+
+    .rail,
+    .inspector {
+      position: relative;
+      z-index: 2;
+      padding: 28px 24px;
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      border-color: var(--line);
+      overflow: auto;
+    }
+
+    .rail {
+      border-right: 1px solid var(--line);
+    }
+
+    .inspector {
+      border-left: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--cyan);
+      font-size: 12px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      line-height: 1.05;
+      letter-spacing: 0;
+      font-weight: 720;
+      max-width: 10ch;
+    }
+
+    .summary {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .candidate-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .candidate-button {
+      width: 100%;
+      min-height: 66px;
+      display: grid;
+      grid-template-columns: 16px 1fr 34px;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.035);
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .candidate-button[aria-selected="true"] {
+      border-color: rgba(109, 217, 207, 0.48);
+      background: rgba(109, 217, 207, 0.08);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.24);
+    }
+
+    .swatch {
+      width: 14px;
+      height: 42px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 18px color-mix(in srgb, var(--accent), transparent 45%);
+    }
+
+    .button-title {
+      display: block;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.18;
+      font-weight: 650;
+    }
+
+    .button-subtitle {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .score-pill {
+      justify-self: end;
+      min-width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: var(--ink);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.11);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stage {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chapter-strip {
+      position: absolute;
+      left: clamp(18px, 3vw, 42px);
+      right: clamp(18px, 3vw, 42px);
+      bottom: clamp(18px, 3vw, 38px);
+      z-index: 3;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(5, 7, 6, 0.62);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 18px 48px var(--shadow);
+    }
+
+    .chapter-button {
+      min-height: 48px;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      text-align: left;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .chapter-button[aria-selected="true"] {
+      color: var(--ink);
+      border-color: rgba(216, 149, 93, 0.38);
+      background: rgba(216, 149, 93, 0.08);
+    }
+
+    .chapter-index {
+      display: block;
+      font-size: 10px;
+      color: var(--amber);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .chapter-name {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .object-meta {
+      position: absolute;
+      top: 26px;
+      left: 30px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: rgba(241, 234, 215, 0.76);
+      font-size: 12px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--active-accent, var(--cyan));
+      box-shadow: 0 0 20px var(--active-accent, var(--cyan));
+    }
+
+    .field-note {
+      position: absolute;
+      right: 32px;
+      top: 26px;
+      z-index: 3;
+      max-width: 230px;
+      color: rgba(241, 234, 215, 0.62);
+      font-size: 12px;
+      line-height: 1.45;
+      text-align: right;
+    }
+
+    .inspector h2 {
+      margin: 0 0 8px;
+      font-size: 21px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .family {
+      margin: 0 0 18px;
+      color: var(--cyan);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .section-label {
+      margin: 22px 0 8px;
+      color: var(--amber);
+      font-size: 11px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .inspector p,
+    .prompt-box,
+    .score-grid {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .prompt-box {
+      margin: 0;
+      padding: 12px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.035);
+      color: rgba(241, 234, 215, 0.72);
+      white-space: pre-wrap;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 14px;
+      margin-top: 8px;
+    }
+
+    .score-grid span:nth-child(even) {
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .decision {
+      margin-top: 24px;
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(109, 217, 207, 0.07);
+      border: 1px solid rgba(109, 217, 207, 0.18);
+      color: rgba(241, 234, 215, 0.78);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1080px) {
+      html,
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        min-height: 100vh;
+        height: auto;
+        grid-template-columns: 1fr;
+      }
+
+      .rail,
+      .inspector {
+        border: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .stage {
+        min-height: 680px;
+      }
+
+      h1 {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .rail,
+      .inspector {
+        padding: 22px 18px;
+      }
+
+      .stage {
+        min-height: 620px;
+      }
+
+      .chapter-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .field-note {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" data-vector-stage-product="2026-06-stage-02-central-object-spike">
+    <aside class="rail" aria-label="Candidate directions">
+      <p class="eyebrow">Stage 02 object spike</p>
+      <h1>Choose the subject.</h1>
+      <p class="summary">
+        Six central-object candidates for a scroll/page-state visual. These are not final assets;
+        they define what to generate or model before rebuilding the page.
+      </p>
+      <div class="candidate-list" id="candidateList"></div>
+    </aside>
+
+    <main class="stage" aria-label="Central object preview">
+      <canvas id="stageCanvas" width="1920" height="1080"></canvas>
+      <div class="object-meta">
+        <span class="pulse-dot" aria-hidden="true"></span>
+        <span id="objectMeta">central object preview</span>
+      </div>
+      <div class="field-note" id="fieldNote">
+        Scroll state language: scan, bloom, explode, archive.
+      </div>
+      <div class="chapter-strip" id="chapterStrip" aria-label="Scroll state preview"></div>
+    </main>
+
+    <aside class="inspector" aria-label="Candidate details">
+      <p class="eyebrow">Model prompt</p>
+      <h2 id="candidateTitle"></h2>
+      <p class="family" id="candidateFamily"></p>
+      <p id="candidateSummary"></p>
+
+      <p class="section-label">Generation brief</p>
+      <pre class="prompt-box" id="candidatePrompt"></pre>
+
+      <p class="section-label">Evaluation</p>
+      <div class="score-grid" id="scoreGrid"></div>
+
+      <p class="section-label">Risk</p>
+      <p id="candidateRisk"></p>
+
+      <div class="decision" id="candidateDecision"></div>
+    </aside>
+  </div>
+
+  <script>
+    const CANDIDATES = [
+      {
+        "id": "evidence-garden",
+        "label": "Evidence Garden",
+        "family": "micro_world",
+        "accent": "#6dd9cf",
+        "warm": "#d8955d",
+        "summary": "A floating mineral data island with glass roots, route veins, and small luminous blossoms.",
+        "modelPrompt": "Single centered 3D asset, floating mineral data garden island, matte dark stone base, translucent glass roots, thin luminous cyan route veins, three warm amber data blossoms, precise botanical technical aesthetic, no text, no characters, no logo, clean silhouette, export as GLB.",
+        "states": ["Dormant island", "Scan through roots", "Data bloom", "Archive constellation"],
+        "score": {"firstFrame": 3, "silhouette": 3, "statePotential": 3, "assetRisk": 2},
+        "risk": "Can become fantasy garden if the model prompt is too soft. Keep materials mineral, glass, and technical.",
+        "decision": "Recommended first. It gives us real content and still leaves room for vector routes, scan planes, and particle systems."
+      },
+      {
+        "id": "glass-root-archive",
+        "label": "Glass Root Archive",
+        "family": "living_system",
+        "accent": "#8da66f",
+        "warm": "#f1ead7",
+        "summary": "A transparent root vessel: half specimen, half data archive, designed as a calm central object.",
+        "modelPrompt": "Single centered 3D object, transparent glass seed vessel with visible root network inside, small ceramic data plates embedded around roots, pale moss and ivory material accents, scientific botanical archive, elegant quiet composition, no text, no mascot, no logo, export as GLB.",
+        "states": ["Closed vessel", "Root illumination", "Layer reveal", "Specimen lock"],
+        "score": {"firstFrame": 3, "silhouette": 2, "statePotential": 2, "assetRisk": 2},
+        "risk": "Transparent materials may look cheap in generated output. Needs manual material cleanup.",
+        "decision": "Good fallback if we want quieter, more refined content than a full micro-world."
+      },
+      {
+        "id": "evidence-instrument",
+        "label": "Evidence Instrument",
+        "family": "product_exploded_view",
+        "accent": "#6dd9cf",
+        "warm": "#c97877",
+        "summary": "A compact orb/capsule device that can split into plates, rings, lenses, and data cores.",
+        "modelPrompt": "Single centered 3D asset, compact evidence instrument, small orb and capsule hybrid, glass lens core, brushed dark metal plates, thin cyan route channels, warm copper separators, designed for exploded view animation, high quality product material, no text, no brand, no logo, export as GLB.",
+        "states": ["Closed core", "Scan ring", "Exploded plates", "Reassembled artifact"],
+        "score": {"firstFrame": 2, "silhouette": 3, "statePotential": 3, "assetRisk": 2},
+        "risk": "Can drift into generic sci-fi hardware. The form language needs one memorable shape.",
+        "decision": "Best if the project should feel more technical and less organic."
+      },
+      {
+        "id": "mineral-scanner-seed",
+        "label": "Mineral Scanner Seed",
+        "family": "technical_device",
+        "accent": "#d8955d",
+        "warm": "#6dd9cf",
+        "summary": "A seed-like scanner object with faceted mineral shell and a soft inner signal.",
+        "modelPrompt": "Single centered 3D object, faceted mineral scanner seed, dark graphite shell, translucent amber core, subtle cyan scanning slit, polished but not futuristic, clean silhouette, object for scroll-state reveal, no text, no logo, no character, export as GLB.",
+        "states": ["Faceted shell", "Signal slit", "Shell split", "Core pulse"],
+        "score": {"firstFrame": 2, "silhouette": 3, "statePotential": 2, "assetRisk": 3},
+        "risk": "Small object may feel too simple unless surrounding scan and field layers are excellent.",
+        "decision": "Useful as a low-risk model-generation test because the form is simple and readable."
+      },
+      {
+        "id": "route-core-sculpture",
+        "label": "Route Core Sculpture",
+        "family": "spatial_sculpture",
+        "accent": "#6dd9cf",
+        "warm": "#f1ead7",
+        "summary": "A dark core surrounded by route arcs and meshline-like paths, preserving the Stage 01 vector identity.",
+        "modelPrompt": "Single centered 3D asset, abstract route core sculpture, smooth dark ceramic central stone, carved grooves for luminous route lines, sparse orbital rings, technical vector sculpture, high contrast silhouette, no text, no UI panels, no logo, export as GLB.",
+        "states": ["Silent core", "Routes ignite", "Orbit field", "Trace lock"],
+        "score": {"firstFrame": 2, "silhouette": 2, "statePotential": 2, "assetRisk": 3},
+        "risk": "Closest to the old failure mode: good technique, weak subject. Needs a stronger core shape.",
+        "decision": "Keep as supporting language, not the main direction unless the generated forms become exceptional."
+      },
+      {
+        "id": "archive-constellation",
+        "label": "Archive Constellation",
+        "family": "micro_world",
+        "accent": "#c97877",
+        "warm": "#6dd9cf",
+        "summary": "A small orbital archive with floating shards, lenses, and particles arranged around a central seed.",
+        "modelPrompt": "Single centered 3D asset, miniature archive constellation, central seed object with floating glass shards, small lenses, mineral fragments, thin cyan and rose light paths, calm technical museum object, no text, no logo, no characters, export as GLB.",
+        "states": ["Seed", "Shards orbit", "Lens alignment", "Constellation map"],
+        "score": {"firstFrame": 3, "silhouette": 2, "statePotential": 3, "assetRisk": 1},
+        "risk": "Harder for text-to-3D systems because separated shards may merge or become noisy.",
+        "decision": "Strong motion idea, but likely better as procedural Three.js layers around another generated core."
+      }
+    ];
+
+    const app = document.querySelector(".app");
+    const canvas = document.getElementById("stageCanvas");
+    const ctx = canvas.getContext("2d");
+    const candidateList = document.getElementById("candidateList");
+    const chapterStrip = document.getElementById("chapterStrip");
+    const titleEl = document.getElementById("candidateTitle");
+    const familyEl = document.getElementById("candidateFamily");
+    const summaryEl = document.getElementById("candidateSummary");
+    const promptEl = document.getElementById("candidatePrompt");
+    const riskEl = document.getElementById("candidateRisk");
+    const decisionEl = document.getElementById("candidateDecision");
+    const scoreGrid = document.getElementById("scoreGrid");
+    const objectMeta = document.getElementById("objectMeta");
+    const fieldNote = document.getElementById("fieldNote");
+
+    const state = {
+      candidateIndex: 0,
+      chapterIndex: 0,
+      time: 0,
+      dpr: 1,
+      autoTimer: 0
+    };
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      state.dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * state.dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * state.dpr));
+      ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+    }
+
+    function currentCandidate() {
+      return CANDIDATES[state.candidateIndex];
+    }
+
+    function setCandidate(index) {
+      state.candidateIndex = index;
+      state.chapterIndex = 0;
+      renderControls();
+      renderInspector();
+    }
+
+    function setChapter(index) {
+      state.chapterIndex = index;
+      renderControls();
+      renderInspector();
+    }
+
+    function renderControls() {
+      candidateList.innerHTML = "";
+      CANDIDATES.forEach((candidate, index) => {
+        const button = document.createElement("button");
+        button.className = "candidate-button";
+        button.type = "button";
+        button.style.setProperty("--accent", candidate.accent);
+        button.setAttribute("aria-selected", String(index === state.candidateIndex));
+        button.innerHTML = `
+          <span class="swatch" aria-hidden="true"></span>
+          <span>
+            <span class="button-title">${candidate.label}</span>
+            <span class="button-subtitle">${candidate.family}</span>
+          </span>
+          <span class="score-pill">${candidate.score.firstFrame + candidate.score.statePotential}</span>
+        `;
+        button.addEventListener("click", () => setCandidate(index));
+        candidateList.appendChild(button);
+      });
+
+      chapterStrip.innerHTML = "";
+      currentCandidate().states.forEach((label, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "chapter-button";
+        button.setAttribute("aria-selected", String(index === state.chapterIndex));
+        button.innerHTML = `
+          <span class="chapter-index">${String(index + 1).padStart(2, "0")}</span>
+          <span class="chapter-name">${label}</span>
+        `;
+        button.addEventListener("click", () => setChapter(index));
+        chapterStrip.appendChild(button);
+      });
+    }
+
+    function renderInspector() {
+      const candidate = currentCandidate();
+      app.style.setProperty("--active-accent", candidate.accent);
+      titleEl.textContent = candidate.label;
+      familyEl.textContent = candidate.family;
+      summaryEl.textContent = candidate.summary;
+      promptEl.textContent = candidate.modelPrompt;
+      riskEl.textContent = candidate.risk;
+      decisionEl.textContent = candidate.decision;
+      objectMeta.textContent = `${candidate.label} / ${candidate.states[state.chapterIndex]}`;
+      fieldNote.textContent = "Page state: " + candidate.states.join(" / ");
+      scoreGrid.innerHTML = "";
+      [
+        ["First frame", candidate.score.firstFrame],
+        ["Silhouette", candidate.score.silhouette],
+        ["State potential", candidate.score.statePotential],
+        ["Asset risk", candidate.score.assetRisk]
+      ].forEach(([label, value]) => {
+        const key = document.createElement("span");
+        const score = document.createElement("span");
+        key.textContent = label;
+        score.textContent = `${value}/3`;
+        scoreGrid.append(key, score);
+      });
+    }
+
+    function drawBackground(width, height, candidate) {
+      const g = ctx.createRadialGradient(width * 0.5, height * 0.44, 10, width * 0.5, height * 0.5, width * 0.72);
+      g.addColorStop(0, "rgba(241,234,215,0.08)");
+      g.addColorStop(0.32, "rgba(109,217,207,0.055)");
+      g.addColorStop(0.76, "rgba(216,149,93,0.032)");
+      g.addColorStop(1, "rgba(5,7,6,0)");
+      ctx.fillStyle = "#050706";
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.save();
+      ctx.globalAlpha = 0.14;
+      ctx.strokeStyle = "rgba(241,234,215,0.18)";
+      ctx.lineWidth = 1;
+      const spacing = 54;
+      for (let x = -spacing; x < width + spacing; x += spacing) {
+        ctx.beginPath();
+        ctx.moveTo(x + Math.sin(state.time * 0.25 + x) * 4, 0);
+        ctx.lineTo(x - 90, height);
+        ctx.stroke();
+      }
+      for (let y = height * 0.28; y < height + spacing; y += spacing) {
+        ctx.beginPath();
+        ctx.moveTo(width * 0.18, y);
+        ctx.lineTo(width * 0.82, y + 22);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = hexToRgba(candidate.accent, 0.06);
+      ctx.beginPath();
+      ctx.ellipse(width * 0.5, height * 0.54, width * 0.28, height * 0.09, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function hexToRgba(hex, alpha) {
+      const value = hex.replace("#", "");
+      const r = parseInt(value.slice(0, 2), 16);
+      const g = parseInt(value.slice(2, 4), 16);
+      const b = parseInt(value.slice(4, 6), 16);
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    function drawGlowLine(points, color, alpha, width) {
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = hexToRgba(color, alpha * 0.32);
+      ctx.lineWidth = width * 4;
+      pathThrough(points);
+      ctx.stroke();
+      ctx.strokeStyle = hexToRgba(color, alpha);
+      ctx.lineWidth = width;
+      pathThrough(points);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function pathThrough(points) {
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], points[0][1]);
+      for (let i = 1; i < points.length - 1; i += 1) {
+        const midX = (points[i][0] + points[i + 1][0]) / 2;
+        const midY = (points[i][1] + points[i + 1][1]) / 2;
+        ctx.quadraticCurveTo(points[i][0], points[i][1], midX, midY);
+      }
+      const last = points[points.length - 1];
+      ctx.lineTo(last[0], last[1]);
+    }
+
+    function drawEllipse(cx, cy, rx, ry, fill, stroke, lineWidth = 1) {
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fillStyle = fill;
+      ctx.fill();
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
+      }
+    }
+
+    function drawShard(cx, cy, radius, angle, color, alpha) {
+      const points = [];
+      for (let i = 0; i < 5; i += 1) {
+        const a = angle + i * 1.33;
+        const r = radius * (i % 2 ? 0.52 : 1);
+        points.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+      }
+      ctx.save();
+      ctx.fillStyle = hexToRgba(color, alpha);
+      ctx.strokeStyle = "rgba(241,234,215,0.18)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        if (index === 0) ctx.moveTo(point[0], point[1]);
+        else ctx.lineTo(point[0], point[1]);
+      });
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawEvidenceGarden(width, height, candidate, chapter) {
+      const cx = width * 0.5;
+      const cy = height * 0.5;
+      const s = Math.min(width, height) / 820;
+      const bloom = chapter / 3;
+      const breathe = Math.sin(state.time * 0.9) * 5 * s;
+
+      drawEllipse(cx, cy + 60 * s + breathe, 205 * s, 58 * s, "rgba(11,15,13,0.92)", "rgba(241,234,215,0.24)", 1.2);
+      drawEllipse(cx, cy + 44 * s + breathe, 175 * s, 45 * s, "rgba(36,45,38,0.96)", hexToRgba(candidate.accent, 0.32), 1.5);
+
+      for (let i = 0; i < 7; i += 1) {
+        const x = cx - 130 * s + i * 43 * s;
+        const depth = (Math.sin(i * 1.7 + state.time) + 1) * 0.5;
+        drawGlowLine(
+          [[x, cy + 58 * s], [x + (i - 3) * 14 * s, cy + 118 * s + depth * 18 * s], [cx + Math.sin(i) * 110 * s, cy + 168 * s]],
+          candidate.accent,
+          0.3 + bloom * 0.28,
+          1.1 * s
+        );
+      }
+
+      for (let i = 0; i < 9; i += 1) {
+        const a = (i / 9) * Math.PI * 2 + state.time * 0.12;
+        const r = (44 + i * 7) * s;
+        const x = cx + Math.cos(a) * r * 2.1;
+        const y = cy + 36 * s + Math.sin(a) * r * 0.34;
+        drawGlowLine([[cx, cy + 35 * s], [x, y]], i % 3 === 0 ? candidate.warm : candidate.accent, 0.28, 1 * s);
+      }
+
+      for (let i = 0; i < 5; i += 1) {
+        const x = cx - 112 * s + i * 56 * s;
+        const y = cy + 15 * s + Math.sin(state.time + i) * 8 * s - bloom * 34 * s;
+        const size = (10 + bloom * 12 + (i % 2) * 4) * s;
+        drawEllipse(x, y, size * 0.9, size * 1.45, hexToRgba(candidate.warm, 0.18 + bloom * 0.24), hexToRgba(candidate.warm, 0.48), 1);
+        drawEllipse(x, y, size * 0.22, size * 0.22, hexToRgba(candidate.accent, 0.8), null);
+      }
+
+      if (chapter >= 1) {
+        drawScanRing(cx, cy + 40 * s, 250 * s, 86 * s, candidate.accent, 0.42);
+      }
+      if (chapter >= 3) {
+        drawConstellation(cx, cy - 65 * s, 160 * s, candidate);
+      }
+    }
+
+    function drawGlassRootArchive(width, height, candidate, chapter) {
+      const cx = width * 0.5;
+      const cy = height * 0.47;
+      const s = Math.min(width, height) / 820;
+      const reveal = chapter / 3;
+      drawEllipse(cx, cy + 168 * s, 188 * s, 43 * s, "rgba(0,0,0,0.36)", null);
+      drawEllipse(cx, cy, 118 * s, 158 * s, "rgba(241,234,215,0.035)", "rgba(241,234,215,0.24)", 1.3);
+      drawEllipse(cx - 24 * s, cy - 26 * s, 62 * s, 110 * s, "rgba(109,217,207,0.025)", "rgba(255,255,255,0.1)", 1);
+
+      for (let i = 0; i < 10; i += 1) {
+        const a = -Math.PI / 2 + (i - 5) * 0.18;
+        const startX = cx + Math.cos(a) * 22 * s;
+        const startY = cy - 20 * s + Math.sin(i) * 7 * s;
+        const endX = cx + Math.cos(a + 0.6) * (78 + i * 4) * s;
+        const endY = cy + 74 * s + i * 7 * s;
+        drawGlowLine([[startX, startY], [cx + (i - 5) * 14 * s, cy + 35 * s], [endX, endY]], candidate.accent, 0.28 + reveal * 0.28, 1.3 * s);
+      }
+
+      for (let i = 0; i < 6; i += 1) {
+        const x = cx - 70 * s + i * 28 * s;
+        const y = cy + 30 * s + Math.sin(state.time * 0.7 + i) * 8 * s;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(-0.18 + i * 0.06);
+        ctx.fillStyle = "rgba(241,234,215,0.13)";
+        ctx.strokeStyle = hexToRgba(candidate.warm, 0.26);
+        ctx.lineWidth = 1;
+        ctx.fillRect(-13 * s, -7 * s, 26 * s, 14 * s);
+        ctx.strokeRect(-13 * s, -7 * s, 26 * s, 14 * s);
+        ctx.restore();
+      }
+
+      if (chapter >= 2) {
+        drawScanRing(cx, cy, 165 * s, 222 * s, candidate.warm, 0.28);
+      }
+    }
+
+    function drawEvidenceInstrument(width, height, candidate, chapter) {
+      const cx = width * 0.5;
+      const cy = height * 0.5;
+      const s = Math.min(width, height) / 820;
+      const spread = chapter * 42 * s;
+      drawEllipse(cx, cy + 160 * s, 230 * s, 46 * s, "rgba(0,0,0,0.38)", null);
+
+      for (let i = -2; i <= 2; i += 1) {
+        const x = cx + i * spread;
+        const y = cy + Math.abs(i) * 4 * s;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(i * 0.08);
+        const g = ctx.createLinearGradient(-74 * s, -80 * s, 80 * s, 92 * s);
+        g.addColorStop(0, "rgba(241,234,215,0.22)");
+        g.addColorStop(0.48, "rgba(25,31,29,0.98)");
+        g.addColorStop(1, hexToRgba(i % 2 ? candidate.warm : candidate.accent, 0.28));
+        roundedRect(-78 * s, -98 * s, 156 * s, 196 * s, 52 * s, g, "rgba(241,234,215,0.18)");
+        ctx.restore();
+      }
+
+      drawEllipse(cx, cy, 72 * s, 72 * s, "rgba(6,9,8,0.92)", hexToRgba(candidate.accent, 0.62), 1.6);
+      drawEllipse(cx, cy, 34 * s, 34 * s, hexToRgba(candidate.accent, 0.18), hexToRgba(candidate.accent, 0.72), 1.2);
+
+      for (let i = 0; i < 4; i += 1) {
+        const r = (112 + i * 24 + chapter * 12) * s;
+        drawScanRing(cx, cy, r, r * 0.38, i % 2 ? candidate.warm : candidate.accent, 0.18 + i * 0.035);
+      }
+    }
+
+    function drawMineralScannerSeed(width, height, candidate, chapter) {
+      const cx = width * 0.5;
+      const cy = height * 0.5;
+      const s = Math.min(width, height) / 820;
+      const open = chapter / 3;
+      drawEllipse(cx, cy + 164 * s, 185 * s, 42 * s, "rgba(0,0,0,0.34)", null);
+
+      for (let side = -1; side <= 1; side += 2) {
+        ctx.save();
+        ctx.translate(cx + side * open * 48 * s, cy);
+        ctx.rotate(side * open * 0.18);
+        ctx.beginPath();
+        ctx.moveTo(side * -8 * s, -146 * s);
+        ctx.quadraticCurveTo(side * 118 * s, -86 * s, side * 72 * s, 58 * s);
+        ctx.quadraticCurveTo(side * 45 * s, 142 * s, side * -12 * s, 146 * s);
+        ctx.quadraticCurveTo(side * -45 * s, 30 * s, side * -8 * s, -146 * s);
+        const g = ctx.createLinearGradient(cx - 100 * s, cy - 120 * s, cx + 100 * s, cy + 150 * s);
+        g.addColorStop(0, "rgba(241,234,215,0.22)");
+        g.addColorStop(0.38, "rgba(34,38,33,0.98)");
+        g.addColorStop(1, hexToRgba(candidate.accent, 0.22));
+        ctx.fillStyle = g;
+        ctx.strokeStyle = "rgba(241,234,215,0.19)";
+        ctx.lineWidth = 1.2;
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      drawGlowLine([[cx, cy - 106 * s], [cx, cy + 112 * s]], candidate.warm, 0.54 + open * 0.24, 3 * s);
+      for (let i = 0; i < 9; i += 1) {
+        const y = cy - 112 * s + i * 28 * s;
+        drawGlowLine([[cx - (52 - i * 2) * s, y], [cx + (52 - i * 2) * s, y + 9 * s]], candidate.accent, 0.14 + open * 0.18, 1 * s);
+      }
+      if (chapter >= 1) drawScanRing(cx, cy, 230 * s, 118 * s, candidate.warm, 0.32);
+    }
+
+    function drawRouteCoreSculpture(width, height, candidate, chapter) {
+      const cx = width * 0.5;
+      const cy = height * 0.5;
+      const s = Math.min(width, height) / 820;
+      drawEllipse(cx, cy + 160 * s, 210 * s, 48 * s, "rgba(0,0,0,0.36)", null);
+      drawEllipse(cx, cy, 92 * s, 126 * s, "rgba(13,16,15,0.98)", "rgba(241,234,215,0.18)", 1.2);
+      drawEllipse(cx - 16 * s, cy - 28 * s, 38 * s, 70 * s, "rgba(241,234,215,0.055)", null);
+
+      for (let i = 0; i < 12; i += 1) {
+        const orbit = (i / 12) * Math.PI * 2 + state.time * (0.06 + i * 0.003);
+        const rx = (160 + (i % 3) * 32 + chapter * 15) * s;
+        const ry = (46 + (i % 4) * 13) * s;
+        const y = cy + Math.sin(i) * 9 * s;
+        ctx.save();
+        ctx.translate(cx, y);
+        ctx.rotate(orbit * 0.1 + i * 0.19);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, rx, ry, 0, Math.PI * 0.12, Math.PI * 1.42);
+        ctx.strokeStyle = hexToRgba(i % 3 === 0 ? candidate.warm : candidate.accent, 0.16 + chapter * 0.06);
+        ctx.lineWidth = (1.1 + (i % 2)) * s;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      for (let i = 0; i < 7; i += 1) {
+        const a = i * 0.88 + state.time * 0.28;
+        const x = cx + Math.cos(a) * 142 * s;
+        const y = cy + Math.sin(a) * 54 * s;
+        drawEllipse(x, y, 4.5 * s, 4.5 * s, hexToRgba(candidate.accent, 0.75), null);
+      }
+    }
+
+    function drawArchiveConstellation(width, height, candidate, chapter) {
+      const cx = width * 0.5;
+      const cy = height * 0.49;
+      const s = Math.min(width, height) / 820;
+      const spread = 0.55 + chapter * 0.18;
+      drawEllipse(cx, cy + 160 * s, 230 * s, 46 * s, "rgba(0,0,0,0.34)", null);
+      drawEllipse(cx, cy, 68 * s, 84 * s, "rgba(14,17,16,0.96)", hexToRgba(candidate.accent, 0.38), 1.4);
+
+      for (let i = 0; i < 16; i += 1) {
+        const a = i * 0.78 + state.time * (0.05 + i * 0.002);
+        const r = (112 + (i % 5) * 24) * s * spread;
+        const x = cx + Math.cos(a) * r;
+        const y = cy + Math.sin(a) * r * 0.46;
+        if (i % 3 === 0) {
+          drawShard(x, y, (13 + (i % 4) * 3) * s, a, i % 2 ? candidate.warm : candidate.accent, 0.18 + chapter * 0.04);
+        } else {
+          drawEllipse(x, y, (5 + (i % 4)) * s, (5 + (i % 4)) * s, hexToRgba(i % 2 ? candidate.accent : candidate.warm, 0.38), "rgba(241,234,215,0.12)");
+        }
+        if (i % 2 === 0) {
+          drawGlowLine([[cx, cy], [x, y]], i % 4 === 0 ? candidate.warm : candidate.accent, 0.08 + chapter * 0.03, 0.8 * s);
+        }
+      }
+      drawScanRing(cx, cy, 252 * s * spread, 92 * s * spread, candidate.accent, 0.2 + chapter * 0.04);
+    }
+
+    function drawConstellation(cx, cy, radius, candidate) {
+      for (let i = 0; i < 13; i += 1) {
+        const a = i * 0.72 + state.time * 0.08;
+        const x = cx + Math.cos(a) * radius * (0.45 + (i % 4) * 0.14);
+        const y = cy + Math.sin(a) * radius * 0.32;
+        drawEllipse(x, y, 4, 4, hexToRgba(i % 2 ? candidate.accent : candidate.warm, 0.62), null);
+        if (i % 2 === 0) drawGlowLine([[cx, cy], [x, y]], candidate.accent, 0.08, 0.8);
+      }
+    }
+
+    function drawScanRing(cx, cy, rx, ry, color, alpha) {
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.strokeStyle = hexToRgba(color, alpha);
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([10, 16]);
+      ctx.lineDashOffset = -state.time * 22;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    function roundedRect(x, y, w, h, r, fill, stroke) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+
+    function drawFrame(now) {
+      state.time = now / 1000;
+      state.autoTimer += 1 / 60;
+      if (state.autoTimer > 4.2) {
+        state.autoTimer = 0;
+        state.chapterIndex = (state.chapterIndex + 1) % currentCandidate().states.length;
+        renderControls();
+        renderInspector();
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      const candidate = currentCandidate();
+      const chapter = state.chapterIndex;
+      drawBackground(width, height, candidate);
+
+      if (candidate.id === "evidence-garden") drawEvidenceGarden(width, height, candidate, chapter);
+      if (candidate.id === "glass-root-archive") drawGlassRootArchive(width, height, candidate, chapter);
+      if (candidate.id === "evidence-instrument") drawEvidenceInstrument(width, height, candidate, chapter);
+      if (candidate.id === "mineral-scanner-seed") drawMineralScannerSeed(width, height, candidate, chapter);
+      if (candidate.id === "route-core-sculpture") drawRouteCoreSculpture(width, height, candidate, chapter);
+      if (candidate.id === "archive-constellation") drawArchiveConstellation(width, height, candidate, chapter);
+
+      requestAnimationFrame(drawFrame);
+    }
+
+    window.__VULCA_STAGE02_CANDIDATES__ = CANDIDATES;
+    window.__VULCA_RENDER_CANDIDATE__ = function(candidateId, chapterIndex = 0, t = 0) {
+      const found = CANDIDATES.findIndex((candidate) => candidate.id === candidateId);
+      if (found >= 0) {
+        state.candidateIndex = found;
+        state.chapterIndex = Math.max(0, Math.min(3, chapterIndex));
+        state.time = t;
+        renderControls();
+        renderInspector();
+        const rect = canvas.getBoundingClientRect();
+        drawBackground(rect.width, rect.height, currentCandidate());
+      }
+    };
+
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight") setChapter((state.chapterIndex + 1) % currentCandidate().states.length);
+      if (event.key === "ArrowLeft") setChapter((state.chapterIndex + currentCandidate().states.length - 1) % currentCandidate().states.length);
+      if (event.key === "ArrowDown") setCandidate((state.candidateIndex + 1) % CANDIDATES.length);
+      if (event.key === "ArrowUp") setCandidate((state.candidateIndex + CANDIDATES.length - 1) % CANDIDATES.length);
+    });
+
+    resizeCanvas();
+    renderControls();
+    renderInspector();
+    requestAnimationFrame(drawFrame);
+  </script>
+</body>
+</html>
