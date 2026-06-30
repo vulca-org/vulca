@@ -1,7 +1,32 @@
 {
-  "assets": [],
+  "assets": [
+    {
+      "capture_id": "minimal-rebuild-desktop",
+      "path": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "screenshot",
+      "use": "spatial UI sculpture state evidence"
+    },
+    {
+      "capture_id": "minimal-rebuild-motion",
+      "path": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "motion_clip",
+      "use": "panel morph, node motion, and hotspot state evidence"
+    },
+    {
+      "capture_id": "minimal-rebuild-code",
+      "path": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "code_note",
+      "use": "standalone spatial UI rebuild exercise"
+    }
+  ],
   "case_id": "spline-contemporary-3d-web",
-  "notes": "No local assets archived in seed state.",
-  "rights_status": "source_link_only",
+  "notes": "Only generated local learning evidence is archived here. Spline remains a source-link-only aesthetic and workflow reference.",
+  "rights_status": "local_capture",
   "schema_version": 1
 }

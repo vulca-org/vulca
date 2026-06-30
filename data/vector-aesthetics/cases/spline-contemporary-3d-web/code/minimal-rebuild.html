@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spline Contemporary 3D Web Minimal Rebuild</title>
+  <style>
+    :root { color-scheme: dark; background:#07090f; color:#f4fbff; font-family:Arial,sans-serif; }
+    body {
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      background:
+        radial-gradient(circle at 64% 36%, rgba(112,204,255,.18), transparent 30%),
+        radial-gradient(circle at 36% 60%, rgba(255,180,90,.12), transparent 28%),
+        linear-gradient(rgba(104,128,160,.13) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(104,128,160,.13) 1px, transparent 1px),
+        #07090f;
+      background-size:auto, auto, 60px 60px, 60px 60px;
+    }
+    svg { width:min(100vw,960px); aspect-ratio:16/9; display:block; overflow:visible; }
+    .panel-frame { fill:#0f1620; stroke:#7da8c7; stroke-width:1; }
+    .label { fill:#f4fbff; font-size:19px; font-weight:700; letter-spacing:0; }
+    .note { fill:#dbefff; font-size:16px; letter-spacing:0; }
+    .ui-panel { fill:#172334; stroke:#89c8ff; stroke-width:1.5; animation: morph 4s ease-in-out infinite alternate; }
+    .ui-panel.alt { fill:#201b2d; stroke:#ffbe74; }
+    .spatial-node { fill:#f6fbff; stroke:#89c8ff; stroke-width:2; animation: morph 3.2s ease-in-out infinite alternate; }
+    .state-track { fill:none; stroke:#7ef0d2; stroke-width:3; stroke-linecap:round; opacity:.82; animation: morph 4.4s ease-in-out infinite alternate; }
+    .hotspot { fill:#ffbe74; stroke:#f6fbff; stroke-width:2; animation: morph 2.8s ease-in-out infinite alternate; }
+    .depth-line { stroke:#536d86; stroke-width:1; opacity:.58; vector-effect:non-scaling-stroke; }
+    .glow { fill:#89c8ff; opacity:.18; }
+    @keyframes morph {
+      from { transform:translate(-8px, 7px); opacity:.7; }
+      to { transform:translate(10px, -6px); opacity:1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Offline SVG/CSS approximation for learning review; it does not embed Spline runtime, scenes, models, materials, or screenshots. -->
+  <svg viewBox="0 0 960 540" role="img" aria-label="Local generated Spline-style spatial UI sculpture rebuild" data-spline-ui="generated">
+    <rect class="panel-frame" x="34" y="32" width="570" height="104" />
+    <text class="label" x="50" y="66">Spline-style spatial UI sculpture rebuild</text>
+    <text class="note" x="50" y="104">layered panels + states + events + spatial nodes</text>
+
+    <ellipse class="glow" cx="566" cy="282" rx="270" ry="146" />
+    <g>
+      <line class="depth-line" x1="190" y1="396" x2="704" y2="222" />
+      <line class="depth-line" x1="244" y1="430" x2="764" y2="252" />
+      <line class="depth-line" x1="308" y1="456" x2="826" y2="280" />
+      <line class="depth-line" x1="360" y1="176" x2="312" y2="456" />
+      <line class="depth-line" x1="500" y1="150" x2="482" y2="468" />
+      <line class="depth-line" x1="642" y1="176" x2="662" y2="442" />
+      <line class="depth-line" x1="778" y1="220" x2="812" y2="404" />
+    </g>
+
+    <g>
+      <polygon class="ui-panel" points="220,210 408,170 452,290 250,334" />
+      <polygon class="ui-panel alt" points="472,152 692,192 656,330 430,286" />
+      <polygon class="ui-panel" points="612,252 812,216 850,350 638,392" />
+      <polygon class="ui-panel alt" points="180,356 370,324 420,434 218,472" />
+      <polygon class="ui-panel" points="438,326 632,362 590,468 390,430" />
+    </g>
+
+    <g>
+      <circle class="spatial-node" cx="260" cy="238" r="5" /><circle class="spatial-node" cx="336" cy="204" r="5" /><circle class="spatial-node" cx="422" cy="286" r="5" />
+      <circle class="spatial-node" cx="506" cy="184" r="5" /><circle class="spatial-node" cx="614" cy="210" r="5" /><circle class="spatial-node" cx="648" cy="304" r="5" />
+      <circle class="spatial-node" cx="660" cy="286" r="5" /><circle class="spatial-node" cx="754" cy="244" r="5" /><circle class="spatial-node" cx="826" cy="338" r="5" />
+      <circle class="spatial-node" cx="226" cy="388" r="5" /><circle class="spatial-node" cx="348" cy="352" r="5" /><circle class="spatial-node" cx="400" cy="420" r="5" />
+    </g>
+
+    <g>
+      <path class="state-track" d="M248 280 C332 240 392 256 470 288 C560 324 644 304 754 264" />
+      <path class="state-track" d="M242 406 C346 372 444 368 554 394 C646 416 728 382 818 332" />
+      <path class="state-track" d="M452 198 C520 226 574 266 628 330 C674 384 738 390 820 360" />
+      <path class="state-track" d="M308 220 C370 296 432 340 522 366 C610 392 686 350 766 300" />
+    </g>
+
+    <g>
+      <circle class="hotspot" cx="318" cy="248" r="8" />
+      <circle class="hotspot" cx="516" cy="244" r="8" />
+      <circle class="hotspot" cx="716" cy="296" r="8" />
+      <circle class="hotspot" cx="306" cy="402" r="8" />
+      <circle class="hotspot" cx="512" cy="396" r="8" />
+      <circle class="hotspot" cx="706" cy="356" r="8" />
+    </g>
+
+    <rect class="panel-frame" x="92" y="438" width="498" height="56" />
+    <text class="note" x="110" y="472">state_model: hover event + timeline morph + layer stack</text>
+    <rect class="panel-frame" x="650" y="414" width="280" height="96" />
+    <text class="note" x="668" y="442">local generated evidence</text>
+    <text class="note" x="668" y="476">not copied from Spline scenes</text>
+  </svg>
+</body>
+</html>
