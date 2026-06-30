@@ -12,35 +12,61 @@
       "evidence_type": "external_doc",
       "id": "canonical-source",
       "interaction": "none",
-      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "notes": "Canonical Countertype site link for attribution and three-text pipeline framing; local evidence below is generated from scratch for learning review.",
       "path_or_url": "https://countertype.com/",
       "rights_status": "source_link_only",
       "source_url": "https://countertype.com/",
       "viewport": "none"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "screenshot",
-      "id": "screenshot-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires visual capture. No local screenshot archived yet.",
-      "path_or_url": "https://countertype.com/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "typography_layout_state",
+      "notes": "Local generated rebuild screenshot showing glyph meshes, paragraph baselines, geometry cache, variable-axis handles, and depth edges; not copied from Countertype demos.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
       "source_url": "https://countertype.com/",
-      "viewport": "none"
+      "viewport": "960x540"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "video",
-      "id": "video-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
-      "path_or_url": "https://countertype.com/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-motion",
+      "interaction": "retessellation_loop",
+      "notes": "Local generated motion clip isolates glyph retessellation, baseline stability, cache-state highlighting, and variable-axis state changes; not copied from Countertype demos.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://countertype.com/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise reconstructing the primitive with generated glyph meshes, layout rails, cache cells, axis handles, and CSS-only retessellation motion.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://countertype.com/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
       "source_url": "https://countertype.com/",
       "viewport": "none"
     }
@@ -49,54 +75,118 @@
   "id": "countertype-three-text",
   "modules": [
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "typography_3d",
       "payload": {
-        "learning_primitive": "typography_3d learning primitive",
-        "seed_status": "metadata_only"
+        "axis_handle_count": 6,
+        "baseline_count": 5,
+        "cache_cell_count": 18,
+        "glyph_mesh_count": 30,
+        "learning_primitive": "3D typography as layout plus glyph geometry",
+        "text_system_layers": [
+          "paragraph layout",
+          "glyph mesh tessellation",
+          "geometry cache",
+          "variable axis state",
+          "retessellation motion"
+        ],
+        "visual_role": "teaches how text becomes spatial vector material while staying readable"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and code note all show the same typography primitive.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
       "module_type": "asset_pipeline",
       "payload": {
-        "learning_primitive": "asset_pipeline learning primitive",
-        "seed_status": "metadata_only"
+        "font_boundary": "no Countertype fonts or runtime assets are archived",
+        "learning_primitive": "font source to shaped glyph mesh to cached geometry",
+        "pipeline_steps": [
+          "license font source",
+          "shape text into lines",
+          "tessellate glyph geometry",
+          "cache repeated glyph meshes",
+          "retessellate on axis change"
+        ],
+        "review_artifacts": [
+          "local PNG",
+          "local GIF",
+          "standalone HTML",
+          "asset manifest"
+        ]
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Asset pipeline is represented as a rights-safe generated proxy with explicit font/runtime boundaries.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "performance_runtime",
       "payload": {
-        "learning_primitive": "performance_runtime learning primitive",
-        "seed_status": "metadata_only"
+        "cache_model": "hot cells indicate reused glyph geometry and line-box reuse",
+        "learning_primitive": "typography runtime budget as cache and retessellation policy",
+        "runtime_risks": [
+          "large multilingual paragraphs",
+          "variable-axis retessellation spikes",
+          "font loading and licensing",
+          "GPU memory churn from rebuilt glyph meshes"
+        ],
+        "verification_command": "PYTHONPATH=src pytest tests/test_vector_aesthetics_gold_cases.py -q"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Performance layer is complete as a teaching abstraction, not a benchmark of the original project.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local PNG proves layout and mesh structure, local GIF proves retessellation state, HTML proves the typography pipeline taxonomy",
+        "learning_primitive": "review labels and interface text as spatial vector material",
+        "review_gap": "canonical Countertype site remains link-only; local rebuild teaches mechanics without Countertype screenshots, code, runtime, fonts, adapters, or demos",
+        "route_decision": "use layout rails for readability, glyph meshes for identity, cache cells for runtime reasoning, and axis handles for interaction state",
+        "source_trail": "canonical Countertype site plus generated local reconstruction",
+        "uncertainty": "exact Countertype implementation details, adapter behavior, multilingual shaping examples, and performance numbers are not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
     }
   ],
   "quality_scores": {
     "aesthetic_relevance": 3,
-    "interaction_clarity": 1,
+    "interaction_clarity": 3,
     "license_safety": 2,
-    "multimodal_completeness": 0,
-    "technical_learnability": 2,
-    "vulca_transfer_value": 2
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
   },
-  "review_status": "candidate",
+  "review_status": "shortlist",
   "source_type": "documentation",
-  "summary": "Modern Three.js text layout and 3D typography pipeline reference.",
+  "summary": "Modern Three.js typography reference rebuilt as a local 3D text primitive with paragraph baselines, glyph meshes, geometry cache, variable-axis handles, motion, code, and asset evidence.",
   "title": "Countertype three-text",
   "visual_families": [
     "typography_3d"
   ],
-  "why_relevant": "Provides technical baseline for treating words and labels as 3D vector material.",
+  "why_relevant": "Completes the atlas's typography_3d branch by teaching how text becomes spatial vector material with layout, cache, and retessellation constraints.",
   "year": 2025
 }

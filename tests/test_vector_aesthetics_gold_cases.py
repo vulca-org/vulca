@@ -29,9 +29,10 @@ def test_checked_in_gold_cases_are_multimodal_and_learning_ready(tmp_path: Path)
     false_earth = cases["false-earth-webgpu-world"]
     matrix_sentinels = cases["matrix-sentinels-particle-trails-tsl"]
     spline_ui = cases["spline-contemporary-3d-web"]
+    countertype = cases["countertype-three-text"]
 
-    assert payload["summary"]["gold_case_count"] == 9
-    assert payload["summary"]["multimodal_complete_count"] == 9
+    assert payload["summary"]["gold_case_count"] == 10
+    assert payload["summary"]["multimodal_complete_count"] == 10
     for case in [
         makio,
         text_destruction,
@@ -42,6 +43,7 @@ def test_checked_in_gold_cases_are_multimodal_and_learning_ready(tmp_path: Path)
         false_earth,
         matrix_sentinels,
         spline_ui,
+        countertype,
     ]:
         assert case["coverage"]["screenshots"] == "complete"
         assert case["coverage"]["video"] == "complete"
@@ -311,3 +313,32 @@ def test_spline_contemporary_3d_web_gold_assets_are_bounded_and_self_contained()
     assert len(re.findall(r'class=\"state-track', html_text)) >= 4
     assert len(re.findall(r'class=\"hotspot', html_text)) >= 6
     assert "animation: morph" in html_text
+
+
+def test_countertype_three_text_gold_assets_are_bounded_and_self_contained():
+    case_dir = REPO_ROOT / "data" / "vector-aesthetics" / "cases" / "countertype-three-text"
+    size_budgets = {
+        "screenshots/minimal-rebuild-desktop.png": 300_000,
+        "videos/minimal-rebuild-motion.gif": 3_000_000,
+        "code/minimal-rebuild.html": 46_000,
+    }
+
+    for rel_path, max_bytes in size_budgets.items():
+        asset_path = case_dir / rel_path
+        assert asset_path.is_file()
+        assert asset_path.stat().st_size <= max_bytes
+
+    html_text = (case_dir / "code" / "minimal-rebuild.html").read_text(encoding="utf-8")
+    lowered_html = html_text.lower()
+    assert "<script" not in lowered_html
+    assert "src=" not in lowered_html
+    assert "href=" not in lowered_html
+    assert "http://" not in html_text
+    assert "https://" not in html_text
+    assert 'role="img"' in html_text
+    assert 'data-three-text="generated"' in html_text
+    assert len(re.findall(r'class=\"glyph-mesh', html_text)) >= 24
+    assert len(re.findall(r'class=\"layout-line', html_text)) >= 5
+    assert len(re.findall(r'class=\"cache-cell', html_text)) >= 18
+    assert len(re.findall(r'class=\"axis-handle', html_text)) >= 6
+    assert "animation: retessellate" in html_text
