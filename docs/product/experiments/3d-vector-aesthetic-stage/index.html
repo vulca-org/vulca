@@ -244,6 +244,7 @@
       let stars = [];
 
       const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false };
+      const recordCursor = { x: 0, y: 0, pulse: 0, down: false };
 
       function hashNoise(seed) {
         let x = Math.sin(seed * 127.1) * 43758.5453123;
@@ -598,6 +599,79 @@
         ctx.restore();
       }
 
+      function getRecordCursor(time) {
+        const seconds = time * 0.001;
+        const nx = clamp(
+          0.5 + Math.sin(seconds * 0.48) * 0.24 + Math.sin(seconds * 1.12 + 0.6) * 0.055,
+          0.18,
+          0.82
+        );
+        const ny = clamp(
+          0.5 + Math.cos(seconds * 0.38 + 0.5) * 0.2 + Math.sin(seconds * 0.86 + 1.4) * 0.055,
+          0.18,
+          0.82
+        );
+        const clickTimes = [3.2, 8.6, 14.4, 20.2];
+        let pulse = 0;
+        for (const clickTime of clickTimes) {
+          pulse = Math.max(pulse, 1 - Math.abs(seconds - clickTime) / 0.52);
+        }
+        return {
+          x: nx * width,
+          y: ny * height,
+          pulse: clamp(pulse, 0, 1),
+          down: pulse > 0.62
+        };
+      }
+
+      function drawRecordCursor(time) {
+        if (!recordMode) return;
+        const cursor = recordCursor;
+        const size = clamp(Math.min(width, height) * 0.026, 16, 34);
+
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        for (let i = 8; i >= 1; i--) {
+          const t = time - i * 90;
+          const previous = getRecordCursor(t);
+          ctx.fillStyle = rgba(PALETTE.cyan, 0.03 + (8 - i) * 0.012);
+          ctx.beginPath();
+          ctx.arc(previous.x, previous.y, size * (0.22 + (8 - i) * 0.018), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+
+        ctx.save();
+        ctx.globalCompositeOperation = "source-over";
+        if (cursor.pulse > 0) {
+          ctx.strokeStyle = rgba(PALETTE.acid, 0.38 * cursor.pulse);
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(cursor.x, cursor.y, size * (1.1 + cursor.pulse * 1.8), 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        ctx.translate(cursor.x, cursor.y);
+        ctx.rotate(-0.28);
+        ctx.shadowColor = rgba(PALETTE.cyan, 0.9);
+        ctx.shadowBlur = 18;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(size * 0.2, size * 1.45);
+        ctx.lineTo(size * 0.48, size * 1.04);
+        ctx.lineTo(size * 0.78, size * 1.78);
+        ctx.lineTo(size * 1.04, size * 1.67);
+        ctx.lineTo(size * 0.74, size * 0.94);
+        ctx.lineTo(size * 1.22, size * 0.9);
+        ctx.closePath();
+        ctx.fillStyle = rgba(PALETTE.paper, cursor.down ? 0.98 : 0.9);
+        ctx.strokeStyle = "rgba(5,6,8,0.86)";
+        ctx.lineWidth = 1.2;
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
       function drawFrame(time) {
         pointer.x = lerp(pointer.x, pointer.tx, 0.08);
         pointer.y = lerp(pointer.y, pointer.ty, 0.08);
@@ -640,13 +714,20 @@
           ctx.fillRect(0, 0, width, height);
           ctx.restore();
         }
+
+        drawRecordCursor(time);
       }
 
       function applyRecordMotion(time) {
         if (!recordMode) return;
+        const cursor = getRecordCursor(time);
+        recordCursor.x = cursor.x;
+        recordCursor.y = cursor.y;
+        recordCursor.pulse = cursor.pulse;
+        recordCursor.down = cursor.down;
         pointer.active = true;
-        pointer.tx = Math.sin(time * 0.00042) * 0.62;
-        pointer.ty = Math.cos(time * 0.00034) * 0.36;
+        pointer.tx = clamp((cursor.x / Math.max(width, 1) - 0.5) * 2, -1, 1);
+        pointer.ty = clamp((cursor.y / Math.max(height, 1) - 0.5) * 2, -1, 1);
         pointer.x = pointer.tx;
         pointer.y = pointer.ty;
       }
@@ -689,7 +770,7 @@
         window.__VULCA_RENDER_FRAME__ = (frame, fps = 24) => {
           const time = Math.max(0, frame) * (1000 / Math.max(1, fps));
           renderAt(time);
-          return { frame, fps, time };
+          return { frame, fps, time, cursor: { ...recordCursor } };
         };
         renderAt(0);
       } else {

@@ -24,6 +24,9 @@ def test_stage_product_is_single_file_recording_surface():
     assert "drawUISculpture" in html_text
     assert "recordMode" in html_text
     assert "__VULCA_RENDER_FRAME__" in html_text
+    assert "drawRecordCursor" in html_text
+    assert "getRecordCursor" in html_text
+    assert "cursor: { ...recordCursor }" in html_text
     assert "pointermove" in html_text
 
     assert "<iframe" not in lowered
@@ -64,14 +67,18 @@ def test_stage_video_builder_targets_xhs_mp4():
     script_text = VIDEO_SCRIPT.read_text(encoding="utf-8")
 
     assert VIDEO_SCRIPT.is_file()
-    assert "vector-stage-xhs-20260630.mp4" in script_text
-    assert "540" in script_text
-    assert "960" in script_text
-    assert "Tingting" in script_text
-    assert "VOICEOVER_TEXT" in script_text
-    assert "SUBTITLE_CUES" in script_text
+    assert "vector-stage-xhs-horizontal-20260630.mp4" in script_text
+    assert "1920" in script_text
+    assert "1080" in script_text
+    assert "Shelley (中文（中国大陆）)" in script_text
+    assert "Sandy (中文（中国大陆）)" in script_text
+    assert "VOICEOVER_SEGMENTS" in script_text
+    assert "synthesize_voiceover" in script_text
+    assert "subtitle_cues" in script_text
     assert "burn_subtitles_on_frames" in script_text
     assert "ImageDraw" in script_text
+    assert "page.mouse.move" in script_text
+    assert "page.mouse.down" in script_text
     assert "libx264" in script_text
     assert "aac" in script_text
     assert "__VULCA_RENDER_FRAME__" in script_text

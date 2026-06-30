@@ -18,30 +18,47 @@ from PIL import Image, ImageDraw, ImageFont
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_HTML = REPO_ROOT / "docs/product/experiments/3d-vector-aesthetic-stage/index.html"
-DEFAULT_OUTPUT = REPO_ROOT / "output/video/3d-vector-aesthetic-stage/vector-stage-xhs-20260630.mp4"
+DEFAULT_OUTPUT = REPO_ROOT / "output/video/3d-vector-aesthetic-stage/vector-stage-xhs-horizontal-20260630.mp4"
 PLAYWRIGHT_MODULE = Path(
     "/Users/yhryzy/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright"
 )
 CHROME_EXECUTABLE = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 
-VOICEOVER_TEXT = (
-    "这不是一张海报。"
-    "它是一套三维矢量美学的训练样本。"
-    "我们把二零二五年之后的网页三维、粒子、字体和着色器，拆成视觉原语。"
-    "线条定义速度和深度。"
-    "粒子负责呼吸和节奏。"
-    "字体也能成为三维结构。"
-    "接下来，用这个数据库生成更多可交互的技术美学作品。"
-)
+VOICE_FALLBACKS = [
+    "Shelley (中文（中国大陆）)",
+    "Sandy (中文（中国大陆）)",
+    "Tingting",
+]
 
-SUBTITLE_CUES = [
-    (0.45, 2.75, "这不是一张海报"),
-    (2.75, 5.35, "它是一套三维矢量美学的训练样本"),
-    (5.35, 9.15, "把 2025+ 的网页三维、粒子、字体和着色器\\N拆成视觉原语"),
-    (9.15, 11.55, "线条定义速度和深度"),
-    (11.55, 14.05, "粒子负责呼吸和节奏"),
-    (14.05, 17.3, "字体也能成为三维结构"),
-    (17.3, 22.6, "接下来，用这个数据库\\N生成更多可交互的技术美学作品"),
+VOICEOVER_SEGMENTS = [
+    {
+        "text": "这不是一张海报。",
+        "subtitle": "这不是一张海报。",
+    },
+    {
+        "text": "它是一套三维矢量美学的训练样本。",
+        "subtitle": "它是一套三维矢量美学的训练样本。",
+    },
+    {
+        "text": "我们把二零二五年之后的网页三维、粒子、字体和着色器，拆成视觉原语。",
+        "subtitle": "我们把二零二五年之后的网页三维、粒子、字体和着色器，\\N拆成视觉原语。",
+    },
+    {
+        "text": "线条定义速度和深度。",
+        "subtitle": "线条定义速度和深度。",
+    },
+    {
+        "text": "粒子负责呼吸和节奏。",
+        "subtitle": "粒子负责呼吸和节奏。",
+    },
+    {
+        "text": "字体也能成为三维结构。",
+        "subtitle": "字体也能成为三维结构。",
+    },
+    {
+        "text": "接下来，用这个数据库生成更多可交互的技术美学作品。",
+        "subtitle": "接下来，用这个数据库\\N生成更多可交互的技术美学作品。",
+    },
 ]
 
 
@@ -88,18 +105,18 @@ def seconds_to_ass(value: float) -> str:
     return f"{hours}:{minutes:02d}:{seconds:02d}.{cs:02d}"
 
 
-def write_ass_subtitles(path: Path, duration: float) -> None:
-    cues = []
-    for start, end, text in SUBTITLE_CUES:
-        if start >= duration:
-            continue
-        cues.append((start, min(end, duration - 0.35), text))
-
+def write_ass_subtitles(
+    path: Path,
+    cues: list[tuple[float, float, str]],
+    width: int,
+    height: int,
+    duration: float,
+) -> None:
     ass = [
         "[Script Info]",
         "ScriptType: v4.00+",
-        "PlayResX: 540",
-        "PlayResY: 960",
+        f"PlayResX: {width}",
+        f"PlayResY: {height}",
         "ScaledBorderAndShadow: yes",
         "",
         "[V4+ Styles]",
@@ -118,8 +135,11 @@ def write_ass_subtitles(path: Path, duration: float) -> None:
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text",
     ]
     for start, end, text in cues:
+        if start >= duration:
+            continue
         ass.append(
-            f"Dialogue: 0,{seconds_to_ass(start)},{seconds_to_ass(end)},Default,,0,0,0,,{text}"
+            f"Dialogue: 0,{seconds_to_ass(start)},{seconds_to_ass(min(end, duration - 0.25))},"
+            f"Default,,0,0,0,,{text}"
         )
     path.write_text("\n".join(ass) + "\n", encoding="utf-8")
 
@@ -142,17 +162,25 @@ def wrap_subtitle_text(text: str) -> list[str]:
     return [part.strip() for part in text.replace("\\N", "\n").splitlines() if part.strip()]
 
 
-def burn_subtitles_on_frames(frames_dir: Path, fps: int, duration: float, width: int, height: int) -> str:
-    font, font_path = load_subtitle_font(31)
-    shadow_font, _ = load_subtitle_font(31)
-    margin_x = 28
-    base_y = height - 166
+def burn_subtitles_on_frames(
+    frames_dir: Path,
+    cues: list[tuple[float, float, str]],
+    fps: int,
+    duration: float,
+    width: int,
+    height: int,
+) -> str:
+    font_size = max(30, min(54, round(min(width, height) * 0.047)))
+    font, font_path = load_subtitle_font(font_size)
+    shadow_font, _ = load_subtitle_font(font_size)
+    margin_x = max(34, round(width * 0.09))
+    base_y = height - max(88, round(height * 0.14))
 
     for frame_path in sorted(frames_dir.glob("frame_*.jpg")):
         frame_number = int(frame_path.stem.split("_")[-1])
         timestamp = frame_number / fps
         cue_text = ""
-        for start, end, text in SUBTITLE_CUES:
+        for start, end, text in cues:
             if start <= timestamp < min(end, duration - 0.35):
                 cue_text = text
                 break
@@ -169,19 +197,19 @@ def burn_subtitles_on_frames(frames_dir: Path, fps: int, duration: float, width:
         text_w = min(width - margin_x * 2, max(line_widths))
         text_h = sum(line_heights) + max(0, len(lines) - 1) * 10
         box_w = min(width - margin_x * 2, text_w + 34)
-        box_h = text_h + 24
+        box_h = text_h + round(font_size * 0.8)
         box_x0 = (width - box_w) / 2
         box_y0 = base_y - box_h / 2
         box_x1 = box_x0 + box_w
         box_y1 = box_y0 + box_h
         draw.rounded_rectangle(
             (box_x0, box_y0, box_x1, box_y1),
-            radius=15,
+            radius=max(14, round(font_size * 0.42)),
             fill=(5, 6, 8, 158),
             outline=(245, 240, 223, 42),
             width=1,
         )
-        y = box_y0 + 13
+        y = box_y0 + round(font_size * 0.38)
         for index, line in enumerate(lines):
             line_w = line_widths[index]
             x = (width - line_w) / 2
@@ -254,6 +282,89 @@ def write_music(path: Path, duration: float, sample_rate: int = 48_000) -> None:
         wav.writeframes(pcm.tobytes())
 
 
+def unique_voice_candidates(preferred: str) -> list[str]:
+    candidates = [preferred, *VOICE_FALLBACKS]
+    result = []
+    for candidate in candidates:
+        if candidate and candidate not in result:
+            result.append(candidate)
+    return result
+
+
+def synthesize_voiceover_with_voice(
+    *,
+    work_dir: Path,
+    voice: str,
+    voice_rate: int,
+    initial_silence: float = 0.38,
+    segment_gap: float = 0.24,
+) -> dict[str, object]:
+    segment_dir = work_dir / "voice_segments"
+    segment_dir.mkdir(parents=True, exist_ok=True)
+    segment_paths = []
+    segment_durations = []
+
+    script_path = work_dir / "voiceover.txt"
+    script_path.write_text(
+        "\n".join(segment["text"] for segment in VOICEOVER_SEGMENTS) + "\n",
+        encoding="utf-8",
+    )
+
+    for index, segment in enumerate(VOICEOVER_SEGMENTS):
+        segment_path = segment_dir / f"voiceover_{index:02d}.aiff"
+        run(["say", "-v", voice, "-r", str(voice_rate), "-o", str(segment_path), segment["text"]])
+        segment_paths.append(segment_path)
+        segment_durations.append(ffprobe_duration(segment_path))
+
+    voiceover_path = work_dir / "voiceover.wav"
+    cmd = ["ffmpeg", "-y", "-hide_banner"]
+    for segment_path in segment_paths:
+        cmd.extend(["-i", str(segment_path)])
+
+    filter_parts = [f"anullsrc=r=44100:cl=mono:d={initial_silence:.3f}[lead]"]
+    concat_inputs = ["[lead]"]
+    cue_cursor = initial_silence
+    cues = []
+    for index, (segment, segment_duration) in enumerate(zip(VOICEOVER_SEGMENTS, segment_durations)):
+        filter_parts.append(
+            f"[{index}:a]aresample=44100,aformat=sample_fmts=fltp:channel_layouts=mono[s{index}]"
+        )
+        concat_inputs.append(f"[s{index}]")
+        cues.append((cue_cursor, cue_cursor + segment_duration, segment["subtitle"]))
+        cue_cursor += segment_duration
+        if index < len(segment_paths) - 1:
+            filter_parts.append(f"anullsrc=r=44100:cl=mono:d={segment_gap:.3f}[g{index}]")
+            concat_inputs.append(f"[g{index}]")
+            cue_cursor += segment_gap
+
+    concat_count = 1 + len(segment_paths) + max(0, len(segment_paths) - 1)
+    filter_parts.append(f"{''.join(concat_inputs)}concat=n={concat_count}:v=0:a=1[a]")
+    cmd.extend(["-filter_complex", ";".join(filter_parts), "-map", "[a]", str(voiceover_path)])
+    run(cmd)
+    return {
+        "path": voiceover_path,
+        "voice": voice,
+        "duration": ffprobe_duration(voiceover_path),
+        "segment_durations": segment_durations,
+        "cues": cues,
+        "script": str(script_path),
+    }
+
+
+def synthesize_voiceover(work_dir: Path, preferred_voice: str, voice_rate: int) -> dict[str, object]:
+    errors = []
+    for voice in unique_voice_candidates(preferred_voice):
+        try:
+            return synthesize_voiceover_with_voice(
+                work_dir=work_dir,
+                voice=voice,
+                voice_rate=voice_rate,
+            )
+        except subprocess.CalledProcessError as error:
+            errors.append(f"{voice}: {error.stderr.strip() or error.stdout.strip()}")
+    raise SystemExit("could not synthesize voiceover with any configured voice: " + " | ".join(errors))
+
+
 def start_http_server(port: int) -> subprocess.Popen[bytes]:
     return subprocess.Popen(
         [sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1"],
@@ -304,11 +415,22 @@ def capture_frames(work_dir: Path, url: str, width: int, height: int, fps: int, 
               }});
               await page.goto({json.dumps(url)}, {{ waitUntil: 'domcontentloaded' }});
               await page.waitForFunction(() => typeof window.__VULCA_RENDER_FRAME__ === 'function');
+              let mouseDown = false;
               for (let frame = 0; frame < {frame_count}; frame += 1) {{
-                await page.evaluate(
+                const state = await page.evaluate(
                   (payload) => window.__VULCA_RENDER_FRAME__(payload.frame, payload.fps),
                   {{ frame, fps: {fps} }}
                 );
+                if (state.cursor) {{
+                  await page.mouse.move(state.cursor.x, state.cursor.y);
+                  if (state.cursor.down && !mouseDown) {{
+                    await page.mouse.down();
+                    mouseDown = true;
+                  }} else if (!state.cursor.down && mouseDown) {{
+                    await page.mouse.up();
+                    mouseDown = false;
+                  }}
+                }}
                 const name = `frame_${{String(frame).padStart(5, '0')}}.jpg`;
                 await page.screenshot({{
                   path: {json.dumps(str(frames_dir))} + '/' + name,
@@ -321,6 +443,7 @@ def capture_frames(work_dir: Path, url: str, width: int, height: int, fps: int, 
                   console.log(`captured ${{frame}}/{frame_count}`);
                 }}
               }}
+              if (mouseDown) await page.mouse.up();
               await browser.close();
             }})().catch((error) => {{
               console.error(error);
@@ -359,20 +482,19 @@ def build_video(
         shutil.rmtree(work_dir)
     work_dir.mkdir(parents=True)
 
-    voice_txt = work_dir / "voiceover.txt"
-    voice_aiff = work_dir / "voiceover.aiff"
     music_wav = work_dir / "music.wav"
     subtitles_ass = work_dir / "subtitles.ass"
     poster = output.with_suffix(".poster.jpg")
 
-    voice_txt.write_text(VOICEOVER_TEXT, encoding="utf-8")
-    run(["say", "-v", voice, "-r", str(voice_rate), "-o", str(voice_aiff), "-f", str(voice_txt)])
-    voice_duration = ffprobe_duration(voice_aiff)
+    voiceover = synthesize_voiceover(work_dir, voice, voice_rate)
+    voice_path = Path(str(voiceover["path"]))
+    voice_duration = float(voiceover["duration"])
+    subtitle_cues = list(voiceover["cues"])
     final_duration = max(duration, math.ceil((voice_duration + 1.2) * 10) / 10)
     frame_count = int(math.ceil(final_duration * fps))
 
     write_music(music_wav, final_duration)
-    write_ass_subtitles(subtitles_ass, final_duration)
+    write_ass_subtitles(subtitles_ass, subtitle_cues, width, height, final_duration)
 
     port = find_free_port()
     server = start_http_server(port)
@@ -391,7 +513,7 @@ def build_video(
             server.kill()
 
     frames_pattern = work_dir / "frames/frame_%05d.jpg"
-    font_path = burn_subtitles_on_frames(work_dir / "frames", fps, final_duration, width, height)
+    font_path = burn_subtitles_on_frames(work_dir / "frames", subtitle_cues, fps, final_duration, width, height)
     filter_graph = (
         f"[0:v]scale={width}:{height}:flags=lanczos,format=yuv420p[v];"
         "[1:a]volume=1.12,adelay=220|220,apad[a1];"
@@ -410,7 +532,7 @@ def build_video(
             "-i",
             str(frames_pattern),
             "-i",
-            str(voice_aiff),
+            str(voice_path),
             "-i",
             str(music_wav),
             "-filter_complex",
@@ -486,14 +608,20 @@ def build_video(
         "width": width,
         "height": height,
         "frame_count": frame_count,
-        "voice": voice,
+        "voice": voiceover["voice"],
         "voice_duration_seconds": round(voice_duration, 3),
+        "voice_segment_durations_seconds": [round(value, 3) for value in voiceover["segment_durations"]],
+        "subtitle_cues": [
+            {"start": round(start, 3), "end": round(end, 3), "text": text}
+            for start, end, text in subtitle_cues
+        ],
+        "voice_script": voiceover["script"],
         "subtitles": str(subtitles_ass),
         "subtitle_font": font_path,
         "music": str(music_wav),
         "probe": probe,
     }
-    (output.parent / "vector-stage-xhs-20260630.manifest.json").write_text(
+    output.with_suffix(".manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
@@ -505,10 +633,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--duration", type=float, default=24.0)
     parser.add_argument("--fps", type=int, default=24)
-    parser.add_argument("--width", type=int, default=540)
-    parser.add_argument("--height", type=int, default=960)
-    parser.add_argument("--voice", default="Tingting")
-    parser.add_argument("--voice-rate", type=int, default=180)
+    parser.add_argument("--width", type=int, default=1920)
+    parser.add_argument("--height", type=int, default=1080)
+    parser.add_argument("--voice", default="Shelley (中文（中国大陆）)")
+    parser.add_argument("--voice-rate", type=int, default=170)
     parser.add_argument("--keep-frames", action="store_true")
     args = parser.parse_args(argv)
 
