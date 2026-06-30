@@ -12,35 +12,61 @@
       "evidence_type": "external_doc",
       "id": "canonical-source",
       "interaction": "none",
-      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "notes": "Canonical Codrops tutorial link for attribution and technical framing; local evidence below is generated from scratch for learning review.",
       "path_or_url": "https://tympanus.net/codrops/2025/05/05/matrix-sentinels-building-dynamic-particle-trails-with-tsl/",
       "rights_status": "source_link_only",
       "source_url": "https://tympanus.net/codrops/2025/05/05/matrix-sentinels-building-dynamic-particle-trails-with-tsl/",
       "viewport": "none"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "screenshot",
-      "id": "screenshot-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires visual capture. No local screenshot archived yet.",
-      "path_or_url": "https://tympanus.net/codrops/2025/05/05/matrix-sentinels-building-dynamic-particle-trails-with-tsl/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "trail_tunnel_state",
+      "notes": "Local generated rebuild screenshot showing sentinel heads, trail routes, position-history slices, flow vectors, and tunnel scaffold; not copied from the Matrix Sentinels demo.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
       "source_url": "https://tympanus.net/codrops/2025/05/05/matrix-sentinels-building-dynamic-particle-trails-with-tsl/",
-      "viewport": "none"
+      "viewport": "960x540"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "video",
-      "id": "video-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
-      "path_or_url": "https://tympanus.net/codrops/2025/05/05/matrix-sentinels-building-dynamic-particle-trails-with-tsl/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-motion",
+      "interaction": "trace_motion",
+      "notes": "Local generated motion clip isolates route tracing, head motion, and history-buffer shimmer; not copied from the Matrix Sentinels demo.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/05/05/matrix-sentinels-building-dynamic-particle-trails-with-tsl/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise reconstructing the primitive with generated trail routes, history slices, sentinel heads, flow vectors, and CSS-only trace motion.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/05/05/matrix-sentinels-building-dynamic-particle-trails-with-tsl/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
       "source_url": "https://tympanus.net/codrops/2025/05/05/matrix-sentinels-building-dynamic-particle-trails-with-tsl/",
       "viewport": "none"
     }
@@ -49,66 +75,149 @@
   "id": "matrix-sentinels-particle-trails-tsl",
   "modules": [
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "particle_vector",
       "payload": {
-        "learning_primitive": "particle_vector learning primitive",
-        "seed_status": "metadata_only"
+        "head_count": 8,
+        "history_slice_count": 32,
+        "learning_primitive": "sentinel head plus history trail particle system",
+        "shape_roles": [
+          "bright sentinel heads",
+          "smaller history slices",
+          "thick trail routes",
+          "flow-vector arrows"
+        ],
+        "trail_route_count": 8,
+        "visual_role": "makes particle motion readable as temporal state rather than a decorative scatter field"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and code note all represent the same trail-state primitive.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "data_tunnel",
+      "payload": {
+        "flow_vector_count": 20,
+        "learning_primitive": "history-buffer data tunnel",
+        "scaffold_model": "concentric ellipses and diagonal guides define a tunnel coordinate field",
+        "state_model": "current head plus stored previous positions along each path",
+        "translation_value": "maps directly to evidence trails, reasoning paths, and time-dependent review state"
+      },
+      "review_notes": "Data-tunnel layer is complete because route, history, current-state, and flow-field components are all visible and named.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "shader_material",
       "payload": {
-        "learning_primitive": "shader_material learning primitive",
-        "seed_status": "metadata_only"
+        "learning_primitive": "TSL-style emissive trail material",
+        "material_states": [
+          "mint active trail",
+          "cyan flow field",
+          "gold sentinel head",
+          "pink alternate trail",
+          "dim tunnel scaffold"
+        ],
+        "source_boundary": "does not claim Codrops TSL code, compute shader logic, storage buffer layout, camera, or demo assets"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Material notes are complete for teaching pass separation and trail-state emphasis without claiming upstream shaders.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "interaction_state",
       "payload": {
-        "learning_primitive": "interaction_state learning primitive",
-        "seed_status": "metadata_only"
+        "input_model": "flow-vector field stands in for hidden force/noise steering",
+        "learning_primitive": "traceable particle state transition",
+        "state_names": [
+          "head_position",
+          "history_buffer",
+          "flow_field",
+          "trace_update"
+        ],
+        "verification_command": "PYTHONPATH=src pytest tests/test_vector_aesthetics_gold_cases.py -q"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Interaction state is represented as named simulation layers plus still and motion evidence.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "performance_runtime",
       "payload": {
-        "learning_primitive": "performance_runtime learning primitive",
-        "seed_status": "metadata_only"
+        "bounded_counts": {
+          "flow_vectors": 20,
+          "history_slices": 32,
+          "sentinel_heads": 8,
+          "trail_routes": 8
+        },
+        "learning_primitive": "bounded browser-reviewable trail simulation",
+        "runtime_target": "offline SVG/CSS review exercise; production analogue would use TSL compute, storage buffers, and position-history textures"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Runtime payload is complete because it names bounded counts and the production analogue without claiming upstream implementation.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local PNG proves head/history/route/flow layers, local GIF proves trace motion, HTML note proves the rebuild taxonomy",
+        "learning_primitive": "reasoning trail data tunnel",
+        "review_gap": "canonical tutorial remains link-only; local rebuild teaches mechanics without upstream media",
+        "route_decision": "use sentinel heads for active claims, history slices for evidence memory, trail routes for reasoning paths, and flow vectors for hidden review pressure",
+        "source_trail": "canonical Codrops tutorial plus generated local reconstruction",
+        "uncertainty": "exact upstream TSL compute and simulation scale are not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
     }
   ],
   "quality_scores": {
     "aesthetic_relevance": 3,
-    "interaction_clarity": 1,
+    "interaction_clarity": 3,
     "license_safety": 2,
-    "multimodal_completeness": 0,
-    "technical_learnability": 2,
-    "vulca_transfer_value": 2
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
   },
-  "review_status": "candidate",
+  "review_status": "shortlist",
   "source_type": "tutorial",
-  "summary": "TSL particle trails and dynamic motion structure in Three.js.",
+  "summary": "2025 TSL particle trail tutorial rebuilt as a local sentinel-head, history-buffer, flow-field, and data-tunnel learning primitive with still, motion, code, and asset evidence.",
   "title": "Matrix Sentinels Dynamic Particle Trails",
   "visual_families": [
     "particle_vector",
     "data_tunnel"
   ],
-  "why_relevant": "Useful for hybrid particle-vector trail behavior and uncertainty-state visualization.",
+  "why_relevant": "Completes a data-tunnel anchor for the atlas by teaching particle trajectories as stored temporal evidence rather than decorative scatter.",
   "year": 2025
 }

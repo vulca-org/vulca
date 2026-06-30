@@ -27,10 +27,20 @@ def test_checked_in_gold_cases_are_multimodal_and_learning_ready(tmp_path: Path)
     gommage = cases["webgpu-gommage-msdf-dissolve"]
     codrops_meshline = cases["codrops-threejs-meshline-family"]
     false_earth = cases["false-earth-webgpu-world"]
+    matrix_sentinels = cases["matrix-sentinels-particle-trails-tsl"]
 
-    assert payload["summary"]["gold_case_count"] == 7
-    assert payload["summary"]["multimodal_complete_count"] == 7
-    for case in [makio, text_destruction, scanning_depth, phantom_grid, gommage, codrops_meshline, false_earth]:
+    assert payload["summary"]["gold_case_count"] == 8
+    assert payload["summary"]["multimodal_complete_count"] == 8
+    for case in [
+        makio,
+        text_destruction,
+        scanning_depth,
+        phantom_grid,
+        gommage,
+        codrops_meshline,
+        false_earth,
+        matrix_sentinels,
+    ]:
         assert case["coverage"]["screenshots"] == "complete"
         assert case["coverage"]["video"] == "complete"
         assert case["coverage"]["code_anatomy"] == "complete"
@@ -241,3 +251,32 @@ def test_false_earth_gold_assets_are_bounded_and_self_contained():
     assert len(re.findall(r'class=\"wave-ring', html_text)) >= 5
     assert len(re.findall(r'class=\"flower-bloom', html_text)) >= 12
     assert "animation: drift" in html_text
+
+
+def test_matrix_sentinels_gold_assets_are_bounded_and_self_contained():
+    case_dir = REPO_ROOT / "data" / "vector-aesthetics" / "cases" / "matrix-sentinels-particle-trails-tsl"
+    size_budgets = {
+        "screenshots/minimal-rebuild-desktop.png": 320_000,
+        "videos/minimal-rebuild-motion.gif": 3_200_000,
+        "code/minimal-rebuild.html": 48_000,
+    }
+
+    for rel_path, max_bytes in size_budgets.items():
+        asset_path = case_dir / rel_path
+        assert asset_path.is_file()
+        assert asset_path.stat().st_size <= max_bytes
+
+    html_text = (case_dir / "code" / "minimal-rebuild.html").read_text(encoding="utf-8")
+    lowered_html = html_text.lower()
+    assert "<script" not in lowered_html
+    assert "src=" not in lowered_html
+    assert "href=" not in lowered_html
+    assert "http://" not in html_text
+    assert "https://" not in html_text
+    assert 'role="img"' in html_text
+    assert 'data-trail-field="generated"' in html_text
+    assert len(re.findall(r'class=\"trail-route', html_text)) >= 8
+    assert len(re.findall(r'class=\"history-slice', html_text)) >= 32
+    assert len(re.findall(r'class=\"sentinel-head', html_text)) >= 8
+    assert len(re.findall(r'class=\"flow-vector', html_text)) >= 20
+    assert "animation: trace" in html_text
