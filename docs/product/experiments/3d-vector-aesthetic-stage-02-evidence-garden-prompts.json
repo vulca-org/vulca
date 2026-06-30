@@ -2,6 +2,7 @@
   "direction_id": "stage-02-evidence-garden",
   "status": "selected_working_direction",
   "selected_model_candidate_id": "glass-root-specimen",
+  "selected_model_variant_id": "suspended-root-lens",
   "asset_target": {
     "format": "glb",
     "subject": "single centered 3D glass root specimen object",
