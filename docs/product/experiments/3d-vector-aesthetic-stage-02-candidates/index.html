@@ -424,6 +424,7 @@
       {
         "id": "evidence-garden",
         "label": "Evidence Garden",
+        "status": "selected_working_direction",
         "family": "micro_world",
         "accent": "#6dd9cf",
         "warm": "#d8955d",
@@ -437,6 +438,7 @@
       {
         "id": "glass-root-archive",
         "label": "Glass Root Archive",
+        "status": "candidate",
         "family": "living_system",
         "accent": "#8da66f",
         "warm": "#f1ead7",
@@ -450,6 +452,7 @@
       {
         "id": "evidence-instrument",
         "label": "Evidence Instrument",
+        "status": "candidate",
         "family": "product_exploded_view",
         "accent": "#6dd9cf",
         "warm": "#c97877",
@@ -463,6 +466,7 @@
       {
         "id": "mineral-scanner-seed",
         "label": "Mineral Scanner Seed",
+        "status": "candidate",
         "family": "technical_device",
         "accent": "#d8955d",
         "warm": "#6dd9cf",
@@ -476,6 +480,7 @@
       {
         "id": "route-core-sculpture",
         "label": "Route Core Sculpture",
+        "status": "candidate",
         "family": "spatial_sculpture",
         "accent": "#6dd9cf",
         "warm": "#f1ead7",
@@ -489,6 +494,7 @@
       {
         "id": "archive-constellation",
         "label": "Archive Constellation",
+        "status": "candidate",
         "family": "micro_world",
         "accent": "#c97877",
         "warm": "#6dd9cf",
@@ -561,7 +567,7 @@
           <span class="swatch" aria-hidden="true"></span>
           <span>
             <span class="button-title">${candidate.label}</span>
-            <span class="button-subtitle">${candidate.family}</span>
+            <span class="button-subtitle">${candidate.family} / ${candidate.status.replaceAll("_", " ")}</span>
           </span>
           <span class="score-pill">${candidate.score.firstFrame + candidate.score.statePotential}</span>
         `;
@@ -588,7 +594,7 @@
       const candidate = currentCandidate();
       app.style.setProperty("--active-accent", candidate.accent);
       titleEl.textContent = candidate.label;
-      familyEl.textContent = candidate.family;
+      familyEl.textContent = `${candidate.family} / ${candidate.status.replaceAll("_", " ")}`;
       summaryEl.textContent = candidate.summary;
       promptEl.textContent = candidate.modelPrompt;
       riskEl.textContent = candidate.risk;
