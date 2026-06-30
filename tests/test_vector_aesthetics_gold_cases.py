@@ -23,10 +23,11 @@ def test_checked_in_gold_cases_are_multimodal_and_learning_ready(tmp_path: Path)
     makio = cases["makio-meshline"]
     text_destruction = cases["interactive-text-destruction-webgpu-tsl"]
     scanning_depth = cases["webgpu-scanning-depth-maps"]
+    phantom_grid = cases["phantom-land-interactive-grid"]
 
-    assert payload["summary"]["gold_case_count"] == 3
-    assert payload["summary"]["multimodal_complete_count"] == 3
-    for case in [makio, text_destruction, scanning_depth]:
+    assert payload["summary"]["gold_case_count"] == 4
+    assert payload["summary"]["multimodal_complete_count"] == 4
+    for case in [makio, text_destruction, scanning_depth, phantom_grid]:
         assert case["coverage"]["screenshots"] == "complete"
         assert case["coverage"]["video"] == "complete"
         assert case["coverage"]["code_anatomy"] == "complete"
@@ -125,3 +126,30 @@ def test_webgpu_scanning_depth_gold_assets_are_bounded_and_self_contained():
     assert len(re.findall(r'class=\"depth-dot', html_text)) >= 36
     assert "data-depth-map=\"generated\"" in html_text
     assert "animation: scan" in html_text
+
+
+def test_phantom_land_grid_gold_assets_are_bounded_and_self_contained():
+    case_dir = REPO_ROOT / "data" / "vector-aesthetics" / "cases" / "phantom-land-interactive-grid"
+    size_budgets = {
+        "screenshots/minimal-rebuild-desktop.png": 280_000,
+        "videos/minimal-rebuild-motion.gif": 2_800_000,
+        "code/minimal-rebuild.html": 38_000,
+    }
+
+    for rel_path, max_bytes in size_budgets.items():
+        asset_path = case_dir / rel_path
+        assert asset_path.is_file()
+        assert asset_path.stat().st_size <= max_bytes
+
+    html_text = (case_dir / "code" / "minimal-rebuild.html").read_text(encoding="utf-8")
+    lowered_html = html_text.lower()
+    assert "<script" not in lowered_html
+    assert "src=" not in lowered_html
+    assert "href=" not in lowered_html
+    assert "http://" not in html_text
+    assert "https://" not in html_text
+    assert 'role="img"' in html_text
+    assert 'data-grid-field="generated"' in html_text
+    assert len(re.findall(r'class=\"grid-line', html_text)) >= 18
+    assert len(re.findall(r'class=\"face-particle', html_text)) >= 36
+    assert "animation: orbit" in html_text
