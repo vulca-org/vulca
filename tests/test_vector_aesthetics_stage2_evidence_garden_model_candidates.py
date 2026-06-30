@@ -38,13 +38,16 @@ def test_model_candidate_pack_defines_three_external_generation_candidates():
     assert payload["status"] == "ready_for_external_3d_generation"
     assert payload["source_baseline"]["visual_gate"] == "failed"
     assert "Never treat one generated model as final" in payload["iteration_rule"]
+    assert payload["selected_candidate_id"] == "glass-root-specimen"
 
     candidates = payload["candidates"]
     assert [candidate["id"] for candidate in candidates] == [
-        "mineral-root-island",
         "glass-root-specimen",
+        "mineral-root-island",
         "technical-data-island",
     ]
+    assert candidates[0]["priority"] == 1
+    assert "Primary model candidate" in candidates[0]["intent"]
 
 
 def test_model_candidate_pack_enforces_spatial_contracts_and_negative_prompts():

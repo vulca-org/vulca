@@ -6,7 +6,7 @@ Selected working direction for Stage 02. This is still pre-implementation: gener
 
 ## Direction
 
-Evidence Garden is a small floating data garden: a dark mineral island, translucent glass roots, luminous route veins, and three to five warm data blossoms. It should feel like a technical specimen in a dark museum, not fantasy terrain, dashboard UI, or text poster.
+Evidence Garden is now anchored on the Glass Root Specimen branch: a transparent technical specimen with a compact dark mineral garden core, internal glass roots, cyan signal veins, and tiny amber buds. It should feel like a quiet museum object, not fantasy terrain, dashboard UI, product perfume bottle, or text poster.
 
 The direction is selected because it solves the current visual problem:
 
@@ -120,7 +120,7 @@ Before final implementation:
 
 - First frame reads as a central object in under one second.
 - Silhouette remains recognizable at 1920x1080 and mobile crop.
-- Object looks like a technical specimen, not a fantasy island.
+- Object looks like a technical specimen, not a fantasy island or product bottle.
 - The page can show four states without adding text as the main visual.
 - GLB is small enough after optimization for local browser review.
 - The model has no text, logos, brand marks, characters, or mascot elements.
@@ -128,16 +128,18 @@ Before final implementation:
 
 ## Open Questions
 
-- Should the first generated asset lean more botanical or more mineral?
+- Should the first generated asset lean more botanical specimen or more glass archive object?
 - Should the final motion be scroll-driven, page-button-driven, or both?
 - Which tool will supply the first GLB: Spline, Tripo, Meshy, or manual Blender blockout?
 
 ## Current Recommendation
 
-Use Evidence Garden as the Stage 02 working direction, then generate three model candidates:
+Use Evidence Garden as the Stage 02 working direction, and use Glass Root Specimen as the primary model candidate.
 
-1. mineral island with glass roots;
-2. specimen vessel/garden hybrid;
-3. darker technical data island with fewer organic features.
+Generate candidates in this order:
 
-Pick the best silhouette first. Materials and scan overlays can be repaired later, but a weak silhouette will not recover.
+1. glass root specimen: transparent vessel, compact mineral core, contained roots, tiny amber signal buds;
+2. mineral root island: fallback if glass material fails or turns into a bottle;
+3. technical data island: fallback if the branch needs to read more engineered and less botanical.
+
+Pick the best silhouette first, but reject immediately if the glass form becomes a medicine vial, perfume bottle, terrarium, or generic product container. Materials and scan overlays can be repaired later, but weak shape logic will not recover.

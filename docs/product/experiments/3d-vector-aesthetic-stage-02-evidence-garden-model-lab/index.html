@@ -310,11 +310,26 @@
   <script>
     const CANDIDATES = [
       {
+        id: "glass-root-specimen",
+        label: "Glass Root Specimen",
+        accent: "#8da66f",
+        priority: 1,
+        intent: "Primary model candidate: the garden becomes a transparent technical specimen object with roots protected inside glass. It is quieter, more premium, and less likely to read as fantasy terrain.",
+        model_prompt: "Single centered GLB-ready 3D asset, premium transparent glass root specimen, clear oval glass vessel containing a compact dark mineral garden core, delicate root network suspended inside the glass, subtle cyan data veins running through the roots, three tiny warm amber signal buds inside the vessel, scientific botanical archive object, quiet luxury museum lighting response, clean premium silhouette, no background scene, no text, no logo, no characters, no mascot.",
+        spatial_contract: {
+          primary_mass: "one transparent glass vessel with a compact dark mineral garden core inside",
+          root_logic: "roots are fully contained and visible through glass; they curve around the core and must not pierce vessel walls",
+          route_logic: "cyan signal lines run along internal roots or inside designed glass channels",
+          blossom_logic: "amber buds stay internal, tiny, and signal-like; they attach to root endpoints or core sockets"
+        },
+        review_targets: { first_frame_beauty: 3, silhouette_strength: 3, material_separation: 3, state_potential: 3, cleanup_effort_max: 2 }
+      },
+      {
         id: "mineral-root-island",
         label: "Mineral Root Island",
         accent: "#6dd9cf",
-        priority: 1,
-        intent: "Most direct Evidence Garden subject: a floating mineral island with roots and route veins, but designed as a specimen object rather than fantasy terrain.",
+        priority: 2,
+        intent: "Secondary fallback: a floating mineral island with roots and route veins, but designed as a specimen object rather than fantasy terrain.",
         model_prompt: "Single centered GLB-ready 3D asset, floating mineral evidence garden island, asymmetric oval graphite and basalt base, carved shallow root sockets under the island, translucent glass roots emerging from visible sockets without intersecting the stone, thin cyan luminous route veins embedded into the top surface, three small amber data blossoms attached to vein endpoints, technical botanical museum specimen, clean silhouette, no background environment, no text, no logo, no characters, no mascot.",
         spatial_contract: {
           primary_mass: "one asymmetric mineral island with a flat-enough top surface and visible underside",
@@ -323,21 +338,6 @@
           blossom_logic: "blossoms attach to route endpoints and stay small; they should read as data nodes, not flowers"
         },
         review_targets: { first_frame_beauty: 3, silhouette_strength: 3, material_separation: 2, state_potential: 3, cleanup_effort_max: 2 }
-      },
-      {
-        id: "glass-root-specimen",
-        label: "Glass Root Specimen",
-        accent: "#8da66f",
-        priority: 2,
-        intent: "A quieter, more premium version: the garden becomes a transparent specimen object with roots protected inside glass.",
-        model_prompt: "Single centered GLB-ready 3D asset, transparent glass specimen vessel containing a small dark mineral garden core, root network suspended inside the glass, subtle cyan data veins running through the roots, three tiny warm amber signal buds inside the vessel, scientific botanical archive object, elegant museum lighting response, clean premium silhouette, no background scene, no text, no logo, no characters, no mascot.",
-        spatial_contract: {
-          primary_mass: "one transparent vessel with a compact mineral garden core inside",
-          root_logic: "roots are contained and visible through glass; they should curve around the core instead of piercing vessel walls",
-          route_logic: "cyan signal lines run along roots or inside glass channels",
-          blossom_logic: "amber buds stay internal, tiny, and signal-like"
-        },
-        review_targets: { first_frame_beauty: 3, silhouette_strength: 2, material_separation: 3, state_potential: 2, cleanup_effort_max: 3 }
       },
       {
         id: "technical-data-island",
