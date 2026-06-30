@@ -66,6 +66,14 @@ def _flag_list(flags: list[str]) -> str:
     return '<div class="flags">' + "".join(f"<span>{_visible(flag)}</span>" for flag in flags) + "</div>"
 
 
+def _is_gold_case(case: dict[str, Any]) -> bool:
+    return not case.get("data_quality_flags")
+
+
+def _case_class(case: dict[str, Any]) -> str:
+    return "case-gold" if _is_gold_case(case) else "case-seed"
+
+
 def _safe_href(value: Any, output_dir: Path, *, case_path: str | None = None) -> str:
     raw = str(value or "").strip()
     if not raw:
@@ -85,6 +93,39 @@ def _safe_href(value: Any, output_dir: Path, *, case_path: str | None = None) ->
 
     target = Path(case_path) / raw
     return _redact(os.path.relpath(target, output_dir).replace(os.sep, "/"))
+
+
+def _media_preview(case: dict[str, Any], output_dir: Path) -> str:
+    case_path = str(case.get("local_case_path") or case.get("case_rel", "")) or None
+    previews = []
+    for evidence_type in ["screenshot", "video"]:
+        capture = next(
+            (
+                item
+                for item in case.get("captures", [])
+                if item.get("evidence_type") == evidence_type
+                and item.get("rights_status") == "local_capture"
+                and item.get("interaction") != "capture_failed"
+            ),
+            None,
+        )
+        if not capture:
+            continue
+        href = _safe_href(capture.get("path_or_url", ""), output_dir, case_path=case_path)
+        label = "video" if evidence_type == "video" else "screenshot"
+        previews.append(
+            "\n".join(
+                [
+                    '<a class="preview-tile" href="' + _escape(href) + '">',
+                    f'<img src="{_escape(href)}" alt="{_visible(case.get("title", "Case"))} {label} preview" loading="lazy">',
+                    f"<span>{_visible(label)}</span>",
+                    "</a>",
+                ]
+            )
+        )
+    if not previews:
+        return '<div class="media-preview media-empty"><span>No local media preview</span></div>'
+    return '<div class="media-preview">' + "".join(previews) + "</div>"
 
 
 def _capture_details(capture: dict[str, Any]) -> str:
@@ -185,11 +226,12 @@ def _case_card(case: dict[str, Any], output_dir: Path) -> str:
     canonical_href = _safe_href(canonical_url, output_dir)
     return "\n".join(
         [
-            '<article class="case-card">',
+            f'<article class="case-card {_case_class(case)}" data-case-id="{_visible(case.get("id", ""))}">',
             '<div class="case-head">',
             f"<h2>{_visible(case.get('title', 'Untitled'))}</h2>",
             f'<span class="score">{_escape(case.get("quality_score_total", 0))}/18</span>',
             "</div>",
+            _media_preview(case, output_dir),
             f"<p>{_visible(case.get('summary', ''))}</p>",
             f'<p><a href="{_escape(canonical_href)}">{_visible(canonical_url)}</a></p>',
             f'<div class="badges">{_badge_list(case.get("visual_families", []))}</div>',
@@ -234,6 +276,83 @@ def _quality_gate(payload: dict[str, Any]) -> str:
     )
 
 
+def _filter_controls() -> str:
+    return "\n".join(
+        [
+            '<section class="review-filters">',
+            "<h2>Review Filters</h2>",
+            '<div class="filter-row">',
+            '<label for="filter-all">All cases</label>',
+            '<label for="filter-gold">Gold only</label>',
+            '<label for="filter-seed">Seed gaps</label>',
+            "</div>",
+            "</section>",
+        ]
+    )
+
+
+def _family_matrix(cases: list[dict[str, Any]]) -> str:
+    families: dict[str, dict[str, int]] = {}
+    for case in cases:
+        for family in case.get("visual_families", []):
+            family_key = str(family)
+            record = families.setdefault(family_key, {"total": 0, "gold": 0})
+            record["total"] += 1
+            if _is_gold_case(case):
+                record["gold"] += 1
+    rows = []
+    for family, record in sorted(families.items()):
+        rows.append(
+            "\n".join(
+                [
+                    "<tr>",
+                    f"<th>{_visible(family)}</th>",
+                    f"<td>{_visible(str(record['gold']) + ' / ' + str(record['total']) + ' gold')}</td>",
+                    "</tr>",
+                ]
+            )
+        )
+    return "\n".join(
+        [
+            '<section class="coverage-matrix">',
+            "<h2>Family Coverage Matrix</h2>",
+            "<table>",
+            "<thead><tr><th>Family</th><th>Gold Coverage</th></tr></thead>",
+            f"<tbody>{''.join(rows)}</tbody>",
+            "</table>",
+            "</section>",
+        ]
+    )
+
+
+def _gap_queue(cases: list[dict[str, Any]]) -> str:
+    rows = []
+    for case in cases:
+        flags = case.get("data_quality_flags", [])
+        if not flags:
+            continue
+        flag_badges = '<span class="gap-flags">' + "".join(f"<span>{_visible(flag)}</span>" for flag in flags) + "</span>"
+        rows.append(
+            "\n".join(
+                [
+                    '<li class="gap-item">',
+                    f"<strong>{_visible(case.get('title', 'Untitled'))}</strong>",
+                    flag_badges,
+                    "</li>",
+                ]
+            )
+        )
+    body = "".join(rows) if rows else '<li class="gap-item gap-clear"><strong>No active gaps</strong><span>All cases are gold-ready.</span></li>'
+    return "\n".join(
+        [
+            '<section class="gap-queue">',
+            "<h2>Gap Queue</h2>",
+            f"<ul>{body}</ul>",
+            "</section>",
+        ]
+    )
+
+
 def _compare_matrix(cases: list[dict[str, Any]]) -> str:
     rows = []
     for case in cases:
@@ -271,6 +390,9 @@ def _html(payload: dict[str, Any], output_dir: Path) -> str:
     cases = payload.get("cases", [])
     cards = "\n".join(_case_card(case, output_dir) for case in cases)
     quality = _quality_gate(payload)
+    filters = _filter_controls()
+    family_matrix = _family_matrix(cases)
+    gap_queue = _gap_queue(cases)
     compare = _compare_matrix(cases)
     return "\n".join(
         [
@@ -284,34 +406,45 @@ def _html(payload: dict[str, Any], output_dir: Path) -> str:
             ":root{color-scheme:dark;font-family:Arial,sans-serif;background:#0d1014;color:#e8edf2}",
             "body{margin:0;padding:28px;background:#0d1014}",
             "main{max-width:1280px;margin:0 auto}",
+            ".filter-toggle{position:absolute;inline-size:1px;block-size:1px;opacity:0;pointer-events:none}",
+            "#filter-gold:checked ~ .grid .case-seed{display:none}#filter-seed:checked ~ .grid .case-gold{display:none}",
+            "#filter-all:checked ~ .review-filters label[for=filter-all],#filter-gold:checked ~ .review-filters label[for=filter-gold],#filter-seed:checked ~ .review-filters label[for=filter-seed]{background:#d8e4ef;color:#10151b;border-color:#d8e4ef}",
             "header{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px}",
             "h1{font-size:32px;margin:0 0 8px}h2{font-size:18px;margin:0}p{color:#aeb8c4;line-height:1.5}",
             ".views{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:18px 0}",
             ".view-pill,.case-card{border:1px solid #27313d;background:#131922;border-radius:8px}",
             ".view-pill{padding:12px;color:#d8e4ef}",
+            ".active-view{background:#d8e4ef;color:#10151b;border-color:#d8e4ef}",
             ".grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}",
             ".case-card{padding:16px}.case-head{display:flex;justify-content:space-between;gap:12px}",
+            ".media-preview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}.media-empty{display:block;border-top:1px solid #222b35;padding-top:10px;color:#7f8b99;font:12px/1.3 monospace}.preview-tile{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;border:1px solid #2c3947;background:#0a0f15}.preview-tile img{width:100%;height:100%;object-fit:cover;display:block}.preview-tile span{position:absolute;left:8px;bottom:8px;background:#0b1118cc;border:1px solid #334353;color:#d8e4ef;font:11px/1.2 monospace;padding:4px 6px}",
             ".score{font:12px/1.2 monospace;border:1px solid #415061;border-radius:999px;padding:5px 8px;color:#c9f3ff}",
             ".badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.badges span{font:12px/1.2 monospace;background:#1e2a36;border:1px solid #32404f;border-radius:999px;padding:5px 7px}",
             ".flags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.flags span{font:12px/1.2 monospace;color:#ffd4bd;background:#3a211b;border:1px solid #684032;border-radius:999px;padding:5px 7px}.flags-clear span{color:#bfe8c4;background:#193120;border-color:#345a3d}",
             ".muted-badges span{color:#b3bcc6}.coverage-list{list-style:none;padding:0;margin:12px 0;display:grid;gap:5px}.coverage-list li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #222b35;padding-top:5px}",
             ".manifest-state{font:12px/1.4 monospace;color:#d7c98d;margin:8px 0 0}.learning-path{display:grid;gap:10px;margin:12px 0}.learning-panel,.module-card{border-top:1px solid #222b35;padding-top:10px}.learning-panel h3{font-size:13px;margin:0 0 6px;color:#d8e4ef}.learning-panel pre{white-space:pre-wrap;word-break:break-word;margin:0;color:#aeb8c4;font:12px/1.45 monospace}.module-list{display:grid;gap:8px}.module-head{display:flex;justify-content:space-between;gap:10px;color:#d8e4ef;font:12px/1.4 monospace}.module-field{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:10px;font:12px/1.4 monospace;color:#aeb8c4}",
             ".quality-gate{border:1px solid #4d3626;background:#1a1613;border-radius:8px;padding:16px;margin:18px 0}.quality-gate h2{margin:0 0 8px}.quality-gate p{margin:0 0 12px;color:#d0b8a6}.quality-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.quality-metric{border-top:1px solid #4d3626;padding-top:10px}.quality-metric strong{display:block;font-size:22px}.quality-metric span{color:#d0b8a6;font:12px/1.3 monospace}",
-            ".compare-matrix{margin:22px 0;overflow:auto}.compare-matrix h2{margin:0 0 10px}.compare-matrix table{width:100%;border-collapse:collapse;font-size:12px}.compare-matrix th,.compare-matrix td{border-top:1px solid #27313d;padding:8px;text-align:left;vertical-align:top}.compare-matrix th{color:#e8edf2}.compare-matrix td{color:#aeb8c4}",
+            ".review-filters,.coverage-matrix,.gap-queue,.compare-matrix{margin:22px 0;overflow:auto}.review-filters h2,.coverage-matrix h2,.gap-queue h2,.compare-matrix h2{margin:0 0 10px}.filter-row{display:flex;flex-wrap:wrap;gap:8px}.filter-row label{cursor:pointer;border:1px solid #344353;background:#121922;color:#d8e4ef;border-radius:8px;padding:8px 10px;font:12px/1.2 monospace}.coverage-matrix table,.compare-matrix table{width:100%;border-collapse:collapse;font-size:12px}.coverage-matrix th,.coverage-matrix td,.compare-matrix th,.compare-matrix td{border-top:1px solid #27313d;padding:8px;text-align:left;vertical-align:top}.coverage-matrix th,.compare-matrix th{color:#e8edf2}.coverage-matrix td,.compare-matrix td{color:#aeb8c4}.gap-queue ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}.gap-item{border-top:1px solid #27313d;padding-top:8px;display:grid;grid-template-columns:minmax(180px,auto) 1fr;gap:12px}.gap-item strong{color:#e8edf2}.gap-flags{display:flex;flex-wrap:wrap;gap:6px}.gap-flags span{color:#ffd4bd;background:#3a211b;border:1px solid #684032;border-radius:999px;padding:4px 6px;font:12px/1.2 monospace}.gap-clear span{color:#bfe8c4}",
             "a{color:#8ed7ff}.capture-list{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}.capture-item{border-top:1px solid #222b35;padding-top:10px}.capture-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.capture-path{color:#9aa7b4;font:12px/1.3 monospace;word-break:break-word}.capture-details{display:grid;gap:6px;margin-top:8px}.capture-field{display:grid;grid-template-columns:minmax(112px,auto) 1fr;gap:10px}.capture-label{font:12px/1.3 monospace;color:#9aa7b4;text-transform:lowercase}",
             "</style>",
             "</head>",
             "<body>",
             "<main>",
             '<header><div><h1>3D Vector Aesthetics Learning Atlas</h1><p>Archive + Lab + Course review surface for contemporary technical vector references.</p></div></header>',
+            '<input class="filter-toggle" type="radio" name="case-filter" id="filter-all" checked>',
+            '<input class="filter-toggle" type="radio" name="case-filter" id="filter-gold">',
+            '<input class="filter-toggle" type="radio" name="case-filter" id="filter-seed">',
             '<section class="views">',
-            '<div class="view-pill">Atlas View</div>',
+            '<div class="view-pill active-view">Atlas View</div>',
             '<div class="view-pill">Anatomy View</div>',
             '<div class="view-pill">Compare View</div>',
             '<div class="view-pill">Coverage View</div>',
             '<div class="view-pill">Lesson Path View</div>',
             "</section>",
+            filters,
             quality,
+            family_matrix,
+            gap_queue,
             compare,
             f'<section class="grid">{cards}</section>',
             f'<script id="review-data" type="application/json">{_safe_json_script(payload)}</script>',

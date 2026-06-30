@@ -305,3 +305,113 @@ def test_write_review_html_blocks_unsafe_href_and_hardens_script_json(tmp_path: 
 
     parsed = json.loads(script_body.replace("<\\/", "</"))
     assert parsed["cases"][0]["title"] == "</script><script>alert(1)</script>"
+
+
+def test_write_review_html_renders_media_previews_filters_family_matrix_and_gap_queue(tmp_path: Path):
+    from vulca.vector_aesthetics.review_html import write_review_html
+
+    case_dir = tmp_path / "vector-aesthetics" / "cases" / "gold-case"
+    (case_dir / "screenshots").mkdir(parents=True)
+    (case_dir / "videos").mkdir(parents=True)
+    (case_dir / "screenshots" / "still.png").write_text("png fixture", encoding="utf-8")
+    (case_dir / "videos" / "motion.gif").write_text("gif fixture", encoding="utf-8")
+    output_dir = tmp_path / "output" / "review"
+    review_json = tmp_path / "references.json"
+    review_json.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "summary": {
+                    "case_count": 2,
+                    "gold_case_count": 1,
+                    "multimodal_complete_count": 1,
+                    "seed_stub_case_count": 1,
+                },
+                "cases": [
+                    {
+                        "id": "gold-case",
+                        "title": "Gold Case",
+                        "summary": "Gold preview test.",
+                        "visual_families": ["meshline", "scan_depth"],
+                        "coverage": {"screenshots": "complete", "video": "complete"},
+                        "quality_score_total": 17,
+                        "review_status": "shortlist",
+                        "canonical_url": "https://example.com/gold",
+                        "asset_manifest_status": "present_with_assets",
+                        "data_quality_flags": [],
+                        "case_rel": case_dir.as_posix(),
+                        "modules": [{"module_type": "meshline", "payload": {}, "review_status": "complete", "confidence": "high"}],
+                        "captures": [
+                            {
+                                "id": "still",
+                                "evidence_type": "screenshot",
+                                "path_or_url": "screenshots/still.png",
+                                "capture_method": "user_supplied",
+                                "viewport": "960x540",
+                                "interaction": "idle",
+                                "captured_at": "2026-06-30",
+                                "source_url": "https://example.com/gold",
+                                "confidence": "high",
+                                "rights_status": "local_capture",
+                                "notes": "Local still.",
+                            },
+                            {
+                                "id": "motion",
+                                "evidence_type": "video",
+                                "path_or_url": "videos/motion.gif",
+                                "capture_method": "user_supplied",
+                                "viewport": "960x540",
+                                "interaction": "motion",
+                                "captured_at": "2026-06-30",
+                                "source_url": "https://example.com/gold",
+                                "confidence": "high",
+                                "rights_status": "local_capture",
+                                "notes": "Local motion.",
+                            },
+                        ],
+                    },
+                    {
+                        "id": "seed-case",
+                        "title": "Seed Case",
+                        "summary": "Seed gap test.",
+                        "visual_families": ["scan_depth"],
+                        "coverage": {"screenshots": "partial", "video": "partial"},
+                        "quality_score_total": 10,
+                        "review_status": "candidate",
+                        "canonical_url": "https://example.com/seed",
+                        "asset_manifest_status": "present_empty",
+                        "data_quality_flags": ["missing_local_screenshot", "metadata_only_modules"],
+                        "case_rel": "cases/seed-case",
+                        "modules": [{"module_type": "scan_depth", "payload": {}, "review_status": "partial", "confidence": "low"}],
+                        "captures": [],
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    html_text = write_review_html(review_json, output_dir / "index.html").read_text(encoding="utf-8")
+    still_href = os.path.relpath(case_dir / "screenshots" / "still.png", output_dir).replace(os.sep, "/")
+    motion_href = os.path.relpath(case_dir / "videos" / "motion.gif", output_dir).replace(os.sep, "/")
+
+    assert "Review Filters" in html_text
+    assert 'class="view-pill active-view"' in html_text
+    assert 'id="filter-gold"' in html_text
+    assert 'id="filter-seed"' in html_text
+    assert 'class="case-card case-gold"' in html_text
+    assert 'class="case-card case-seed"' in html_text
+    assert "Family Coverage Matrix" in html_text
+    assert "meshline" in html_text
+    assert "scan_depth" in html_text
+    assert "1 / 1 gold" in html_text
+    assert "1 / 2 gold" in html_text
+    assert "Gap Queue" in html_text
+    assert 'class="gap-flags"' in html_text
+    assert '<span>missing_local_screenshot</span>' in html_text
+    assert '<span>metadata_only_modules</span>' in html_text
+    assert "missing_local_screenshot" in html_text
+    assert f'src="{still_href}"' in html_text
+    assert f'src="{motion_href}"' in html_text
+    assert 'alt="Gold Case screenshot preview"' in html_text
+    assert 'alt="Gold Case video preview"' in html_text
