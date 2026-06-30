@@ -6,6 +6,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_HTML = REPO_ROOT / "docs" / "product" / "experiments" / "3d-vector-aesthetic-stage" / "index.html"
 VIDEO_SCRIPT = REPO_ROOT / "scripts" / "build_vector_stage_video.py"
+LIVE_RECORD_SCRIPT = REPO_ROOT / "scripts" / "record_vector_stage_live.py"
 VOICE_AUDITION_SCRIPT = REPO_ROOT / "scripts" / "build_vector_voice_auditions.py"
 
 
@@ -27,8 +28,11 @@ def test_stage_product_is_single_file_recording_surface():
     assert "__VULCA_RENDER_FRAME__" in html_text
     assert "drawRecordCursor" in html_text
     assert "getRecordCursor" in html_text
+    assert "captureMode" in html_text
+    assert "cursorTrail" in html_text
     assert "cursor: { ...recordCursor }" in html_text
     assert "pointermove" in html_text
+    assert "pointerup" in html_text
 
     assert "<iframe" not in lowered
     assert "http://" not in lowered
@@ -80,14 +84,34 @@ def test_stage_video_builder_targets_xhs_mp4():
     assert "ImageDraw" in script_text
     assert "page.mouse.move" in script_text
     assert "page.mouse.down" in script_text
+    assert "deviceScaleFactor" in script_text
+    assert "render_scale" in script_text
+    assert "type: 'png'" in script_text
     assert "h264_videotoolbox" in script_text
-    assert "12M" in script_text
+    assert "24M" in script_text
+    assert "30M" in script_text
     assert "aac" in script_text
     assert "__VULCA_RENDER_FRAME__" in script_text
     assert "不是" not in script_text
     assert "而是" not in script_text
     assert "AI 式" not in script_text
     assert "反转句" not in script_text
+
+
+def test_stage_live_recorder_uses_real_pointer_capture():
+    script_text = LIVE_RECORD_SCRIPT.read_text(encoding="utf-8")
+
+    assert LIVE_RECORD_SCRIPT.is_file()
+    assert "capture=1" in script_text
+    assert "recordVideo" in script_text
+    assert "headless: false" in script_text
+    assert "LIVE_CAPTURE_READY" in script_text
+    assert "trim=start" in script_text
+    assert "h264_videotoolbox" in script_text
+    assert "24M" in script_text
+    assert "zh-CN-XiaoxiaoNeural" in script_text
+    assert "不是" not in script_text
+    assert "而是" not in script_text
 
 
 def test_stage_voice_audition_builder_compares_neural_cn_voices():

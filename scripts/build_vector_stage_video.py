@@ -165,7 +165,8 @@ def burn_subtitles_on_frames(
     margin_x = max(34, round(width * 0.09))
     base_y = height - max(88, round(height * 0.14))
 
-    for frame_path in sorted(frames_dir.glob("frame_*.jpg")):
+    frame_paths = sorted(frames_dir.glob("frame_*.png")) or sorted(frames_dir.glob("frame_*.jpg"))
+    for frame_path in frame_paths:
         frame_number = int(frame_path.stem.split("_")[-1])
         timestamp = frame_number / fps
         cue_text = ""
@@ -206,7 +207,10 @@ def burn_subtitles_on_frames(
             draw.text((x, y), line, font=font, fill=(245, 240, 223, 242))
             y += line_heights[index] + 10
         image = Image.alpha_composite(image.convert("RGBA"), overlay).convert("RGB")
-        image.save(frame_path, quality=92, subsampling=0)
+        if frame_path.suffix.lower() == ".png":
+            image.save(frame_path, compress_level=3)
+        else:
+            image.save(frame_path, quality=96, subsampling=0)
 
     return font_path
 
@@ -391,7 +395,15 @@ def wait_for_http(port: int) -> None:
     raise RuntimeError("local HTTP server did not start")
 
 
-def capture_frames(work_dir: Path, url: str, width: int, height: int, fps: int, frame_count: int) -> None:
+def capture_frames(
+    work_dir: Path,
+    url: str,
+    width: int,
+    height: int,
+    fps: int,
+    frame_count: int,
+    render_scale: float,
+) -> None:
     if not CHROME_EXECUTABLE.exists():
         raise SystemExit(f"Chrome executable not found: {CHROME_EXECUTABLE}")
     if not PLAYWRIGHT_MODULE.exists():
@@ -417,7 +429,7 @@ def capture_frames(work_dir: Path, url: str, width: int, height: int, fps: int, 
               }});
               const page = await browser.newPage({{
                 viewport: {{ width: {width}, height: {height} }},
-                deviceScaleFactor: 1
+                deviceScaleFactor: {render_scale:.3f}
               }});
               await page.goto({json.dumps(url)}, {{ waitUntil: 'domcontentloaded' }});
               await page.waitForFunction(() => typeof window.__VULCA_RENDER_FRAME__ === 'function');
@@ -437,11 +449,10 @@ def capture_frames(work_dir: Path, url: str, width: int, height: int, fps: int, 
                     mouseDown = false;
                   }}
                 }}
-                const name = `frame_${{String(frame).padStart(5, '0')}}.jpg`;
+                const name = `frame_${{String(frame).padStart(5, '0')}}.png`;
                 await page.screenshot({{
                   path: {json.dumps(str(frames_dir))} + '/' + name,
-                  type: 'jpeg',
-                  quality: 92,
+                  type: 'png',
                   animations: 'disabled',
                   fullPage: false
                 }});
@@ -470,6 +481,10 @@ def build_video(
     fps: int,
     width: int,
     height: int,
+    render_scale: float,
+    video_bitrate: str,
+    video_maxrate: str,
+    video_bufsize: str,
     voice: str,
     voice_rate: int,
     keep_frames: bool,
@@ -498,6 +513,8 @@ def build_video(
     subtitle_cues = list(voiceover["cues"])
     final_duration = max(duration, math.ceil((voice_duration + 1.2) * 10) / 10)
     frame_count = int(math.ceil(final_duration * fps))
+    capture_width = int(round(width * render_scale))
+    capture_height = int(round(height * render_scale))
 
     write_music(music_wav, final_duration)
     write_ass_subtitles(subtitles_ass, subtitle_cues, width, height, final_duration)
@@ -510,7 +527,7 @@ def build_video(
             f"http://127.0.0.1:{port}/"
             "docs/product/experiments/3d-vector-aesthetic-stage/index.html?record=1"
         )
-        capture_frames(work_dir, url, width, height, fps, frame_count)
+        capture_frames(work_dir, url, width, height, fps, frame_count, render_scale)
     finally:
         server.terminate()
         try:
@@ -518,8 +535,15 @@ def build_video(
         except subprocess.TimeoutExpired:
             server.kill()
 
-    frames_pattern = work_dir / "frames/frame_%05d.jpg"
-    font_path = burn_subtitles_on_frames(work_dir / "frames", subtitle_cues, fps, final_duration, width, height)
+    frames_pattern = work_dir / "frames/frame_%05d.png"
+    font_path = burn_subtitles_on_frames(
+        work_dir / "frames",
+        subtitle_cues,
+        fps,
+        final_duration,
+        capture_width,
+        capture_height,
+    )
     filter_graph = (
         f"[0:v]scale={width}:{height}:flags=lanczos,format=yuv420p[v];"
         "[1:a]volume=1.12,adelay=220|220,apad[a1];"
@@ -554,11 +578,11 @@ def build_video(
             "-c:v",
             "h264_videotoolbox",
             "-b:v",
-            "12M",
+            video_bitrate,
             "-maxrate",
-            "14M",
+            video_maxrate,
             "-bufsize",
-            "18M",
+            video_bufsize,
             "-profile:v",
             "high",
             "-pix_fmt",
@@ -617,6 +641,12 @@ def build_video(
         "fps": fps,
         "width": width,
         "height": height,
+        "render_scale": render_scale,
+        "source_frame_width": capture_width,
+        "source_frame_height": capture_height,
+        "video_bitrate": video_bitrate,
+        "video_maxrate": video_maxrate,
+        "video_bufsize": video_bufsize,
         "frame_count": frame_count,
         "voice": voiceover["voice"],
         "voice_duration_seconds": round(voice_duration, 3),
@@ -645,6 +675,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--fps", type=int, default=24)
     parser.add_argument("--width", type=int, default=1920)
     parser.add_argument("--height", type=int, default=1080)
+    parser.add_argument("--render-scale", type=float, default=2.0)
+    parser.add_argument("--video-bitrate", default="24M")
+    parser.add_argument("--video-maxrate", default="30M")
+    parser.add_argument("--video-bufsize", default="48M")
     parser.add_argument("--voice", default="zh-CN-XiaoxiaoNeural")
     parser.add_argument("--voice-rate", type=int, default=170)
     parser.add_argument("--keep-frames", action="store_true")
@@ -656,6 +690,10 @@ def main(argv: list[str] | None = None) -> int:
         fps=args.fps,
         width=args.width,
         height=args.height,
+        render_scale=max(1.0, args.render_scale),
+        video_bitrate=args.video_bitrate,
+        video_maxrate=args.video_maxrate,
+        video_bufsize=args.video_bufsize,
         voice=args.voice,
         voice_rate=args.voice_rate,
         keep_frames=args.keep_frames,
