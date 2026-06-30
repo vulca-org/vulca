@@ -12,35 +12,61 @@
       "evidence_type": "external_doc",
       "id": "canonical-source",
       "interaction": "none",
-      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "notes": "Canonical Codrops article for attribution and technical framing; local evidence below is generated from scratch for learning review.",
       "path_or_url": "https://tympanus.net/codrops/2025/07/22/interactive-text-destruction-with-three-js-webgpu-and-tsl/",
       "rights_status": "source_link_only",
       "source_url": "https://tympanus.net/codrops/2025/07/22/interactive-text-destruction-with-three-js-webgpu-and-tsl/",
       "viewport": "none"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "screenshot",
-      "id": "screenshot-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires visual capture. No local screenshot archived yet.",
-      "path_or_url": "https://tympanus.net/codrops/2025/07/22/interactive-text-destruction-with-three-js-webgpu-and-tsl/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "pointer_displacement_state",
+      "notes": "Local generated rebuild screenshot showing 3D text volume, pointer influence rings, displaced fragments, and particle traces; not copied from the Codrops demo.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
       "source_url": "https://tympanus.net/codrops/2025/07/22/interactive-text-destruction-with-three-js-webgpu-and-tsl/",
-      "viewport": "none"
+      "viewport": "960x540"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "video",
-      "id": "video-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
-      "path_or_url": "https://tympanus.net/codrops/2025/07/22/interactive-text-destruction-with-three-js-webgpu-and-tsl/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-motion",
+      "interaction": "spring_back_reconstruction",
+      "notes": "Local generated motion clip isolates fragments settling from a pointer-displaced state back toward readable text; not copied from the Codrops demo.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/07/22/interactive-text-destruction-with-three-js-webgpu-and-tsl/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise that reconstructs the primitive with text fragments, pointer field rings, glow layers, and CSS-only drift animation.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/07/22/interactive-text-destruction-with-three-js-webgpu-and-tsl/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
       "source_url": "https://tympanus.net/codrops/2025/07/22/interactive-text-destruction-with-three-js-webgpu-and-tsl/",
       "viewport": "none"
     }
@@ -49,66 +75,123 @@
   "id": "interactive-text-destruction-webgpu-tsl",
   "modules": [
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "typography_3d",
       "payload": {
-        "learning_primitive": "typography_3d learning primitive",
-        "seed_status": "metadata_only"
+        "destruction_state": "letters remain readable while fragments are displaced by a pointer field",
+        "learning_primitive": "interactive 3D text destruction",
+        "reconstruction_state": "fragments spring back toward a legible word structure",
+        "rebuild_scope": "local generated typography study from the visible primitive, not a capture of upstream geometry",
+        "text_volume_model": "bold word face, chromatic offset shadows, and block fragments imply depth without copying TextGeometry",
+        "word": "VULCA"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and HTML note all represent the same typography destruction primitive.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "particle_vector",
+      "payload": {
+        "field_behavior": "particles radiate from the pointer zone and retain faint trace lines to expose force direction",
+        "learning_primitive": "pointer-driven fragment and particle field",
+        "particle_count": 150,
+        "shape_units": "small cyan, magenta, yellow, and white points mixed with rectangular text fragments",
+        "visual_role": "makes the interaction field visible rather than treating destruction as a pure opacity effect"
+      },
+      "review_notes": "Particle vector layer is explicit enough to teach force field, fragment scatter, and readable-state recovery separately.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "medium",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-code"
+      ],
       "module_type": "shader_material",
       "payload": {
-        "learning_primitive": "shader_material learning primitive",
-        "seed_status": "metadata_only"
+        "background_system": "dark grid plus pointer rings to locate the destruction field",
+        "bloom_proxy": "blurred cyan/magenta/yellow accents and bright fragments approximate emissive post-processing",
+        "learning_primitive": "emissive typography material stack",
+        "palette": [
+          "cyan displacement",
+          "magenta fracture",
+          "yellow energy fragments",
+          "white readable face"
+        ],
+        "source_boundary": "does not claim Codrops shader code, TSL nodes, or exact postprocessing implementation"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Material notes are complete for visual reconstruction; exact WebGPU shader implementation is intentionally not claimed.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "interaction_state",
       "payload": {
-        "learning_primitive": "interaction_state learning primitive",
-        "seed_status": "metadata_only"
+        "input_model": "pointer influence point displaces nearby fragments outward",
+        "learning_primitive": "distance-field text disruption state",
+        "motion_model": "fragment drift and spring-back reconstruction",
+        "state_names": [
+          "readable_text",
+          "pointer_displacement",
+          "spring_back"
+        ],
+        "verification_command": "PYTHONPATH=src pytest tests/test_vector_aesthetics_gold_cases.py -q"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Interaction is represented as named states plus still and motion evidence.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
       "module_type": "vulca_translation",
       "payload": {
-        "learning_primitive": "vulca_translation learning primitive",
-        "seed_status": "metadata_only"
+        "evidence_layer": "local PNG proves displaced state, local GIF proves reconstruction motion, HTML note proves the rebuild recipe",
+        "learning_primitive": "claim-label destruction and recovery primitive",
+        "review_gap": "canonical source remains link-only; local rebuild teaches mechanics without upstream media",
+        "route_decision": "use readable text for stable claims, displaced fragments for uncertainty, and spring-back motion for repaired evidence state",
+        "source_trail": "canonical article plus generated local reconstruction",
+        "uncertainty": "exact upstream WebGPU/TSL implementation is not claimed"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
     }
   ],
   "quality_scores": {
     "aesthetic_relevance": 3,
-    "interaction_clarity": 1,
+    "interaction_clarity": 3,
     "license_safety": 2,
-    "multimodal_completeness": 0,
-    "technical_learnability": 2,
-    "vulca_transfer_value": 2
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
   },
-  "review_status": "candidate",
+  "review_status": "shortlist",
   "source_type": "tutorial",
-  "summary": "Interactive 3D text destruction and reconstruction using Three.js, WebGPU, and TSL.",
+  "summary": "Contemporary 3D text destruction reference rebuilt as a local typography and particle-field learning primitive with still, motion, code, and asset evidence.",
   "title": "Interactive Text Destruction with Three.js, WebGPU and TSL",
   "visual_families": [
     "typography_3d",
     "particle_vector"
   ],
-  "why_relevant": "Maps directly to technical evidence labels exploding into fragments and rebuilding into readable state.",
+  "why_relevant": "Maps directly to technical evidence labels exploding into fragments, showing uncertainty, then rebuilding into a readable claim state.",
   "year": 2025
 }
