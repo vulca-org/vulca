@@ -1,0 +1,25 @@
+{
+  "asset_id": "evidence-garden-blockout",
+  "path": "docs/product/experiments/3d-vector-aesthetic-stage-02-evidence-garden/assets/evidence-garden-blockout.glb",
+  "format": "glb",
+  "source": "procedural_blockout",
+  "generated_by": "scripts/build_stage02_evidence_garden_glb.py",
+  "intent": "Baseline local GLB for Evidence Garden first-frame and model-viewer smoke review.",
+  "model_parts": [
+    "evidence_garden_mineral_island",
+    "evidence_garden_moss_specimen_surface",
+    "evidence_garden_translucent_roots",
+    "evidence_garden_luminous_route_veins",
+    "evidence_garden_warm_data_blossoms",
+    "evidence_garden_archive_seed_particles"
+  ],
+  "materials": [
+    "dark_graphite_mineral",
+    "translucent_glass_roots",
+    "cyan_route_veins",
+    "warm_data_blossoms",
+    "moss_specimen_surface"
+  ],
+  "rights_status": "generated_local_procedural",
+  "do_not_treat_as_final_asset": true
+}
