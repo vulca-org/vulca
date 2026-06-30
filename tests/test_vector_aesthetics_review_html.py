@@ -33,6 +33,10 @@ def test_write_review_html_renders_required_views(tmp_path: Path):
     assert "learning_primitive" in html_text
     assert "meshline learning primitive" in html_text
     assert "Manifest present, no archived assets" in html_text
+    assert "Data Quality Gate" in html_text
+    assert "Seed/stub cases" in html_text
+    assert "Gold cases" in html_text
+    assert "metadata_only_modules" in html_text
     assert '<script id="review-data" type="application/json">' in html_text
 
 

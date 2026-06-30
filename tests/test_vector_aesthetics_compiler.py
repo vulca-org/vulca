@@ -43,7 +43,12 @@ def test_export_review_json_is_bounded_and_sorted(tmp_path: Path):
 
     assert payload["schema_version"] == 1
     assert payload["summary"]["case_count"] == 12
+    assert payload["summary"]["gold_case_count"] == 0
+    assert payload["summary"]["seed_stub_case_count"] == 12
+    assert payload["summary"]["multimodal_complete_count"] == 0
     assert [case["id"] for case in payload["cases"]] == sorted(case["id"] for case in payload["cases"])
+    assert all(case["coverage"]["module_payloads"] == "seed_stub" for case in payload["cases"])
+    assert all("metadata_only_modules" in case["data_quality_flags"] for case in payload["cases"])
     assert "sk-" not in json.dumps(payload)
     assert output_path.read_text(encoding="utf-8") == sqlite_output_path.read_text(encoding="utf-8")
 

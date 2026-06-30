@@ -60,6 +60,12 @@ def _coverage(coverage: dict[str, str]) -> str:
     return '<ul class="coverage-list">' + "".join(rows) + "</ul>"
 
 
+def _flag_list(flags: list[str]) -> str:
+    if not flags:
+        return '<div class="flags flags-clear"><span>gold_candidate_ready</span></div>'
+    return '<div class="flags">' + "".join(f"<span>{_visible(flag)}</span>" for flag in flags) + "</div>"
+
+
 def _safe_href(value: Any, output_dir: Path, *, case_path: str | None = None) -> str:
     raw = str(value or "").strip()
     if not raw:
@@ -189,6 +195,7 @@ def _case_card(case: dict[str, Any], output_dir: Path) -> str:
             f'<div class="badges">{_badge_list(case.get("visual_families", []))}</div>',
             f'<div class="badges muted-badges">{_badge_list(modules)}</div>',
             f'<p class="manifest-state">{_visible(_asset_manifest_label(case.get("asset_manifest_status")))}</p>',
+            _flag_list(case.get("data_quality_flags", [])),
             _coverage(case.get("coverage", {})),
             '<div class="learning-path">',
             _text_panel("Anatomy", case.get("anatomy_excerpt", "")),
@@ -198,6 +205,31 @@ def _case_card(case: dict[str, Any], output_dir: Path) -> str:
             "</div>",
             f'<ul class="capture-list">{capture_cards}</ul>',
             "</article>",
+        ]
+    )
+
+
+def _quality_gate(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    items = [
+        ("Total cases", summary.get("case_count", 0)),
+        ("Gold cases", summary.get("gold_case_count", 0)),
+        ("Seed/stub cases", summary.get("seed_stub_case_count", 0)),
+        ("Multimodal complete", summary.get("multimodal_complete_count", 0)),
+    ]
+    rows = "".join(
+        '<div class="quality-metric">'
+        f"<strong>{_visible(value)}</strong><span>{_visible(label)}</span>"
+        "</div>"
+        for label, value in items
+    )
+    return "\n".join(
+        [
+            '<section class="quality-gate">',
+            "<h2>Data Quality Gate</h2>",
+            '<p>Seed/stub flags are intentionally visible here: a case is not learning-ready until local visual evidence, module payloads, and verified rebuild notes are present.</p>',
+            f'<div class="quality-grid">{rows}</div>',
+            "</section>",
         ]
     )
 
@@ -238,6 +270,7 @@ def _compare_matrix(cases: list[dict[str, Any]]) -> str:
 def _html(payload: dict[str, Any], output_dir: Path) -> str:
     cases = payload.get("cases", [])
     cards = "\n".join(_case_card(case, output_dir) for case in cases)
+    quality = _quality_gate(payload)
     compare = _compare_matrix(cases)
     return "\n".join(
         [
@@ -260,8 +293,10 @@ def _html(payload: dict[str, Any], output_dir: Path) -> str:
             ".case-card{padding:16px}.case-head{display:flex;justify-content:space-between;gap:12px}",
             ".score{font:12px/1.2 monospace;border:1px solid #415061;border-radius:999px;padding:5px 8px;color:#c9f3ff}",
             ".badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.badges span{font:12px/1.2 monospace;background:#1e2a36;border:1px solid #32404f;border-radius:999px;padding:5px 7px}",
+            ".flags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.flags span{font:12px/1.2 monospace;color:#ffd4bd;background:#3a211b;border:1px solid #684032;border-radius:999px;padding:5px 7px}.flags-clear span{color:#bfe8c4;background:#193120;border-color:#345a3d}",
             ".muted-badges span{color:#b3bcc6}.coverage-list{list-style:none;padding:0;margin:12px 0;display:grid;gap:5px}.coverage-list li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #222b35;padding-top:5px}",
             ".manifest-state{font:12px/1.4 monospace;color:#d7c98d;margin:8px 0 0}.learning-path{display:grid;gap:10px;margin:12px 0}.learning-panel,.module-card{border-top:1px solid #222b35;padding-top:10px}.learning-panel h3{font-size:13px;margin:0 0 6px;color:#d8e4ef}.learning-panel pre{white-space:pre-wrap;word-break:break-word;margin:0;color:#aeb8c4;font:12px/1.45 monospace}.module-list{display:grid;gap:8px}.module-head{display:flex;justify-content:space-between;gap:10px;color:#d8e4ef;font:12px/1.4 monospace}.module-field{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:10px;font:12px/1.4 monospace;color:#aeb8c4}",
+            ".quality-gate{border:1px solid #4d3626;background:#1a1613;border-radius:8px;padding:16px;margin:18px 0}.quality-gate h2{margin:0 0 8px}.quality-gate p{margin:0 0 12px;color:#d0b8a6}.quality-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.quality-metric{border-top:1px solid #4d3626;padding-top:10px}.quality-metric strong{display:block;font-size:22px}.quality-metric span{color:#d0b8a6;font:12px/1.3 monospace}",
             ".compare-matrix{margin:22px 0;overflow:auto}.compare-matrix h2{margin:0 0 10px}.compare-matrix table{width:100%;border-collapse:collapse;font-size:12px}.compare-matrix th,.compare-matrix td{border-top:1px solid #27313d;padding:8px;text-align:left;vertical-align:top}.compare-matrix th{color:#e8edf2}.compare-matrix td{color:#aeb8c4}",
             "a{color:#8ed7ff}.capture-list{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}.capture-item{border-top:1px solid #222b35;padding-top:10px}.capture-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.capture-path{color:#9aa7b4;font:12px/1.3 monospace;word-break:break-word}.capture-details{display:grid;gap:6px;margin-top:8px}.capture-field{display:grid;grid-template-columns:minmax(112px,auto) 1fr;gap:10px}.capture-label{font:12px/1.3 monospace;color:#9aa7b4;text-transform:lowercase}",
             "</style>",
@@ -276,6 +311,7 @@ def _html(payload: dict[str, Any], output_dir: Path) -> str:
             '<div class="view-pill">Coverage View</div>',
             '<div class="view-pill">Lesson Path View</div>',
             "</section>",
+            quality,
             compare,
             f'<section class="grid">{cards}</section>',
             f'<script id="review-data" type="application/json">{_safe_json_script(payload)}</script>',

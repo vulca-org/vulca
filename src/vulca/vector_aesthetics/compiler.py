@@ -151,12 +151,38 @@ def compile_database(root: Path, sqlite_path: Path) -> list[CaseRecord]:
 
 
 def _review_payload(cases: list[dict[str, object]]) -> dict[str, object]:
+    def is_multimodal_complete(case: dict[str, object]) -> bool:
+        coverage = case.get("coverage", {})
+        if not isinstance(coverage, dict):
+            return False
+        return coverage.get("screenshots") == "complete" and coverage.get("video") == "complete"
+
+    def is_gold_case(case: dict[str, object]) -> bool:
+        coverage = case.get("coverage", {})
+        if not isinstance(coverage, dict):
+            return False
+        return (
+            is_multimodal_complete(case)
+            and not case.get("data_quality_flags")
+            and coverage.get("code_anatomy") == "complete"
+            and coverage.get("lesson") == "complete"
+            and coverage.get("vulca_translation") == "complete"
+            and coverage.get("module_payloads") == "complete"
+        )
+
+    def is_seed_stub(case: dict[str, object]) -> bool:
+        flags = case.get("data_quality_flags", [])
+        return isinstance(flags, list) and any("seed" in str(flag) or flag == "metadata_only_modules" for flag in flags)
+
     payload = {
         "schema_version": 1,
         "summary": {
             "case_count": len(cases),
             "shortlist_count": sum(1 for case in cases if case["review_status"] == "shortlist"),
             "candidate_count": sum(1 for case in cases if case["review_status"] == "candidate"),
+            "gold_case_count": sum(1 for case in cases if is_gold_case(case)),
+            "seed_stub_case_count": sum(1 for case in cases if is_seed_stub(case)),
+            "multimodal_complete_count": sum(1 for case in cases if is_multimodal_complete(case)),
         },
         "cases": cases,
     }

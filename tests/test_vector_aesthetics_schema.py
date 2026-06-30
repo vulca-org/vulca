@@ -452,7 +452,48 @@ def test_asset_manifest_coverage_comes_from_evidence_not_module_presence(tmp_pat
 
     record = validate_case_folder(case_dir)
 
-    assert record.coverage["asset_manifest"] == "complete"
+    assert record.coverage["asset_manifest"] == "partial"
+
+
+def test_seed_stub_content_downgrades_learning_coverage(tmp_path: Path):
+    from vulca.vector_aesthetics.schema import case_to_review_dict, validate_case_folder
+
+    case_dir = write_case(tmp_path)
+    metadata_path = case_dir / "metadata.json"
+    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+    payload["modules"][0]["payload"] = {
+        "learning_primitive": "meshline learning primitive",
+        "seed_status": "metadata_only",
+    }
+    payload["modules"][0]["confidence"] = "low"
+    payload["modules"][0]["review_notes"] = "Seed module; requires ingestion review."
+    metadata_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    (case_dir / "anatomy.md").write_text(
+        "# Anatomy\n\nPrimitive: meshline reference primitive.\n\n"
+        "Technique: seed-level public-source review; deeper implementation anatomy is pending.\n",
+        encoding="utf-8",
+    )
+    (case_dir / "lesson.md").write_text(
+        "# Lesson\n\nminimal_rebuild_exercise: Describe a small meshline rebuild using generated placeholders before shortlist promotion.\n",
+        encoding="utf-8",
+    )
+    (case_dir / "vulca_translation.md").write_text(
+        "# VULCA Translation\n\nSeed translation. Review must map this case to source trail.\n",
+        encoding="utf-8",
+    )
+
+    review = case_to_review_dict(validate_case_folder(case_dir))
+
+    assert review["coverage"]["code_anatomy"] == "seed_stub"
+    assert review["coverage"]["lesson"] == "seed_stub"
+    assert review["coverage"]["vulca_translation"] == "seed_stub"
+    assert review["coverage"]["module_payloads"] == "seed_stub"
+    assert set(review["data_quality_flags"]) >= {
+        "seed_anatomy",
+        "seed_lesson",
+        "seed_vulca_translation",
+        "metadata_only_modules",
+    }
 
 
 def test_asset_manifest_capture_failure_counts_as_partial(tmp_path: Path):

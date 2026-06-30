@@ -201,8 +201,11 @@ def _validate_learning_minimums(modules: list[dict[str, Any]], anatomy: str, les
 
 def _asset_manifest_coverage(record: CaseRecord) -> str:
     captures = record.metadata.get("captures", [])
-    if (record.case_dir / "assets" / "asset_manifest.json").exists():
+    status = asset_manifest_status(record)
+    if status == "present_with_assets":
         return "complete"
+    if status in {"present_empty", "present_unknown", "present_unreadable"}:
+        return "partial"
     return _capture_coverage(captures, "asset_manifest")
 
 
@@ -222,6 +225,36 @@ def asset_manifest_status(record: CaseRecord) -> str:
     return "present_unknown"
 
 
+def _contains_any(text: str, markers: set[str]) -> bool:
+    lowered = text.lower()
+    return any(marker in lowered for marker in markers)
+
+
+def _text_coverage(text: str, *, seed_markers: set[str]) -> str:
+    if not text.strip():
+        return "missing"
+    if _contains_any(text, seed_markers):
+        return "seed_stub"
+    return "complete"
+
+
+def _module_payload_coverage(modules: list[dict[str, Any]]) -> str:
+    if not modules:
+        return "missing"
+    metadata_only = [
+        module
+        for module in modules
+        if module.get("payload", {}).get("seed_status") == "metadata_only"
+        or module.get("confidence") == "low"
+        or str(module.get("review_notes", "")).lower().startswith("seed module")
+    ]
+    if len(metadata_only) == len(modules):
+        return "seed_stub"
+    if metadata_only:
+        return "partial"
+    return "complete"
+
+
 def coverage_for_case(record: CaseRecord) -> dict[str, str]:
     captures = record.metadata.get("captures", [])
     license_score = record.metadata["quality_scores"]["license_safety"]
@@ -230,12 +263,46 @@ def coverage_for_case(record: CaseRecord) -> dict[str, str]:
         "screenshots": _capture_coverage(captures, "screenshot"),
         "video": _capture_coverage(captures, "video"),
         "trace": _capture_coverage(captures, "trace", missing="not_applicable"),
-        "code_anatomy": "complete" if record.anatomy.strip() else "missing",
+        "code_anatomy": _text_coverage(
+            record.anatomy,
+            seed_markers={"seed-level", "deeper implementation anatomy is pending"},
+        ),
         "asset_manifest": _asset_manifest_coverage(record),
         "license_review": "clear" if license_score >= 2 else "unclear",
-        "lesson": "complete" if record.lesson.strip() else "missing",
-        "vulca_translation": "complete" if record.vulca_translation.strip() else "missing",
+        "lesson": _text_coverage(
+            record.lesson,
+            seed_markers={
+                "generated placeholders",
+                "before shortlist promotion",
+                "verified_status: described",
+                "verification_command: none",
+            },
+        ),
+        "vulca_translation": _text_coverage(record.vulca_translation, seed_markers={"seed translation"}),
+        "module_payloads": _module_payload_coverage(record.metadata.get("modules", [])),
     }
+
+
+def data_quality_flags(record: CaseRecord) -> list[str]:
+    flags: list[str] = []
+    coverage = record.coverage or coverage_for_case(record)
+    if coverage.get("screenshots") != "complete":
+        flags.append("missing_local_screenshot")
+    if coverage.get("video") != "complete":
+        flags.append("missing_local_video")
+    if coverage.get("asset_manifest") != "complete":
+        flags.append("asset_manifest_not_archived")
+    if coverage.get("code_anatomy") == "seed_stub":
+        flags.append("seed_anatomy")
+    if coverage.get("lesson") == "seed_stub":
+        flags.append("seed_lesson")
+    if coverage.get("vulca_translation") == "seed_stub":
+        flags.append("seed_vulca_translation")
+    if coverage.get("module_payloads") == "seed_stub":
+        flags.append("metadata_only_modules")
+    if record.metadata["quality_scores"]["multimodal_completeness"] == 0:
+        flags.append("multimodal_score_zero")
+    return flags
 
 
 def validate_case_folder(case_dir: Path) -> CaseRecord:
@@ -340,6 +407,7 @@ def case_to_review_dict(record: CaseRecord, *, dataset_root: Path | None = None)
             "lesson_excerpt": record.lesson[:1200],
             "vulca_translation_excerpt": record.vulca_translation[:1200],
             "asset_manifest_status": asset_manifest_status(record),
+            "data_quality_flags": data_quality_flags(record),
             "case_rel": _dataset_relative_case_path(record, dataset_root),
             "local_case_path": _local_case_path(record, dataset_root),
         }
