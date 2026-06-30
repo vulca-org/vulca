@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>VULCA Vector Atlas Stage</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #080a0d;
+      --paper: #f5f0df;
+      --cyan: #45e6dd;
+      --acid: #b7ff62;
+      --ember: #ff7b62;
+      --rose: #ff4f91;
+      --blue: #78a7ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100dvh;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      display: block;
+      background: radial-gradient(circle at 50% 44%, #151b1c 0%, #080a0d 64%, #050608 100%);
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.18;
+      mix-blend-mode: overlay;
+      background-image:
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 3px 3px;
+      mask-image: radial-gradient(circle at 50% 42%, black 0%, transparent 76%);
+    }
+
+    .hud {
+      position: fixed;
+      left: max(20px, env(safe-area-inset-left));
+      right: max(20px, env(safe-area-inset-right));
+      top: max(18px, env(safe-area-inset-top));
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      pointer-events: none;
+      letter-spacing: 0;
+    }
+
+    .mark {
+      display: grid;
+      gap: 3px;
+      text-transform: uppercase;
+      line-height: 0.94;
+    }
+
+    .mark strong {
+      font-size: clamp(20px, 4.8vw, 58px);
+      font-weight: 780;
+      color: var(--paper);
+      text-shadow: 0 0 24px rgba(69, 230, 221, 0.28);
+    }
+
+    .mark span,
+    .telemetry span {
+      font: 11px/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: rgba(245, 240, 223, 0.68);
+    }
+
+    .telemetry {
+      display: grid;
+      justify-items: end;
+      gap: 7px;
+      min-width: 148px;
+      padding-top: 5px;
+    }
+
+    .telemetry b {
+      color: var(--acid);
+      font-weight: 700;
+    }
+
+    .rail {
+      position: fixed;
+      right: max(18px, env(safe-area-inset-right));
+      top: 50%;
+      width: 2px;
+      height: min(42vh, 330px);
+      transform: translateY(-50%);
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent, rgba(245,240,223,0.3), transparent);
+    }
+
+    .rail::before,
+    .rail::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      transform: translateX(-50%) rotate(45deg);
+      border: 1px solid rgba(69, 230, 221, 0.72);
+      background: rgba(69, 230, 221, 0.18);
+      box-shadow: 0 0 18px rgba(69, 230, 221, 0.45);
+    }
+
+    .rail::before {
+      top: 8%;
+    }
+
+    .rail::after {
+      bottom: 8%;
+      border-color: rgba(255, 123, 98, 0.78);
+      background: rgba(255, 123, 98, 0.16);
+      box-shadow: 0 0 18px rgba(255, 123, 98, 0.38);
+    }
+
+    .caption {
+      position: fixed;
+      left: max(20px, env(safe-area-inset-left));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .caption span {
+      border: 1px solid rgba(245,240,223,0.18);
+      background: rgba(8,10,13,0.32);
+      backdrop-filter: blur(16px);
+      color: rgba(245,240,223,0.76);
+      padding: 7px 9px;
+      border-radius: 999px;
+      font: 11px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 720px) {
+      .hud {
+        align-items: flex-start;
+      }
+
+      .telemetry {
+        min-width: auto;
+      }
+
+      .caption {
+        max-width: calc(100vw - 40px);
+      }
+    }
+  </style>
+</head>
+<body data-vector-stage-product="2026-06">
+  <canvas id="stage" aria-label="VULCA vector atlas stage product"></canvas>
+  <div class="grain"></div>
+  <div class="hud" aria-hidden="true">
+    <div class="mark">
+      <strong>VULCA</strong>
+      <span>VECTOR ATLAS / STAGE 01</span>
+    </div>
+    <div class="telemetry">
+      <span><b>12</b> CASES</span>
+      <span><b>6</b> FAMILIES</span>
+      <span>2025+ VECTOR</span>
+    </div>
+  </div>
+  <div class="rail" aria-hidden="true"></div>
+  <div class="caption" aria-hidden="true">
+    <span>meshline</span>
+    <span>tsl</span>
+    <span>type-3d</span>
+    <span>particle trail</span>
+    <span>scan depth</span>
+  </div>
+  <script>
+    (() => {
+      "use strict";
+
+      const canvas = document.getElementById("stage");
+      const ctx = canvas.getContext("2d", { alpha: false });
+      const offscreen = document.createElement("canvas");
+      const offctx = offscreen.getContext("2d", { willReadFrequently: true });
+
+      const PALETTE = {
+        paper: "#f5f0df",
+        cyan: "#45e6dd",
+        acid: "#b7ff62",
+        ember: "#ff7b62",
+        rose: "#ff4f91",
+        blue: "#78a7ff",
+        ink: "#080a0d"
+      };
+
+      const CASES = [
+        { id: "meshline", family: "meshline", hue: "#45e6dd", weight: 1.12 },
+        { id: "countertype", family: "typography_3d", hue: "#f5f0df", weight: 0.82 },
+        { id: "false-earth", family: "ui_sculpture", hue: "#b7ff62", weight: 1.08 },
+        { id: "text-destruction", family: "particle_vector", hue: "#ff4f91", weight: 1.22 },
+        { id: "makio", family: "data_tunnel", hue: "#78a7ff", weight: 0.94 },
+        { id: "matrix-sentinels", family: "particle_vector", hue: "#45e6dd", weight: 1.05 },
+        { id: "tsl-guide", family: "shader_material", hue: "#ff7b62", weight: 0.9 },
+        { id: "phantom-grid", family: "wire_grid", hue: "#b7ff62", weight: 1.18 },
+        { id: "spline-ui", family: "ui_sculpture", hue: "#f5f0df", weight: 0.86 },
+        { id: "threejs-docs", family: "shader_material", hue: "#78a7ff", weight: 0.96 },
+        { id: "gommage", family: "shader_material", hue: "#ff4f91", weight: 1.16 },
+        { id: "scan-depth", family: "scan_depth", hue: "#45e6dd", weight: 1.02 }
+      ];
+
+      const DPR_MAX = 2;
+      let dpr = 1;
+      let width = 1;
+      let height = 1;
+      let centerX = 0;
+      let centerY = 0;
+      let viewportScale = 1;
+      let portraitBias = 0;
+      let textPoints = [];
+      let stars = [];
+
+      const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false };
+
+      function hashNoise(seed) {
+        let x = Math.sin(seed * 127.1) * 43758.5453123;
+        return x - Math.floor(x);
+      }
+
+      function lerp(a, b, n) {
+        return a + (b - a) * n;
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function hexToRgb(hex) {
+        const clean = hex.replace("#", "");
+        return {
+          r: parseInt(clean.slice(0, 2), 16),
+          g: parseInt(clean.slice(2, 4), 16),
+          b: parseInt(clean.slice(4, 6), 16)
+        };
+      }
+
+      function rgba(hex, alpha) {
+        const c = hexToRgb(hex);
+        return `rgba(${c.r},${c.g},${c.b},${alpha})`;
+      }
+
+      function buildTextPoints() {
+        const ow = 720;
+        const oh = 240;
+        offscreen.width = ow;
+        offscreen.height = oh;
+        offctx.clearRect(0, 0, ow, oh);
+        offctx.fillStyle = "#fff";
+        offctx.textAlign = "center";
+        offctx.textBaseline = "middle";
+        offctx.font = "900 118px Arial, sans-serif";
+        offctx.fillText("VECTOR", ow / 2, 100);
+        offctx.font = "700 38px Arial, sans-serif";
+        offctx.fillText("ATLAS", ow / 2, 168);
+        const pixels = offctx.getImageData(0, 0, ow, oh).data;
+        const pts = [];
+        for (let y = 0; y < oh; y += 6) {
+          for (let x = 0; x < ow; x += 6) {
+            const alpha = pixels[(y * ow + x) * 4 + 3];
+            if (alpha > 32 && hashNoise(x * 13 + y * 17) > 0.38) {
+              pts.push({
+                x: (x - ow / 2) * 1.22,
+                y: (y - oh / 2) * 1.08,
+                z: (hashNoise(x * 3 + y * 11) - 0.5) * 170,
+                seed: x * 7 + y * 19
+              });
+            }
+          }
+        }
+        textPoints = pts.slice(0, 1180);
+      }
+
+      function buildStars() {
+        stars = Array.from({ length: 180 }, (_, i) => ({
+          x: hashNoise(i * 3.1) * 2 - 1,
+          y: hashNoise(i * 7.7) * 2 - 1,
+          z: hashNoise(i * 11.3),
+          r: 0.4 + hashNoise(i * 17.1) * 1.4
+        }));
+      }
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, DPR_MAX);
+        width = Math.max(1, Math.floor(window.innerWidth));
+        height = Math.max(1, Math.floor(window.innerHeight));
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        centerX = width * 0.5;
+        centerY = height * (0.5 - portraitBias * 0.035);
+        viewportScale = Math.min(width, height) / 820;
+        portraitBias = clamp((height / Math.max(width, 1) - 1.12) * 0.85, 0, 1);
+      }
+
+      function rotatePoint(point, rx, ry, rz) {
+        let { x, y, z } = point;
+        const cx = Math.cos(rx), sx = Math.sin(rx);
+        const cy = Math.cos(ry), sy = Math.sin(ry);
+        const cz = Math.cos(rz), sz = Math.sin(rz);
+        let y1 = y * cx - z * sx;
+        let z1 = y * sx + z * cx;
+        let x2 = x * cy + z1 * sy;
+        let z2 = -x * sy + z1 * cy;
+        let x3 = x2 * cz - y1 * sz;
+        let y3 = x2 * sz + y1 * cz;
+        return { x: x3, y: y3, z: z2 };
+      }
+
+      function projectPoint(point, state) {
+        const rotated = rotatePoint(point, state.rx, state.ry, state.rz);
+        const focal = 720;
+        const z = rotated.z + 900 + state.depthOffset;
+        const scale = focal / Math.max(180, z);
+        return {
+          x: centerX + rotated.x * scale * state.scale,
+          y: centerY + rotated.y * scale * state.scale,
+          z,
+          scale,
+          visible: z > 120
+        };
+      }
+
+      function polyline(points, strokeStyle, widthValue, close = false) {
+        if (points.length < 2) return;
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+          ctx.lineTo(points[i].x, points[i].y);
+        }
+        if (close) ctx.closePath();
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = widthValue;
+        ctx.stroke();
+      }
+
+      function drawBackground(time) {
+        const g = ctx.createRadialGradient(centerX, centerY * 0.82, 0, centerX, centerY, Math.max(width, height) * 0.75);
+        g.addColorStop(0, "#17211f");
+        g.addColorStop(0.32, "#0c1114");
+        g.addColorStop(1, "#050608");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+          const drift = (time * 0.018 + s.z * 4) % 1;
+          const x = centerX + s.x * width * (0.48 + drift * 0.08);
+          const y = centerY + s.y * height * (0.42 + drift * 0.1);
+          const alpha = (0.08 + s.z * 0.22) * (1 - drift * 0.35);
+          ctx.fillStyle = `rgba(245,240,223,${alpha})`;
+          ctx.fillRect(x, y, s.r, s.r);
+        }
+        ctx.restore();
+
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        for (let i = 0; i < 18; i++) {
+          const y = height * (0.13 + i * 0.045) + Math.sin(time * 0.001 + i) * 18;
+          const grad = ctx.createLinearGradient(0, y, width, y);
+          grad.addColorStop(0, "rgba(69,230,221,0)");
+          grad.addColorStop(0.5, `rgba(69,230,221,${0.03 + i * 0.001})`);
+          grad.addColorStop(1, "rgba(255,123,98,0)");
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          for (let x = -20; x <= width + 20; x += 32) {
+            const yy = y + Math.sin(x * 0.012 + time * 0.0014 + i) * (12 + i * 0.7);
+            if (x === -20) ctx.moveTo(x, yy);
+            else ctx.lineTo(x, yy);
+          }
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function drawVectorTunnel(time, state, gain) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        const ringCount = 22;
+        const pointsPerRing = 96;
+        for (let r = 0; r < ringCount; r++) {
+          const z = ((r / ringCount) * 1500 + time * 0.08) % 1500 - 760;
+          const radius = 250 + Math.sin(time * 0.001 + r * 0.7) * 38 + portraitBias * 80;
+          const pts = [];
+          for (let i = 0; i <= pointsPerRing; i++) {
+            const a = (i / pointsPerRing) * Math.PI * 2;
+            const wobble = Math.sin(a * 5 + time * 0.002 + r) * 18;
+            const p = projectPoint({
+              x: Math.cos(a) * (radius + wobble),
+              y: Math.sin(a) * (radius * 0.58 + wobble * 0.36),
+              z
+            }, state);
+            if (p.visible) pts.push(p);
+          }
+          const alpha = gain * clamp(1 - Math.abs(z) / 850, 0.08, 0.72);
+          polyline(pts, rgba(r % 3 === 0 ? PALETTE.acid : PALETTE.cyan, alpha), 0.7 + alpha * 2.2, true);
+          if (r % 4 === 0) {
+            for (let i = 0; i < 8; i++) {
+              const a = (i / 8) * Math.PI * 2 + time * 0.0008;
+              const p0 = projectPoint({ x: Math.cos(a) * 78, y: Math.sin(a) * 46, z }, state);
+              const p1 = projectPoint({ x: Math.cos(a) * radius, y: Math.sin(a) * radius * 0.58, z }, state);
+              polyline([p0, p1], `rgba(245,240,223,${alpha * 0.26})`, 0.8);
+            }
+          }
+        }
+        ctx.restore();
+      }
+
+      function drawMaterialRibbons(time, state, gain) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (let lane = 0; lane < 7; lane++) {
+          const hue = [PALETTE.cyan, PALETTE.ember, PALETTE.blue, PALETTE.rose, PALETTE.acid][lane % 5];
+          const pts = [];
+          for (let i = 0; i < 90; i++) {
+            const u = i / 89;
+            const x = (u - 0.5) * (760 + portraitBias * 150);
+            const y = Math.sin(u * Math.PI * 2 + lane * 0.86 + time * 0.0011) * (92 + lane * 8) + (lane - 3) * 18;
+            const z = Math.cos(u * Math.PI * 2 + time * 0.0017 + lane) * 160 + lane * 32;
+            pts.push(projectPoint({ x, y, z }, state));
+          }
+          ctx.shadowColor = hue;
+          ctx.shadowBlur = 18 * gain;
+          polyline(pts, rgba(hue, 0.2 + gain * 0.32), 2.6 + gain * 3.2);
+          ctx.shadowBlur = 0;
+          polyline(pts.filter((_, idx) => idx % 3 === 0), rgba(PALETTE.paper, 0.08 + gain * 0.16), 0.8);
+        }
+        ctx.restore();
+      }
+
+      function drawTextParticleField(time, state, gain) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        const typeSize = Math.min(width, height) * (portraitBias > 0.45 ? 0.18 : 0.13);
+        const typeLift = portraitBias > 0.45 ? -Math.min(width, height) * 0.18 : -Math.min(width, height) * 0.06;
+        ctx.save();
+        ctx.translate(centerX, centerY + typeLift + Math.sin(time * 0.001) * 8);
+        ctx.rotate(Math.sin(time * 0.0007) * 0.035);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = `900 ${typeSize}px Arial, sans-serif`;
+        ctx.lineWidth = Math.max(1.4, typeSize * 0.03);
+        ctx.shadowColor = PALETTE.cyan;
+        ctx.shadowBlur = 34 * gain;
+        ctx.strokeStyle = rgba(PALETTE.paper, 0.2 + gain * 0.28);
+        ctx.strokeText("VECTOR", 0, -typeSize * 0.05);
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = rgba(PALETTE.cyan, 0.14 + gain * 0.18);
+        ctx.strokeText("VECTOR", 4, -typeSize * 0.05 + 4);
+        ctx.restore();
+
+        const step = portraitBias > 0.45 ? 1 : 2;
+        for (let i = 0; i < textPoints.length; i += step) {
+          const base = textPoints[i];
+          const n = Math.sin(time * 0.002 + base.seed * 0.013);
+          const p = projectPoint({
+            x: base.x * (0.76 + portraitBias * 0.08),
+            y: base.y * (0.78 + portraitBias * 0.08) + Math.sin(time * 0.0013 + base.seed) * 6,
+            z: base.z + n * 95
+          }, state);
+          if (!p.visible) continue;
+          const pulse = 0.45 + 0.55 * Math.sin(time * 0.004 + base.seed);
+          const size = clamp(p.scale * (2.3 + pulse * 3.2), 0.5, 4.5) * gain;
+          const color = pulse > 0.78 ? PALETTE.ember : (i % 5 === 0 ? PALETTE.acid : PALETTE.paper);
+          ctx.fillStyle = rgba(color, gain * (0.2 + pulse * 0.6));
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawCaseConstellation(time, state, gain) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        const nodes = [];
+        for (let i = 0; i < CASES.length; i++) {
+          const c = CASES[i];
+          const a = (i / CASES.length) * Math.PI * 2 + time * 0.00045;
+          const radius = 345 + Math.sin(time * 0.001 + i) * 18;
+          const p = projectPoint({
+            x: Math.cos(a) * radius,
+            y: Math.sin(a) * radius * (0.42 + portraitBias * 0.08),
+            z: Math.sin(a * 2 + time * 0.001) * 250
+          }, state);
+          nodes.push({ ...p, caseData: c });
+        }
+        for (let i = 0; i < nodes.length; i++) {
+          const a = nodes[i];
+          const b = nodes[(i + 3) % nodes.length];
+          polyline([a, b], rgba(a.caseData.hue, 0.06 + gain * 0.12), 0.8 + gain);
+        }
+        for (const node of nodes) {
+          const r = clamp(node.scale * 11 * node.caseData.weight, 2, 9);
+          ctx.shadowColor = node.caseData.hue;
+          ctx.shadowBlur = 16 * gain;
+          ctx.fillStyle = rgba(node.caseData.hue, 0.28 + gain * 0.42);
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = rgba(PALETTE.paper, 0.25 * gain);
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function drawUISculpture(time, state, gain) {
+        ctx.save();
+        ctx.globalCompositeOperation = "source-over";
+        const panels = [
+          { x: -420, y: -180, z: 80, w: 170, h: 82, color: PALETTE.cyan },
+          { x: 310, y: -140, z: 20, w: 190, h: 92, color: PALETTE.ember },
+          { x: -330, y: 182, z: -20, w: 155, h: 76, color: PALETTE.blue },
+          { x: 310, y: 170, z: 120, w: 165, h: 78, color: PALETTE.acid }
+        ];
+        for (let i = 0; i < panels.length; i++) {
+          const panel = panels[i];
+          const lift = Math.sin(time * 0.0013 + i) * 18;
+          const corners = [
+            { x: panel.x - panel.w / 2, y: panel.y - panel.h / 2 + lift, z: panel.z },
+            { x: panel.x + panel.w / 2, y: panel.y - panel.h / 2 + lift * 0.4, z: panel.z + 24 },
+            { x: panel.x + panel.w / 2, y: panel.y + panel.h / 2 + lift * 0.2, z: panel.z + 34 },
+            { x: panel.x - panel.w / 2, y: panel.y + panel.h / 2 + lift, z: panel.z - 10 }
+          ].map((p) => projectPoint(p, state));
+          ctx.beginPath();
+          ctx.moveTo(corners[0].x, corners[0].y);
+          for (let c = 1; c < corners.length; c++) ctx.lineTo(corners[c].x, corners[c].y);
+          ctx.closePath();
+          ctx.fillStyle = rgba(panel.color, 0.035 + gain * 0.055);
+          ctx.strokeStyle = rgba(panel.color, 0.2 + gain * 0.36);
+          ctx.lineWidth = 1;
+          ctx.fill();
+          ctx.stroke();
+          for (const c of corners) {
+            ctx.fillStyle = rgba(PALETTE.paper, 0.22 * gain);
+            ctx.fillRect(c.x - 1.2, c.y - 1.2, 2.4, 2.4);
+          }
+        }
+        ctx.restore();
+      }
+
+      function drawScanPlane(time, state, gain) {
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        const sweep = Math.sin(time * 0.0008);
+        const x = centerX + sweep * Math.min(width, height) * 0.34;
+        const grad = ctx.createLinearGradient(x - 80, 0, x + 80, 0);
+        grad.addColorStop(0, "rgba(69,230,221,0)");
+        grad.addColorStop(0.5, `rgba(69,230,221,${0.08 * gain})`);
+        grad.addColorStop(1, "rgba(69,230,221,0)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(x - 90, 0, 180, height);
+        ctx.strokeStyle = `rgba(245,240,223,${0.12 * gain})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, height * 0.12);
+        ctx.lineTo(x, height * 0.88);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawFrame(time) {
+        pointer.x = lerp(pointer.x, pointer.tx, 0.08);
+        pointer.y = lerp(pointer.y, pointer.ty, 0.08);
+
+        const seconds = time * 0.001;
+        const cycle = (seconds / 19) % 1;
+        const waveA = 0.5 + 0.5 * Math.sin(seconds * 0.52);
+        const waveB = 0.5 + 0.5 * Math.sin(seconds * 0.37 + 1.6);
+        const waveC = 0.5 + 0.5 * Math.sin(seconds * 0.43 + 3.1);
+        const state = {
+          rx: -0.16 + pointer.y * 0.24 + Math.sin(seconds * 0.18) * 0.05,
+          ry: pointer.x * 0.42 + seconds * 0.055,
+          rz: Math.sin(seconds * 0.12) * 0.08,
+          scale: viewportScale * (1.02 + portraitBias * 0.34),
+          depthOffset: -portraitBias * 120
+        };
+
+        drawBackground(time);
+        drawMaterialRibbons(time, state, 0.62 + waveA * 0.32);
+        drawVectorTunnel(time, state, (0.48 + waveB * 0.28) * (portraitBias > 0.45 ? 0.86 : 1));
+        drawCaseConstellation(time, state, 0.7);
+        drawTextParticleField(time, state, 0.7 + waveC * 0.46);
+        drawUISculpture(time, state, 0.74 + waveA * 0.18);
+        drawScanPlane(time, state, 0.8);
+
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        const vignette = ctx.createRadialGradient(centerX, centerY, Math.min(width, height) * 0.16, centerX, centerY, Math.max(width, height) * 0.78);
+        vignette.addColorStop(0, "rgba(255,255,255,0.02)");
+        vignette.addColorStop(0.58, "rgba(255,255,255,0)");
+        vignette.addColorStop(1, "rgba(0,0,0,0.68)");
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, width, height);
+        ctx.restore();
+
+        if (cycle > 0.82) {
+          ctx.save();
+          ctx.globalCompositeOperation = "screen";
+          ctx.fillStyle = `rgba(255,123,98,${(cycle - 0.82) * 0.08})`;
+          ctx.fillRect(0, 0, width, height);
+          ctx.restore();
+        }
+      }
+
+      function animate(time) {
+        drawFrame(time);
+        requestAnimationFrame(animate);
+      }
+
+      function updatePointer(clientX, clientY) {
+        pointer.tx = clamp((clientX / Math.max(width, 1) - 0.5) * 2, -1, 1);
+        pointer.ty = clamp((clientY / Math.max(height, 1) - 0.5) * 2, -1, 1);
+      }
+
+      window.addEventListener("resize", resize, { passive: true });
+      window.addEventListener("pointermove", (event) => {
+        pointer.active = true;
+        updatePointer(event.clientX, event.clientY);
+      }, { passive: true });
+      window.addEventListener("pointerleave", () => {
+        pointer.active = false;
+        pointer.tx = 0;
+        pointer.ty = 0;
+      }, { passive: true });
+      window.addEventListener("pointerdown", (event) => {
+        updatePointer(event.clientX, event.clientY);
+        pointer.tx *= 1.35;
+        pointer.ty *= 1.35;
+      }, { passive: true });
+
+      buildTextPoints();
+      buildStars();
+      resize();
+      requestAnimationFrame(animate);
+    })();
+  </script>
+</body>
+</html>
