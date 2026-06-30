@@ -40,6 +40,65 @@ def test_write_review_html_renders_required_views(tmp_path: Path):
     assert '<script id="review-data" type="application/json">' in html_text
 
 
+def test_write_review_html_renders_release_ready_state_for_complete_payload(tmp_path: Path):
+    from vulca.vector_aesthetics.review_html import write_review_html
+
+    review_json = tmp_path / "references.json"
+    review_json.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "summary": {
+                    "case_count": 1,
+                    "gold_case_count": 1,
+                    "seed_stub_case_count": 0,
+                    "multimodal_complete_count": 1,
+                    "shortlist_count": 1,
+                    "candidate_count": 0,
+                },
+                "cases": [
+                    {
+                        "id": "complete-case",
+                        "title": "Complete Case",
+                        "summary": "Complete learning case.",
+                        "visual_families": ["shader_material"],
+                        "coverage": {
+                            "screenshots": "complete",
+                            "video": "complete",
+                            "code_anatomy": "complete",
+                            "lesson": "complete",
+                            "vulca_translation": "complete",
+                        },
+                        "quality_score_total": 17,
+                        "review_status": "shortlist",
+                        "canonical_url": "https://example.com",
+                        "asset_manifest_status": "present_with_assets",
+                        "data_quality_flags": [],
+                        "modules": [
+                            {
+                                "module_type": "shader_material",
+                                "review_status": "complete",
+                                "confidence": "high",
+                                "payload": {"learning_primitive": "complete primitive"},
+                            }
+                        ],
+                        "captures": [],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    html_text = write_review_html(review_json, tmp_path / "index.html").read_text(encoding="utf-8")
+
+    assert "Release-ready atlas" in html_text
+    assert "No active seed gaps" in html_text
+    assert "Completion Checklist" in html_text
+    assert "All tracked cases are gold-ready and multimodal complete." in html_text
+    assert '<label for="filter-seed">' not in html_text
+
+
 def test_write_review_html_redacts_secret_like_json(tmp_path: Path):
     from vulca.vector_aesthetics.review_html import write_review_html
 

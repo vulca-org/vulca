@@ -74,6 +74,17 @@ def _case_class(case: dict[str, Any]) -> str:
     return "case-gold" if _is_gold_case(case) else "case-seed"
 
 
+def _is_release_ready(summary: dict[str, Any]) -> bool:
+    case_count = int(summary.get("case_count") or 0)
+    return (
+        case_count > 0
+        and int(summary.get("gold_case_count") or 0) == case_count
+        and int(summary.get("multimodal_complete_count") or 0) == case_count
+        and int(summary.get("seed_stub_case_count") or 0) == 0
+        and int(summary.get("candidate_count") or 0) == 0
+    )
+
+
 def _safe_href(value: Any, output_dir: Path, *, case_path: str | None = None) -> str:
     raw = str(value or "").strip()
     if not raw:
@@ -253,6 +264,7 @@ def _case_card(case: dict[str, Any], output_dir: Path) -> str:
 
 def _quality_gate(payload: dict[str, Any]) -> str:
     summary = payload.get("summary", {})
+    release_ready = _is_release_ready(summary)
     items = [
         ("Total cases", summary.get("case_count", 0)),
         ("Gold cases", summary.get("gold_case_count", 0)),
@@ -265,18 +277,32 @@ def _quality_gate(payload: dict[str, Any]) -> str:
         "</div>"
         for label, value in items
     )
+    heading = "Release-ready atlas" if release_ready else "Data Quality Gate"
+    description = (
+        "All tracked cases are gold-ready and multimodal complete. Source links remain attribution-only; local PNG, GIF, HTML, module payloads, lessons, and VULCA translations are present for review."
+        if release_ready
+        else "Seed/stub flags are intentionally visible here: a case is not learning-ready until local visual evidence, module payloads, and verified rebuild notes are present."
+    )
+    section_class = "quality-gate quality-complete" if release_ready else "quality-gate"
     return "\n".join(
         [
-            '<section class="quality-gate">',
-            "<h2>Data Quality Gate</h2>",
-            '<p>Seed/stub flags are intentionally visible here: a case is not learning-ready until local visual evidence, module payloads, and verified rebuild notes are present.</p>',
+            f'<section class="{section_class}">',
+            f"<h2>{_visible(heading)}</h2>",
+            f"<p>{_visible(description)}</p>",
             f'<div class="quality-grid">{rows}</div>',
             "</section>",
         ]
     )
 
 
-def _filter_controls() -> str:
+def _filter_controls(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    seed_count = int(summary.get("seed_stub_case_count") or 0)
+    seed_control = (
+        '<label for="filter-seed">Seed gaps</label>'
+        if seed_count
+        else '<span class="filter-static">No active seed gaps</span>'
+    )
     return "\n".join(
         [
             '<section class="review-filters">',
@@ -284,7 +310,7 @@ def _filter_controls() -> str:
             '<div class="filter-row">',
             '<label for="filter-all">All cases</label>',
             '<label for="filter-gold">Gold only</label>',
-            '<label for="filter-seed">Seed gaps</label>',
+            seed_control,
             "</div>",
             "</section>",
         ]
@@ -342,11 +368,17 @@ def _gap_queue(cases: list[dict[str, Any]]) -> str:
                 ]
             )
         )
-    body = "".join(rows) if rows else '<li class="gap-item gap-clear"><strong>No active gaps</strong><span>All cases are gold-ready.</span></li>'
+    has_gaps = bool(rows)
+    body = (
+        "".join(rows)
+        if has_gaps
+        else '<li class="gap-item gap-clear"><strong>No active gaps</strong><span>All tracked cases are gold-ready and multimodal complete.</span></li>'
+    )
+    heading = "Gap Queue" if has_gaps else "Completion Checklist"
     return "\n".join(
         [
             '<section class="gap-queue">',
-            "<h2>Gap Queue</h2>",
+            f"<h2>{heading}</h2>",
             f"<ul>{body}</ul>",
             "</section>",
         ]
@@ -390,7 +422,7 @@ def _html(payload: dict[str, Any], output_dir: Path) -> str:
     cases = payload.get("cases", [])
     cards = "\n".join(_case_card(case, output_dir) for case in cases)
     quality = _quality_gate(payload)
-    filters = _filter_controls()
+    filters = _filter_controls(payload)
     family_matrix = _family_matrix(cases)
     gap_queue = _gap_queue(cases)
     compare = _compare_matrix(cases)
@@ -424,7 +456,8 @@ def _html(payload: dict[str, Any], output_dir: Path) -> str:
             ".muted-badges span{color:#b3bcc6}.coverage-list{list-style:none;padding:0;margin:12px 0;display:grid;gap:5px}.coverage-list li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #222b35;padding-top:5px}",
             ".manifest-state{font:12px/1.4 monospace;color:#d7c98d;margin:8px 0 0}.learning-path{display:grid;gap:10px;margin:12px 0}.learning-panel,.module-card{border-top:1px solid #222b35;padding-top:10px}.learning-panel h3{font-size:13px;margin:0 0 6px;color:#d8e4ef}.learning-panel pre{white-space:pre-wrap;word-break:break-word;margin:0;color:#aeb8c4;font:12px/1.45 monospace}.module-list{display:grid;gap:8px}.module-head{display:flex;justify-content:space-between;gap:10px;color:#d8e4ef;font:12px/1.4 monospace}.module-field{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:10px;font:12px/1.4 monospace;color:#aeb8c4}",
             ".quality-gate{border:1px solid #4d3626;background:#1a1613;border-radius:8px;padding:16px;margin:18px 0}.quality-gate h2{margin:0 0 8px}.quality-gate p{margin:0 0 12px;color:#d0b8a6}.quality-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.quality-metric{border-top:1px solid #4d3626;padding-top:10px}.quality-metric strong{display:block;font-size:22px}.quality-metric span{color:#d0b8a6;font:12px/1.3 monospace}",
-            ".review-filters,.coverage-matrix,.gap-queue,.compare-matrix{margin:22px 0;overflow:auto}.review-filters h2,.coverage-matrix h2,.gap-queue h2,.compare-matrix h2{margin:0 0 10px}.filter-row{display:flex;flex-wrap:wrap;gap:8px}.filter-row label{cursor:pointer;border:1px solid #344353;background:#121922;color:#d8e4ef;border-radius:8px;padding:8px 10px;font:12px/1.2 monospace}.coverage-matrix table,.compare-matrix table{width:100%;border-collapse:collapse;font-size:12px}.coverage-matrix th,.coverage-matrix td,.compare-matrix th,.compare-matrix td{border-top:1px solid #27313d;padding:8px;text-align:left;vertical-align:top}.coverage-matrix th,.compare-matrix th{color:#e8edf2}.coverage-matrix td,.compare-matrix td{color:#aeb8c4}.gap-queue ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}.gap-item{border-top:1px solid #27313d;padding-top:8px;display:grid;grid-template-columns:minmax(180px,auto) 1fr;gap:12px}.gap-item strong{color:#e8edf2}.gap-flags{display:flex;flex-wrap:wrap;gap:6px}.gap-flags span{color:#ffd4bd;background:#3a211b;border:1px solid #684032;border-radius:999px;padding:4px 6px;font:12px/1.2 monospace}.gap-clear span{color:#bfe8c4}",
+            ".quality-gate{border:1px solid #4d3626;background:#1a1613;border-radius:8px;padding:16px;margin:18px 0}.quality-complete{border-color:#345a3d;background:#111d16}.quality-gate h2{margin:0 0 8px}.quality-gate p{margin:0 0 12px;color:#d0b8a6}.quality-complete p{color:#bfe8c4}.quality-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.quality-metric{border-top:1px solid #4d3626;padding-top:10px}.quality-complete .quality-metric{border-top-color:#345a3d}.quality-metric strong{display:block;font-size:22px}.quality-metric span{color:#d0b8a6;font:12px/1.3 monospace}.quality-complete .quality-metric span{color:#bfe8c4}",
+            ".review-filters,.coverage-matrix,.gap-queue,.compare-matrix{margin:22px 0;overflow:auto}.review-filters h2,.coverage-matrix h2,.gap-queue h2,.compare-matrix h2{margin:0 0 10px}.filter-row{display:flex;flex-wrap:wrap;gap:8px}.filter-row label,.filter-static{border:1px solid #344353;background:#121922;color:#d8e4ef;border-radius:8px;padding:8px 10px;font:12px/1.2 monospace}.filter-row label{cursor:pointer}.filter-static{color:#bfe8c4;background:#142118;border-color:#345a3d}.coverage-matrix table,.compare-matrix table{width:100%;border-collapse:collapse;font-size:12px}.coverage-matrix th,.coverage-matrix td,.compare-matrix th,.compare-matrix td{border-top:1px solid #27313d;padding:8px;text-align:left;vertical-align:top}.coverage-matrix th,.compare-matrix th{color:#e8edf2}.coverage-matrix td,.compare-matrix td{color:#aeb8c4}.gap-queue ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}.gap-item{border-top:1px solid #27313d;padding-top:8px;display:grid;grid-template-columns:minmax(180px,auto) 1fr;gap:12px}.gap-item strong{color:#e8edf2}.gap-flags{display:flex;flex-wrap:wrap;gap:6px}.gap-flags span{color:#ffd4bd;background:#3a211b;border:1px solid #684032;border-radius:999px;padding:4px 6px;font:12px/1.2 monospace}.gap-clear span{color:#bfe8c4}",
             "a{color:#8ed7ff}.capture-list{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}.capture-item{border-top:1px solid #222b35;padding-top:10px}.capture-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.capture-path{color:#9aa7b4;font:12px/1.3 monospace;word-break:break-word}.capture-details{display:grid;gap:6px;margin-top:8px}.capture-field{display:grid;grid-template-columns:minmax(112px,auto) 1fr;gap:10px}.capture-label{font:12px/1.3 monospace;color:#9aa7b4;text-transform:lowercase}",
             "</style>",
             "</head>",
