@@ -12,35 +12,61 @@
       "evidence_type": "external_doc",
       "id": "canonical-source",
       "interaction": "none",
-      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "notes": "Canonical article link for attribution and TSL/WebGPU mental-model framing; local evidence below is generated from scratch for learning review.",
       "path_or_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
       "rights_status": "source_link_only",
       "source_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
       "viewport": "none"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "screenshot",
-      "id": "screenshot-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires visual capture. No local screenshot archived yet.",
-      "path_or_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "tsl_graph_state",
+      "notes": "Local generated rebuild screenshot showing shader nodes, uniform chips, material passes, compute lanes, and compile flow; not copied from the article.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
       "source_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
-      "viewport": "none"
+      "viewport": "960x540"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "video",
-      "id": "video-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
-      "path_or_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-motion",
+      "interaction": "compile_flow_loop",
+      "notes": "Local generated motion clip isolates node activation, material compile flow, and compute-lane state; not copied from the article.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise reconstructing the primitive with generated nodes, uniforms, passes, compute lanes, and CSS-only compile motion.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
       "source_url": "https://blog.maximeheckel.com/posts/field-guide-to-tsl-and-webgpu/",
       "viewport": "none"
     }
@@ -49,43 +75,90 @@
   "id": "maxime-heckel-tsl-webgpu-guide",
   "modules": [
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "shader_material",
       "payload": {
-        "learning_primitive": "shader_material learning primitive",
-        "seed_status": "metadata_only"
+        "compute_lane_count": 8,
+        "learning_primitive": "TSL shader graph as material grammar",
+        "material_pass_count": 5,
+        "shader_node_count": 20,
+        "uniform_chip_count": 8,
+        "visual_layers": [
+          "shader nodes",
+          "node links",
+          "uniform chips",
+          "material passes",
+          "compile flow"
+        ],
+        "visual_role": "teaches how a contemporary WebGPU material is authored as readable node logic before it becomes surface style"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and code note all show the same TSL material primitive.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "performance_runtime",
       "payload": {
-        "learning_primitive": "performance_runtime learning primitive",
-        "seed_status": "metadata_only"
+        "compute_model": "lanes represent dispatched work feeding material state before render",
+        "learning_primitive": "shader material runtime budget",
+        "runtime_risks": [
+          "node graph complexity",
+          "uniform update frequency",
+          "compute dispatch cost",
+          "material pass count",
+          "device capability variance"
+        ],
+        "verification_command": "PYTHONPATH=src pytest tests/test_vector_aesthetics_gold_cases.py -q"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Performance layer is complete as a teaching abstraction, not a benchmark of the original article examples.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local PNG proves node/uniform/pass taxonomy, local GIF proves compile motion, HTML proves the shader-material rebuild recipe",
+        "learning_primitive": "review transformation graph as shader material",
+        "review_gap": "canonical article remains link-only; local rebuild teaches mechanics without article screenshots, code snippets, shaders, demos, or media",
+        "route_decision": "use nodes for claim transformation, uniforms for reviewer controls, passes for evidence styling stages, and compute lanes for background review work",
+        "source_trail": "canonical Maxime Heckel article plus generated local reconstruction",
+        "uncertainty": "exact article examples, source code, diagrams, and benchmark behavior are not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
     }
   ],
   "quality_scores": {
     "aesthetic_relevance": 3,
-    "interaction_clarity": 1,
+    "interaction_clarity": 3,
     "license_safety": 2,
-    "multimodal_completeness": 0,
-    "technical_learnability": 2,
-    "vulca_transfer_value": 2
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
   },
-  "review_status": "candidate",
+  "review_status": "shortlist",
   "source_type": "tutorial",
-  "summary": "Teaching reference for TSL and WebGPU mental models.",
+  "summary": "TSL/WebGPU teaching reference rebuilt as a local shader-material primitive with node graph, uniforms, material passes, compute lanes, motion, code, and asset evidence.",
   "title": "Field Guide to TSL and WebGPU",
   "visual_families": [
     "shader_material"
   ],
-  "why_relevant": "Best seed for lesson-path explanations and implementation risk notes.",
+  "why_relevant": "Completes the atlas's lesson-path branch for contemporary shader materials by making node composition, compile flow, and runtime budget visible.",
   "year": 2025
 }

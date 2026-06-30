@@ -1,7 +1,32 @@
 {
-  "assets": [],
+  "assets": [
+    {
+      "capture_id": "minimal-rebuild-desktop",
+      "path": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "screenshot",
+      "use": "TSL node graph, uniforms, material pass, compute lane, and runtime-budget evidence"
+    },
+    {
+      "capture_id": "minimal-rebuild-motion",
+      "path": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "motion_clip",
+      "use": "compile flow, node activation, compute dispatch, and pass-stack motion evidence"
+    },
+    {
+      "capture_id": "minimal-rebuild-code",
+      "path": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "code_note",
+      "use": "standalone TSL and WebGPU field-guide rebuild exercise"
+    }
+  ],
   "case_id": "maxime-heckel-tsl-webgpu-guide",
-  "notes": "No local assets archived in seed state.",
-  "rights_status": "source_link_only",
+  "notes": "Only generated local learning evidence is archived here. The Maxime Heckel article remains a source-link-only tutorial reference.",
+  "rights_status": "local_capture",
   "schema_version": 1
 }
