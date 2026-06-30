@@ -1,7 +1,32 @@
 {
-  "assets": [],
+  "assets": [
+    {
+      "capture_id": "minimal-rebuild-desktop",
+      "path": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "screenshot",
+      "use": "desktop visual state evidence"
+    },
+    {
+      "capture_id": "minimal-rebuild-motion",
+      "path": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "motion_clip",
+      "use": "dash packet motion evidence"
+    },
+    {
+      "capture_id": "minimal-rebuild-code",
+      "path": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "code_note",
+      "use": "standalone primitive rebuild exercise"
+    }
+  ],
   "case_id": "makio-meshline",
-  "notes": "No local assets archived in seed state.",
-  "rights_status": "source_link_only",
+  "notes": "Only generated local learning evidence is archived here. Canonical upstream URLs remain source-link-only references.",
+  "rights_status": "local_capture",
   "schema_version": 1
 }
