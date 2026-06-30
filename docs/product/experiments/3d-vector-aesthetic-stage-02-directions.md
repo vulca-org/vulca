@@ -1,26 +1,37 @@
-# 3D Vector Technical Aesthetics - Stage 02 Direction Handoff
+# 3D Vector Technical Aesthetics - Stage 02 Visual Direction Handoff
 
 ## Design Read
 
-Reading this as a continuation handoff for a code-native creative-coding stage product for Xiaohongshu design/front-end viewers, with a contemporary 3D vector, shader, typography, and inspection-system language.
+Reading this as a visual-first creative-coding stage for Xiaohongshu design/front-end viewers. The technical database is already useful; Stage 02 needs a better image: stronger composition, controlled palette, clearer subject, and a more designed first frame.
 
 - Design variance: 8
-- Motion intensity: 8
+- Motion intensity: 6
 - Visual density: 3
-- Product mode: interactive single-file HTML first, horizontal MP4 second
-- Visual baseline: Stage 01 already established the atlas overview. Stage 02 should focus on one stronger interaction grammar instead of another broad collage.
+- Product mode: dynamic visual poster HTML first, horizontal MP4 second
+- Visual baseline: Stage 01 proved the technical vocabulary, but its screen reads as neon debug spaghetti. Stage 02 should look like a finished visual piece.
 
 ## Baseline Constraints
 
 - Output should remain horizontal and clear enough for posting.
-- Final interaction recordings should use real pointer movement through `capture=1` and `scripts/record_vector_stage_live.py`.
+- Interaction is optional support only. The main artifact is visualization.
+- The first frame must work as a poster without requiring motion or explanation.
+- Use fewer colors with stronger hierarchy: one dominant neutral, one cold accent, one warm accent at most.
+- Avoid dashboard HUD clutter, tiny telemetry, decorative labels, and fake product panels.
 - Narration voice should keep the Xiaoxiao curator direction, preferably `zh-CN-XiaoxiaoNeural`.
 - Subtitle segments and spoken audio must come from the same source text.
 - XHS narration should only cover the visible effect, the next continuation step, and future planning.
-- Chinese copy should avoid `不是`, `而是`, `AI 式`, and `反转句`.
 - Generated MP4 files stay under `output/video/` and remain ignored unless a separate release decision says otherwise.
 
-## Direction 1: Scan Typography Field
+## Visual Problems To Fix From Stage 01
+
+- Too many line families compete for attention.
+- The palette uses several saturated neon colors, which makes the work feel like a technical test.
+- The typography is present, but it does not own the composition.
+- HUD labels and counters make the screen feel like a dashboard.
+- The center mass is busy without enough negative space.
+- The video hook is technical complexity, not visual beauty.
+
+## Direction 1: Depth Typography Poster
 
 Recommended for Stage 02.
 
@@ -28,130 +39,131 @@ Source cases:
 
 - `webgpu-scanning-depth-maps`
 - `webgpu-gommage-msdf-dissolve`
-- `interactive-text-destruction-webgpu-tsl`
 - `countertype-three-text`
+- `interactive-text-destruction-webgpu-tsl`
 
 Primitive stack:
 
-- Synthetic depth-dot field
-- Vertical or radial scan band
-- Readable 3D typography
-- Glyph fragments, dust samples, and recovery traces
-- Pointer-driven inspection pressure
+- Large readable typography as the visual anchor
+- Depth-coded dot field sampled from the typography
+- One scan veil or glow plane
+- Sparse ribbon accents
+- Soft film grain and vignette
 
-Product mechanic:
+Visual mechanic:
 
-The stage opens with a readable word or short phrase as the stable claim state. Real pointer movement pushes a scan band through the type. The scan reveals depth-coded dots, breaks the active edge into fragments, then lets the text recover into a readable state. The visual should feel like an inspection tool becoming a typographic artwork.
+The screen is a dynamic poster. A large typographic object sits slightly off-center. Its surface breaks into depth-coded points and fine vector traces, while a slow scan veil passes through it. The composition should feel like a museum-quality technical poster, not a control surface.
 
-Interaction model:
+Motion role:
 
-- Pointer position controls scan center, scan pressure, and fragment displacement.
-- Pointer down increases disruption.
-- Pointer release triggers recovery.
-- `record=1` can still produce deterministic preview motion, but `capture=1` is the publication path.
+- Slow depth shimmer.
+- One scan pass.
+- Subtle ribbon drift.
+- No visible cursor language.
 
 XHS narration shape:
 
-1. Show the effect: scan band, depth dots, readable text, fragment recovery.
-2. Continue the database work: add more typography and shader references.
-3. Future plan: turn the primitive into a reusable interaction module and tutorial.
+1. Show the effect: large 3D type, depth points, scan veil, restrained vector motion.
+2. Continue the database work: add more typography, shader, and scan references.
+3. Future plan: turn the best visual primitives into a series of works and tutorials.
 
-Risks and gates:
+Visual gates:
 
-- The word must remain readable after disruption.
-- The scan field must look spatial, not like flat blinking particles.
-- The pointer interaction must be visible in a still frame and obvious in motion.
-- Reduced-motion mode should preserve one static scan midpoint.
+- The poster must read in one still frame.
+- The typography must remain legible.
+- The palette must stay disciplined and avoid rainbow neon.
+- The composition needs negative space around the main mass.
 
 Why this direction:
 
-Stage 01 was an atlas view. This direction turns the atlas into a single teachable mechanic with a clearer video hook, stronger pointer interaction, and a direct path to tutorial content.
+It directly addresses the user's critique. The technical structure remains, but the visible output becomes a cleaner, more desirable image.
 
-## Direction 2: Particle Reasoning Tunnel
+## Direction 2: Mineral Line Sculpture
 
 Source cases:
 
-- `matrix-sentinels-particle-trails-tsl`
 - `makio-meshline`
 - `codrops-threejs-meshline-family`
+- `matrix-sentinels-particle-trails-tsl`
 - `maxime-heckel-tsl-webgpu-guide`
 
 Primitive stack:
 
-- Sentinel heads
-- History-buffer trail slices
-- Thick route curves
-- Data tunnel scaffold
-- Shader-node side channel
+- A small number of thick 3D route curves
+- Mineral-toned glow material
+- One grounded perspective grid
+- A few bright head particles
+- A quiet shader-node undertone
 
-Product mechanic:
+Visual mechanic:
 
-The stage becomes a forward-moving tunnel. Several active particles carry claim states through route curves. Behind each head, history slices show memory and direction. A small shader-node strip can pulse along the side to show how the material system controls confidence, speed, and color.
+Instead of filling the canvas with many trails, this direction treats line work as sculpture. Five to seven carefully weighted routes cross the scene with clear rhythm, negative space, and material depth.
 
-Interaction model:
+Motion role:
 
-- Pointer bends route families and changes flow pressure.
-- Pointer down freezes one route and expands its history slices.
-- Pointer release restarts the tunnel flow.
+- Slow route breathing.
+- Head particles travel along selected curves.
+- Grid light shifts gently.
 
 XHS narration shape:
 
-1. Show the effect: particle heads, history trails, route tunnel, shader pulse.
-2. Continue the database work: add more data tunnel and route-sculpture cases.
-3. Future plan: use it for claim paths, evidence memory, and source-trail visualizations.
+1. Show the effect: sculptural vector routes and mineral glow.
+2. Continue the database work: collect more line-sculpture and data-tunnel references.
+3. Future plan: use the route language for visual systems and tutorial modules.
 
-Risks and gates:
+Visual gates:
 
-- The result must avoid generic particle-sparkle behavior.
-- Head, history, route, and flow layers need to be visually separable.
-- Motion should communicate temporal state, not only ambience.
+- Fewer, better curves.
+- No dense spaghetti field.
+- Each line should have material weight, not just stroke color.
+- The background must support the sculpture instead of swallowing it.
 
 Why this direction:
 
-It extends the strongest Stage 01 motion family and maps cleanly to VULCA's evidence-routing story.
+It keeps the vector identity of Stage 01 while fixing the biggest visual failure: uncontrolled line density.
 
-## Direction 3: Spatial Type Interface
+## Direction 3: Quiet Interface Still Life
 
 Source cases:
 
-- `countertype-three-text`
 - `spline-contemporary-3d-web`
 - `phantom-land-interactive-grid`
 - `false-earth-webgpu-world`
+- `countertype-three-text`
 
 Primitive stack:
 
-- Floating interface panels
-- 3D glyph rails
-- Geometry-cache cells
-- Distorted wire grid
-- Hotspot and state-track markers
+- Floating 3D panels as simple abstract planes
+- Type fragments as spatial material
+- One deformed grid plane
+- Soft depth haze
+- Minimal notation, no dashboard counters
 
-Product mechanic:
+Visual mechanic:
 
-The stage behaves like a spatial control surface. Text becomes geometry, panels carry short evidence states, and the grid bends under pointer pressure. The composition should look like a creative coding tool surfaced as an artwork, with less particle density and more object clarity.
+The image becomes a still life of interface objects. Panels, glyphs, and grid fragments are arranged like a product photograph of a technical system. It should feel composed and collectible, not operational.
 
-Interaction model:
+Motion role:
 
-- Pointer bends grid cells and pulls panel layers forward.
-- Pointer down toggles a cache-state overlay.
-- Pointer release settles the panels back into a clean stage.
+- Slow camera drift.
+- Tiny parallax between planes.
+- Light haze and shadow movement.
 
 XHS narration shape:
 
-1. Show the effect: spatial typography, floating panels, grid pressure.
-2. Continue the database work: collect more type-engine and interface-sculpture references.
-3. Future plan: turn these controls into a design system for future creative-code pieces.
+1. Show the effect: abstract interface objects arranged as a visual still life.
+2. Continue the database work: collect more spatial UI and typography references.
+3. Future plan: turn the style into a visual language for future creative-code pieces.
 
-Risks and gates:
+Visual gates:
 
-- The surface must feel like an interactive artwork, not a dashboard.
-- Panels should not become fake product screenshots.
-- The typographic layer must stay legible in horizontal video.
+- Must not look like a fake app screenshot.
+- No tiny labels or status counters as decoration.
+- The object arrangement needs a clear foreground, middle ground, and background.
 
 Why this direction:
 
-It gives the project a product-interface branch, useful when the series needs to connect visual experiments back to VULCA's actual software direction.
+It connects the series back to product/interface design, but treats UI as visual material instead of workflow.
 
 ## Recommended Next Build
 
@@ -159,15 +171,16 @@ Build Direction 1 first as `docs/product/experiments/3d-vector-aesthetic-stage-0
 
 Implementation outline:
 
-1. Create a single-file canvas HTML with `record=1` deterministic preview and `capture=1` real pointer capture.
-2. Reuse the existing video builder structure, but change the source HTML and narration segments for Stage 02.
-3. Add tests for self-contained HTML, source-case references, real pointer capture, Xiaoxiao narration, and banned Chinese copy tokens.
-4. Validate with browser screenshot checks at 1920x1080 and a mobile-safe crop preview.
-5. Generate a horizontal preview MP4 only after the HTML passes visual and structural checks.
+1. Create a single-file canvas HTML focused on dynamic poster composition.
+2. Keep `record=1` only for deterministic MP4 capture.
+3. Do not foreground cursor, clicks, or pointer trails.
+4. Use a reduced palette and remove HUD clutter.
+5. Validate the first frame at 1920x1080 before generating video.
+6. Generate a horizontal preview MP4 only after the still frame looks publishable.
 
 Definition of ready:
 
 - The HTML works when opened directly or served locally.
-- The live recording path uses real pointer events.
+- The still frame reads as a designed poster.
 - The video can be produced from the same narration segments used for subtitles.
-- The still frame communicates scan, depth, type, and recovery without requiring an explanation.
+- The visual clearly communicates typography, depth, scan, and material restraint.

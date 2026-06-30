@@ -12,9 +12,9 @@ def test_stage2_direction_handoff_exists_with_three_directions():
 
     assert HANDOFF.is_file()
     assert text.count("## Direction ") == 3
-    assert "Scan Typography Field" in text
-    assert "Particle Reasoning Tunnel" in text
-    assert "Spatial Type Interface" in text
+    assert "Depth Typography Poster" in text
+    assert "Mineral Line Sculpture" in text
+    assert "Quiet Interface Still Life" in text
     assert "Recommended for Stage 02." in text
 
 
@@ -37,21 +37,33 @@ def test_stage2_direction_handoff_maps_to_shortlist_sources():
         assert case_id in text
 
 
-def test_stage2_direction_handoff_preserves_video_and_copy_constraints():
+def test_stage2_direction_handoff_preserves_visual_first_constraints():
     text = HANDOFF.read_text(encoding="utf-8")
 
     for required in [
         "horizontal",
-        "capture=1",
-        "scripts/record_vector_stage_live.py",
+        "visual-first",
+        "dynamic visual poster",
+        "first frame",
+        "still frame",
+        "one cold accent",
+        "one warm accent",
         "zh-CN-XiaoxiaoNeural",
         "Subtitle segments and spoken audio must come from the same source text.",
         "output/video/",
         "effect",
-        "continuation step",
         "future planning",
     ]:
         assert required in text
 
-    for banned in ["不是", "而是", "AI 式", "反转句", "—", "–"]:
-        assert banned not in text.replace(f"`{banned}`", "")
+    for banned in [
+        "capture=1",
+        "scripts/record_vector_stage_live.py",
+        "Pointer down",
+        "Pointer release",
+        "cursorTrail",
+        "mouse demo",
+        "—",
+        "–",
+    ]:
+        assert banned not in text
