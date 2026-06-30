@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import math
 import shutil
@@ -25,39 +26,35 @@ PLAYWRIGHT_MODULE = Path(
 CHROME_EXECUTABLE = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 
 VOICE_FALLBACKS = [
+    "zh-CN-XiaoxiaoNeural",
     "Shelley (中文（中国大陆）)",
-    "Sandy (中文（中国大陆）)",
     "Tingting",
 ]
 
 VOICEOVER_SEGMENTS = [
     {
-        "text": "这不是一张海报。",
-        "subtitle": "这不是一张海报。",
+        "text": "画面先从一组细线展开。",
+        "subtitle": "画面先从一组细线展开。",
     },
     {
-        "text": "它是一套三维矢量美学的训练样本。",
-        "subtitle": "它是一套三维矢量美学的训练样本。",
+        "text": "鼠标靠近时，空间像被轻轻推开。",
+        "subtitle": "鼠标靠近时，空间像被轻轻推开。",
     },
     {
-        "text": "我们把二零二五年之后的网页三维、粒子、字体和着色器，拆成视觉原语。",
-        "subtitle": "我们把二零二五年之后的网页三维、粒子、字体和着色器，\\N拆成视觉原语。",
+        "text": "中间的粒子开始聚集，光带绕过字体，又回到中心。",
+        "subtitle": "中间的粒子开始聚集，光带绕过字体，又回到中心。",
     },
     {
-        "text": "线条定义速度和深度。",
-        "subtitle": "线条定义速度和深度。",
+        "text": "这套样本记录的，是线条、深度和交互之间的关系。",
+        "subtitle": "这套样本记录的，是线条、深度和交互之间的关系。",
     },
     {
-        "text": "粒子负责呼吸和节奏。",
-        "subtitle": "粒子负责呼吸和节奏。",
+        "text": "它让一个网页场景拥有可分析的结构。",
+        "subtitle": "它让一个网页场景拥有可分析的结构。",
     },
     {
-        "text": "字体也能成为三维结构。",
-        "subtitle": "字体也能成为三维结构。",
-    },
-    {
-        "text": "接下来，用这个数据库生成更多可交互的技术美学作品。",
-        "subtitle": "接下来，用这个数据库\\N生成更多可交互的技术美学作品。",
+        "text": "后面的作品，会从这些结构继续往外延展。",
+        "subtitle": "后面的作品，会从这些结构继续往外延展。",
     },
 ]
 
@@ -291,6 +288,20 @@ def unique_voice_candidates(preferred: str) -> list[str]:
     return result
 
 
+def is_edge_voice(voice: str) -> bool:
+    return voice.startswith("zh-CN-")
+
+
+async def synthesize_edge_text(text: str, voice: str, output_path: Path) -> None:
+    try:
+        import edge_tts
+    except ModuleNotFoundError as exc:
+        raise RuntimeError("edge-tts is not installed") from exc
+
+    communicate = edge_tts.Communicate(text, voice, rate="-6%", pitch="-2Hz")
+    await communicate.save(str(output_path))
+
+
 def synthesize_voiceover_with_voice(
     *,
     work_dir: Path,
@@ -311,8 +322,11 @@ def synthesize_voiceover_with_voice(
     )
 
     for index, segment in enumerate(VOICEOVER_SEGMENTS):
-        segment_path = segment_dir / f"voiceover_{index:02d}.aiff"
-        run(["say", "-v", voice, "-r", str(voice_rate), "-o", str(segment_path), segment["text"]])
+        segment_path = segment_dir / f"voiceover_{index:02d}.{'mp3' if is_edge_voice(voice) else 'aiff'}"
+        if is_edge_voice(voice):
+            asyncio.run(synthesize_edge_text(segment["text"], voice, segment_path))
+        else:
+            run(["say", "-v", voice, "-r", str(voice_rate), "-o", str(segment_path), segment["text"]])
         segment_paths.append(segment_path)
         segment_durations.append(ffprobe_duration(segment_path))
 
@@ -548,9 +562,9 @@ def build_video(
             "-c:v",
             "libx264",
             "-preset",
-            "medium",
+            "veryfast",
             "-crf",
-            "19",
+            "18",
             "-pix_fmt",
             "yuv420p",
             "-c:a",
@@ -635,7 +649,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--fps", type=int, default=24)
     parser.add_argument("--width", type=int, default=1920)
     parser.add_argument("--height", type=int, default=1080)
-    parser.add_argument("--voice", default="Shelley (中文（中国大陆）)")
+    parser.add_argument("--voice", default="zh-CN-XiaoxiaoNeural")
     parser.add_argument("--voice-rate", type=int, default=170)
     parser.add_argument("--keep-frames", action="store_true")
     args = parser.parse_args(argv)

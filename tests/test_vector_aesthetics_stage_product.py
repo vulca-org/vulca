@@ -71,8 +71,8 @@ def test_stage_video_builder_targets_xhs_mp4():
     assert "vector-stage-xhs-horizontal-20260630.mp4" in script_text
     assert "1920" in script_text
     assert "1080" in script_text
-    assert "Shelley (中文（中国大陆）)" in script_text
-    assert "Sandy (中文（中国大陆）)" in script_text
+    assert "zh-CN-XiaoxiaoNeural" in script_text
+    assert "is_edge_voice" in script_text
     assert "VOICEOVER_SEGMENTS" in script_text
     assert "synthesize_voiceover" in script_text
     assert "subtitle_cues" in script_text
@@ -83,19 +83,22 @@ def test_stage_video_builder_targets_xhs_mp4():
     assert "libx264" in script_text
     assert "aac" in script_text
     assert "__VULCA_RENDER_FRAME__" in script_text
+    assert "不是" not in script_text
+    assert "而是" not in script_text
 
 
 def test_stage_voice_audition_builder_compares_neural_cn_voices():
     script_text = VOICE_AUDITION_SCRIPT.read_text(encoding="utf-8")
 
     assert VOICE_AUDITION_SCRIPT.is_file()
-    assert "VOICE_SCRIPT" in script_text
-    assert "CANDIDATES" in script_text
+    assert "SCRIPT_VARIANTS" in script_text
+    assert "01_quiet_gallery" in script_text
+    assert "02_scene_method" in script_text
+    assert "03_database_method" in script_text
     assert "zh-CN-XiaoxiaoNeural" in script_text
-    assert "zh-CN-YunyangNeural" in script_text
-    assert "zh-CN-YunxiNeural" in script_text
-    assert "zh-CN-XiaoyiNeural" in script_text
     assert "edge_tts" in script_text
     assert "loudnorm=I=-18" in script_text
     assert "Voice Auditions" in script_text
     assert "<audio controls" in script_text
+    assert "不是" not in script_text
+    assert "而是" not in script_text
