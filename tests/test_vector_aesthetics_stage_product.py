@@ -80,11 +80,14 @@ def test_stage_video_builder_targets_xhs_mp4():
     assert "ImageDraw" in script_text
     assert "page.mouse.move" in script_text
     assert "page.mouse.down" in script_text
-    assert "libx264" in script_text
+    assert "h264_videotoolbox" in script_text
+    assert "12M" in script_text
     assert "aac" in script_text
     assert "__VULCA_RENDER_FRAME__" in script_text
     assert "不是" not in script_text
     assert "而是" not in script_text
+    assert "AI 式" not in script_text
+    assert "反转句" not in script_text
 
 
 def test_stage_voice_audition_builder_compares_neural_cn_voices():
@@ -92,9 +95,9 @@ def test_stage_voice_audition_builder_compares_neural_cn_voices():
 
     assert VOICE_AUDITION_SCRIPT.is_file()
     assert "SCRIPT_VARIANTS" in script_text
-    assert "01_quiet_gallery" in script_text
-    assert "02_scene_method" in script_text
-    assert "03_database_method" in script_text
+    assert "01_effect_plan" in script_text
+    assert "02_short_direct" in script_text
+    assert "03_product_roadmap" in script_text
     assert "zh-CN-XiaoxiaoNeural" in script_text
     assert "edge_tts" in script_text
     assert "loudnorm=I=-18" in script_text
@@ -102,3 +105,5 @@ def test_stage_voice_audition_builder_compares_neural_cn_voices():
     assert "<audio controls" in script_text
     assert "不是" not in script_text
     assert "而是" not in script_text
+    assert "AI 式" not in script_text
+    assert "反转句" not in script_text

@@ -14,54 +14,49 @@ DEFAULT_OUTPUT_DIR = REPO_ROOT / "output/video/3d-vector-aesthetic-stage/voice-a
 
 SCRIPT_VARIANTS = [
     {
-        "id": "01_quiet_gallery",
+        "id": "01_effect_plan",
         "provider": "edge-neural",
         "voice": "zh-CN-XiaoxiaoNeural",
-        "label": "Quiet gallery",
-        "persona": "推荐版：更像展览导览，语气轻，画面连续，时长更适合视频。",
-        "rate": "-8%",
-        "pitch": "-3Hz",
-        "script": [
-            "画面先从一组细线展开。",
-            "鼠标靠近时，空间像被轻轻推开。",
-            "中间的粒子开始聚集，光带绕过字体，又回到中心。",
-            "这套样本记录的，是线条、深度和交互之间的关系。",
-            "它让一个网页场景拥有可分析的结构。",
-            "后面的作品，会从这些结构继续往外延展。",
-        ],
-    },
-    {
-        "id": "02_scene_method",
-        "provider": "edge-neural",
-        "voice": "zh-CN-XiaoxiaoNeural",
-        "label": "Scene method",
-        "persona": "更完整地讲样本库和原语，信息量更高，时长也更长。",
+        "label": "Effect + next plan",
+        "persona": "推荐版：直接讲效果、继续扩展数据库、未来生成作品和教程。",
         "rate": "-6%",
         "pitch": "-2Hz",
         "script": [
-            "屏幕里的这套结构，来自我们的三维矢量样本库。",
-            "鼠标划过时，线条先把空间拉开。",
-            "粒子跟着聚成一层流动的密度。",
-            "字体被放进深度里，像一个可以进入的界面。",
-            "我们把这些变化拆成线条、轨迹、材质、字体和交互几个原语。",
-            "下一次生成作品时，就可以沿着这些原语继续组合。",
-            "让技术美学，从一次画面，变成一套可以生长的方法。",
+            "这一版展示的是三维矢量技术美学效果。",
+            "画面里有三维文字、粒子云、发光轨迹，还有鼠标触发的空间变化。",
+            "接下来会继续收集新的参考案例，把更多网页三维、字体动画、着色器和界面效果拆进数据库。",
+            "未来会用这些模块生成一系列互动作品，也会整理成教程，持续迭代这个风格。",
         ],
     },
     {
-        "id": "03_database_method",
+        "id": "02_short_direct",
         "provider": "edge-neural",
         "voice": "zh-CN-XiaoxiaoNeural",
-        "label": "Database method",
-        "persona": "更强调数据库和方法论，适合解释项目价值。",
+        "label": "Short direct",
+        "persona": "更短，适合节奏更快的视频。",
+        "rate": "-6%",
+        "pitch": "-2Hz",
+        "script": [
+            "现在先看这一版效果。",
+            "三维文字、粒子和光线会跟着鼠标一起变化。",
+            "后面会继续补充参考案例，扩展数据库。",
+            "未来会用这个数据库生成更多互动作品和制作教程。",
+        ],
+    },
+    {
+        "id": "03_product_roadmap",
+        "provider": "edge-neural",
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "label": "Product roadmap",
+        "persona": "更偏项目规划，强调数据库到作品生成的路径。",
         "rate": "-7%",
         "pitch": "-2Hz",
         "script": [
-            "这段画面来自三维矢量美学数据库的第一组样本。",
-            "每一次鼠标移动，都会改变线条的角度、粒子的密度和字体的空间关系。",
-            "我们记录这些变化，是为了让风格可以被学习、复用和继续扩展。",
-            "当数据库变得更完整，新的互动作品会从这里一步步生成。",
-            "它会保留技术的结构，也保留视觉的气质。",
+            "现在先完成第一版可交互视觉效果。",
+            "它包含三维文字、粒子轨迹、发光线条和鼠标响应。",
+            "下一步会继续补充参考案例，把不同风格拆成数据库字段。",
+            "再往后，我们会根据这些字段自动组合出新的页面、视频和教程。",
+            "目标是做出一套持续更新的技术美学创作系统。",
         ],
     },
 ]
@@ -278,8 +273,8 @@ def write_review_html(output_dir: Path, manifest: dict[str, object]) -> Path:
         </div>
       </section>
       <section class="script">
-        <p>目标：保留温暖克制的策展人声音，去掉 AI 式反转句，让旁白顺着画面连续讲下去。</p>
-        <p>检查点：避开 AI 式反转句；每一句都能对应画面里的动作、结构或方法。</p>
+        <p>正式视频使用推荐版：先说明视觉效果，再说明继续补案例和未来作品规划。</p>
+        <p>字幕与配音来自同一组分句，试听只用于比较节奏和时长。</p>
       </section>
     </header>
     <section class="grid">
