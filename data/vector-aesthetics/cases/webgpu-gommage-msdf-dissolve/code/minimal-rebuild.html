@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebGPU Gommage Minimal Rebuild</title>
+  <style>
+    :root { color-scheme: dark; background:#08070d; color:#fff7ec; font-family:Arial,sans-serif; }
+    body {
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      background:
+        radial-gradient(circle at 72% 45%, rgba(255,91,145,.18), transparent 30%),
+        radial-gradient(circle at 58% 36%, rgba(255,205,95,.14), transparent 24%),
+        linear-gradient(rgba(120,95,150,.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120,95,150,.12) 1px, transparent 1px),
+        #08070d;
+      background-size:auto, auto, 64px 64px, 64px 64px;
+    }
+    svg { width:min(100vw,960px); aspect-ratio:16/9; display:block; overflow:visible; }
+    .panel { fill:#12121b; stroke:#8e789e; stroke-width:1; }
+    .label { fill:#fff7ec; font-size:19px; font-weight:700; letter-spacing:0; }
+    .note { fill:#fffdf7; font-size:18px; letter-spacing:0; }
+    .status-panel { fill:#08070d; stroke:#b7a0c6; stroke-width:1; opacity:.95; }
+    .msdf-shadow-a { fill:#ff5b91; opacity:.32; font-size:132px; font-weight:800; }
+    .msdf-shadow-b { fill:#ffce63; opacity:.28; font-size:132px; font-weight:800; }
+    .msdf-face { fill:#fff7ec; font-size:132px; font-weight:800; letter-spacing:0; }
+    .dissolve-band { fill:none; stroke:#ffce63; stroke-width:2; opacity:.86; animation: dissolve 3.4s ease-in-out infinite alternate; }
+    .glyph-fragment { rx:2; animation: dissolve 3.4s ease-in-out infinite alternate; }
+    .dust-particle { animation: dissolve 2.6s ease-in-out infinite alternate; }
+    .petal { animation: dissolve 3.9s ease-in-out infinite alternate; transform-origin:center; }
+    .bloom { fill:none; stroke:#ff5b91; stroke-width:2; opacity:.42; }
+    @keyframes dissolve {
+      from { transform:translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity:.58; }
+      to { transform:translate(0,0) rotate(0deg); opacity:1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Offline SVG/CSS approximation for learning review; it does not run WebGPU, TSL, MRT bloom, or copy Codrops demo assets. -->
+  <svg viewBox="0 0 960 540" role="img" aria-label="Local generated WebGPU gommage MSDF text dissolve rebuild" data-msdf-text="generated">
+    <rect class="panel" x="34" y="32" width="546" height="104" />
+    <text class="label" x="50" y="66">WebGPU Gommage minimal rebuild</text>
+    <text class="note" x="50" y="103">MSDF text + noise dissolve + dust and petal burst</text>
+    <g transform="translate(128 322)">
+      <text class="msdf-shadow-a" x="8" y="8">VULCA</text>
+      <text class="msdf-shadow-b" x="-6" y="-6">VULCA</text>
+      <text class="msdf-face" x="0" y="0">VULCA</text>
+    </g>
+    <path class="dissolve-band" d="M164 206 C268 194 366 236 472 224 C562 214 650 164 780 196" />
+    <ellipse class="bloom" cx="620" cy="260" rx="252" ry="154" />
+
+    <g>
+      <rect class="glyph-fragment" x="164" y="214" width="14" height="34" fill="#fff7ec" style="--dx:8px;--dy:-22px;--rot:-4deg" />
+      <rect class="glyph-fragment" x="188" y="264" width="18" height="20" fill="#ffce63" style="--dx:18px;--dy:-36px;--rot:7deg" />
+      <rect class="glyph-fragment" x="214" y="310" width="24" height="12" fill="#ff5b91" style="--dx:28px;--dy:-14px;--rot:-12deg" />
+      <rect class="glyph-fragment" x="246" y="198" width="11" height="42" fill="#fff7ec" style="--dx:38px;--dy:-48px;--rot:10deg" />
+      <rect class="glyph-fragment" x="274" y="250" width="20" height="16" fill="#ffdba2" style="--dx:46px;--dy:-24px;--rot:-9deg" />
+      <rect class="glyph-fragment" x="302" y="304" width="18" height="20" fill="#ff5b91" style="--dx:58px;--dy:10px;--rot:14deg" />
+      <rect class="glyph-fragment" x="334" y="212" width="12" height="36" fill="#fff7ec" style="--dx:66px;--dy:-40px;--rot:-6deg" />
+      <rect class="glyph-fragment" x="364" y="276" width="22" height="14" fill="#ffce63" style="--dx:72px;--dy:-10px;--rot:16deg" />
+      <rect class="glyph-fragment" x="394" y="326" width="20" height="12" fill="#ff5b91" style="--dx:80px;--dy:22px;--rot:-14deg" />
+      <rect class="glyph-fragment" x="424" y="206" width="16" height="28" fill="#fff7ec" style="--dx:88px;--dy:-54px;--rot:8deg" />
+      <rect class="glyph-fragment" x="454" y="252" width="18" height="18" fill="#ffdba2" style="--dx:96px;--dy:-30px;--rot:-18deg" />
+      <rect class="glyph-fragment" x="482" y="312" width="26" height="10" fill="#ff5b91" style="--dx:106px;--dy:18px;--rot:12deg" />
+      <rect class="glyph-fragment" x="516" y="196" width="14" height="40" fill="#fff7ec" style="--dx:122px;--dy:-62px;--rot:-10deg" />
+      <rect class="glyph-fragment" x="544" y="246" width="22" height="16" fill="#ffce63" style="--dx:132px;--dy:-34px;--rot:18deg" />
+      <rect class="glyph-fragment" x="574" y="296" width="18" height="24" fill="#ff5b91" style="--dx:144px;--dy:4px;--rot:-16deg" />
+      <rect class="glyph-fragment" x="606" y="210" width="12" height="34" fill="#fff7ec" style="--dx:152px;--dy:-48px;--rot:8deg" />
+      <rect class="glyph-fragment" x="632" y="260" width="24" height="14" fill="#ffdba2" style="--dx:164px;--dy:-18px;--rot:-20deg" />
+      <rect class="glyph-fragment" x="664" y="324" width="22" height="12" fill="#ff5b91" style="--dx:178px;--dy:24px;--rot:16deg" />
+      <rect class="glyph-fragment" x="694" y="204" width="15" height="32" fill="#fff7ec" style="--dx:188px;--dy:-56px;--rot:-12deg" />
+      <rect class="glyph-fragment" x="724" y="254" width="18" height="18" fill="#ffce63" style="--dx:198px;--dy:-26px;--rot:21deg" />
+      <rect class="glyph-fragment" x="754" y="302" width="24" height="14" fill="#ff5b91" style="--dx:210px;--dy:12px;--rot:-17deg" />
+      <rect class="glyph-fragment" x="784" y="228" width="14" height="34" fill="#fff7ec" style="--dx:224px;--dy:-32px;--rot:12deg" />
+      <rect class="glyph-fragment" x="812" y="278" width="22" height="16" fill="#ffdba2" style="--dx:238px;--dy:0px;--rot:-18deg" />
+      <rect class="glyph-fragment" x="842" y="326" width="26" height="10" fill="#ff5b91" style="--dx:250px;--dy:28px;--rot:15deg" />
+      <rect class="glyph-fragment" x="252" y="336" width="17" height="13" fill="#ffce63" style="--dx:42px;--dy:38px;--rot:-10deg" />
+      <rect class="glyph-fragment" x="346" y="340" width="16" height="12" fill="#fff7ec" style="--dx:70px;--dy:44px;--rot:13deg" />
+      <rect class="glyph-fragment" x="444" y="344" width="18" height="13" fill="#ff5b91" style="--dx:98px;--dy:48px;--rot:-15deg" />
+      <rect class="glyph-fragment" x="548" y="344" width="17" height="12" fill="#ffce63" style="--dx:138px;--dy:46px;--rot:12deg" />
+      <rect class="glyph-fragment" x="650" y="342" width="18" height="13" fill="#fff7ec" style="--dx:172px;--dy:42px;--rot:-11deg" />
+      <rect class="glyph-fragment" x="750" y="338" width="18" height="12" fill="#ff5b91" style="--dx:210px;--dy:36px;--rot:14deg" />
+    </g>
+
+    <g>
+      <circle class="dust-particle" cx="456" cy="160" r="2" fill="#ffce63" style="--dx:38px;--dy:-48px;--rot:0deg" />
+      <circle class="dust-particle" cx="486" cy="178" r="2" fill="#fff7ec" style="--dx:46px;--dy:-34px;--rot:0deg" />
+      <circle class="dust-particle" cx="518" cy="150" r="3" fill="#ff5b91" style="--dx:62px;--dy:-58px;--rot:0deg" />
+      <circle class="dust-particle" cx="548" cy="188" r="2" fill="#ffdba2" style="--dx:78px;--dy:-28px;--rot:0deg" />
+      <circle class="dust-particle" cx="578" cy="140" r="2" fill="#ffce63" style="--dx:90px;--dy:-66px;--rot:0deg" />
+      <circle class="dust-particle" cx="606" cy="172" r="3" fill="#fff7ec" style="--dx:106px;--dy:-44px;--rot:0deg" />
+      <circle class="dust-particle" cx="634" cy="126" r="2" fill="#ff5b91" style="--dx:124px;--dy:-72px;--rot:0deg" />
+      <circle class="dust-particle" cx="662" cy="164" r="2" fill="#ffdba2" style="--dx:138px;--dy:-52px;--rot:0deg" />
+      <circle class="dust-particle" cx="690" cy="202" r="2" fill="#ffce63" style="--dx:154px;--dy:-20px;--rot:0deg" />
+      <circle class="dust-particle" cx="720" cy="152" r="3" fill="#fff7ec" style="--dx:170px;--dy:-62px;--rot:0deg" />
+      <circle class="dust-particle" cx="748" cy="196" r="2" fill="#ff5b91" style="--dx:188px;--dy:-22px;--rot:0deg" />
+      <circle class="dust-particle" cx="776" cy="238" r="2" fill="#ffdba2" style="--dx:204px;--dy:0px;--rot:0deg" />
+      <circle class="dust-particle" cx="804" cy="178" r="2" fill="#ffce63" style="--dx:220px;--dy:-46px;--rot:0deg" />
+      <circle class="dust-particle" cx="832" cy="220" r="3" fill="#fff7ec" style="--dx:236px;--dy:-12px;--rot:0deg" />
+      <circle class="dust-particle" cx="858" cy="264" r="2" fill="#ff5b91" style="--dx:248px;--dy:18px;--rot:0deg" />
+      <circle class="dust-particle" cx="520" cy="356" r="2" fill="#ffdba2" style="--dx:68px;--dy:40px;--rot:0deg" />
+      <circle class="dust-particle" cx="554" cy="374" r="2" fill="#ffce63" style="--dx:90px;--dy:52px;--rot:0deg" />
+      <circle class="dust-particle" cx="588" cy="348" r="2" fill="#fff7ec" style="--dx:110px;--dy:34px;--rot:0deg" />
+      <circle class="dust-particle" cx="622" cy="384" r="3" fill="#ff5b91" style="--dx:128px;--dy:64px;--rot:0deg" />
+      <circle class="dust-particle" cx="654" cy="346" r="2" fill="#ffdba2" style="--dx:150px;--dy:32px;--rot:0deg" />
+      <circle class="dust-particle" cx="686" cy="370" r="2" fill="#ffce63" style="--dx:168px;--dy:54px;--rot:0deg" />
+      <circle class="dust-particle" cx="718" cy="336" r="2" fill="#fff7ec" style="--dx:188px;--dy:28px;--rot:0deg" />
+      <circle class="dust-particle" cx="750" cy="362" r="3" fill="#ff5b91" style="--dx:206px;--dy:46px;--rot:0deg" />
+      <circle class="dust-particle" cx="782" cy="330" r="2" fill="#ffdba2" style="--dx:224px;--dy:24px;--rot:0deg" />
+      <circle class="dust-particle" cx="814" cy="354" r="2" fill="#ffce63" style="--dx:242px;--dy:42px;--rot:0deg" />
+      <circle class="dust-particle" cx="846" cy="314" r="2" fill="#fff7ec" style="--dx:256px;--dy:16px;--rot:0deg" />
+      <circle class="dust-particle" cx="874" cy="342" r="3" fill="#ff5b91" style="--dx:268px;--dy:34px;--rot:0deg" />
+      <circle class="dust-particle" cx="398" cy="242" r="2" fill="#ffce63" style="--dx:20px;--dy:-8px;--rot:0deg" />
+      <circle class="dust-particle" cx="426" cy="286" r="2" fill="#fff7ec" style="--dx:28px;--dy:14px;--rot:0deg" />
+      <circle class="dust-particle" cx="458" cy="230" r="3" fill="#ff5b91" style="--dx:42px;--dy:-16px;--rot:0deg" />
+      <circle class="dust-particle" cx="492" cy="284" r="2" fill="#ffdba2" style="--dx:58px;--dy:12px;--rot:0deg" />
+      <circle class="dust-particle" cx="528" cy="222" r="2" fill="#ffce63" style="--dx:76px;--dy:-18px;--rot:0deg" />
+      <circle class="dust-particle" cx="562" cy="292" r="3" fill="#fff7ec" style="--dx:92px;--dy:16px;--rot:0deg" />
+      <circle class="dust-particle" cx="596" cy="232" r="2" fill="#ff5b91" style="--dx:112px;--dy:-12px;--rot:0deg" />
+      <circle class="dust-particle" cx="630" cy="284" r="2" fill="#ffdba2" style="--dx:130px;--dy:8px;--rot:0deg" />
+      <circle class="dust-particle" cx="666" cy="248" r="2" fill="#ffce63" style="--dx:150px;--dy:-4px;--rot:0deg" />
+      <circle class="dust-particle" cx="700" cy="298" r="3" fill="#fff7ec" style="--dx:170px;--dy:18px;--rot:0deg" />
+      <circle class="dust-particle" cx="734" cy="256" r="2" fill="#ff5b91" style="--dx:190px;--dy:2px;--rot:0deg" />
+      <circle class="dust-particle" cx="768" cy="292" r="2" fill="#ffdba2" style="--dx:210px;--dy:18px;--rot:0deg" />
+      <circle class="dust-particle" cx="802" cy="270" r="2" fill="#ffce63" style="--dx:228px;--dy:8px;--rot:0deg" />
+      <circle class="dust-particle" cx="838" cy="292" r="3" fill="#fff7ec" style="--dx:248px;--dy:22px;--rot:0deg" />
+    </g>
+
+    <g>
+      <path class="petal" d="M594 170 C606 156 626 158 632 176 C614 184 600 184 594 170Z" fill="#ff5b91" style="--dx:86px;--dy:-68px;--rot:-22deg" />
+      <path class="petal" d="M636 126 C652 116 668 126 668 144 C648 148 638 140 636 126Z" fill="#ffdba2" style="--dx:128px;--dy:-84px;--rot:32deg" />
+      <path class="petal" d="M704 154 C720 142 738 150 740 168 C722 176 708 170 704 154Z" fill="#ff5b91" style="--dx:184px;--dy:-72px;--rot:-28deg" />
+      <path class="petal" d="M756 202 C772 190 790 198 792 216 C774 224 760 218 756 202Z" fill="#ffdba2" style="--dx:226px;--dy:-36px;--rot:30deg" />
+      <path class="petal" d="M792 276 C810 266 826 278 824 294 C806 300 794 292 792 276Z" fill="#ff5b91" style="--dx:252px;--dy:18px;--rot:-34deg" />
+      <path class="petal" d="M744 340 C762 332 776 344 772 360 C754 364 744 356 744 340Z" fill="#ffdba2" style="--dx:218px;--dy:72px;--rot:28deg" />
+      <path class="petal" d="M682 378 C700 370 714 382 710 398 C692 402 682 394 682 378Z" fill="#ff5b91" style="--dx:172px;--dy:92px;--rot:-26deg" />
+      <path class="petal" d="M610 356 C628 348 642 360 638 376 C620 380 610 372 610 356Z" fill="#ffdba2" style="--dx:114px;--dy:74px;--rot:24deg" />
+      <path class="petal" d="M536 324 C554 316 568 328 564 344 C546 348 536 340 536 324Z" fill="#ff5b91" style="--dx:72px;--dy:54px;--rot:-18deg" />
+      <path class="petal" d="M502 242 C520 234 534 246 530 262 C512 266 502 258 502 242Z" fill="#ffdba2" style="--dx:54px;--dy:-10px;--rot:18deg" />
+      <path class="petal" d="M562 198 C580 190 594 202 590 218 C572 222 562 214 562 198Z" fill="#ff5b91" style="--dx:88px;--dy:-34px;--rot:-32deg" />
+      <path class="petal" d="M664 214 C682 206 696 218 692 234 C674 238 664 230 664 214Z" fill="#ffdba2" style="--dx:152px;--dy:-20px;--rot:34deg" />
+      <path class="petal" d="M710 284 C728 276 742 288 738 304 C720 308 710 300 710 284Z" fill="#ff5b91" style="--dx:184px;--dy:28px;--rot:-24deg" />
+      <path class="petal" d="M636 304 C654 296 668 308 664 324 C646 328 636 320 636 304Z" fill="#ffdba2" style="--dx:130px;--dy:36px;--rot:20deg" />
+      <path class="petal" d="M590 268 C608 260 622 272 618 288 C600 292 590 284 590 268Z" fill="#ff5b91" style="--dx:98px;--dy:18px;--rot:-20deg" />
+      <path class="petal" d="M810 232 C828 224 842 236 838 252 C820 256 810 248 810 232Z" fill="#ffdba2" style="--dx:270px;--dy:-24px;--rot:26deg" />
+    </g>
+
+    <rect class="status-panel" x="94" y="428" width="526" height="54" />
+    <text class="note" x="110" y="456">noise_phase: dissolve edge</text>
+    <text class="note" x="330" y="456">render: MSDF + bloom proxy</text>
+    <rect class="panel" x="650" y="414" width="280" height="96" />
+    <text class="note" x="668" y="442">local generated evidence</text>
+    <text class="note" x="668" y="476">not copied from Codrops demo</text>
+  </svg>
+</body>
+</html>

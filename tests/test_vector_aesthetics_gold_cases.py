@@ -24,10 +24,11 @@ def test_checked_in_gold_cases_are_multimodal_and_learning_ready(tmp_path: Path)
     text_destruction = cases["interactive-text-destruction-webgpu-tsl"]
     scanning_depth = cases["webgpu-scanning-depth-maps"]
     phantom_grid = cases["phantom-land-interactive-grid"]
+    gommage = cases["webgpu-gommage-msdf-dissolve"]
 
-    assert payload["summary"]["gold_case_count"] == 4
-    assert payload["summary"]["multimodal_complete_count"] == 4
-    for case in [makio, text_destruction, scanning_depth, phantom_grid]:
+    assert payload["summary"]["gold_case_count"] == 5
+    assert payload["summary"]["multimodal_complete_count"] == 5
+    for case in [makio, text_destruction, scanning_depth, phantom_grid, gommage]:
         assert case["coverage"]["screenshots"] == "complete"
         assert case["coverage"]["video"] == "complete"
         assert case["coverage"]["code_anatomy"] == "complete"
@@ -153,3 +154,31 @@ def test_phantom_land_grid_gold_assets_are_bounded_and_self_contained():
     assert len(re.findall(r'class=\"grid-line', html_text)) >= 18
     assert len(re.findall(r'class=\"face-particle', html_text)) >= 36
     assert "animation: orbit" in html_text
+
+
+def test_webgpu_gommage_gold_assets_are_bounded_and_self_contained():
+    case_dir = REPO_ROOT / "data" / "vector-aesthetics" / "cases" / "webgpu-gommage-msdf-dissolve"
+    size_budgets = {
+        "screenshots/minimal-rebuild-desktop.png": 300_000,
+        "videos/minimal-rebuild-motion.gif": 3_000_000,
+        "code/minimal-rebuild.html": 42_000,
+    }
+
+    for rel_path, max_bytes in size_budgets.items():
+        asset_path = case_dir / rel_path
+        assert asset_path.is_file()
+        assert asset_path.stat().st_size <= max_bytes
+
+    html_text = (case_dir / "code" / "minimal-rebuild.html").read_text(encoding="utf-8")
+    lowered_html = html_text.lower()
+    assert "<script" not in lowered_html
+    assert "src=" not in lowered_html
+    assert "href=" not in lowered_html
+    assert "http://" not in html_text
+    assert "https://" not in html_text
+    assert 'role="img"' in html_text
+    assert 'data-msdf-text="generated"' in html_text
+    assert len(re.findall(r'class=\"glyph-fragment', html_text)) >= 30
+    assert len(re.findall(r'class=\"dust-particle', html_text)) >= 40
+    assert len(re.findall(r'class=\"petal', html_text)) >= 16
+    assert "animation: dissolve" in html_text
