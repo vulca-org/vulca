@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebGPU Depth Scan Minimal Rebuild</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      background: #070a10;
+      color: #eef6ff;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(rgba(120, 170, 210, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120, 170, 210, 0.08) 1px, transparent 1px),
+        #070a10;
+      background-size: 60px 60px;
+    }
+
+    svg {
+      width: min(100vw, 960px);
+      aspect-ratio: 16 / 9;
+      display: block;
+      overflow: visible;
+    }
+
+    .panel {
+      fill: #0d141d;
+      stroke: #678baf;
+      stroke-width: 1;
+    }
+
+    .label {
+      fill: #ebf4fc;
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .note {
+      fill: #cbdce8;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    .scan-box {
+      fill: rgba(18, 42, 61, 0.18);
+      stroke: #476b88;
+      stroke-width: 1;
+    }
+
+    .scan-band {
+      fill: rgba(77, 230, 255, 0.20);
+      animation: scan 3.8s ease-in-out infinite alternate;
+    }
+
+    .scan-line {
+      stroke: #5eeeff;
+      stroke-width: 3;
+      animation: scan 3.8s ease-in-out infinite alternate;
+    }
+
+    .depth-dot {
+      opacity: 0.88;
+    }
+
+    .near {
+      fill: #ffd94f;
+    }
+
+    .mid {
+      fill: #45d8ff;
+    }
+
+    .far {
+      fill: #6989a6;
+      opacity: 0.68;
+    }
+
+    @keyframes scan {
+      from {
+        transform: translateX(-350px);
+      }
+      to {
+        transform: translateX(310px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Offline SVG/CSS approximation for learning review; it does not run WebGPU or copy Codrops assets. -->
+  <svg viewBox="0 0 960 540" role="img" aria-label="Local generated WebGPU depth scan rebuild" data-depth-map="generated">
+    <rect class="panel" x="34" y="32" width="478" height="104" />
+    <text class="label" x="50" y="66">WebGPU depth scan minimal rebuild</text>
+    <text class="note" x="50" y="103">generated depth map + dot grid + scanning reveal plane</text>
+
+    <rect class="scan-box" x="90" y="104" width="748" height="328" />
+    <ellipse cx="456" cy="270" rx="298" ry="136" fill="#14324a" opacity="0.42" />
+    <path d="M244 354 L355 176 L486 332 L586 158 L724 370 Z" fill="#12435a" opacity="0.62" stroke="#67bbd4" stroke-opacity="0.32" />
+
+    <g>
+      <circle class="depth-dot far" cx="148" cy="146" r="2" /><circle class="depth-dot mid" cx="202" cy="146" r="3" /><circle class="depth-dot mid" cx="256" cy="146" r="4" /><circle class="depth-dot near" cx="310" cy="146" r="5" /><circle class="depth-dot near" cx="364" cy="146" r="6" /><circle class="depth-dot near" cx="418" cy="146" r="6" /><circle class="depth-dot near" cx="472" cy="146" r="6" /><circle class="depth-dot mid" cx="526" cy="146" r="4" /><circle class="depth-dot far" cx="580" cy="146" r="2" /><circle class="depth-dot far" cx="634" cy="146" r="2" />
+      <circle class="depth-dot mid" cx="166" cy="182" r="3" /><circle class="depth-dot mid" cx="220" cy="182" r="4" /><circle class="depth-dot near" cx="274" cy="182" r="5" /><circle class="depth-dot near" cx="328" cy="182" r="6" /><circle class="depth-dot near" cx="382" cy="182" r="7" /><circle class="depth-dot near" cx="436" cy="182" r="7" /><circle class="depth-dot near" cx="490" cy="182" r="6" /><circle class="depth-dot mid" cx="544" cy="182" r="4" /><circle class="depth-dot far" cx="598" cy="182" r="3" /><circle class="depth-dot far" cx="652" cy="182" r="2" />
+      <circle class="depth-dot mid" cx="148" cy="218" r="3" /><circle class="depth-dot mid" cx="202" cy="218" r="4" /><circle class="depth-dot near" cx="256" cy="218" r="6" /><circle class="depth-dot near" cx="310" cy="218" r="7" /><circle class="depth-dot near" cx="364" cy="218" r="8" /><circle class="depth-dot near" cx="418" cy="218" r="8" /><circle class="depth-dot near" cx="472" cy="218" r="7" /><circle class="depth-dot mid" cx="526" cy="218" r="5" /><circle class="depth-dot mid" cx="580" cy="218" r="4" /><circle class="depth-dot far" cx="634" cy="218" r="2" />
+      <circle class="depth-dot mid" cx="130" cy="254" r="3" /><circle class="depth-dot mid" cx="184" cy="254" r="4" /><circle class="depth-dot near" cx="238" cy="254" r="6" /><circle class="depth-dot near" cx="292" cy="254" r="8" /><circle class="depth-dot near" cx="346" cy="254" r="9" /><circle class="depth-dot near" cx="400" cy="254" r="9" /><circle class="depth-dot near" cx="454" cy="254" r="8" /><circle class="depth-dot mid" cx="508" cy="254" r="5" /><circle class="depth-dot mid" cx="562" cy="254" r="4" /><circle class="depth-dot far" cx="616" cy="254" r="3" />
+      <circle class="depth-dot far" cx="148" cy="290" r="2" /><circle class="depth-dot mid" cx="202" cy="290" r="4" /><circle class="depth-dot near" cx="256" cy="290" r="6" /><circle class="depth-dot near" cx="310" cy="290" r="8" /><circle class="depth-dot near" cx="364" cy="290" r="9" /><circle class="depth-dot near" cx="418" cy="290" r="9" /><circle class="depth-dot near" cx="472" cy="290" r="8" /><circle class="depth-dot mid" cx="526" cy="290" r="5" /><circle class="depth-dot mid" cx="580" cy="290" r="4" /><circle class="depth-dot far" cx="634" cy="290" r="2" />
+      <circle class="depth-dot far" cx="166" cy="326" r="2" /><circle class="depth-dot mid" cx="220" cy="326" r="4" /><circle class="depth-dot near" cx="274" cy="326" r="5" /><circle class="depth-dot near" cx="328" cy="326" r="7" /><circle class="depth-dot near" cx="382" cy="326" r="7" /><circle class="depth-dot near" cx="436" cy="326" r="7" /><circle class="depth-dot near" cx="490" cy="326" r="6" /><circle class="depth-dot mid" cx="544" cy="326" r="4" /><circle class="depth-dot far" cx="598" cy="326" r="3" /><circle class="depth-dot far" cx="652" cy="326" r="2" />
+      <circle class="depth-dot far" cx="184" cy="362" r="2" /><circle class="depth-dot mid" cx="238" cy="362" r="3" /><circle class="depth-dot mid" cx="292" cy="362" r="4" /><circle class="depth-dot near" cx="346" cy="362" r="5" /><circle class="depth-dot near" cx="400" cy="362" r="6" /><circle class="depth-dot near" cx="454" cy="362" r="5" /><circle class="depth-dot mid" cx="508" cy="362" r="4" /><circle class="depth-dot far" cx="562" cy="362" r="3" /><circle class="depth-dot far" cx="616" cy="362" r="2" /><circle class="depth-dot far" cx="670" cy="362" r="2" />
+    </g>
+
+    <rect class="scan-band" x="494" y="104" width="56" height="328" />
+    <line class="scan-line" x1="522" y1="92" x2="522" y2="448" />
+
+    <circle class="near" cx="812" cy="180" r="8" /><text class="note" x="830" y="184">near</text>
+    <circle class="mid" cx="812" cy="208" r="8" /><text class="note" x="830" y="212">mid</text>
+    <circle class="far" cx="812" cy="236" r="8" /><text class="note" x="830" y="240">far</text>
+
+    <text class="note" x="110" y="466">scan_progress: animated</text>
+    <text class="note" x="286" y="466">depth_source: generated radial relief map</text>
+
+    <rect class="panel" x="646" y="414" width="284" height="96" />
+    <text class="note" x="664" y="442">local generated evidence</text>
+    <text class="note" x="664" y="476">not copied from Codrops demo</text>
+  </svg>
+</body>
+</html>
