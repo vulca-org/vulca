@@ -2,7 +2,7 @@
 
 ## Status
 
-Selected working direction for Stage 02. This is still pre-implementation: generate or source the central 3D object before rebuilding the final page.
+Selected working direction for Stage 02. The current implementation path is: Glass Root Specimen variant pack, procedural Three.js preview, then generated GLB replacement after the visual gate passes.
 
 ## Direction
 
@@ -136,10 +136,16 @@ Before final implementation:
 
 Use Evidence Garden as the Stage 02 working direction, and use Glass Root Specimen as the primary model candidate.
 
-Generate candidates in this order:
+Current selected variant:
 
-1. glass root specimen: transparent vessel, compact mineral core, contained roots, tiny amber signal buds;
-2. mineral root island: fallback if glass material fails or turns into a bottle;
-3. technical data island: fallback if the branch needs to read more engineered and less botanical.
+1. suspended root lens: horizontal transparent glass lens, compact dark mineral core, contained root network, cyan scan routes, tiny amber endpoint buds.
+
+Use the procedural preview at `docs/product/experiments/3d-vector-aesthetic-stage-02-suspended-root-lens-preview/index.html` to judge first-frame beauty, containment logic, and four-state motion before spending effort on external GLB generation.
+
+Generate fallback candidates in this order only if the selected lens fails:
+
+1. oval archive vessel: transparent vessel, compact mineral core, contained roots, tiny amber signal buds;
+2. core reliquary: sculptural glass shell around mineral core and preserved root filaments;
+3. mineral root island: fallback if glass material fails or turns into a bottle.
 
 Pick the best silhouette first, but reject immediately if the glass form becomes a medicine vial, perfume bottle, terrarium, or generic product container. Materials and scan overlays can be repaired later, but weak shape logic will not recover.

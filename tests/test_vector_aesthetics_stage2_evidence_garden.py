@@ -34,6 +34,8 @@ def test_evidence_garden_direction_brief_locks_selected_working_direction():
     assert "not text-led" in text
     assert "3D generation tool" in text
     assert "Do not generate the full web scene" in text
+    assert "procedural Three.js preview" in text
+    assert "3d-vector-aesthetic-stage-02-suspended-root-lens-preview/index.html" in text
     assert "Current Recommendation" in text
 
 
