@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codrops MeshLines Family Minimal Rebuild</title>
+  <style>
+    :root { color-scheme: dark; background:#06090d; color:#f1fbff; font-family:Arial,sans-serif; }
+    body {
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      background:
+        radial-gradient(circle at 66% 42%, rgba(72,224,255,.14), transparent 30%),
+        radial-gradient(circle at 38% 58%, rgba(255,221,99,.10), transparent 28%),
+        linear-gradient(rgba(94,150,168,.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(94,150,168,.16) 1px, transparent 1px),
+        #06090d;
+      background-size:auto, auto, 58px 58px, 58px 58px;
+    }
+    svg { width:min(100vw,960px); aspect-ratio:16/9; display:block; overflow:visible; }
+    .panel { fill:#0c1218; stroke:#6ea3ba; stroke-width:1; }
+    .label { fill:#f1fbff; font-size:19px; font-weight:700; letter-spacing:0; }
+    .note { fill:#dff5ff; font-size:16px; letter-spacing:0; }
+    .mesh-route { fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-width:4; animation: sweep 3.6s ease-in-out infinite alternate; }
+    .wire-cross { stroke:#78aebb; stroke-width:1; opacity:.58; vector-effect:non-scaling-stroke; }
+    .shader-ribbon { fill:none; stroke-linecap:round; stroke-width:9; opacity:.68; animation: sweep 4.2s ease-in-out infinite alternate; }
+    .node { fill:#f1fbff; opacity:.9; animation: sweep 2.8s ease-in-out infinite alternate; }
+    .cyan { stroke:#4ee4ff; } .gold { stroke:#ffdf63; } .pink { stroke:#ff6db2; } .mint { stroke:#73f0bf; }
+    @keyframes sweep {
+      from { transform:translate(-10px, 8px); opacity:.58; }
+      to { transform:translate(12px, -8px); opacity:1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Offline SVG/CSS approximation for learning review; it does not run Three.js, TSL, WebGPU, or copy Codrops demo assets. -->
+  <svg viewBox="0 0 960 540" role="img" aria-label="Local generated Codrops Three.js MeshLines family rebuild" data-meshline-field="generated">
+    <rect class="panel" x="34" y="32" width="594" height="104" />
+    <text class="label" x="50" y="66">Codrops MeshLines family minimal rebuild</text>
+    <text class="note" x="50" y="104">ricefield grid + venus orbit ribbons + bamboo mesh fibers</text>
+
+    <g transform="translate(78 164)">
+      <line class="wire-cross" x1="0" y1="0" x2="292" y2="74" />
+      <line class="wire-cross" x1="0" y1="26" x2="292" y2="100" />
+      <line class="wire-cross" x1="0" y1="52" x2="292" y2="126" />
+      <line class="wire-cross" x1="0" y1="78" x2="292" y2="152" />
+      <line class="wire-cross" x1="0" y1="104" x2="292" y2="178" />
+      <line class="wire-cross" x1="0" y1="130" x2="292" y2="204" />
+      <line class="wire-cross" x1="0" y1="156" x2="292" y2="230" />
+      <line class="wire-cross" x1="0" y1="182" x2="292" y2="256" />
+      <line class="wire-cross" x1="0" y1="208" x2="292" y2="282" />
+      <line class="wire-cross" x1="0" y1="234" x2="292" y2="308" />
+      <line class="wire-cross" x1="0" y1="260" x2="292" y2="334" />
+      <line class="wire-cross" x1="0" y1="286" x2="292" y2="360" />
+      <line class="wire-cross" x1="0" y1="360" x2="292" y2="286" />
+      <line class="wire-cross" x1="0" y1="334" x2="292" y2="260" />
+      <line class="wire-cross" x1="0" y1="308" x2="292" y2="234" />
+      <line class="wire-cross" x1="0" y1="282" x2="292" y2="208" />
+      <line class="wire-cross" x1="0" y1="256" x2="292" y2="182" />
+      <line class="wire-cross" x1="0" y1="230" x2="292" y2="156" />
+      <line class="wire-cross" x1="0" y1="204" x2="292" y2="130" />
+      <line class="wire-cross" x1="0" y1="178" x2="292" y2="104" />
+      <line class="wire-cross" x1="0" y1="152" x2="292" y2="78" />
+      <line class="wire-cross" x1="0" y1="126" x2="292" y2="52" />
+      <line class="wire-cross" x1="0" y1="100" x2="292" y2="26" />
+      <line class="wire-cross" x1="0" y1="74" x2="292" y2="0" />
+    </g>
+
+    <g>
+      <path class="mesh-route cyan" d="M96 404 C160 360 238 374 316 326 C390 280 448 208 552 226" />
+      <path class="mesh-route gold" d="M88 376 C172 328 250 344 326 294 C392 248 460 190 578 198" />
+      <path class="mesh-route pink" d="M112 346 C188 310 244 314 344 270 C430 232 498 168 604 180" />
+      <path class="mesh-route mint" d="M140 422 C198 378 276 392 352 348 C432 302 506 246 610 262" />
+      <path class="mesh-route cyan" d="M430 252 C496 168 616 160 678 242 C736 318 650 400 548 370 C466 346 390 306 430 252" />
+      <path class="mesh-route gold" d="M456 248 C522 192 614 194 656 250 C694 304 644 360 566 348 C492 336 420 292 456 248" />
+      <path class="mesh-route pink" d="M482 250 C542 214 612 218 638 258 C664 300 626 334 572 326 C520 318 454 284 482 250" />
+      <path class="mesh-route mint" d="M504 256 C552 236 604 240 620 266 C636 294 606 314 570 308 C530 302 480 278 504 256" />
+      <path class="mesh-route cyan" d="M706 160 C724 226 714 310 684 392" />
+      <path class="mesh-route gold" d="M734 148 C760 228 750 320 708 414" />
+      <path class="mesh-route pink" d="M762 156 C794 240 784 328 728 430" />
+      <path class="mesh-route mint" d="M792 172 C828 252 812 344 750 440" />
+      <path class="mesh-route cyan" d="M826 188 C858 272 842 354 778 438" />
+      <path class="mesh-route gold" d="M856 216 C884 294 862 366 806 426" />
+      <path class="mesh-route pink" d="M690 206 C724 286 698 356 646 418" />
+      <path class="mesh-route mint" d="M678 182 C704 248 694 320 652 386" />
+      <path class="mesh-route cyan" d="M728 196 C754 266 742 336 700 404" />
+      <path class="mesh-route gold" d="M812 204 C838 276 826 346 784 412" />
+    </g>
+
+    <g>
+      <path class="shader-ribbon cyan" d="M398 258 C476 126 640 130 704 254" />
+      <path class="shader-ribbon gold" d="M410 276 C490 160 630 166 690 276" />
+      <path class="shader-ribbon pink" d="M430 298 C506 194 620 200 668 296" />
+      <path class="shader-ribbon mint" d="M452 316 C520 226 604 230 646 314" />
+      <path class="shader-ribbon cyan" d="M684 170 C728 250 728 334 680 412" />
+      <path class="shader-ribbon gold" d="M716 164 C766 252 760 348 704 428" />
+      <path class="shader-ribbon pink" d="M748 176 C802 268 790 356 728 438" />
+      <path class="shader-ribbon mint" d="M780 194 C832 280 820 356 760 426" />
+      <path class="shader-ribbon cyan" d="M112 404 C210 346 302 372 392 308" />
+      <path class="shader-ribbon gold" d="M120 374 C218 316 310 342 406 278" />
+      <path class="shader-ribbon pink" d="M136 344 C230 296 324 306 420 246" />
+      <path class="shader-ribbon mint" d="M158 420 C246 382 330 392 420 340" />
+    </g>
+
+    <g>
+      <circle class="node" cx="430" cy="252" r="4" />
+      <circle class="node" cx="552" cy="226" r="3" />
+      <circle class="node" cx="604" cy="180" r="3" />
+      <circle class="node" cx="706" cy="160" r="3" />
+      <circle class="node" cx="792" cy="172" r="4" />
+      <circle class="node" cx="806" cy="426" r="3" />
+    </g>
+
+    <rect class="panel" x="92" y="438" width="482" height="56" />
+    <text class="note" x="110" y="472">route_family: meshline thickness + shader sweep</text>
+    <rect class="panel" x="650" y="414" width="280" height="96" />
+    <text class="note" x="668" y="442">local generated evidence</text>
+    <text class="note" x="668" y="476">not copied from Codrops demos</text>
+  </svg>
+</body>
+</html>

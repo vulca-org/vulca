@@ -12,35 +12,61 @@
       "evidence_type": "external_doc",
       "id": "canonical-source",
       "interaction": "none",
-      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "notes": "Canonical Codrops Three.js hub link for attribution and family-level technical framing; local evidence below is generated from scratch for learning review.",
       "path_or_url": "https://tympanus.net/codrops/hub/tag/three-js/",
       "rights_status": "source_link_only",
       "source_url": "https://tympanus.net/codrops/hub/tag/three-js/",
       "viewport": "none"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "screenshot",
-      "id": "screenshot-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires visual capture. No local screenshot archived yet.",
-      "path_or_url": "https://tympanus.net/codrops/hub/tag/three-js/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "meshline_family_state",
+      "notes": "Local generated rebuild screenshot showing ricefield-style wire grid, venus-like orbit ribbons, bamboo-like vertical fibers, and shader ribbon pass; not copied from Codrops demos.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
       "source_url": "https://tympanus.net/codrops/hub/tag/three-js/",
-      "viewport": "none"
+      "viewport": "960x540"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "video",
-      "id": "video-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
-      "path_or_url": "https://tympanus.net/codrops/hub/tag/three-js/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-motion",
+      "interaction": "shader_sweep",
+      "notes": "Local generated motion clip isolates sweep motion across route families and shader ribbons; not copied from Codrops demos.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/hub/tag/three-js/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise reconstructing the primitive with generated mesh routes, wire crossings, shader ribbons, route nodes, and CSS-only sweep motion.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/hub/tag/three-js/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
       "source_url": "https://tympanus.net/codrops/hub/tag/three-js/",
       "viewport": "none"
     }
@@ -49,56 +75,125 @@
   "id": "codrops-threejs-meshline-family",
   "modules": [
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "meshline",
       "payload": {
-        "learning_primitive": "meshline learning primitive",
-        "seed_status": "metadata_only"
+        "learning_primitive": "thickened vector route family",
+        "mesh_route_count": 18,
+        "route_families": [
+          "ricefield furrows",
+          "venus orbit ribbons",
+          "bamboo vertical fibers"
+        ],
+        "route_width_model": "crisp thick strokes over wider translucent material ribbons",
+        "spatial_role": "turns line paths into 3D-feeling sculptural objects without filled mesh surfaces"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and HTML note all represent the same meshline family primitive.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "wire_grid",
+      "payload": {
+        "learning_primitive": "crossed route-coordinate field",
+        "scaffold_count": 24,
+        "scaffold_role": "low-opacity crossings make the line sculpture's ground plane and direction reviewable",
+        "visual_model": "ricefield-like coordinate furrows under the meshline routes"
+      },
+      "review_notes": "Wire-grid layer is complete enough to teach route scaffolding separately from decorative line motion.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "shader_material",
       "payload": {
-        "learning_primitive": "shader_material learning primitive",
-        "seed_status": "metadata_only"
+        "learning_primitive": "emissive line material pass",
+        "material_states": [
+          "crisp mesh route",
+          "wide shader ribbon",
+          "glow halo",
+          "sweep opacity state"
+        ],
+        "shader_ribbon_count": 12,
+        "source_boundary": "does not claim Codrops shader code, TSL nodes, WebGPU renderer, or exact demo materials"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Material layer is explicit enough to teach pass separation: scaffold, shader ribbon, crisp route, and sweep state.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "performance_runtime",
       "payload": {
-        "learning_primitive": "performance_runtime learning primitive",
-        "seed_status": "metadata_only"
+        "bounded_counts": {
+          "mesh_routes": 18,
+          "shader_ribbons": 12,
+          "wire_crossings": 24
+        },
+        "learning_primitive": "bounded browser-reviewable line scene",
+        "motion_model": "subtle sweep offsets rather than high-cost camera or particle simulation",
+        "runtime_target": "offline SVG/CSS review exercise; production analogue would use Three.js MeshLine-style geometry and TSL/WebGPU materials"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Runtime payload is complete because it names bounded counts and the review-safe motion model.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local PNG proves route families and wire scaffold, local GIF proves sweep motion, HTML note proves the rebuild taxonomy",
+        "learning_primitive": "evidence-route sculpture",
+        "review_gap": "canonical hub remains link-only; local rebuild teaches mechanics without upstream demos or assets",
+        "route_decision": "use mesh routes for claim pathways, wire crossings for source-coordinate scaffolding, shader ribbons for confidence emphasis, and sweep motion for analyst attention",
+        "source_trail": "canonical Codrops Three.js hub plus generated local reconstruction",
+        "uncertainty": "exact linked demo geometry, materials, and runtime implementation are not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
     }
   ],
   "quality_scores": {
     "aesthetic_relevance": 3,
-    "interaction_clarity": 1,
+    "interaction_clarity": 3,
     "license_safety": 2,
-    "multimodal_completeness": 0,
-    "technical_learnability": 2,
-    "vulca_transfer_value": 2
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
   },
-  "review_status": "candidate",
+  "review_status": "shortlist",
   "source_type": "tutorial",
-  "summary": "2025+ Three.js demo family containing contemporary line-sculpture and WebGPU/TSL directions.",
+  "summary": "2025+ Three.js MeshLines demo family rebuilt as a local meshline, wire-grid, and shader-ribbon learning primitive with still, motion, code, and asset evidence.",
   "title": "Codrops Three.js MeshLines Demo Family",
   "visual_families": [
     "meshline",
     "wire_grid",
     "shader_material"
   ],
-  "why_relevant": "Useful as a source for selecting meshline sculpture and vector-space motion cases.",
+  "why_relevant": "Completes a contemporary line-sculpture anchor for the atlas: thick vector routes, spatial wire scaffolds, and shader-material sweep states.",
   "year": 2025
 }
