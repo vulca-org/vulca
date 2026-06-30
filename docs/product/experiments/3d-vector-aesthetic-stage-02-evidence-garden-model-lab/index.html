@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evidence Garden Model Candidate Lab</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --bg: #050706;
+      --panel: rgba(13, 19, 17, 0.82);
+      --line: rgba(241, 234, 215, 0.13);
+      --ink: #f1ead7;
+      --muted: #9b9a8b;
+      --cyan: #6dd9cf;
+      --amber: #d8955d;
+      --moss: #8da66f;
+      --rose: #c97877;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 45% 20%, rgba(109, 217, 207, 0.12), transparent 26%),
+        radial-gradient(circle at 80% 80%, rgba(216, 149, 93, 0.12), transparent 28%),
+        linear-gradient(135deg, #040605, #0b1110 58%, #070807);
+      color: var(--ink);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(480px, 1fr) minmax(300px, 390px);
+      overflow: hidden;
+    }
+
+    .panel {
+      padding: 28px 24px;
+      background: var(--panel);
+      border-color: var(--line);
+      backdrop-filter: blur(18px);
+      overflow: auto;
+    }
+
+    .left {
+      border-right: 1px solid var(--line);
+    }
+
+    .right {
+      border-left: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--cyan);
+      font-size: 12px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      line-height: 1.06;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 11ch;
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 21px;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .candidate-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .candidate-button {
+      width: 100%;
+      min-height: 74px;
+      display: grid;
+      grid-template-columns: 18px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .candidate-button[aria-selected="true"] {
+      border-color: rgba(109, 217, 207, 0.45);
+      background: rgba(109, 217, 207, 0.08);
+    }
+
+    .swatch {
+      width: 14px;
+      height: 48px;
+      border-radius: 99px;
+      background: var(--accent);
+      box-shadow: 0 0 18px color-mix(in srgb, var(--accent), transparent 50%);
+    }
+
+    .button-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1.18;
+    }
+
+    .button-subtitle {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .priority {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 99px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 12px;
+    }
+
+    .stage {
+      position: relative;
+      min-width: 0;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .warning-band {
+      position: absolute;
+      left: 34px;
+      right: 34px;
+      bottom: 30px;
+      z-index: 3;
+      padding: 13px 14px;
+      border: 1px solid rgba(216, 149, 93, 0.24);
+      border-radius: 8px;
+      background: rgba(5, 7, 6, 0.68);
+      color: rgba(241, 234, 215, 0.76);
+      font-size: 12px;
+      line-height: 1.45;
+      backdrop-filter: blur(14px);
+    }
+
+    .score-grid,
+    .contract-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .score-row,
+    .contract-item {
+      padding: 11px 12px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .score-row strong {
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .contract-item strong {
+      display: block;
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .contract-item span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .prompt-box {
+      margin: 18px 0 0;
+      padding: 12px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      color: rgba(241, 234, 215, 0.75);
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .status-note {
+      margin-top: 22px;
+      padding: 13px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(216, 149, 93, 0.22);
+      background: rgba(216, 149, 93, 0.07);
+      color: rgba(241, 234, 215, 0.78);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1120px) {
+      .app {
+        grid-template-columns: 1fr;
+        overflow: auto;
+      }
+
+      .left,
+      .right {
+        border: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .stage {
+        min-height: 680px;
+      }
+
+      h1 {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" data-vector-stage-product="2026-06-stage-02-evidence-garden-model-lab">
+    <aside class="panel left">
+      <p class="eyebrow">Evidence Garden</p>
+      <h1>Model candidate lab.</h1>
+      <p>
+        The procedural GLB failed visual review. This page defines three external-generation candidates and checks their spatial logic before any final web implementation.
+      </p>
+      <div class="candidate-list" id="candidateList"></div>
+      <div class="status-note">
+        Rule: one-shot output is only a seed. Reject fast on silhouette or space logic before polishing materials.
+      </div>
+    </aside>
+
+    <main class="stage" aria-label="Candidate silhouette and spatial logic preview">
+      <canvas id="previewCanvas" width="1440" height="1080"></canvas>
+      <div class="warning-band" id="warningBand">
+        Spatial contract preview. Real GLB candidates should replace the procedural blockout one at a time.
+      </div>
+    </main>
+
+    <aside class="panel right">
+      <p class="eyebrow">Candidate spec</p>
+      <h2 id="candidateTitle"></h2>
+      <p id="candidateIntent"></p>
+      <div class="score-grid" id="scoreGrid"></div>
+      <div class="contract-list" id="contractList"></div>
+      <p class="eyebrow" style="margin-top: 24px;">Prompt</p>
+      <pre class="prompt-box" id="promptBox"></pre>
+    </aside>
+  </div>
+
+  <script>
+    const CANDIDATES = [
+      {
+        id: "mineral-root-island",
+        label: "Mineral Root Island",
+        accent: "#6dd9cf",
+        priority: 1,
+        intent: "Most direct Evidence Garden subject: a floating mineral island with roots and route veins, but designed as a specimen object rather than fantasy terrain.",
+        model_prompt: "Single centered GLB-ready 3D asset, floating mineral evidence garden island, asymmetric oval graphite and basalt base, carved shallow root sockets under the island, translucent glass roots emerging from visible sockets without intersecting the stone, thin cyan luminous route veins embedded into the top surface, three small amber data blossoms attached to vein endpoints, technical botanical museum specimen, clean silhouette, no background environment, no text, no logo, no characters, no mascot.",
+        spatial_contract: {
+          primary_mass: "one asymmetric mineral island with a flat-enough top surface and visible underside",
+          root_logic: "roots must originate from underside sockets; roots may overlap visually but should not pass through the island core",
+          route_logic: "cyan veins should be inlaid on the surface, not floating above it",
+          blossom_logic: "blossoms attach to route endpoints and stay small; they should read as data nodes, not flowers"
+        },
+        review_targets: { first_frame_beauty: 3, silhouette_strength: 3, material_separation: 2, state_potential: 3, cleanup_effort_max: 2 }
+      },
+      {
+        id: "glass-root-specimen",
+        label: "Glass Root Specimen",
+        accent: "#8da66f",
+        priority: 2,
+        intent: "A quieter, more premium version: the garden becomes a transparent specimen object with roots protected inside glass.",
+        model_prompt: "Single centered GLB-ready 3D asset, transparent glass specimen vessel containing a small dark mineral garden core, root network suspended inside the glass, subtle cyan data veins running through the roots, three tiny warm amber signal buds inside the vessel, scientific botanical archive object, elegant museum lighting response, clean premium silhouette, no background scene, no text, no logo, no characters, no mascot.",
+        spatial_contract: {
+          primary_mass: "one transparent vessel with a compact mineral garden core inside",
+          root_logic: "roots are contained and visible through glass; they should curve around the core instead of piercing vessel walls",
+          route_logic: "cyan signal lines run along roots or inside glass channels",
+          blossom_logic: "amber buds stay internal, tiny, and signal-like"
+        },
+        review_targets: { first_frame_beauty: 3, silhouette_strength: 2, material_separation: 3, state_potential: 2, cleanup_effort_max: 3 }
+      },
+      {
+        id: "technical-data-island",
+        label: "Technical Data Island",
+        accent: "#d8955d",
+        priority: 3,
+        intent: "Less organic and more technical: the garden is a compact island-machine with root-like conduits and plate layers.",
+        model_prompt: "Single centered GLB-ready 3D asset, compact technical data island, dark ceramic mineral core with layered graphite plates, root-like translucent conduits emerging from underside ports, thin cyan circuit-like route veins embedded on top, three small amber data capsules rising from the surface, refined industrial botanical hybrid, precise clean silhouette, no background scene, no text, no logo, no characters, no mascot.",
+        spatial_contract: {
+          primary_mass: "one compact layered island-machine with clear top, side, and underside",
+          root_logic: "conduits originate from ports and remain below the object plane",
+          route_logic: "top veins should align with plate grooves and read as embedded channels",
+          blossom_logic: "amber capsules rise from designed sockets; no floating unsupported pods"
+        },
+        review_targets: { first_frame_beauty: 2, silhouette_strength: 3, material_separation: 3, state_potential: 3, cleanup_effort_max: 2 }
+      }
+    ];
+
+    const state = { selected: 0, t: 0 };
+    const canvas = document.getElementById("previewCanvas");
+    const ctx = canvas.getContext("2d");
+    const candidateList = document.getElementById("candidateList");
+    const candidateTitle = document.getElementById("candidateTitle");
+    const candidateIntent = document.getElementById("candidateIntent");
+    const scoreGrid = document.getElementById("scoreGrid");
+    const contractList = document.getElementById("contractList");
+    const promptBox = document.getElementById("promptBox");
+    const warningBand = document.getElementById("warningBand");
+
+    function current() {
+      return CANDIDATES[state.selected];
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function renderControls() {
+      candidateList.innerHTML = "";
+      CANDIDATES.forEach((candidate, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "candidate-button";
+        button.style.setProperty("--accent", candidate.accent);
+        button.setAttribute("aria-selected", String(index === state.selected));
+        button.innerHTML = `
+          <span class="swatch"></span>
+          <span>
+            <span class="button-title">${candidate.label}</span>
+            <span class="button-subtitle">${candidate.id}</span>
+          </span>
+          <span class="priority">${candidate.priority}</span>
+        `;
+        button.addEventListener("click", () => {
+          state.selected = index;
+          renderControls();
+          renderInspector();
+        });
+        candidateList.appendChild(button);
+      });
+    }
+
+    function renderInspector() {
+      const candidate = current();
+      candidateTitle.textContent = candidate.label;
+      candidateIntent.textContent = candidate.intent;
+      promptBox.textContent = candidate.model_prompt;
+      warningBand.textContent = `${candidate.label}: reject if roots/routes/blossoms do not attach to believable sockets.`;
+      scoreGrid.innerHTML = "";
+      Object.entries(candidate.review_targets).forEach(([key, value]) => {
+        const row = document.createElement("div");
+        row.className = "score-row";
+        row.innerHTML = `<span>${key.replaceAll("_", " ")}</span><strong>${value}/3</strong>`;
+        scoreGrid.appendChild(row);
+      });
+      contractList.innerHTML = "";
+      Object.entries(candidate.spatial_contract).forEach(([key, value]) => {
+        const item = document.createElement("div");
+        item.className = "contract-item";
+        item.innerHTML = `<strong>${key.replaceAll("_", " ")}</strong><span>${value}</span>`;
+        contractList.appendChild(item);
+      });
+    }
+
+    function rgba(hex, alpha) {
+      const value = hex.replace("#", "");
+      const r = parseInt(value.slice(0, 2), 16);
+      const g = parseInt(value.slice(2, 4), 16);
+      const b = parseInt(value.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function drawBackground(w, h, candidate) {
+      ctx.fillStyle = "#050706";
+      ctx.fillRect(0, 0, w, h);
+      const glow = ctx.createRadialGradient(w * 0.5, h * 0.42, 20, w * 0.5, h * 0.48, w * 0.55);
+      glow.addColorStop(0, rgba(candidate.accent, 0.13));
+      glow.addColorStop(0.55, "rgba(241,234,215,0.025)");
+      glow.addColorStop(1, "rgba(5,7,6,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.save();
+      ctx.strokeStyle = "rgba(241,234,215,0.08)";
+      ctx.lineWidth = 1;
+      for (let y = h * 0.24; y < h * 0.78; y += 42) {
+        ctx.beginPath();
+        ctx.moveTo(w * 0.22, y);
+        ctx.lineTo(w * 0.78, y + 20);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function ellipse(cx, cy, rx, ry, fill, stroke = null, lineWidth = 1) {
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fillStyle = fill;
+      ctx.fill();
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
+      }
+    }
+
+    function line(points, color, width = 2, alpha = 1) {
+      ctx.save();
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = rgba(color, alpha * 0.24);
+      ctx.lineWidth = width * 4;
+      path(points);
+      ctx.stroke();
+      ctx.strokeStyle = rgba(color, alpha);
+      ctx.lineWidth = width;
+      path(points);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function path(points) {
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], points[0][1]);
+      for (let i = 1; i < points.length - 1; i += 1) {
+        const midX = (points[i][0] + points[i + 1][0]) / 2;
+        const midY = (points[i][1] + points[i + 1][1]) / 2;
+        ctx.quadraticCurveTo(points[i][0], points[i][1], midX, midY);
+      }
+      const last = points[points.length - 1];
+      ctx.lineTo(last[0], last[1]);
+    }
+
+    function drawMineralRootIsland(w, h, candidate) {
+      const cx = w * 0.5;
+      const cy = h * 0.48;
+      const s = Math.min(w, h) / 720;
+      ellipse(cx, cy + 115 * s, 240 * s, 52 * s, "rgba(0,0,0,0.36)");
+      ellipse(cx, cy + 22 * s, 210 * s, 66 * s, "rgba(24,33,28,0.98)", "rgba(241,234,215,0.18)", 1.2);
+      ellipse(cx - 18 * s, cy - 2 * s, 155 * s, 38 * s, "rgba(64,78,61,0.62)", rgba(candidate.accent, 0.28), 1);
+      const sockets = [-118, -62, 8, 76, 132];
+      sockets.forEach((x, i) => {
+        const sx = cx + x * s;
+        const sy = cy + 52 * s;
+        ellipse(sx, sy, 11 * s, 5 * s, rgba(candidate.accent, 0.18), rgba(candidate.accent, 0.32), 1);
+        line([[sx, sy], [sx + (i - 2) * 25 * s, sy + 55 * s], [sx + (i - 2) * 42 * s, sy + 112 * s]], "#d8f4ee", 2 * s, 0.55);
+      });
+      [[-120, -8, -25, 8, 70, -6, 126, 4], [-68, 22, -18, 3, 42, 18], [-20, -24, 8, 18, 42, 34]].forEach((p) => {
+        const pts = [];
+        for (let i = 0; i < p.length; i += 2) pts.push([cx + p[i] * s, cy + p[i + 1] * s]);
+        line(pts, candidate.accent, 2.4 * s, 0.9);
+      });
+      [[-95, -42], [-20, -48], [72, -36]].forEach((p) => {
+        ellipse(cx + p[0] * s, cy + p[1] * s, 13 * s, 18 * s, "rgba(216,149,93,0.52)", "rgba(216,149,93,0.82)", 1);
+      });
+    }
+
+    function drawGlassRootSpecimen(w, h, candidate) {
+      const cx = w * 0.5;
+      const cy = h * 0.46;
+      const s = Math.min(w, h) / 720;
+      ellipse(cx, cy + 145 * s, 190 * s, 45 * s, "rgba(0,0,0,0.34)");
+      ellipse(cx, cy, 126 * s, 172 * s, "rgba(216,244,238,0.06)", "rgba(216,244,238,0.34)", 1.8);
+      ellipse(cx - 28 * s, cy - 20 * s, 68 * s, 126 * s, "rgba(255,255,255,0.045)");
+      ellipse(cx, cy + 26 * s, 72 * s, 44 * s, "rgba(27,36,31,0.88)", "rgba(241,234,215,0.13)", 1);
+      for (let i = 0; i < 9; i += 1) {
+        const a = -1.1 + i * 0.27;
+        line([[cx, cy + 20 * s], [cx + Math.cos(a) * 54 * s, cy + 56 * s + i * 5 * s], [cx + Math.cos(a) * 82 * s, cy + 112 * s]], "#d8f4ee", 1.6 * s, 0.55);
+      }
+      line([[cx - 56 * s, cy + 18 * s], [cx - 14 * s, cy - 16 * s], [cx + 48 * s, cy + 8 * s]], candidate.accent, 2 * s, 0.75);
+      [[-36, -20], [18, -10], [46, 28]].forEach((p) => ellipse(cx + p[0] * s, cy + p[1] * s, 8 * s, 8 * s, "rgba(216,149,93,0.7)"));
+    }
+
+    function drawTechnicalDataIsland(w, h, candidate) {
+      const cx = w * 0.5;
+      const cy = h * 0.48;
+      const s = Math.min(w, h) / 720;
+      ellipse(cx, cy + 128 * s, 210 * s, 44 * s, "rgba(0,0,0,0.35)");
+      for (let layer = 0; layer < 4; layer += 1) {
+        const y = cy + (layer - 1.5) * 20 * s;
+        ellipse(cx, y, (190 - layer * 18) * s, (48 - layer * 5) * s, `rgba(${22 + layer * 8},${29 + layer * 8},${27 + layer * 6},0.95)`, "rgba(241,234,215,0.13)", 1);
+      }
+      [-120, -52, 28, 102].forEach((x, i) => {
+        const sx = cx + x * s;
+        const sy = cy + 54 * s;
+        ellipse(sx, sy, 12 * s, 6 * s, rgba(candidate.accent, 0.18), rgba(candidate.accent, 0.38), 1);
+        line([[sx, sy], [sx + (i - 1.5) * 22 * s, sy + 48 * s], [sx + (i - 1.5) * 58 * s, sy + 90 * s]], "#d8f4ee", 2 * s, 0.5);
+      });
+      [[-110, -18, -42, -6, 24, -16, 112, -2], [-76, 18, -8, 8, 70, 20]].forEach((p) => {
+        const pts = [];
+        for (let i = 0; i < p.length; i += 2) pts.push([cx + p[i] * s, cy + p[i + 1] * s]);
+        line(pts, "#6dd9cf", 2.3 * s, 0.78);
+      });
+      [[-78, -42], [6, -48], [88, -36]].forEach((p) => {
+        ctx.fillStyle = "rgba(216,149,93,0.72)";
+        ctx.fillRect(cx + p[0] * s - 7 * s, cy + p[1] * s - 16 * s, 14 * s, 32 * s);
+      });
+    }
+
+    function draw(now) {
+      state.t = now / 1000;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+      const candidate = current();
+      drawBackground(w, h, candidate);
+      if (candidate.id === "mineral-root-island") drawMineralRootIsland(w, h, candidate);
+      if (candidate.id === "glass-root-specimen") drawGlassRootSpecimen(w, h, candidate);
+      if (candidate.id === "technical-data-island") drawTechnicalDataIsland(w, h, candidate);
+      requestAnimationFrame(draw);
+    }
+
+    window.__EVIDENCE_GARDEN_MODEL_CANDIDATES__ = CANDIDATES;
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    renderControls();
+    renderInspector();
+    requestAnimationFrame(draw);
+  </script>
+</body>
+</html>

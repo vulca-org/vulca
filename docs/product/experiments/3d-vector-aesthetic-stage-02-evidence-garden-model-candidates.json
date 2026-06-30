@@ -1,0 +1,85 @@
+{
+  "direction_id": "stage-02-evidence-garden",
+  "status": "ready_for_external_3d_generation",
+  "source_baseline": {
+    "asset_id": "evidence-garden-blockout",
+    "visual_gate": "failed",
+    "reason": "Procedural blockout validates GLB loading only. It has visible intersection risk, weak silhouette design, and fake state logic."
+  },
+  "iteration_rule": "Never treat one generated model as final. Each candidate must pass silhouette, spatial logic, material separation, and state-anchor checks before web implementation.",
+  "candidates": [
+    {
+      "id": "mineral-root-island",
+      "label": "Mineral Root Island",
+      "priority": 1,
+      "intent": "Most direct Evidence Garden subject: a floating mineral island with roots and route veins, but designed as a specimen object rather than fantasy terrain.",
+      "model_prompt": "Single centered GLB-ready 3D asset, floating mineral evidence garden island, asymmetric oval graphite and basalt base, carved shallow root sockets under the island, translucent glass roots emerging from visible sockets without intersecting the stone, thin cyan luminous route veins embedded into the top surface, three small amber data blossoms attached to vein endpoints, technical botanical museum specimen, clean silhouette, no background environment, no text, no logo, no characters, no mascot.",
+      "negative_prompt": "No fantasy landscape, no cute garden, no oversized flowers, no grass carpet, no tree, no house, no path, no character, no mascot, no text, no logo, no UI, no dashboard, no brand mark, no random floating debris, no merged roots passing through solid stone.",
+      "spatial_contract": {
+        "primary_mass": "one asymmetric mineral island with a flat-enough top surface and visible underside",
+        "root_logic": "roots must originate from underside sockets; roots may overlap visually but should not pass through the island core",
+        "route_logic": "cyan veins should be inlaid on the surface, not floating above it",
+        "blossom_logic": "blossoms attach to route endpoints and stay small; they should read as data nodes, not flowers",
+        "state_anchors": ["root sockets", "surface route veins", "blossom endpoints", "upper empty space for archive particles"]
+      },
+      "review_targets": {
+        "first_frame_beauty": 3,
+        "silhouette_strength": 3,
+        "material_separation": 2,
+        "state_potential": 3,
+        "cleanup_effort_max": 2
+      }
+    },
+    {
+      "id": "glass-root-specimen",
+      "label": "Glass Root Specimen",
+      "priority": 2,
+      "intent": "A quieter, more premium version: the garden becomes a transparent specimen object with roots protected inside glass.",
+      "model_prompt": "Single centered GLB-ready 3D asset, transparent glass specimen vessel containing a small dark mineral garden core, root network suspended inside the glass, subtle cyan data veins running through the roots, three tiny warm amber signal buds inside the vessel, scientific botanical archive object, elegant museum lighting response, clean premium silhouette, no background scene, no text, no logo, no characters, no mascot.",
+      "negative_prompt": "No bottle label, no text, no logo, no brand, no character, no fantasy terrarium, no soil clump mess, no house, no landscape, no oversized plant, no decorative flowers, no unclear glass blob, no roots escaping randomly through solid glass.",
+      "spatial_contract": {
+        "primary_mass": "one transparent vessel with a compact mineral garden core inside",
+        "root_logic": "roots are contained and visible through glass; they should curve around the core instead of piercing vessel walls",
+        "route_logic": "cyan signal lines run along roots or inside glass channels",
+        "blossom_logic": "amber buds stay internal, tiny, and signal-like",
+        "state_anchors": ["glass shell", "internal root network", "core object", "small buds"]
+      },
+      "review_targets": {
+        "first_frame_beauty": 3,
+        "silhouette_strength": 2,
+        "material_separation": 3,
+        "state_potential": 2,
+        "cleanup_effort_max": 3
+      }
+    },
+    {
+      "id": "technical-data-island",
+      "label": "Technical Data Island",
+      "priority": 3,
+      "intent": "Less organic and more technical: the garden is a compact island-machine with root-like conduits and plate layers.",
+      "model_prompt": "Single centered GLB-ready 3D asset, compact technical data island, dark ceramic mineral core with layered graphite plates, root-like translucent conduits emerging from underside ports, thin cyan circuit-like route veins embedded on top, three small amber data capsules rising from the surface, refined industrial botanical hybrid, precise clean silhouette, no background scene, no text, no logo, no characters, no mascot.",
+      "negative_prompt": "No spaceship, no generic sci-fi drone, no dashboard UI, no labels, no text, no logo, no brand mark, no character, no mascot, no messy cables piercing plates, no random mechanical parts, no weapon-like silhouette.",
+      "spatial_contract": {
+        "primary_mass": "one compact layered island-machine with clear top, side, and underside",
+        "root_logic": "conduits originate from ports and remain below the object plane",
+        "route_logic": "top veins should align with plate grooves and read as embedded channels",
+        "blossom_logic": "amber capsules rise from designed sockets; no floating unsupported pods",
+        "state_anchors": ["layer seams", "underside ports", "top grooves", "capsule sockets"]
+      },
+      "review_targets": {
+        "first_frame_beauty": 2,
+        "silhouette_strength": 3,
+        "material_separation": 3,
+        "state_potential": 3,
+        "cleanup_effort_max": 2
+      }
+    }
+  ],
+  "review_loop": [
+    "Generate candidate GLB.",
+    "Run it through model candidate lab.",
+    "Reject if silhouette fails before material cleanup.",
+    "Reject if roots, routes, or blossoms do not attach to believable sockets.",
+    "Only after spatial logic passes, add scan, bloom, and archive animation layers."
+  ]
+}
