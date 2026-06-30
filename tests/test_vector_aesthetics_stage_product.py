@@ -5,6 +5,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_HTML = REPO_ROOT / "docs" / "product" / "experiments" / "3d-vector-aesthetic-stage" / "index.html"
+VIDEO_SCRIPT = REPO_ROOT / "scripts" / "build_vector_stage_video.py"
 
 
 def test_stage_product_is_single_file_recording_surface():
@@ -21,6 +22,8 @@ def test_stage_product_is_single_file_recording_surface():
     assert "drawTextParticleField" in html_text
     assert "drawMaterialRibbons" in html_text
     assert "drawUISculpture" in html_text
+    assert "recordMode" in html_text
+    assert "__VULCA_RENDER_FRAME__" in html_text
     assert "pointermove" in html_text
 
     assert "<iframe" not in lowered
@@ -55,3 +58,20 @@ def test_stage_product_embeds_atlas_learning_primitives():
         "scan-depth",
     ]:
         assert case_id in html_text
+
+
+def test_stage_video_builder_targets_xhs_mp4():
+    script_text = VIDEO_SCRIPT.read_text(encoding="utf-8")
+
+    assert VIDEO_SCRIPT.is_file()
+    assert "vector-stage-xhs-20260630.mp4" in script_text
+    assert "540" in script_text
+    assert "960" in script_text
+    assert "Tingting" in script_text
+    assert "VOICEOVER_TEXT" in script_text
+    assert "SUBTITLE_CUES" in script_text
+    assert "burn_subtitles_on_frames" in script_text
+    assert "ImageDraw" in script_text
+    assert "libx264" in script_text
+    assert "aac" in script_text
+    assert "__VULCA_RENDER_FRAME__" in script_text

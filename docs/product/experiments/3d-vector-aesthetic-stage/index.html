@@ -204,6 +204,8 @@
       const ctx = canvas.getContext("2d", { alpha: false });
       const offscreen = document.createElement("canvas");
       const offctx = offscreen.getContext("2d", { willReadFrequently: true });
+      const query = new URLSearchParams(window.location.search);
+      const recordMode = query.get("record") === "1";
 
       const PALETTE = {
         paper: "#f5f0df",
@@ -640,8 +642,22 @@
         }
       }
 
-      function animate(time) {
+      function applyRecordMotion(time) {
+        if (!recordMode) return;
+        pointer.active = true;
+        pointer.tx = Math.sin(time * 0.00042) * 0.62;
+        pointer.ty = Math.cos(time * 0.00034) * 0.36;
+        pointer.x = pointer.tx;
+        pointer.y = pointer.ty;
+      }
+
+      function renderAt(time) {
+        applyRecordMotion(time);
         drawFrame(time);
+      }
+
+      function animate(time) {
+        renderAt(time);
         requestAnimationFrame(animate);
       }
 
@@ -669,7 +685,16 @@
       buildTextPoints();
       buildStars();
       resize();
-      requestAnimationFrame(animate);
+      if (recordMode) {
+        window.__VULCA_RENDER_FRAME__ = (frame, fps = 24) => {
+          const time = Math.max(0, frame) * (1000 / Math.max(1, fps));
+          renderAt(time);
+          return { frame, fps, time };
+        };
+        renderAt(0);
+      } else {
+        requestAnimationFrame(animate);
+      }
     })();
   </script>
 </body>

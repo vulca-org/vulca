@@ -70,3 +70,4 @@ docs/tool-audit-logs/
 # 3D vector aesthetics learning DB local build outputs
 /data/vector-aesthetics/references.sqlite
 /output/review/3d-vector-aesthetics-learning-db/
+/output/video/
