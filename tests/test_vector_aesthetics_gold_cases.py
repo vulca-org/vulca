@@ -26,10 +26,11 @@ def test_checked_in_gold_cases_are_multimodal_and_learning_ready(tmp_path: Path)
     phantom_grid = cases["phantom-land-interactive-grid"]
     gommage = cases["webgpu-gommage-msdf-dissolve"]
     codrops_meshline = cases["codrops-threejs-meshline-family"]
+    false_earth = cases["false-earth-webgpu-world"]
 
-    assert payload["summary"]["gold_case_count"] == 6
-    assert payload["summary"]["multimodal_complete_count"] == 6
-    for case in [makio, text_destruction, scanning_depth, phantom_grid, gommage, codrops_meshline]:
+    assert payload["summary"]["gold_case_count"] == 7
+    assert payload["summary"]["multimodal_complete_count"] == 7
+    for case in [makio, text_destruction, scanning_depth, phantom_grid, gommage, codrops_meshline, false_earth]:
         assert case["coverage"]["screenshots"] == "complete"
         assert case["coverage"]["video"] == "complete"
         assert case["coverage"]["code_anatomy"] == "complete"
@@ -211,3 +212,32 @@ def test_codrops_threejs_meshline_family_gold_assets_are_bounded_and_self_contai
     assert len(re.findall(r'class=\"wire-cross', html_text)) >= 24
     assert len(re.findall(r'class=\"shader-ribbon', html_text)) >= 12
     assert "animation: sweep" in html_text
+
+
+def test_false_earth_gold_assets_are_bounded_and_self_contained():
+    case_dir = REPO_ROOT / "data" / "vector-aesthetics" / "cases" / "false-earth-webgpu-world"
+    size_budgets = {
+        "screenshots/minimal-rebuild-desktop.png": 320_000,
+        "videos/minimal-rebuild-motion.gif": 3_200_000,
+        "code/minimal-rebuild.html": 46_000,
+    }
+
+    for rel_path, max_bytes in size_budgets.items():
+        asset_path = case_dir / rel_path
+        assert asset_path.is_file()
+        assert asset_path.stat().st_size <= max_bytes
+
+    html_text = (case_dir / "code" / "minimal-rebuild.html").read_text(encoding="utf-8")
+    lowered_html = html_text.lower()
+    assert "<script" not in lowered_html
+    assert "src=" not in lowered_html
+    assert "href=" not in lowered_html
+    assert "http://" not in html_text
+    assert "https://" not in html_text
+    assert 'role="img"' in html_text
+    assert 'data-world-field="generated"' in html_text
+    assert len(re.findall(r'class=\"grass-blade', html_text)) >= 48
+    assert len(re.findall(r'class=\"cosmic-beam', html_text)) >= 8
+    assert len(re.findall(r'class=\"wave-ring', html_text)) >= 5
+    assert len(re.findall(r'class=\"flower-bloom', html_text)) >= 12
+    assert "animation: drift" in html_text

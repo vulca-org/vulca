@@ -1,5 +1,5 @@
 {
-  "author_or_studio": "Codrops",
+  "author_or_studio": "Codrops / Ming Jyun Hung",
   "canonical_sources": [
     "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/"
   ],
@@ -12,35 +12,61 @@
       "evidence_type": "external_doc",
       "id": "canonical-source",
       "interaction": "none",
-      "notes": "Seed metadata record. Screenshots and motion captures are not complete yet.",
+      "notes": "Canonical Codrops case-study link for attribution and technical framing; local evidence below is generated from scratch for learning review.",
       "path_or_url": "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/",
       "rights_status": "source_link_only",
       "source_url": "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/",
       "viewport": "none"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "screenshot",
-      "id": "screenshot-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires visual capture. No local screenshot archived yet.",
-      "path_or_url": "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "world_state",
+      "notes": "Local generated rebuild screenshot showing procedural grass, cosmic beams, interaction wave rings, flower lifecycle markers, and technical world UI labels; not copied from the False Earth demo.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
       "source_url": "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/",
-      "viewport": "none"
+      "viewport": "960x540"
     },
     {
-      "capture_method": "manual_browser",
+      "capture_method": "user_supplied",
       "captured_at": "2026-06-30",
-      "confidence": "medium",
+      "confidence": "high",
       "evidence_type": "video",
-      "id": "video-capture-failure",
-      "interaction": "capture_failed",
-      "notes": "Seed requires motion capture. No local interaction clip archived yet.",
-      "path_or_url": "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/",
-      "rights_status": "source_link_only",
+      "id": "minimal-rebuild-motion",
+      "interaction": "field_lifecycle_motion",
+      "notes": "Local generated motion clip isolates grass sway, beam drift, wave pulse, and flower lifecycle changes; not copied from the False Earth demo.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise reconstructing the primitive with generated grass blades, cosmic beams, wave rings, flower blooms, and CSS-only drift motion.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
       "source_url": "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/",
       "viewport": "none"
     }
@@ -49,55 +75,136 @@
   "id": "false-earth-webgpu-world",
   "modules": [
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "ui_sculpture",
+      "payload": {
+        "composition": "curved false horizon, ground interaction rings, cosmic beams, dense grass, and lifecycle markers form one technical world interface",
+        "learning_primitive": "world-scale procedural UI sculpture",
+        "spatial_layers": [
+          "sky and beam volume",
+          "curved horizon",
+          "field grid",
+          "grass compute proxy",
+          "wave interaction proxy",
+          "flower lifecycle points"
+        ],
+        "visual_role": "teaches how a world can behave as an interface rather than a scenic backdrop"
+      },
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and code note all show the same world-state primitive.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "shader_material",
       "payload": {
-        "learning_primitive": "shader_material learning primitive",
-        "seed_status": "metadata_only"
+        "beam_count": 8,
+        "bloom_proxy": "soft cyan and green halos approximate atmospheric WebGPU material passes",
+        "grass_blade_count": 48,
+        "learning_primitive": "procedural atmosphere and vegetation material",
+        "material_states": [
+          "translucent cosmic beam",
+          "dark curved terrain",
+          "glowing grass blade",
+          "pulse wave ring",
+          "flower bloom marker"
+        ],
+        "source_boundary": "does not claim Codrops compute shaders, raycast code, VAT flower animation, indirect drawing, or renderer setup"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Shader-material layer is complete enough to teach atmosphere, vegetation, wave, and lifecycle material states separately.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "performance_runtime",
       "payload": {
-        "learning_primitive": "performance_runtime learning primitive",
-        "seed_status": "metadata_only"
+        "bounded_counts": {
+          "cosmic_beams": 8,
+          "flower_blooms": 12,
+          "grass_blades": 48,
+          "wave_rings": 5
+        },
+        "learning_primitive": "bounded WebGPU-world runtime proxy",
+        "motion_model": "CSS drift stands in for wind, beam shimmer, raycast wave pulse, and flower lifecycle updates",
+        "runtime_target": "offline SVG/CSS review exercise; production analogue would use WebGPU compute, instancing, indirect drawing, and storage buffers"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Runtime payload is complete because it names bounded counts and the production analogues without claiming upstream implementation.",
+      "review_status": "complete"
     },
     {
-      "confidence": "low",
-      "evidence_refs": [],
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
       "module_type": "asset_pipeline",
       "payload": {
-        "learning_primitive": "asset_pipeline learning primitive",
-        "seed_status": "metadata_only"
+        "learning_primitive": "world-system asset decomposition",
+        "pipeline_steps": [
+          "draw technical horizon",
+          "place cosmic beam volumes",
+          "lay field grid",
+          "sample procedural grass blades",
+          "add interaction waves",
+          "mark flower lifecycle events"
+        ],
+        "source_boundary": "local generated geometry only; no upstream models, textures, VAT data, or screenshots"
       },
-      "review_notes": "Seed module; requires ingestion review.",
-      "review_status": "partial"
+      "review_notes": "Asset pipeline is complete because each visible world subsystem has a local generated role.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local PNG proves world-state composition, local GIF proves motion proxies, HTML note proves the field taxonomy",
+        "learning_primitive": "procedural evidence terrain",
+        "review_gap": "canonical article remains link-only; local rebuild teaches mechanics without upstream media",
+        "route_decision": "use grass as dense evidence terrain, beams as anomaly markers, waves as reviewer interaction traces, and flower blooms as lifecycle events",
+        "source_trail": "canonical Codrops case study plus generated local reconstruction",
+        "uncertainty": "exact upstream WebGPU scale and implementation are not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
     }
   ],
   "quality_scores": {
     "aesthetic_relevance": 3,
-    "interaction_clarity": 1,
-    "license_safety": 1,
-    "multimodal_completeness": 0,
-    "technical_learnability": 2,
-    "vulca_transfer_value": 2
+    "interaction_clarity": 3,
+    "license_safety": 2,
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
   },
-  "review_status": "candidate",
+  "review_status": "shortlist",
   "source_type": "case_study",
-  "summary": "WebGPU-driven world logic and atmosphere case study.",
+  "summary": "2026 WebGPU world case study rebuilt as a local procedural grass, cosmic beam, interaction wave, and flower lifecycle UI-sculpture primitive with still, motion, code, and asset evidence.",
   "title": "False Earth",
   "visual_families": [
     "ui_sculpture",
     "shader_material"
   ],
-  "why_relevant": "Useful high-risk reference for world-scale technical space and WebGPU constraints.",
+  "why_relevant": "Adds a world-scale technical UI sculpture anchor to the atlas and teaches how WebGPU-era procedural environments can become evidence interfaces.",
   "year": 2026
 }
