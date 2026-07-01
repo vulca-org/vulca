@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -14,6 +15,10 @@ SPECIMEN_JSON = (
     / "experiments"
     / "3d-vector-aesthetic-stage-02-archive-instrument-specimen-asset-pass-01.json"
 )
+SPECIMEN_JSON_RELATIVE = (
+    "docs/product/experiments/"
+    "3d-vector-aesthetic-stage-02-archive-instrument-specimen-asset-pass-01.json"
+)
 SPECIMEN_HTML = (
     REPO_ROOT
     / "docs"
@@ -21,6 +26,10 @@ SPECIMEN_HTML = (
     / "experiments"
     / "3d-vector-aesthetic-stage-02-archive-instrument-specimen-asset-pass-01"
     / "index.html"
+)
+SPECIMEN_HTML_RELATIVE = (
+    "docs/product/experiments/"
+    "3d-vector-aesthetic-stage-02-archive-instrument-specimen-asset-pass-01/index.html"
 )
 CURRENT_PROTOTYPE = (
     REPO_ROOT
@@ -41,6 +50,11 @@ REFERENCE_LOCK_HREF = (
     "../3d-vector-aesthetic-stage-02-archive-instrument-reference-lock/index.html"
 )
 THREE_IMPORT = "https://unpkg.com/three@0.165.0/build/three.module.js"
+TEST_RELATIVE = (
+    "tests/test_vector_aesthetics_stage2_archive_instrument_specimen_asset_pass01.py"
+)
+PASS_BASE_REF_ENV = "ARCHIVE_SPECIMEN_PASS01_BASE_REF"
+DEFAULT_PASS_BASE_REF = "bcdb2597ce23cfb6455fd9c04b8f71117e59adc6"
 
 EXPECTED_PAYLOAD = {
     "candidate_id": "stage-02-archive-instrument-specimen-asset-pass-01",
@@ -103,6 +117,35 @@ def _html() -> str:
     return SPECIMEN_HTML.read_text(encoding="utf-8")
 
 
+def _git(args: list[str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", *args],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+
+def _changed_files_for_pass() -> set[str]:
+    base_ref = os.environ.get(PASS_BASE_REF_ENV, DEFAULT_PASS_BASE_REF)
+    resolved_base = _git(["rev-parse", "--verify", f"{base_ref}^{{commit}}"])
+    assert resolved_base.returncode == 0, (
+        f"{PASS_BASE_REF_ENV}={base_ref!r} does not resolve to a commit: "
+        f"{resolved_base.stderr}"
+    )
+    base_commit = resolved_base.stdout.strip()
+
+    ancestor_check = _git(["merge-base", "--is-ancestor", base_commit, "HEAD"])
+    assert ancestor_check.returncode == 0, (
+        f"{PASS_BASE_REF_ENV}={base_ref!r} resolves to {base_commit}, "
+        "but it is not an ancestor of HEAD"
+    )
+
+    changed = _git(["log", "--format=", "--name-only", f"{base_commit}..HEAD", "--"])
+    assert changed.returncode == 0, changed.stderr
+    return {line for line in changed.stdout.splitlines() if line}
+
+
 def test_stage02_archive_instrument_specimen_asset_pass01_json_contract():
     payload = _payload()
 
@@ -121,6 +164,18 @@ def test_stage02_archive_instrument_specimen_asset_pass01_files_and_prototype_st
         text=True,
     )
     assert prototype_status.stdout == ""
+
+    changed_files = _changed_files_for_pass()
+    expected_pass_files = {
+        SPECIMEN_JSON_RELATIVE,
+        SPECIMEN_HTML_RELATIVE,
+        TEST_RELATIVE,
+    }
+    assert expected_pass_files <= changed_files
+    assert CURRENT_PROTOTYPE_RELATIVE not in changed_files, (
+        f"{CURRENT_PROTOTYPE_RELATIVE} changed in the specimen asset pass "
+        f"range from {os.environ.get(PASS_BASE_REF_ENV, DEFAULT_PASS_BASE_REF)}..HEAD"
+    )
 
 
 def test_stage02_archive_instrument_specimen_asset_pass01_html_review_contract():
