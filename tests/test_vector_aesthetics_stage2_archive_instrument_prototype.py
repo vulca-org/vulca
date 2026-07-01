@@ -77,7 +77,7 @@ def test_archive_instrument_prototype_has_four_state_hierarchy_not_random_demo()
 def test_archive_instrument_prototype_has_mobile_and_canvas_guards():
     html_text = PROTOTYPE.read_text(encoding="utf-8")
 
-    assert "root.scale.setScalar(width < 700 ? 0.56 : 1.18);" in html_text
+    assert "root.scale.setScalar(width < 700 ? 0.74 : 1.42);" in html_text
     assert "@media (max-width: 820px)" in html_text
     assert ".state-rail,\n      .quality-tag {\n        display: none;\n      }" in html_text
     assert "min-height: 430vh;" in html_text
