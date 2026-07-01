@@ -67,7 +67,7 @@ def test_archive_instrument_prototype_has_four_state_hierarchy_not_random_demo()
         "layer_separation",
         "trace_constellation",
     ]
-    for title in ["Sealed Archive", "Membrane Scan", "Layer Separation", "Trace Constellation"]:
+    for title in ["Sealed Vitrine", "Surface Scan", "Open Vitrine", "Evidence Bloom"]:
         assert title in html_text
     assert "random tubes" not in html_text.lower()
     assert "poster" not in html_text.lower()
