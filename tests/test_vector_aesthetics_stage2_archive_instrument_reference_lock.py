@@ -39,6 +39,20 @@ EXPECTED_VISUAL_CRITERIA = [
     "Each scroll state changes inspection logic, not just position or opacity.",
     "The palette has warm material contrast and does not collapse into gray-green technical UI.",
 ]
+EXPECTED_STILL_WEAK = [
+    "real-world specimen fidelity",
+    "glass thickness",
+    "bottom support readability",
+    "reference-level lighting",
+    "lack of high-quality model or texture assets",
+]
+EXPECTED_NEXT_PASS_MOVES = [
+    "replace or supplement procedural plant geometry with a better modeled or generated specimen asset",
+    "rebuild glass as a believable thick container with edge highlights and refraction cues",
+    "define one strong hero camera and only modest scroll-state camera changes",
+    "reduce annotation density and make scan/section states behave like instrument modes",
+    "add screenshot-based browser review checkpoints for mobile and desktop",
+]
 ALLOWED_REFERENCE_PAIRS = {
     ("local_prototype", "baseline"),
     ("museum_science_reference", "specimen"),
@@ -113,21 +127,12 @@ def test_stage02_archive_instrument_reference_lock_diagnosis_and_next_moves():
         "four-state logic",
         "less abstract roots",
     ]
-    assert "real-world specimen fidelity" in payload["current_diagnosis"]["still_weak"]
-    assert (
-        "lack of high-quality model or texture assets"
-        in payload["current_diagnosis"]["still_weak"]
-    )
+    assert payload["current_diagnosis"]["still_weak"] == EXPECTED_STILL_WEAK
     assert payload["current_diagnosis"]["risk"].startswith(
         "continuing to polish procedural shapes"
     )
     assert payload["visual_criteria"] == EXPECTED_VISUAL_CRITERIA
-    assert payload["next_pass_moves"][0].startswith(
-        "replace or supplement procedural plant geometry"
-    )
-    assert payload["next_pass_moves"][-1].startswith(
-        "add screenshot-based browser review checkpoints"
-    )
+    assert payload["next_pass_moves"] == EXPECTED_NEXT_PASS_MOVES
 
 
 def test_stage02_archive_instrument_reference_lock_html_is_reviewable():
@@ -138,9 +143,14 @@ def test_stage02_archive_instrument_reference_lock_html_is_reviewable():
         'data-vector-stage-product="2026-07-stage-02-archive-instrument-reference-lock"'
         in html_text
     )
+    assert "<title>Archive Instrument Reference Lock</title>" in html_text
     assert "window.__ARCHIVE_INSTRUMENT_REFERENCE_LOCK__" in html_text
+    assert "referenceCount: REFERENCE_LOCK.references.length" in html_text
+    assert "criteriaCount: REFERENCE_LOCK.visual_criteria.length" in html_text
+    assert 'direction: "archive-instrument"' in html_text
     assert "Archive Instrument = realistic preserved specimen" in html_text
     assert "Direction is locked; execution quality is not." in html_text
+    assert "Reference Matrix" in html_text
     assert "Current Prototype Diagnosis" in html_text
     assert "Visual Criteria For Next Pass" in html_text
     assert "Next-Pass Moves" in html_text
@@ -159,10 +169,26 @@ def test_stage02_archive_instrument_reference_lock_inline_data_matches_json():
 
     assert html_block, "inline reference lock data missing"
     inline_payload = json.loads(html_block.group(1))
+    assert inline_payload == payload
     assert [item["id"] for item in inline_payload["references"]] == EXPECTED_REFERENCE_IDS
     assert inline_payload["references"] == payload["references"]
+    assert inline_payload["visual_criteria"] == EXPECTED_VISUAL_CRITERIA
+    assert inline_payload["next_pass_moves"] == EXPECTED_NEXT_PASS_MOVES
+    assert inline_payload["current_diagnosis"]["still_weak"] == EXPECTED_STILL_WEAK
+    assert (
+        inline_payload["current_diagnosis"]["risk"]
+        == payload["current_diagnosis"]["risk"]
+    )
+    assert payload["current_diagnosis"]["risk"] in html_block.group(1)
+    for value in payload["visual_criteria"]:
+        assert value in html_block.group(1)
+    for value in payload["next_pass_moves"]:
+        assert value in html_block.group(1)
     for item in payload["references"]:
         assert item["id"] in html_block.group(1)
+        assert item["label"] in html_block.group(1)
+        assert item["borrow"] in html_block.group(1)
+        assert item["do_not_copy"] in html_block.group(1)
         assert item["label"] in html_text
         assert item["borrow"] in html_text
         assert item["do_not_copy"] in html_text
