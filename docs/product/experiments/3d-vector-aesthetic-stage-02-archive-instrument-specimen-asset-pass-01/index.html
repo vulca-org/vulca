@@ -74,13 +74,13 @@
     }
 
     h1 {
-      font-size: 46px;
+      font-size: 28px;
       line-height: 1.14;
-      max-width: 11ch;
+      max-width: none;
     }
 
     h2 {
-      font-size: 22px;
+      font-size: 15px;
     }
 
     h3 {
@@ -90,15 +90,15 @@
     .page {
       width: min(1420px, calc(100vw - 36px));
       margin: 0 auto;
-      padding: 28px 0 48px;
+      padding: 18px 0 36px;
     }
 
     .hero {
       display: grid;
-      grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.72fr);
-      gap: 20px;
+      grid-template-columns: minmax(0, 1.64fr) minmax(360px, 0.76fr);
+      gap: 16px;
       align-items: stretch;
-      min-height: 720px;
+      min-height: min(684px, calc(100dvh - 36px));
     }
 
     .specimen-stage {
@@ -156,8 +156,7 @@
       color: #e5bd83;
     }
 
-    .review-panel,
-    .panel {
+    .review-panel {
       border: 1px solid var(--line);
       border-radius: 8px;
       background: rgba(17, 18, 14, 0.9);
@@ -166,9 +165,9 @@
     .review-panel {
       display: grid;
       align-content: start;
-      gap: 18px;
+      gap: 12px;
       min-width: 0;
-      padding: 20px;
+      padding: 16px;
     }
 
     .eyebrow,
@@ -182,13 +181,13 @@
 
     .question {
       color: var(--ink);
-      font-size: 16px;
-      line-height: 1.5;
+      font-size: 14px;
+      line-height: 1.42;
     }
 
     .copy {
       display: grid;
-      gap: 12px;
+      gap: 8px;
     }
 
     .nav {
@@ -217,37 +216,10 @@
       outline: none;
     }
 
-    .fact-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .fact {
-      min-width: 0;
-      padding-top: 10px;
-      border-top: 1px solid rgba(239, 226, 196, 0.1);
-    }
-
-    .fact dt {
-      margin-bottom: 4px;
-      color: var(--dim);
-      font-size: 11px;
-      line-height: 1.25;
-      text-transform: uppercase;
-    }
-
-    .fact dd {
-      margin: 0;
-      color: var(--ink);
-      font-size: 12px;
-      line-height: 1.4;
-    }
-
     .tag-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 7px;
+      gap: 6px;
       padding: 0;
       list-style: none;
     }
@@ -262,26 +234,10 @@
       color: #d0a08d;
     }
 
-    .review-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .panel {
-      min-width: 0;
-      padding: 16px;
-    }
-
-    .panel h2 {
-      margin-bottom: 12px;
-    }
-
     .ordered-list,
     .plain-list {
       display: grid;
-      gap: 10px;
+      gap: 7px;
       padding-left: 18px;
     }
 
@@ -296,7 +252,7 @@
 
     .ordered-list li.criterion-primary {
       margin-left: -10px;
-      padding: 10px 12px 10px 14px;
+      padding: 8px 10px 8px 13px;
       border: 1px solid rgba(210, 154, 93, 0.42);
       border-radius: 8px;
       color: var(--ink);
@@ -308,7 +264,7 @@
     .ordered-list li.criterion-primary::before {
       content: "Primary read";
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
       color: var(--amber);
       font-size: 11px;
       line-height: 1.2;
@@ -320,34 +276,9 @@
       font-weight: 700;
     }
 
-    .mode-strip {
+    .review-block {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
-      margin-top: 20px;
-    }
-
-    .mode {
-      min-width: 0;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: rgba(23, 24, 18, 0.7);
-    }
-
-    .mode strong {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--ink);
-      font-size: 12px;
-      line-height: 1.25;
-    }
-
-    .mode span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.45;
     }
 
     @media (max-width: 1060px) {
@@ -355,8 +286,7 @@
         font-size: 38px;
       }
 
-      .hero,
-      .review-grid {
+      .hero {
         grid-template-columns: 1fr;
       }
 
@@ -392,10 +322,6 @@
         min-height: 560px;
       }
 
-      .fact-grid,
-      .mode-strip {
-        grid-template-columns: 1fr;
-      }
     }
   </style>
 </head>
@@ -408,8 +334,6 @@
         </div>
         <div class="stage-readout" aria-hidden="true">
           <span class="readout-pill" data-tone="amber">first read: preserved organic sample</span>
-          <span class="readout-pill">warm brown</span>
-          <span class="readout-pill">olive leaf</span>
           <span class="readout-pill">amber mounting wire</span>
         </div>
       </div>
@@ -419,81 +343,28 @@
           <p class="eyebrow">Specimen Asset Pass 01</p>
           <h1>Specimen Asset Pass 01</h1>
           <p class="question">Does the central specimen read as a preserved real object before it reads as a diagram?</p>
-          <p>This candidate isolates the botanical asset before any merge into the Archive Instrument prototype.</p>
         </div>
+
+        <section class="review-block" aria-label="Required anatomy">
+          <p class="label">Required anatomy</p>
+          <ul class="tag-list" id="anatomyTags"></ul>
+        </section>
+
+        <section class="review-block" aria-label="Visual criteria">
+          <h2>Visual Criteria</h2>
+          <ol class="ordered-list" id="criteriaList"></ol>
+        </section>
+
+        <section class="review-block" aria-label="Handoff notes">
+          <h2>Handoff Notes</h2>
+          <ul class="plain-list" id="handoffList"></ul>
+        </section>
 
         <nav class="nav" aria-label="Archive instrument links">
           <a href="../3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html">Current prototype</a>
           <a href="../3d-vector-aesthetic-stage-02-archive-instrument-reference-lock/index.html">Reference lock</a>
         </nav>
-
-        <dl class="fact-grid">
-          <div class="fact">
-            <dt>Direction</dt>
-            <dd>realistic preserved specimen plus luxury scientific instrument</dd>
-          </div>
-          <div class="fact">
-            <dt>Status</dt>
-            <dd>specimen asset candidate before prototype merge</dd>
-          </div>
-          <div class="fact">
-            <dt>Approach</dt>
-            <dd>separate procedural specimen candidate</dd>
-          </div>
-          <div class="fact">
-            <dt>Non goal</dt>
-            <dd>do not modify the current Archive Instrument prototype in this pass</dd>
-          </div>
-        </dl>
-
-        <section aria-label="Required anatomy">
-          <p class="label">Required anatomy</p>
-          <ul class="tag-list" id="anatomyTags"></ul>
-        </section>
-
-        <section aria-label="Not read as">
-          <p class="label">Not read as</p>
-          <ul class="tag-list" id="avoidTags"></ul>
-        </section>
       </aside>
-    </section>
-
-    <section class="mode-strip" aria-label="Inspection logic states">
-      <div class="mode">
-        <strong>Specimen</strong>
-        <span>Object first, quiet vitrine second.</span>
-      </div>
-      <div class="mode">
-        <strong>Leaf attachment</strong>
-        <span>Petioles visibly bridge blade and woody stem.</span>
-      </div>
-      <div class="mode">
-        <strong>Root crown</strong>
-        <span>Roots emerge from sockets instead of reading as legs.</span>
-      </div>
-      <div class="mode">
-        <strong>Support</strong>
-        <span>Mounting wires cradle the sample as specimen support.</span>
-      </div>
-    </section>
-
-    <section class="review-grid" aria-label="Candidate review details">
-      <article class="panel">
-        <h2>Candidate Traits</h2>
-        <ul class="plain-list" id="traitList"></ul>
-      </article>
-      <article class="panel">
-        <h2>Visual Criteria</h2>
-        <ol class="ordered-list" id="criteriaList"></ol>
-      </article>
-      <article class="panel">
-        <h2>Secondary Success Criteria</h2>
-        <ul class="plain-list" id="successList"></ul>
-      </article>
-      <article class="panel">
-        <h2>Handoff Notes</h2>
-        <ul class="plain-list" id="handoffList"></ul>
-      </article>
     </section>
   </main>
 
@@ -603,10 +474,7 @@
 
     function renderPayloadLists() {
       renderTagList("anatomyTags", SPECIMEN_PASS.required_anatomy_parts);
-      renderTagList("avoidTags", SPECIMEN_PASS.not_read_as, "avoid");
-      renderList("traitList", SPECIMEN_PASS.candidate_traits);
       renderCriteriaList("criteriaList", SPECIMEN_PASS.visual_criteria);
-      renderList("successList", SPECIMEN_PASS.secondary_success_criteria);
       renderList("handoffList", SPECIMEN_PASS.handoff_notes);
     }
 

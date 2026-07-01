@@ -200,6 +200,15 @@ def test_stage02_archive_instrument_specimen_asset_pass01_html_review_contract()
     assert 'node.setAttribute("aria-label", `Primary visual criterion: ${item}`)' in html_text
     assert ".ordered-list li.criterion-primary" in html_text
 
+    review_panel = re.search(r'<aside class="review-panel">(.*?)</aside>', html_text, re.S)
+    assert review_panel, "review panel markup missing"
+    review_panel_html = review_panel.group(1)
+    assert 'id="anatomyTags"' in review_panel_html
+    assert 'id="criteriaList"' in review_panel_html
+    assert 'id="handoffList"' in review_panel_html
+    assert 'class="fact-grid"' not in review_panel_html
+    assert "Candidate Traits" not in html_text
+
 
 def test_stage02_archive_instrument_specimen_asset_pass01_threejs_specimen_contract():
     html_text = _html()
