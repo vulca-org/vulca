@@ -53,6 +53,9 @@ EXPECTED_NEXT_PASS_MOVES = [
     "reduce annotation density and make scan/section states behave like instrument modes",
     "add screenshot-based browser review checkpoints for mobile and desktop",
 ]
+EXPECTED_LOCAL_PROTOTYPE_CARD_HREF = (
+    "../3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html"
+)
 ALLOWED_REFERENCE_PAIRS = {
     ("local_prototype", "baseline"),
     ("museum_science_reference", "specimen"),
@@ -192,3 +195,22 @@ def test_stage02_archive_instrument_reference_lock_inline_data_matches_json():
         assert item["label"] in html_text
         assert item["borrow"] in html_text
         assert item["do_not_copy"] in html_text
+
+
+def test_stage02_archive_instrument_reference_lock_local_card_href_resolves():
+    payload = _payload()
+    html_text = REFERENCE_HTML.read_text(encoding="utf-8")
+    local_reference = next(
+        item for item in payload["references"] if item["source_kind"] == "local_prototype"
+    )
+
+    assert (
+        local_reference["url"]
+        == "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html"
+    )
+    assert f'return "{EXPECTED_LOCAL_PROTOTYPE_CARD_HREF}";' in html_text
+    assert "source.href = referenceHref(item);" in html_text
+    assert "source.href = item.url;" not in html_text
+    assert (
+        REFERENCE_HTML.parent / EXPECTED_LOCAL_PROTOTYPE_CARD_HREF
+    ).resolve().is_file()

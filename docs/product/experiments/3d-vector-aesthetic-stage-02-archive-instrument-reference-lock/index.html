@@ -508,6 +508,13 @@
       return field;
     };
 
+    const referenceHref = (item) => {
+      if (item.source_kind === "local_prototype") {
+        return "../3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html";
+      }
+      return item.url;
+    };
+
     const referenceMatrix = document.querySelector("#referenceMatrix");
     REFERENCE_LOCK.references.forEach((item) => {
       const card = document.createElement("article");
@@ -529,7 +536,7 @@
 
       const source = document.createElement("a");
       source.className = "source";
-      source.href = item.url;
+      source.href = referenceHref(item);
       source.append(text(item.url));
 
       card.append(
