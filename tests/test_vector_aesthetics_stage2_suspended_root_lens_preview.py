@@ -41,6 +41,7 @@ def test_suspended_root_lens_preview_keeps_object_as_primary_surface():
     assert "dashboard" not in lowered
     assert "poster" not in lowered
     assert "font-size: clamp(20px, 2.2vw, 30px);" in html_text
+    assert "clip: rect(0, 0, 0, 0);" in html_text
     assert "@media (max-width: 820px)" in html_text
     assert ".state-rail {\n        display: none;\n      }" in html_text
 
@@ -52,6 +53,7 @@ def test_suspended_root_lens_preview_models_selected_variant_parts():
         "createLensShell",
         "createMineralCore",
         "createRootSystem",
+        "createGlassGlints",
         "createBuds",
         "createScanPlane",
         "createArchiveParticles",
@@ -74,6 +76,8 @@ def test_suspended_root_lens_preview_guards_against_root_piercing_and_blank_canv
 
     assert "preserveDrawingBuffer: true" in html_text
     assert "root.scale.setScalar(width < 700 ? 0.32 : 1);" in html_text
+    assert "edge-caustic" in html_text
+    assert "glass-glint" in html_text
     assert "[-0.78, 0.28, -0.12]" in html_text
     assert "[0.96, 0.24, -0.1]" in html_text
     assert "0.98" not in html_text
