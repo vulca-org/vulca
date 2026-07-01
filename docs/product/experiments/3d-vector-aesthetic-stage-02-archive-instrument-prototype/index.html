@@ -252,16 +252,16 @@
     </section>
 
     <nav class="state-rail" aria-label="Scroll states">
-      <span class="state-dot" data-state-marker="0" aria-current="true">Sealed Specimen</span>
-      <span class="state-dot" data-state-marker="1">Glass Scan</span>
-      <span class="state-dot" data-state-marker="2">Vitrine Section</span>
-      <span class="state-dot" data-state-marker="3">Pinned Evidence</span>
+      <span class="state-dot" data-state-marker="0" aria-current="true">Preserve</span>
+      <span class="state-dot" data-state-marker="1">Scan</span>
+      <span class="state-dot" data-state-marker="2">Section</span>
+      <span class="state-dot" data-state-marker="3">Annotate</span>
     </nav>
 
     <section class="caption" aria-live="polite">
       <p class="state-index" id="stateIndex">01 / 04</p>
-      <h2 id="stateTitle">Sealed Specimen</h2>
-      <p id="stateBody">A root cutting sits in preserving fluid on a dark plinth. The glass, soil, leaves, and roots read as one specimen.</p>
+      <h2 id="stateTitle">Preserve</h2>
+      <p id="stateBody">The specimen starts sealed: glass, preserving fluid, stem, leaves, soil, and roots share one quiet volume.</p>
     </section>
 
     <p class="quality-tag">Reference grammar: wet specimen + museum glass + dark wood plinth</p>
@@ -275,43 +275,55 @@
     const STATES = [
       {
         id: "sealed_archive",
-        title: "Sealed Specimen",
-        body: "A root cutting sits in preserving fluid on a dark wood plinth. The glass, soil, leaves, and roots read as one specimen.",
+        title: "Preserve",
+        body: "The specimen starts sealed: glass, preserving fluid, stem, leaves, soil, and roots share one quiet volume.",
+        logic: "sealed specimen at rest",
         camera: new THREE.Vector3(0, 0.18, 5.52),
         scan: 0,
         separate: 0,
         traces: 0,
-        bloom: 0.24
+        bloom: 0.24,
+        specimenTurn: 0,
+        leafOpen: 0.1
       },
       {
         id: "membrane_scan",
-        title: "Glass Scan",
-        body: "A pale scan moves over the glass and catches condensation, fluid, and root filaments without turning them into UI lines.",
+        title: "Scan",
+        body: "The first pass reads the outer glass and leaf surfaces. The plant turns slightly toward the scanning plane.",
+        logic: "surface scan reveals leaf orientation and condensation",
         camera: new THREE.Vector3(-0.24, 0.14, 5.16),
         scan: 1,
         separate: 0.18,
         traces: 0.08,
-        bloom: 0.38
+        bloom: 0.38,
+        specimenTurn: -0.18,
+        leafOpen: 0.42
       },
       {
         id: "layer_separation",
-        title: "Vitrine Section",
-        body: "The glass separates just enough to show the specimen structure: plinth, fluid, soil core, roots, leaves.",
+        title: "Section",
+        body: "The vitrine opens into a shallow section, separating glass, liquid, soil, root paths, and the living cutting.",
+        logic: "section view separates the physical layers",
         camera: new THREE.Vector3(0.18, 0.28, 4.9),
         scan: 0.45,
         separate: 1,
         traces: 0.22,
-        bloom: 0.62
+        bloom: 0.62,
+        specimenTurn: 0.16,
+        leafOpen: 0.26
       },
       {
         id: "trace_constellation",
-        title: "Pinned Evidence",
-        body: "Small specimen pins and bubbles lift from the leaves and roots while the object still reads as a real preserved sample.",
+        title: "Annotate",
+        body: "Only the checked points lift: a few pins, bubbles, and root details are marked without breaking the specimen.",
+        logic: "evidence pins attach to inspected features",
         camera: new THREE.Vector3(0.04, 0.4, 5.72),
         scan: 0.2,
         separate: 0.54,
         traces: 1,
-        bloom: 0.86
+        bloom: 0.86,
+        specimenTurn: 0.04,
+        leafOpen: 0.18
       }
     ];
 
@@ -749,17 +761,20 @@
       });
 
       const leafSpecs = [
-        [-0.27, 0.42, 0.13, -0.82, 0.18, 0.42, 0],
-        [0.28, 0.48, 0.09, 0.68, 0.17, 0.42, 0],
-        [-0.05, 0.68, 0.02, -0.1, 0.13, 0.33, 1],
-        [0.17, 0.26, 0.18, 0.3, 0.11, 0.27, 1],
-        [-0.18, 0.2, 0.04, -0.52, 0.1, 0.26, 0]
+        [-0.3, 0.42, 0.04, -0.78, 0.52, -0.42, 0.18, 0.2, 0.42, 0],
+        [0.3, 0.48, 0.12, 0.72, 0.42, 0.5, -0.08, 0.19, 0.4, 0],
+        [-0.06, 0.7, -0.03, -0.16, 0.78, -0.08, 0.12, 0.13, 0.33, 1],
+        [0.18, 0.28, 0.22, 0.38, 0.12, 0.7, -0.24, 0.12, 0.28, 1],
+        [-0.18, 0.22, 0.0, -0.46, -0.04, -0.5, 0.1, 0.1, 0.25, 0]
       ];
-      leafSpecs.forEach(([x, y, z, rotation, width, height, young]) => {
+      leafSpecs.forEach(([x, y, z, roll, pitch, yaw, openBias, width, height, young]) => {
         const leaf = createLeafMesh(width, height, young ? youngLeafMaterial.clone() : leafMaterial.clone(), leafVeinMaterial.clone());
         leaf.position.set(x, y, z);
-        leaf.rotation.set(0.28, young ? 0.32 : 0.2, rotation);
-        const petiole = tubeFromPoints([[0.0, 0.24, 0.08], [x * 0.45, y * 0.58, z], [x * 0.9, y * 0.94, z]], 0.0055, cutMaterial, 24);
+        leaf.rotation.set(pitch, yaw, roll);
+        leaf.userData.kind = "leaf-cluster";
+        leaf.userData.baseRotation = leaf.rotation.clone();
+        leaf.userData.openBias = openBias;
+        const petiole = tubeFromPoints([[0.0, 0.24, 0.08], [x * 0.42, y * 0.6, z * 0.65], [x * 0.9, y * 0.94, z]], 0.0055, cutMaterial, 24);
         petiole.userData.kind = "leaf-petiole";
         group.add(petiole);
         group.add(leaf);
@@ -992,7 +1007,9 @@
         scan: THREE.MathUtils.lerp(a.scan, b.scan, local),
         separate: THREE.MathUtils.lerp(a.separate, b.separate, local),
         traces: THREE.MathUtils.lerp(a.traces, b.traces, local),
-        bloom: THREE.MathUtils.lerp(a.bloom, b.bloom, local)
+        bloom: THREE.MathUtils.lerp(a.bloom, b.bloom, local),
+        specimenTurn: THREE.MathUtils.lerp(a.specimenTurn, b.specimenTurn, local),
+        leafOpen: THREE.MathUtils.lerp(a.leafOpen, b.leafOpen, local)
       };
     }
 
@@ -1120,8 +1137,18 @@
         }
       });
 
-      coreLayer.rotation.y = time * 0.025 + state.separate * 0.08;
+      coreLayer.rotation.y = state.specimenTurn + time * 0.018 + state.separate * 0.05;
       coreLayer.rotation.x = Math.sin(time * 0.12) * 0.012;
+      coreLayer.children.forEach((child) => {
+        if (child.userData.kind !== "leaf-cluster") return;
+        const base = child.userData.baseRotation;
+        const open = state.leafOpen * child.userData.openBias;
+        child.rotation.set(
+          base.x + state.scan * 0.05 + Math.sin(time * 0.45 + child.position.x) * 0.006,
+          base.y + open,
+          base.z + open * 0.22
+        );
+      });
       lights.rim.intensity = 6 + state.scan * 7 + state.separate * 2 + state.traces * 2;
       lights.warm.intensity = 7 + state.bloom * 7;
       lights.shelf.intensity = 4 + state.separate * 2;
@@ -1155,7 +1182,7 @@
       engine: "threejs-reference-driven-prototype",
       selectedReferences: ["iyo-webgl-exploded-view", "webgpu-scanning-depth-maps", "spline-ai-single-object-rule"],
       layers: ["frame", "shell", "membrane", "core", "roots", "signals", "scan", "trace-particles"],
-      states: STATES.map(({ id, title }) => ({ id, title })),
+      stateLogic: STATES.map(({ id, title, logic }) => ({ id, title, logic })),
       readScrollProgress
     };
 

@@ -67,8 +67,17 @@ def test_archive_instrument_prototype_has_four_state_hierarchy_not_random_demo()
         "layer_separation",
         "trace_constellation",
     ]
-    for title in ["Sealed Specimen", "Glass Scan", "Vitrine Section", "Pinned Evidence"]:
+    for title in ["Preserve", "Scan", "Section", "Annotate"]:
         assert title in html_text
+    for logic in [
+        "sealed specimen at rest",
+        "surface scan reveals leaf orientation and condensation",
+        "section view separates the physical layers",
+        "evidence pins attach to inspected features",
+    ]:
+        assert logic in html_text
+    for motion_param in ["specimenTurn", "leafOpen", "leaf-cluster", "baseRotation", "openBias"]:
+        assert motion_param in html_text
     assert "random tubes" not in html_text.lower()
     assert "poster" not in html_text.lower()
     assert "<button" not in html_text.lower()
