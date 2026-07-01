@@ -6,6 +6,8 @@ from pathlib import Path
 import re
 import subprocess
 
+import pytest
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SPECIMEN_JSON = (
@@ -126,20 +128,27 @@ def _git(args: list[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
-def _changed_files_for_pass() -> set[str]:
+def _changed_files_for_pass() -> set[str] | None:
     base_ref = os.environ.get(PASS_BASE_REF_ENV, DEFAULT_PASS_BASE_REF)
+    explicit_base_ref = PASS_BASE_REF_ENV in os.environ
     resolved_base = _git(["rev-parse", "--verify", f"{base_ref}^{{commit}}"])
-    assert resolved_base.returncode == 0, (
-        f"{PASS_BASE_REF_ENV}={base_ref!r} does not resolve to a commit: "
-        f"{resolved_base.stderr}"
-    )
+    if resolved_base.returncode != 0:
+        if explicit_base_ref:
+            pytest.fail(
+                f"{PASS_BASE_REF_ENV}={base_ref!r} does not resolve to a "
+                f"commit: {resolved_base.stderr}"
+            )
+        return None
     base_commit = resolved_base.stdout.strip()
 
     ancestor_check = _git(["merge-base", "--is-ancestor", base_commit, "HEAD"])
-    assert ancestor_check.returncode == 0, (
-        f"{PASS_BASE_REF_ENV}={base_ref!r} resolves to {base_commit}, "
-        "but it is not an ancestor of HEAD"
-    )
+    if ancestor_check.returncode != 0:
+        if explicit_base_ref:
+            pytest.fail(
+                f"{PASS_BASE_REF_ENV}={base_ref!r} resolves to {base_commit}, "
+                "but it is not an ancestor of HEAD"
+            )
+        return None
 
     changed = _git(["log", "--format=", "--name-only", f"{base_commit}..HEAD", "--"])
     assert changed.returncode == 0, changed.stderr
@@ -165,7 +174,15 @@ def test_stage02_archive_instrument_specimen_asset_pass01_files_and_prototype_st
     )
     assert prototype_status.stdout == ""
 
+
+def test_stage02_archive_instrument_specimen_asset_pass01_committed_boundary():
     changed_files = _changed_files_for_pass()
+    if changed_files is None:
+        pytest.skip(
+            "committed pass boundary needs the local base commit; set "
+            f"{PASS_BASE_REF_ENV} or fetch full history"
+        )
+
     expected_pass_files = {
         SPECIMEN_JSON_RELATIVE,
         SPECIMEN_HTML_RELATIVE,
