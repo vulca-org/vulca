@@ -22,6 +22,8 @@ def test_stage2_reference_discovery_exists_and_reframes_the_problem():
     assert "The main element is not text." in text
     assert "what is the subject?" in text
     assert "central_scroll_object" in text
+    assert "3d-vector-aesthetic-stage-02-reference-board/index.html" in text
+    assert "3d-vector-aesthetic-stage-02-reference-board.json" in text
 
 
 def test_stage2_reference_discovery_includes_external_reference_shortlist():

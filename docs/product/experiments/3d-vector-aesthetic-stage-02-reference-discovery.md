@@ -4,6 +4,11 @@
 
 Discovery for user review. Do not implement yet.
 
+Current reference-board entrypoint:
+
+- `docs/product/experiments/3d-vector-aesthetic-stage-02-reference-board/index.html`
+- `docs/product/experiments/3d-vector-aesthetic-stage-02-reference-board.json`
+
 The previous Stage 02 direction pushed too quickly into a text-poster canvas. The new target is a central visual element in the middle of the web page: one object, world, or device that changes through page or scroll states. Code is the final delivery layer, not the source of taste.
 
 ## What Changed
