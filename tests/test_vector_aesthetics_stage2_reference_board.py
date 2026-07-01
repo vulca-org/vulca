@@ -30,6 +30,10 @@ def test_stage02_reference_board_json_defines_reference_gate():
     assert payload["status"] == "reference_gate_before_next_visual_iteration"
     assert "technically stable but visually weak" in payload["diagnosis"]
     assert payload["decision"]["reject"].startswith("continuing to polish")
+    assert payload["decision"]["selected_card_id"] == "archive-instrument"
+    assert payload["decision"]["selected_prototype"].endswith(
+        "3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html"
+    )
     assert len(payload["references"]) == 8
     assert len(payload["recommended_cards"]) == 3
     assert payload["next_recommendation"].startswith("Do not continue polishing")

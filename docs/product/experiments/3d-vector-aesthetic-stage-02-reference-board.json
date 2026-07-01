@@ -7,7 +7,9 @@
   "decision": {
     "keep": "central scroll object, four visual states, glass/root/archive subject",
     "reject": "continuing to polish a procedural object without reference-driven silhouette and material targets",
-    "next_move": "Use references to choose a stronger object grammar before further Three.js or GLB work."
+    "next_move": "Use references to choose a stronger object grammar before further Three.js or GLB work.",
+    "selected_card_id": "archive-instrument",
+    "selected_prototype": "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html"
   },
   "references": [
     {
