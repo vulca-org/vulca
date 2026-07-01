@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Archive Instrument Reference Lock</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --bg: #0b0c0a;
+      --panel: #141511;
+      --panel-2: #1b1b16;
+      --line: rgba(236, 226, 201, 0.16);
+      --line-strong: rgba(236, 226, 201, 0.28);
+      --ink: #f1ead7;
+      --muted: #b8ad96;
+      --dim: #827a69;
+      --amber: #d69b5f;
+      --glass: #9bc8bf;
+      --clay: #b56955;
+      --olive: #9faa7a;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(214, 155, 95, 0.08), transparent 340px),
+        linear-gradient(135deg, #080907 0%, #10110d 55%, #080907 100%);
+      color: var(--ink);
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1360px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 34px 0 52px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.92fr) minmax(420px, 1.08fr);
+      gap: 30px;
+      align-items: end;
+      min-height: 280px;
+      padding: 0 0 26px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow,
+    .kicker,
+    .meta {
+      margin: 0;
+      color: var(--amber);
+      font-size: 11px;
+      line-height: 1.35;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      letter-spacing: 0;
+      line-height: 1.05;
+    }
+
+    h1 {
+      max-width: 10ch;
+      margin-top: 12px;
+      font-size: clamp(40px, 6vw, 76px);
+    }
+
+    h2 {
+      font-size: clamp(24px, 3.1vw, 38px);
+    }
+
+    h3 {
+      font-size: 17px;
+    }
+
+    p,
+    li {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .lead {
+      display: grid;
+      gap: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(236, 226, 201, 0.045);
+    }
+
+    .lead strong {
+      color: var(--ink);
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.035);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .nav a:hover {
+      border-color: var(--line-strong);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .section {
+      margin-top: 34px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+
+    .section-head p {
+      max-width: 62ch;
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(230px, 1fr));
+      gap: 12px;
+    }
+
+    .ref-card,
+    .diagnosis-card,
+    .list-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(20, 21, 17, 0.88);
+    }
+
+    .ref-card {
+      display: grid;
+      gap: 14px;
+      min-height: 330px;
+      padding: 15px;
+    }
+
+    .ref-card[data-dimension="specimen"] {
+      border-color: rgba(159, 170, 122, 0.34);
+    }
+
+    .ref-card[data-dimension="glass"] {
+      border-color: rgba(155, 200, 191, 0.34);
+    }
+
+    .ref-card[data-dimension="instrument"],
+    .ref-card[data-dimension="sectioning"] {
+      border-color: rgba(214, 155, 95, 0.3);
+    }
+
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 3px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--dim);
+      background: rgba(255, 255, 255, 0.035);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .source {
+      color: var(--glass);
+      font-size: 12px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .field {
+      padding-top: 10px;
+      border-top: 1px solid rgba(236, 226, 201, 0.1);
+    }
+
+    .field strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 11px;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .field span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .diagnosis-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .diagnosis-card,
+    .list-panel {
+      padding: 16px;
+    }
+
+    .diagnosis-card ul,
+    .list-panel ol {
+      display: grid;
+      gap: 9px;
+      margin: 12px 0 0;
+      padding-left: 18px;
+    }
+
+    .diagnosis-card[data-kind="risk"] {
+      border-color: rgba(181, 105, 85, 0.35);
+      background: rgba(181, 105, 85, 0.08);
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 1180px) {
+      .hero,
+      .diagnosis-grid,
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .matrix {
+        grid-template-columns: repeat(2, minmax(230px, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page {
+        width: min(100vw - 24px, 1360px);
+        padding-top: 24px;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      .section-head {
+        display: grid;
+      }
+
+      .matrix {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-vector-stage-product="2026-07-stage-02-archive-instrument-reference-lock">
+  <main class="page">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Stage 02 / Archive Instrument Reference Lock</p>
+        <h1>Direction is locked; execution quality is not.</h1>
+      </div>
+      <div class="lead">
+        <p><strong>Archive Instrument = realistic preserved specimen + luxury instrument object + restrained scientific inspection.</strong></p>
+        <p>This page locks the reference contract before the next Archive Instrument pass. It is a quality gate, not a redesigned prototype.</p>
+        <nav class="nav" aria-label="Reference lock links">
+          <a href="../3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html">Current Prototype</a>
+          <a href="../3d-vector-aesthetic-stage-02-reference-board/index.html">Reference Board</a>
+          <a href="../3d-vector-aesthetic-stage-02-reference-discovery.md">Reference Discovery Notes</a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Reference Matrix</h2>
+        <p>Eight bounded references define what the next pass may borrow, what it must avoid, and the quality line for each dimension.</p>
+      </div>
+      <div class="matrix" id="referenceMatrix"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Current Prototype Diagnosis</h2>
+        <p>The current prototype has the right direction, but the reference lock keeps asset fidelity and material believability as hard gates.</p>
+      </div>
+      <div class="diagnosis-grid" id="diagnosisGrid"></div>
+    </section>
+
+    <section class="section two-column">
+      <div>
+        <div class="section-head">
+          <h2>Visual Criteria For Next Pass</h2>
+        </div>
+        <div class="list-panel">
+          <ol id="criteriaList"></ol>
+        </div>
+      </div>
+      <div>
+        <div class="section-head">
+          <h2>Next-Pass Moves</h2>
+        </div>
+        <div class="list-panel">
+          <ol id="movesList"></ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const REFERENCE_LOCK = {
+      "lock_id": "stage-02-archive-instrument-reference-lock",
+      "status": "reference_lock_before_next_archive_instrument_pass",
+      "created": "2026-07-01",
+      "selected_direction": "realistic specimen plus luxury scientific instrument",
+      "direction_statement": "Archive Instrument = realistic preserved specimen + luxury instrument object + restrained scientific inspection.",
+      "prototype_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html",
+      "reference_board_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-reference-board/index.html",
+      "reference_discovery_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-reference-discovery.md",
+      "references": [
+        {
+          "id": "archive-instrument-current-prototype",
+          "label": "Archive Instrument Current Prototype",
+          "source_kind": "local_prototype",
+          "url": "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html",
+          "dimension": "baseline",
+          "borrow": "Keep the central object, warmer materiality, four-state logic, and reduced root abstraction as the current baseline.",
+          "do_not_copy": "Do not treat the current procedural geometry as final object design.",
+          "quality_line": "Baseline is directionally useful but still lacks specimen fidelity, glass thickness, and model-asset quality.",
+          "confidence": "high"
+        },
+        {
+          "id": "natural-history-museum-spirit-collection",
+          "label": "Natural History Museum Spirit Collection",
+          "source_kind": "museum_science_reference",
+          "url": "https://www.nhm.ac.uk/discover/14-must-see-spirit-collection.html",
+          "dimension": "specimen",
+          "borrow": "Borrow the preserved-specimen seriousness: real organic form, suspended volume, and quiet institutional inspection.",
+          "do_not_copy": "Do not copy museum photography, specimen identities, labels, or collection presentation.",
+          "quality_line": "Specimen must read as a preserved real object before any diagram, scan, or symbolic layer.",
+          "confidence": "high"
+        },
+        {
+          "id": "apple-vision-pro-formed-glass",
+          "label": "Apple Vision Pro Formed Glass",
+          "source_kind": "product_material_reference",
+          "url": "https://www.apple.com/apple-vision-pro/",
+          "dimension": "glass",
+          "borrow": "Borrow the cue of shaped thick glass with controlled edge highlights and luxury material restraint.",
+          "do_not_copy": "Do not copy Apple product silhouette, interface language, brand cues, or industrial design details.",
+          "quality_line": "Glass must feel like a physical vitrine or wet-specimen container, not a thin transparent UI shell.",
+          "confidence": "medium"
+        },
+        {
+          "id": "zeiss-microscopy-instrument-system",
+          "label": "ZEISS Microscopy Instrument System",
+          "source_kind": "scientific_instrument_reference",
+          "url": "https://www.zeiss.com/microscopy/us/home.html",
+          "dimension": "instrument",
+          "borrow": "Borrow the restrained precision of scientific inspection hardware: stable support, optical hierarchy, and clean control zones.",
+          "do_not_copy": "Do not copy ZEISS product forms, logos, product naming, or proprietary instrument layouts.",
+          "quality_line": "The support and inspection logic should read as deliberate instrument design rather than decorative sci-fi hardware.",
+          "confidence": "medium"
+        },
+        {
+          "id": "iyo-webgl-exploded-view",
+          "label": "iyO WebGL Exploded View",
+          "source_kind": "external_inspiration",
+          "url": "https://www.awwwards.com/inspiration/interactive-webgl-exploded-view-iyo",
+          "dimension": "sectioning",
+          "borrow": "Borrow component hierarchy and sectioning grammar so inspection states reveal named internal layers.",
+          "do_not_copy": "Do not copy the iyO product, page composition, hardware identity, or promotional framing.",
+          "quality_line": "Sectioning must clarify specimen, glass, root, support, and signal layers instead of scattering parts.",
+          "confidence": "medium"
+        },
+        {
+          "id": "webgpu-scanning-depth-maps",
+          "label": "WebGPU Scanning Depth Maps",
+          "source_kind": "shader_demo_reference",
+          "url": "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+          "dimension": "scanning",
+          "borrow": "Borrow scan-depth behavior where the sweep changes what can be inspected, not only a surface overlay.",
+          "do_not_copy": "Do not copy the demo assets, exact shader look, or scanning composition.",
+          "quality_line": "Scan state should expose depth, root paths, and specimen structure with an instrument-mode purpose.",
+          "confidence": "high"
+        },
+        {
+          "id": "spline-ai-single-object-rule",
+          "label": "Spline AI Single Object Rule",
+          "source_kind": "tool_documentation",
+          "url": "https://docs.spline.design/spline-ai/ai-3d-generation",
+          "dimension": "asset_pipeline",
+          "borrow": "Borrow the single-object asset discipline: make or source one stronger specimen object before page polish.",
+          "do_not_copy": "Do not ask generation tools for the full page, UI, brand, or final composition.",
+          "quality_line": "Next pass should improve the asset basis instead of endlessly tuning procedural placeholder geometry.",
+          "confidence": "high"
+        },
+        {
+          "id": "codrops-meshline-family",
+          "label": "Codrops MeshLine Family",
+          "source_kind": "creative_coding_family",
+          "url": "https://tympanus.net/codrops/hub/tag/three-js/",
+          "dimension": "root_routes",
+          "borrow": "Borrow authored route families and line-weight control for readable root paths and support geometry.",
+          "do_not_copy": "Do not drift into retro plotter art, generic line demos, or copied Three.js examples.",
+          "quality_line": "Root and support lines must read as intentional biological or instrument routes, never legs or random strokes.",
+          "confidence": "medium"
+        }
+      ],
+      "current_diagnosis": {
+        "improved": [
+          "central object",
+          "warmer materiality",
+          "four-state logic",
+          "less abstract roots"
+        ],
+        "still_weak": [
+          "real-world specimen fidelity",
+          "glass thickness",
+          "bottom support readability",
+          "reference-level lighting",
+          "lack of high-quality model or texture assets"
+        ],
+        "risk": "continuing to polish procedural shapes will hide the core asset and material weakness instead of fixing it."
+      },
+      "visual_criteria": [
+        "The specimen reads as a real object before reading as a diagram.",
+        "The glass reads as a vitrine or wet-specimen container, not a transparent UI shell.",
+        "The root and support geometry cannot be mistaken for legs or random lines.",
+        "Each scroll state changes inspection logic, not just position or opacity.",
+        "The palette has warm material contrast and does not collapse into gray-green technical UI."
+      ],
+      "next_pass_moves": [
+        "replace or supplement procedural plant geometry with a better modeled or generated specimen asset",
+        "rebuild glass as a believable thick container with edge highlights and refraction cues",
+        "define one strong hero camera and only modest scroll-state camera changes",
+        "reduce annotation density and make scan/section states behave like instrument modes",
+        "add screenshot-based browser review checkpoints for mobile and desktop"
+      ]
+    };
+
+    const text = (value) => {
+      const node = document.createTextNode(value);
+      return node;
+    };
+
+    const makeField = (label, value) => {
+      const field = document.createElement("div");
+      field.className = "field";
+      const title = document.createElement("strong");
+      title.append(text(label));
+      const body = document.createElement("span");
+      body.append(text(value));
+      field.append(title, body);
+      return field;
+    };
+
+    const referenceHref = (item) => {
+      if (item.source_kind === "local_prototype") {
+        return "../3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html";
+      }
+      return item.url;
+    };
+
+    const referenceMatrix = document.querySelector("#referenceMatrix");
+    REFERENCE_LOCK.references.forEach((item) => {
+      const card = document.createElement("article");
+      card.className = "ref-card";
+      card.dataset.dimension = item.dimension;
+
+      const head = document.createElement("div");
+      const title = document.createElement("h3");
+      title.append(text(item.label));
+      const meta = document.createElement("div");
+      meta.className = "meta-line";
+      [item.dimension, item.source_kind, item.confidence].forEach((entry) => {
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.append(text(entry));
+        meta.append(pill);
+      });
+      head.append(title, meta);
+
+      const source = document.createElement("a");
+      source.className = "source";
+      source.href = referenceHref(item);
+      source.append(text(item.url));
+
+      card.append(
+        head,
+        source,
+        makeField("Borrow", item.borrow),
+        makeField("Do Not Copy", item.do_not_copy),
+        makeField("Quality Line", item.quality_line)
+      );
+      referenceMatrix.append(card);
+    });
+
+    const diagnosisGrid = document.querySelector("#diagnosisGrid");
+    [
+      ["Improved", REFERENCE_LOCK.current_diagnosis.improved],
+      ["Still Weak", REFERENCE_LOCK.current_diagnosis.still_weak],
+      ["Risk", [REFERENCE_LOCK.current_diagnosis.risk]]
+    ].forEach(([label, values]) => {
+      const card = document.createElement("article");
+      card.className = "diagnosis-card";
+      if (label === "Risk") {
+        card.dataset.kind = "risk";
+      }
+      const title = document.createElement("h3");
+      title.append(text(label));
+      const list = document.createElement("ul");
+      values.forEach((value) => {
+        const item = document.createElement("li");
+        item.append(text(value));
+        list.append(item);
+      });
+      card.append(title, list);
+      diagnosisGrid.append(card);
+    });
+
+    const renderOrderedList = (selector, values) => {
+      const list = document.querySelector(selector);
+      values.forEach((value) => {
+        const item = document.createElement("li");
+        item.append(text(value));
+        list.append(item);
+      });
+    };
+
+    renderOrderedList("#criteriaList", REFERENCE_LOCK.visual_criteria);
+    renderOrderedList("#movesList", REFERENCE_LOCK.next_pass_moves);
+
+    window.__ARCHIVE_INSTRUMENT_REFERENCE_LOCK__ = {
+      referenceCount: REFERENCE_LOCK.references.length,
+      criteriaCount: REFERENCE_LOCK.visual_criteria.length,
+      direction: "archive-instrument"
+    };
+  </script>
+</body>
+</html>

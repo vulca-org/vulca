@@ -1,0 +1,52 @@
+{
+  "plan_version": 1,
+  "slug": "proya-lead-1600",
+  "domain": "photograph",
+  "device": "mps",
+  "threshold_hint": 0.2,
+  "expand_face_parts": false,
+  "unclaimed_threshold_pct": 2.0,
+  "notes": "Internal hint-driven decompose attempt for PROYA public-example source image. This plan intentionally uses sam_bbox regions to test source-image layer ownership without claiming final production segmentation quality.",
+  "entities": [
+    {
+      "name": "campaign_banner_top_right",
+      "label": "PROYA No Skin Drama Just PROYA campaign banner and promotional text at the upper right",
+      "semantic_path": "foreground.signage.campaign_banner",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.62, 0.10, 0.93, 0.31],
+      "order": 10
+    },
+    {
+      "name": "retail_channel_signage",
+      "label": "Guardian retail display signage and channel context in the center background",
+      "semantic_path": "foreground.signage.retail_channel",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.20, 0.25, 0.62, 0.45],
+      "order": 8
+    },
+    {
+      "name": "product_display_packshots",
+      "label": "PROYA product display shelves packshots and product family units across the center",
+      "semantic_path": "foreground.product.display_packshots",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.16, 0.34, 0.83, 0.66],
+      "order": 9
+    },
+    {
+      "name": "model_campaign_panel",
+      "label": "blue PROYA campaign panel with large model portrait and product bottle",
+      "semantic_path": "foreground.panel.model_campaign",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.11, 0.60, 0.53, 0.94],
+      "order": 7
+    },
+    {
+      "name": "product_panel_lower_right",
+      "label": "lower right product panel with PROYA Original Repair Essence bottle and Guardian logo",
+      "semantic_path": "foreground.panel.product_pdp",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.54, 0.50, 0.72, 0.98],
+      "order": 6
+    }
+  ]
+}

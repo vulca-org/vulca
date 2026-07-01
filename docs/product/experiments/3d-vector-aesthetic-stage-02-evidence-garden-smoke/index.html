@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evidence Garden GLB Smoke Review</title>
+  <link rel="icon" href="data:," />
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root {
+      --bg: #050706;
+      --panel: rgba(13, 19, 17, 0.78);
+      --line: rgba(241, 234, 215, 0.13);
+      --ink: #f1ead7;
+      --muted: #9b9a8b;
+      --cyan: #6dd9cf;
+      --amber: #d8955d;
+      --moss: #8da66f;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(109, 217, 207, 0.13), transparent 30%),
+        radial-gradient(circle at 72% 72%, rgba(216, 149, 93, 0.1), transparent 28%),
+        linear-gradient(135deg, var(--bg), #0a100e 56%, #070807);
+      color: var(--ink);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(260px, 340px) minmax(420px, 1fr) minmax(260px, 360px);
+      overflow: hidden;
+    }
+
+    .panel {
+      padding: 28px 24px;
+      background: var(--panel);
+      border-color: var(--line);
+      backdrop-filter: blur(16px);
+      overflow: auto;
+    }
+
+    .left {
+      border-right: 1px solid var(--line);
+    }
+
+    .right {
+      border-left: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--cyan);
+      font-size: 12px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      letter-spacing: 0;
+      line-height: 1.05;
+    }
+
+    h1 {
+      max-width: 11ch;
+      font-size: 26px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .viewer-shell {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 100vh;
+      background: transparent;
+      --poster-color: transparent;
+    }
+
+    .fallback-note {
+      position: absolute;
+      left: 32px;
+      right: 32px;
+      bottom: 28px;
+      z-index: 3;
+      padding: 12px 14px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(5, 7, 6, 0.68);
+      color: rgba(241, 234, 215, 0.72);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .state-list,
+    .score-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .state,
+    .score {
+      padding: 12px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .state strong,
+    .score strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .state span,
+    .score span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .asset-path {
+      margin-top: 22px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(109, 217, 207, 0.075);
+      border: 1px solid rgba(109, 217, 207, 0.18);
+      color: rgba(241, 234, 215, 0.82);
+      font-size: 12px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 1080px) {
+      .page {
+        grid-template-columns: 1fr;
+        overflow: auto;
+      }
+
+      .left,
+      .right {
+        border: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      model-viewer,
+      .viewer-shell {
+        min-height: 620px;
+        height: 620px;
+      }
+
+      h1 {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page" data-vector-stage-product="2026-06-stage-02-evidence-garden-glb-smoke">
+    <aside class="panel left">
+      <p class="eyebrow">Evidence Garden</p>
+      <h1>GLB smoke review.</h1>
+      <p>
+        This is a reproducible procedural blockout, not the final generated model.
+        It validates loading only. The visual gate is failed: the object has weak silhouette design,
+        visible intersection risk, and fake state logic.
+      </p>
+      <div class="asset-path">
+        Asset: ../3d-vector-aesthetic-stage-02-evidence-garden/assets/evidence-garden-blockout.glb
+      </div>
+      <div class="state-list" aria-label="Page states">
+        <div class="state"><strong>01 Dormant Island</strong><span>Check first-frame silhouette and centered object read.</span></div>
+        <div class="state"><strong>02 Root Scan</strong><span>Glass root network should be visible enough for scan overlays.</span></div>
+        <div class="state"><strong>03 Data Bloom</strong><span>Warm blossom nodes must support a gentle active state.</span></div>
+        <div class="state"><strong>04 Archive Constellation</strong><span>Seed particles should support a restrained final pullback.</span></div>
+      </div>
+    </aside>
+
+    <main class="viewer-shell" aria-label="Evidence Garden GLB viewer">
+      <model-viewer
+        src="../3d-vector-aesthetic-stage-02-evidence-garden/assets/evidence-garden-blockout.glb"
+        camera-controls
+        auto-rotate
+        camera-orbit="35deg 68deg 5.6m"
+        field-of-view="34deg"
+        exposure="1.08"
+        shadow-intensity="0.55"
+        interaction-prompt="none"
+        ar-status="not-presenting"
+      ></model-viewer>
+      <div class="fallback-note">
+        Visual review status: failed baseline. Keep this only as a replaceable GLB loading fixture.
+      </div>
+    </main>
+
+    <aside class="panel right">
+      <p class="eyebrow">Review gate</p>
+      <h2>Pass criteria</h2>
+      <div class="score-list" aria-label="Smoke review criteria">
+        <div class="score"><strong>Silhouette</strong><span>The object must read as one central garden/specimen in under one second.</span></div>
+        <div class="score"><strong>Material split</strong><span>Mineral base, glass roots, cyan routes, and amber blossoms must be visually distinct.</span></div>
+        <div class="score"><strong>State potential</strong><span>The object needs clear anchor points for scan, bloom, and constellation overlays.</span></div>
+        <div class="score"><strong>Model budget</strong><span>The baseline GLB should stay lightweight and replaceable by generated candidates.</span></div>
+      </div>
+      <p>
+        This blockout did not pass visual review. The next step is generating three GLB candidates with Spline, Tripo, or Meshy using the model-candidate pack, then replacing this asset one by one.
+      </p>
+    </aside>
+  </div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+{
+  "status": "internal_technical_proof_only",
+  "date": "2026-06-21",
+  "lane": "Lane C / AI ad workflow and creative automation evidence",
+  "public_example_boundary": "Creatify is a public workflow example only. It is not a VULCA customer, partner, endorser, authorization source, or audit target.",
+  "local_sources": [
+    {
+      "id": "creatify_url_to_video_feature_page",
+      "path": "../browser-screenshot-context/01-creatify-product-feature-page-5b230c8420bd.png",
+      "sha256": "688a02ce0872091611ab816dc911b4dad89fc70aedeb87d159faec729fd5ed90",
+      "image_size": [1440, 1100],
+      "public_url": "https://creatify.ai/features/url-to-video",
+      "source_type": "official public feature page",
+      "field_roles": [
+        "source.input",
+        "candidate.creative",
+        "edit.export.state",
+        "campaign.handoff"
+      ],
+      "use": "Internal proof of product-link input, generated ad candidate context, and source-safe workflow/handoff fields. Raw page includes people/product/ad examples and should be redrawn or masked before external use."
+    },
+    {
+      "id": "creatify_hook_body_cta_anatomy",
+      "path": "../real-asset-batch-01/creatify/images/08-7c61eeda32e3.png",
+      "sha256": "7c61eeda32e3e2cdf11b1ff45b8ba9c67511d5e7d466929a771219197a91356d",
+      "image_size": [1129, 1254],
+      "public_url": "https://creatify.ai/features",
+      "source_type": "public feature/anatomy cue",
+      "field_roles": [
+        "review.anatomy",
+        "candidate.creative"
+      ],
+      "use": "Internal structure cue for hook/body/CTA review. Not performance proof, ad approval, or vendor critique."
+    },
+    {
+      "id": "creatify_alibaba_case_study_internal_reference",
+      "path": "../browser-screenshot-context/03-creatify-case-study-b0b186dadecd.png",
+      "sha256": "094f8c1931b9fc169c4f9999479c795204bf588803ff294ff7b2c2155941ba49",
+      "image_size": [1440, 1100],
+      "public_url": "https://creatify.ai/case-study/alibaba",
+      "source_type": "official public case-study page",
+      "field_roles": [
+        "internal.reserve"
+      ],
+      "use": "Internal reference only by default. Do not use as customer-facing visual proof or VULCA performance evidence unless later explicitly approved with source attribution and metric controls."
+    }
+  ],
+  "generated_artifacts": [
+    {
+      "id": "creatify_workflow_field_overlay_v1",
+      "path": "annotations/creatify-workflow-field-overlay-v1.png",
+      "manifest_path": "annotations/creatify-workflow-field-overlay-v1.json",
+      "sha256": "7290a70d61c1213713edb6615548cd3f6d62f580914dbba8273d64cf2359b5dc",
+      "image_size": [2400, 1500],
+      "role": "internal workflow overlay mapping true public screenshots to VULCA source/input/candidate/review/export/handoff fields"
+    },
+    {
+      "id": "creatify_source_safe_workflow_card_v1",
+      "path": "source-safe/creatify-source-safe-workflow-card-v1.png",
+      "manifest_path": "source-safe/creatify-source-safe-workflow-card-v1.json",
+      "sha256": "ca9475186d60b16d779dd76fa2e08df229736576f5336cc9e0641e8e00d829dd",
+      "image_size": [1800, 1240],
+      "role": "customer-facing candidate distilled from the internal proof; contains no raw vendor UI and no Alibaba case-study proof"
+    }
+  ],
+  "vulca_fields": [
+    {
+      "field": "source.input",
+      "meaning": "Product URL, listing, image, offer, or brief source is preserved."
+    },
+    {
+      "field": "candidate.creative",
+      "meaning": "Generated ad candidate, variant, or output state is separated from source and review state."
+    },
+    {
+      "field": "review.anatomy",
+      "meaning": "Hook, body, CTA, scene, product fit, claim fit, brand fit, and channel fit become review fields."
+    },
+    {
+      "field": "edit.export.state",
+      "meaning": "Draft, edit, export, channel, seller-flow, or campaign reuse state is named."
+    },
+    {
+      "field": "campaign.handoff",
+      "meaning": "Growth, creative operations, marketplace, seller-flow, or campaign owner receives unresolved items."
+    },
+    {
+      "field": "internal.reserve",
+      "meaning": "Third-party case-study material may inform internal context but is not default customer proof."
+    }
+  ],
+  "customer_facing_use": "Use the source-safe distilled card or a redrawn workflow strip. Do not export raw vendor UI or Alibaba case-study material by default.",
+  "must_not_claim": [
+    "Creatify or Alibaba is a VULCA customer, partner, endorser, or authorization source.",
+    "VULCA predicts ad performance, ROI, CPA, CTR, ROAS, adoption growth, or campaign outcome.",
+    "VULCA approves generated ads, replaces platform checks, replaces legal review, or certifies compliance.",
+    "Creatify-reported case-study metrics are VULCA proof."
+  ]
+}

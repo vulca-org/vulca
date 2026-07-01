@@ -1,0 +1,54 @@
+{
+  "candidate_id": "stage-02-archive-instrument-specimen-asset-pass-01",
+  "status": "specimen_asset_candidate_before_prototype_merge",
+  "created": "2026-07-01",
+  "direction": "realistic preserved specimen plus luxury scientific instrument",
+  "goal": "Does the central specimen read as a preserved real object before it reads as a diagram?",
+  "current_prototype_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html",
+  "reference_lock_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-reference-lock/index.html",
+  "recommended_approach": "separate procedural specimen candidate",
+  "explicit_non_goal": "do not modify the current Archive Instrument prototype in this pass",
+  "required_anatomy_parts": [
+    "woody stem",
+    "leaf cluster",
+    "petiole",
+    "root crown",
+    "fine roots",
+    "mounting wire"
+  ],
+  "candidate_traits": [
+    "asymmetric woody stem with taper, knots, scars, and bark rings",
+    "5 to 7 leaves with varied size, age, bend, pitch, and yaw",
+    "petioles visibly attach leaves to the stem",
+    "root crown or soil plug with roots emerging from believable sockets",
+    "short branching fine roots and root hairs",
+    "mounting wires read as specimen support, not legs",
+    "warm brown, olive, pale vein, and amber material accents"
+  ],
+  "first_read": "preserved organic sample",
+  "not_read_as": [
+    "plant icon",
+    "wireframe diagram",
+    "random tubes",
+    "technical toy"
+  ],
+  "visual_criteria": [
+    "The specimen reads as a real object before reading as a diagram.",
+    "The glass reads as a vitrine or wet-specimen container, not a transparent UI shell.",
+    "The root and support geometry cannot be mistaken for legs or random lines.",
+    "Each scroll state changes inspection logic, not just position or opacity.",
+    "The palette has warm material contrast and does not collapse into gray-green technical UI."
+  ],
+  "secondary_success_criteria": [
+    "roots no longer read as legs",
+    "leaves have credible attachment and orientation",
+    "root crown feels physically connected to the stem",
+    "material palette is warmer and less gray-green",
+    "the candidate can be moved into the current prototype without changing the direction"
+  ],
+  "handoff_notes": [
+    "accepted: merge candidate anatomy into the main Archive Instrument prototype",
+    "still weak: move to generated GLB or modeled-asset exploration",
+    "glass/instrument/scroll-state changes remain later passes"
+  ]
+}

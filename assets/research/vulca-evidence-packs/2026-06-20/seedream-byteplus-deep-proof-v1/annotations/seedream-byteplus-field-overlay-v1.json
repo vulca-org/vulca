@@ -1,0 +1,50 @@
+{
+  "status": "internal_field_overlay",
+  "date": "2026-06-21",
+  "image": "seedream-byteplus-field-overlay-v1.png",
+  "image_size": [2400, 1500],
+  "source_images": [
+    "../../capture-batch-02/seedream-45-official-page.jpg",
+    "../../capture-batch-02/byteplus-model-list-seedream-5.jpg",
+    "../../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg",
+    "../../capture-batch-02/byteplus-seedream-model-page.jpg"
+  ],
+  "annotation_method": "manual VULCA field overlay on true public-source screenshots",
+  "fields": [
+    {
+      "id": "source.record",
+      "visual_cues": ["source identity", "documentation title", "official page role"],
+      "customer_value": "Shows where the generated-asset context came from."
+    },
+    {
+      "id": "model.context",
+      "visual_cues": ["model title", "model registry card", "category navigation", "tutorial surface"],
+      "customer_value": "Keeps model/tool context visible without making model-quality claims."
+    },
+    {
+      "id": "input.mode",
+      "visual_cues": ["tutorial title", "source requirement text", "region/base URL block"],
+      "customer_value": "Defines which prompt, reference, or product-source material must travel with the output."
+    },
+    {
+      "id": "output.state",
+      "visual_cues": ["input/output row", "output details", "format/context block"],
+      "customer_value": "Separates output state and format from model benchmark or safety claims."
+    },
+    {
+      "id": "label.posture",
+      "visual_cues": ["decision field in VULCA side panel"],
+      "customer_value": "Treats AI label/disclosure as a routed decision, not a legal ruling."
+    },
+    {
+      "id": "owner.route",
+      "visual_cues": ["try/API route", "region/API block", "VULCA side panel"],
+      "customer_value": "Routes unresolved questions to product, platform, creative, or release owners."
+    }
+  ],
+  "known_limitations": [
+    "BytePlus screenshots contain cookie or feedback overlays.",
+    "The overlay is not a SAM/DINO/Vision Banana segmentation output.",
+    "This artifact is suitable for internal review and should be replaced by a source-safe distilled card or redraw in customer-facing PDFs."
+  ]
+}

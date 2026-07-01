@@ -1,0 +1,32 @@
+{
+  "assets": [
+    {
+      "capture_id": "minimal-rebuild-desktop",
+      "path": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "screenshot",
+      "use": "renderer backend, TSL node material, fallback route, and buffer contract evidence"
+    },
+    {
+      "capture_id": "minimal-rebuild-motion",
+      "path": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "motion_clip",
+      "use": "backend fallback, route motion, node-material stability, and resource-state evidence"
+    },
+    {
+      "capture_id": "minimal-rebuild-code",
+      "path": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source": "generated_from_scratch",
+      "type": "code_note",
+      "use": "standalone WebGPU renderer and TSL docs rebuild exercise"
+    }
+  ],
+  "case_id": "threejs-webgpu-tsl-docs",
+  "notes": "Only generated local learning evidence is archived here. Three.js docs remain source-link-only implementation references.",
+  "rights_status": "local_capture",
+  "schema_version": 1
+}

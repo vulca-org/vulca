@@ -1,0 +1,188 @@
+{
+  "author_or_studio": "Codrops",
+  "canonical_sources": [
+    "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/"
+  ],
+  "canonical_url": "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Canonical Codrops article for attribution and technical framing; local evidence below is generated from scratch for learning review.",
+      "path_or_url": "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+      "rights_status": "source_link_only",
+      "source_url": "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "screenshot",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "scan_progress_midpoint",
+      "notes": "Local generated rebuild screenshot showing synthetic depth map, scan reveal plane, near/mid/far dot grid, and generated-depth source label; not copied from the Codrops demo.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "video",
+      "id": "minimal-rebuild-motion",
+      "interaction": "scan_plane_sweep",
+      "notes": "Local generated motion clip isolates the scan plane sweeping across a synthetic depth-dot field; not copied from the Codrops demo.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise reconstructing the primitive with generated depth dots, scan plane animation, legend, and source-boundary labels.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "2025_plus",
+  "id": "webgpu-scanning-depth-maps",
+  "modules": [
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "scan_depth",
+      "payload": {
+        "depth_classes": [
+          "near",
+          "mid",
+          "far"
+        ],
+        "depth_source": "generated radial relief map",
+        "learning_primitive": "depth-map scanning reveal",
+        "rebuild_scope": "local generated depth-dot study from the visible primitive, not a capture of upstream imagery or shader code",
+        "scan_model": "vertical reveal plane sweeps across a synthetic depth map and brightens points by depth class",
+        "sample_count": 556
+      },
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and code note all represent the same scan-depth primitive.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "shader_material",
+      "payload": {
+        "background_system": "dark technical grid plus bounded scan rectangle",
+        "learning_primitive": "depth-class emissive dot material",
+        "palette": [
+          "yellow near depth",
+          "cyan mid depth",
+          "blue-gray far depth",
+          "cyan scan plane"
+        ],
+        "shader_proxy": "depth value controls dot size, brightness, and revealed state",
+        "source_boundary": "does not claim Codrops TSL nodes, exact WebGPU pipeline, or source imagery"
+      },
+      "review_notes": "Material notes are complete for visual reconstruction; exact WebGPU shader implementation is intentionally not claimed.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "asset_pipeline",
+      "payload": {
+        "asset_outputs": [
+          "screenshots/minimal-rebuild-desktop.png",
+          "videos/minimal-rebuild-motion.gif",
+          "code/minimal-rebuild.html"
+        ],
+        "generated_inputs": [
+          "radial relief depth map",
+          "procedural dot grid",
+          "scan plane animation"
+        ],
+        "learning_primitive": "clean-room scan-depth asset package",
+        "rights_boundary": "canonical source is link-only; archived assets are generated locally",
+        "verification_command": "PYTHONPATH=src pytest tests/test_vector_aesthetics_gold_cases.py -q"
+      },
+      "review_notes": "Asset pipeline is complete because generated inputs, outputs, rights boundary, and verification command are explicit.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local PNG proves scan midpoint, local GIF proves sweep motion, HTML note proves the rebuild recipe",
+        "learning_primitive": "review-gap scan plane primitive",
+        "review_gap": "canonical source remains link-only; local rebuild teaches mechanics without upstream media",
+        "route_decision": "use scan progress to reveal which evidence zones are inspected, near/mid/far dots to encode confidence or depth of review",
+        "source_trail": "canonical article plus generated local reconstruction",
+        "uncertainty": "exact upstream WebGPU/TSL implementation and source imagery are not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 3,
+    "license_safety": 2,
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
+  },
+  "review_status": "shortlist",
+  "source_type": "tutorial",
+  "summary": "Depth-map scanning reference rebuilt as a local scan-depth learning primitive with still, motion, code, and asset evidence.",
+  "title": "WebGPU Scanning Effect with Depth Maps",
+  "visual_families": [
+    "scan_depth",
+    "shader_material"
+  ],
+  "why_relevant": "Directly maps to VULCA review-gap inspection, scan-plane reveal, confidence depth, and technical evidence probing primitives.",
+  "year": 2025
+}

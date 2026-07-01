@@ -1,0 +1,197 @@
+{
+  "author_or_studio": "Phantom.land / Codrops",
+  "canonical_sources": [
+    "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/"
+  ],
+  "canonical_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Canonical Codrops case-study link for attribution and technical framing; local evidence below is generated from scratch for learning review.",
+      "path_or_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "rights_status": "source_link_only",
+      "source_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "screenshot",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "cursor_offset_grid_state",
+      "notes": "Local generated rebuild screenshot showing distorted wire grid, cursor influence ring, and face-like particle sculpture; not copied from the Phantom.land demo.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "video",
+      "id": "minimal-rebuild-motion",
+      "interaction": "ambient_cursor_orbit",
+      "notes": "Local generated motion clip isolates ambient cursor offset, grid distortion, and particle sculpture wobble; not copied from the Phantom.land demo.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise reconstructing the primitive with generated grid lines, face particles, cursor field rings, and CSS-only orbit motion.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2025/06/30/invisible-forces-the-making-of-phantom-lands-interactive-grid-and-3d-face-particle-system/",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "2025_plus",
+  "id": "phantom-land-interactive-grid",
+  "modules": [
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "wire_grid",
+      "payload": {
+        "cursor_model": "ambient offset field bends nearby grid intersections",
+        "grid_nodes": 135,
+        "grid_response": "distortion plus inertia proxy around a moving cursor point",
+        "learning_primitive": "interactive wire grid field",
+        "rebuild_scope": "local generated grid study from the visible primitive, not a capture of upstream geometry",
+        "spatial_role": "technical surface that exposes invisible cursor force"
+      },
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and code note all represent the same grid-field primitive.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "particle_vector",
+      "payload": {
+        "face_particles": 65,
+        "learning_primitive": "face-like particle sculpture",
+        "motion_model": "small orbit/wobble offsets maintain a living sculptural field",
+        "particle_roles": [
+          "cyan structural points",
+          "yellow depth accents",
+          "magenta feature arcs",
+          "white highlight particles"
+        ],
+        "source_boundary": "does not claim Phantom.land particle maps or production capture data"
+      },
+      "review_notes": "Particle vector layer is complete enough to teach sampled portrait-like volumes and motion wobble separately from the grid.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "ui_sculpture",
+      "payload": {
+        "composition": "left interaction field plus right particle bust inside a quiet technical canvas",
+        "learning_primitive": "ambient technical UI sculpture",
+        "material_language": "thin cyan grid lines, sparse particles, dark spatial background, low-friction labels",
+        "relationship": "cursor field and particle face act as one sculptural interface rather than separate illustrations"
+      },
+      "review_notes": "UI sculpture module is complete because the case teaches layout, spatial object, and interaction atmosphere together.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "interaction_state",
+      "payload": {
+        "input_model": "ambient cursor orbit stands in for pointer movement and drag inertia",
+        "learning_primitive": "invisible-force interaction state",
+        "state_names": [
+          "rest_grid",
+          "cursor_offset",
+          "inertia_return"
+        ],
+        "verification_command": "PYTHONPATH=src pytest tests/test_vector_aesthetics_gold_cases.py -q"
+      },
+      "review_notes": "Interaction is represented as named states plus local still and motion evidence.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local PNG proves cursor-distorted grid state, local GIF proves ambient motion, HTML note proves the rebuild recipe",
+        "learning_primitive": "invisible review force field primitive",
+        "review_gap": "canonical source remains link-only; local rebuild teaches mechanics without upstream media",
+        "route_decision": "use wire-grid bend to show review pressure, particle sculpture to represent clustered evidence, and cursor orbit to expose analyst attention",
+        "source_trail": "canonical case study plus generated local reconstruction",
+        "uncertainty": "exact upstream R3F, shaders, particle maps, and postprocessing implementation are not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 3,
+    "license_safety": 2,
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
+  },
+  "review_status": "shortlist",
+  "source_type": "case_study",
+  "summary": "Interactive grid and particle-face case study rebuilt as a local wire-grid, particle, and UI-sculpture learning primitive with still, motion, code, and asset evidence.",
+  "title": "Phantom.land Interactive Grid and 3D Face Particle System",
+  "visual_families": [
+    "wire_grid",
+    "particle_vector",
+    "ui_sculpture"
+  ],
+  "why_relevant": "Good reference for spatial technical surfaces, invisible-force interaction, ambient distortion, and clustered evidence sculpture.",
+  "year": 2025
+}

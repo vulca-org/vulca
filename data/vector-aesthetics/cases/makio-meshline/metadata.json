@@ -1,0 +1,181 @@
+{
+  "author_or_studio": "Makio64",
+  "canonical_sources": [
+    "https://meshline.makio.io/",
+    "https://github.com/Makio64/makio-meshline"
+  ],
+  "canonical_url": "https://meshline.makio.io/",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Canonical source link for attribution and reference framing; local evidence below is generated from scratch for learning review.",
+      "path_or_url": "https://meshline.makio.io/",
+      "rights_status": "source_link_only",
+      "source_url": "https://meshline.makio.io/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "screenshot",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "idle",
+      "notes": "Local generated rebuild screenshot showing thick routed vector lines, glow edge, dash packets, and depth-grid framing; not copied from the source demo.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
+      "source_url": "https://meshline.makio.io/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "video",
+      "id": "minimal-rebuild-motion",
+      "interaction": "dash_packet_motion",
+      "notes": "Local generated motion clip isolates the moving dash-packet behavior along layered bezier routes; not copied from the source demo.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://meshline.makio.io/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise that reconstructs the primitive with bezier paths, glow strokes, and animated dash segments.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://meshline.makio.io/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
+      "source_url": "https://meshline.makio.io/",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "still_current",
+  "id": "makio-meshline",
+  "modules": [
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "meshline",
+      "payload": {
+        "control_model": "three cubic-bezier routes with explicit start, control, and end anchors",
+        "depth_model": "overlap ordering plus glow occlusion creates a shallow 3D route stack without copying source geometry",
+        "learning_primitive": "routed thick 3D vector line",
+        "line_form": "wide ribbon stroke with rounded caps and high-chroma emissive edge",
+        "motion_model": "short dash packets slide along the base route while the full ribbon remains visible",
+        "rebuild_scope": "local generated study from the primitive, not an asset capture from the source site",
+        "spatial_role": "signal route through a dark technical grid"
+      },
+      "review_notes": "Complete for first-pass learning: local screenshot, motion clip, and code note all point to the same primitive.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "shader_material",
+      "payload": {
+        "background_system": "low-contrast technical grid to expose path curvature and crossing order",
+        "glow_stack": "blurred duplicate stroke below a crisp vector core",
+        "learning_primitive": "emissive vector material stack",
+        "palette": [
+          "cyan signal line",
+          "magenta signal line",
+          "yellow signal line",
+          "white moving packets"
+        ],
+        "surface_model": "flat SVG stroke approximating the visual grammar of meshline ribbons",
+        "visibility_rule": "moving white packets remain legible against high-saturation base strokes"
+      },
+      "review_notes": "Material decomposition is explicit enough for a learner to rebuild color, glow, and motion layers separately.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "medium",
+      "evidence_refs": [
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "performance_runtime",
+      "payload": {
+        "animation_budget": "dashoffset-only animation in the local HTML note; GIF evidence is 24 frames at 960x540",
+        "asset_outputs": [
+          "screenshots/minimal-rebuild-desktop.png",
+          "videos/minimal-rebuild-motion.gif",
+          "code/minimal-rebuild.html"
+        ],
+        "learning_primitive": "browser-native motion evidence package",
+        "runtime_target": "static HTML/SVG review artifact",
+        "verification_command": "PYTHONPATH=src pytest tests/test_vector_aesthetics_gold_cases.py -q"
+      },
+      "review_notes": "Runtime notes are complete for the local SVG reconstruction; real Three.js/WebGPU profiling remains outside this first gold case.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local screenshot and GIF prove visual state and motion state separately",
+        "learning_primitive": "source-trail route decision primitive",
+        "review_gap": "canonical source remains link-only; local rebuild is used for teachable mechanics",
+        "route_decision": "convert abstract source trail into three inspectable bezier paths with labeled local assets",
+        "source_trail": "canonical external source plus generated local reconstruction",
+        "uncertainty": "exact upstream shader implementation is not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, gap, decision, and uncertainty are all represented.",
+      "review_status": "complete"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 3,
+    "license_safety": 2,
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
+  },
+  "review_status": "shortlist",
+  "source_type": "demo",
+  "summary": "Contemporary 3D vector route reference rebuilt as a local meshline learning primitive with screenshot, motion, code, and asset evidence.",
+  "title": "Makio MeshLine",
+  "visual_families": [
+    "meshline",
+    "data_tunnel"
+  ],
+  "why_relevant": "Core learning source for thick 3D vector routes, animated trails, glow materials, dash behavior, and VULCA source-trail translation.",
+  "year": 2025
+}

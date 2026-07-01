@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>False Earth WebGPU World Minimal Rebuild</title>
+  <style>
+    :root { color-scheme: dark; background:#05070d; color:#effbff; font-family:Arial,sans-serif; }
+    body {
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      background:
+        radial-gradient(circle at 50% 92%, rgba(81,224,152,.18), transparent 34%),
+        radial-gradient(circle at 38% 26%, rgba(102,184,255,.14), transparent 26%),
+        linear-gradient(rgba(85,132,160,.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,132,160,.12) 1px, transparent 1px),
+        #05070d;
+      background-size:auto, auto, 62px 62px, 62px 62px;
+    }
+    svg { width:min(100vw,960px); aspect-ratio:16/9; display:block; overflow:visible; }
+    .panel { fill:#0d141d; stroke:#6d9fb9; stroke-width:1; }
+    .label { fill:#effbff; font-size:19px; font-weight:700; letter-spacing:0; }
+    .note { fill:#dff7ea; font-size:16px; letter-spacing:0; }
+    .horizon { fill:none; stroke:#7de9bd; stroke-width:2; opacity:.78; }
+    .field-grid { stroke:#4a756d; stroke-width:1; opacity:.58; vector-effect:non-scaling-stroke; }
+    .grass-blade { fill:none; stroke:#7df0b8; stroke-width:2; stroke-linecap:round; animation: drift 3.2s ease-in-out infinite alternate; }
+    .cosmic-beam { fill:url(#beamGradient); opacity:.64; animation: drift 4.6s ease-in-out infinite alternate; }
+    .wave-ring { fill:none; stroke:#7ec8ff; stroke-width:2; opacity:.72; animation: drift 3.8s ease-in-out infinite alternate; }
+    .flower-bloom { animation: drift 3.4s ease-in-out infinite alternate; }
+    .shader-layer { fill:#1b3650; opacity:.35; }
+    .sun-core { fill:#f7ffb0; opacity:.94; }
+    @keyframes drift {
+      from { transform:translate(-7px, 6px); opacity:.62; }
+      to { transform:translate(8px, -5px); opacity:1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Offline SVG/CSS approximation for learning review; it does not run WebGPU, compute shaders, indirect drawing, or copy False Earth assets. -->
+  <svg viewBox="0 0 960 540" role="img" aria-label="Local generated False Earth WebGPU world rebuild" data-world-field="generated">
+    <defs>
+      <linearGradient id="beamGradient" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="#9bd7ff" stop-opacity=".95" />
+        <stop offset=".72" stop-color="#7df0b8" stop-opacity=".24" />
+        <stop offset="1" stop-color="#7df0b8" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+    <path class="shader-layer" d="M0 332 C180 296 310 322 478 302 C660 280 790 306 960 262 L960 540 L0 540Z" />
+    <path class="horizon" d="M0 334 C180 300 310 326 478 306 C660 284 790 310 960 266" />
+    <circle class="sun-core" cx="496" cy="198" r="24" />
+    <path class="cosmic-beam" d="M190 74 L230 74 L282 406 L142 406Z" />
+    <path class="cosmic-beam" d="M300 44 L336 44 L390 428 L238 428Z" />
+    <path class="cosmic-beam" d="M430 66 L466 66 L520 430 L366 430Z" />
+    <path class="cosmic-beam" d="M550 40 L590 40 L636 418 L486 418Z" />
+    <path class="cosmic-beam" d="M660 84 L698 84 L732 418 L594 418Z" />
+    <path class="cosmic-beam" d="M760 58 L798 58 L822 400 L700 400Z" />
+    <path class="cosmic-beam" d="M118 116 L146 116 L190 384 L82 384Z" />
+    <path class="cosmic-beam" d="M844 122 L872 122 L900 390 L806 390Z" />
+
+    <g>
+      <line class="field-grid" x1="88" y1="396" x2="872" y2="396" />
+      <line class="field-grid" x1="58" y1="430" x2="904" y2="430" />
+      <line class="field-grid" x1="18" y1="466" x2="944" y2="466" />
+      <line class="field-grid" x1="0" y1="504" x2="960" y2="504" />
+      <line class="field-grid" x1="160" y1="346" x2="78" y2="540" />
+      <line class="field-grid" x1="270" y1="330" x2="230" y2="540" />
+      <line class="field-grid" x1="380" y1="316" x2="384" y2="540" />
+      <line class="field-grid" x1="492" y1="306" x2="506" y2="540" />
+      <line class="field-grid" x1="606" y1="296" x2="638" y2="540" />
+      <line class="field-grid" x1="722" y1="292" x2="784" y2="540" />
+      <line class="field-grid" x1="834" y1="284" x2="930" y2="540" />
+    </g>
+
+    <g>
+      <path class="grass-blade" d="M86 506 C82 472 92 444 102 410" /><path class="grass-blade" d="M108 512 C104 476 116 444 130 404" /><path class="grass-blade" d="M130 500 C132 466 142 438 160 402" /><path class="grass-blade" d="M152 514 C148 476 160 444 178 406" />
+      <path class="grass-blade" d="M174 504 C172 470 184 440 204 400" /><path class="grass-blade" d="M196 514 C198 476 212 448 232 408" /><path class="grass-blade" d="M218 502 C216 466 230 438 252 398" /><path class="grass-blade" d="M240 516 C246 478 260 448 282 410" />
+      <path class="grass-blade" d="M262 506 C260 468 274 436 298 396" /><path class="grass-blade" d="M284 516 C292 478 306 448 330 410" /><path class="grass-blade" d="M306 500 C310 466 326 436 350 398" /><path class="grass-blade" d="M328 514 C336 474 352 446 378 406" />
+      <path class="grass-blade" d="M350 504 C354 468 370 438 396 400" /><path class="grass-blade" d="M372 516 C380 478 396 448 424 408" /><path class="grass-blade" d="M394 500 C400 466 418 436 446 398" /><path class="grass-blade" d="M416 514 C426 474 444 446 474 406" />
+      <path class="grass-blade" d="M438 504 C448 468 466 438 496 400" /><path class="grass-blade" d="M460 516 C470 478 490 448 522 408" /><path class="grass-blade" d="M482 500 C494 466 514 436 546 398" /><path class="grass-blade" d="M504 514 C516 474 538 446 572 406" />
+      <path class="grass-blade" d="M526 504 C540 468 562 438 598 400" /><path class="grass-blade" d="M548 516 C562 478 586 448 622 408" /><path class="grass-blade" d="M570 500 C586 466 610 436 646 398" /><path class="grass-blade" d="M592 514 C608 474 634 446 672 406" />
+      <path class="grass-blade" d="M614 504 C632 468 658 438 698 400" /><path class="grass-blade" d="M636 516 C654 478 682 448 722 408" /><path class="grass-blade" d="M658 500 C678 466 706 436 746 398" /><path class="grass-blade" d="M680 514 C700 474 730 446 772 406" />
+      <path class="grass-blade" d="M702 504 C724 468 754 438 798 400" /><path class="grass-blade" d="M724 516 C746 478 778 448 822 408" /><path class="grass-blade" d="M746 500 C770 466 802 436 846 398" /><path class="grass-blade" d="M768 514 C792 474 826 446 872 406" />
+      <path class="grass-blade" d="M790 504 C816 468 850 438 898 400" /><path class="grass-blade" d="M812 516 C838 478 874 448 918 408" /><path class="grass-blade" d="M834 500 C862 466 900 436 936 398" /><path class="grass-blade" d="M856 514 C884 474 918 448 946 412" />
+      <path class="grass-blade" d="M118 466 C114 440 124 420 136 392" /><path class="grass-blade" d="M190 468 C194 438 208 416 226 388" /><path class="grass-blade" d="M264 464 C270 436 286 412 306 384" /><path class="grass-blade" d="M338 466 C346 438 364 414 386 388" />
+      <path class="grass-blade" d="M412 462 C422 432 442 410 466 382" /><path class="grass-blade" d="M486 466 C498 436 520 414 546 386" /><path class="grass-blade" d="M560 462 C574 432 598 410 626 382" /><path class="grass-blade" d="M634 466 C650 436 676 414 706 386" />
+      <path class="grass-blade" d="M708 462 C726 432 754 410 786 382" /><path class="grass-blade" d="M782 466 C802 436 832 414 866 386" /><path class="grass-blade" d="M856 462 C878 432 910 410 940 386" /><path class="grass-blade" d="M64 470 C62 444 70 422 82 396" />
+    </g>
+
+    <g>
+      <ellipse class="wave-ring" cx="484" cy="418" rx="48" ry="16" />
+      <ellipse class="wave-ring" cx="484" cy="418" rx="92" ry="30" />
+      <ellipse class="wave-ring" cx="484" cy="418" rx="142" ry="46" />
+      <ellipse class="wave-ring" cx="484" cy="418" rx="198" ry="62" />
+      <ellipse class="wave-ring" cx="484" cy="418" rx="256" ry="78" />
+    </g>
+
+    <g>
+      <circle class="flower-bloom" cx="220" cy="414" r="5" fill="#f7ffb0" /><circle class="flower-bloom" cx="252" cy="448" r="4" fill="#ff83bd" /><circle class="flower-bloom" cx="312" cy="404" r="6" fill="#7ec8ff" /><circle class="flower-bloom" cx="362" cy="454" r="5" fill="#f7ffb0" />
+      <circle class="flower-bloom" cx="432" cy="394" r="5" fill="#ff83bd" /><circle class="flower-bloom" cx="496" cy="430" r="7" fill="#f7ffb0" /><circle class="flower-bloom" cx="552" cy="404" r="4" fill="#7ec8ff" /><circle class="flower-bloom" cx="618" cy="452" r="6" fill="#ff83bd" />
+      <circle class="flower-bloom" cx="682" cy="398" r="5" fill="#f7ffb0" /><circle class="flower-bloom" cx="742" cy="440" r="4" fill="#7ec8ff" /><circle class="flower-bloom" cx="812" cy="408" r="6" fill="#ff83bd" /><circle class="flower-bloom" cx="872" cy="456" r="5" fill="#f7ffb0" />
+    </g>
+
+    <rect class="panel" x="34" y="32" width="566" height="104" />
+    <text class="label" x="50" y="66">False Earth WebGPU world minimal rebuild</text>
+    <text class="note" x="50" y="104">procedural grass + cosmic beams + flower lifecycle field</text>
+    <rect class="panel" x="92" y="438" width="504" height="56" />
+    <text class="note" x="110" y="472">world_state: grass compute field + raycast wave proxy</text>
+    <rect class="panel" x="650" y="414" width="280" height="96" />
+    <text class="note" x="668" y="442">local generated evidence</text>
+    <text class="note" x="668" y="476">not copied from False Earth demo</text>
+  </svg>
+</body>
+</html>

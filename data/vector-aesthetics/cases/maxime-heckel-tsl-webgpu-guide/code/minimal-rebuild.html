@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TSL and WebGPU field guide minimal rebuild</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #111315;
+      --paper: #f4f0df;
+      --cyan: #4bd8d0;
+      --lime: #a4e46f;
+      --pink: #ff6f91;
+      --amber: #ffd166;
+      --blue: #7aa2ff;
+      --panel: rgba(244, 240, 223, 0.055);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      color: var(--paper);
+      font: 14px/1.35 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .stage {
+      width: min(100vw, 1120px);
+      aspect-ratio: 16 / 9;
+      display: block;
+      background: var(--bg);
+    }
+
+    .panel {
+      fill: var(--panel);
+      stroke: rgba(244, 240, 223, 0.18);
+      stroke-width: 1;
+    }
+
+    .title {
+      fill: var(--paper);
+      font-size: 28px;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .label {
+      fill: rgba(244, 240, 223, 0.76);
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    .micro {
+      fill: rgba(244, 240, 223, 0.58);
+      font-size: 11px;
+      letter-spacing: 0;
+    }
+
+    .shader-node {
+      fill: rgba(75, 216, 208, 0.72);
+      stroke: rgba(244, 240, 223, 0.85);
+      stroke-width: 1.1;
+      animation: compile 4.8s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .shader-node.math {
+      fill: rgba(122, 162, 255, 0.66);
+      animation-delay: -1s;
+    }
+
+    .shader-node.output {
+      fill: rgba(255, 111, 145, 0.72);
+      animation-delay: -2.2s;
+    }
+
+    .node-link {
+      fill: none;
+      stroke: rgba(75, 216, 208, 0.42);
+      stroke-width: 2;
+      stroke-dasharray: 7 9;
+      animation: route 5s linear infinite;
+    }
+
+    .compute-lane {
+      fill: rgba(164, 228, 111, 0.11);
+      stroke: rgba(164, 228, 111, 0.46);
+      stroke-width: 1;
+    }
+
+    .material-pass {
+      fill: rgba(255, 209, 102, 0.12);
+      stroke: rgba(255, 209, 102, 0.54);
+      stroke-width: 1.1;
+    }
+
+    .uniform-chip {
+      fill: rgba(255, 111, 145, 0.16);
+      stroke: rgba(255, 111, 145, 0.64);
+      stroke-width: 1;
+    }
+
+    .compile-band {
+      fill: rgba(75, 216, 208, 0.13);
+      animation: compile 4.8s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .evidence {
+      fill: rgba(244, 240, 223, 0.06);
+      stroke: rgba(255, 209, 102, 0.36);
+      stroke-width: 1;
+    }
+
+    @keyframes compile {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.74; }
+      50% { transform: translateY(-4px) scale(1.05); opacity: 0.98; }
+    }
+
+    @keyframes route {
+      to { stroke-dashoffset: -120; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="stage" viewBox="0 0 1120 630" role="img" aria-label="Generated TSL and WebGPU field guide rebuild showing shader nodes, uniform chips, material passes, compute lanes, and compile flow." data-tsl-field-guide="generated">
+    <rect width="1120" height="630" fill="#111315"/>
+    <path d="M80 502 L420 108 L1030 154 M160 450 L520 146 L1010 258 M260 518 L832 118" stroke="rgba(244,240,223,.13)" stroke-width="1"/>
+    <rect class="panel" x="52" y="44" width="1016" height="536" rx="12"/>
+    <text class="title" x="84" y="90">TSL and WebGPU field guide minimal rebuild</text>
+    <text class="label" x="86" y="119">Primitive: shader node graph + uniforms + material passes + compute lanes + runtime budget</text>
+
+    <g transform="translate(82 150)">
+      <rect class="panel" x="0" y="0" width="570" height="332" rx="10"/>
+      <text class="label" x="18" y="28">TSL node graph</text>
+      <text class="micro" x="18" y="48">compose shader intent before renderer implementation</text>
+
+      <path class="node-link" d="M82 92 C142 50 196 72 252 112 S356 160 426 98"/>
+      <path class="node-link" d="M92 192 C154 146 216 168 284 204 S408 244 486 194"/>
+      <path class="node-link" d="M120 268 C208 230 324 278 482 254"/>
+      <path class="node-link" d="M176 108 C220 156 244 188 286 236"/>
+      <path class="node-link" d="M342 82 C374 130 412 162 472 178"/>
+
+      <circle class="shader-node" cx="74" cy="92" r="18"/>
+      <circle class="shader-node math" cx="136" cy="62" r="16"/>
+      <circle class="shader-node" cx="202" cy="84" r="18"/>
+      <circle class="shader-node math" cx="260" cy="116" r="17"/>
+      <circle class="shader-node output" cx="334" cy="144" r="20"/>
+      <circle class="shader-node" cx="430" cy="98" r="18"/>
+      <circle class="shader-node math" cx="492" cy="132" r="16"/>
+      <circle class="shader-node" cx="92" cy="194" r="18"/>
+      <circle class="shader-node math" cx="154" cy="160" r="16"/>
+      <circle class="shader-node" cx="226" cy="174" r="18"/>
+      <circle class="shader-node output" cx="286" cy="206" r="20"/>
+      <circle class="shader-node math" cx="358" cy="236" r="16"/>
+      <circle class="shader-node" cx="432" cy="214" r="18"/>
+      <circle class="shader-node output" cx="492" cy="196" r="19"/>
+      <rect class="shader-node" x="96" y="248" width="42" height="32" rx="8"/>
+      <rect class="shader-node math" x="164" y="228" width="42" height="32" rx="8"/>
+      <rect class="shader-node" x="238" y="246" width="42" height="32" rx="8"/>
+      <rect class="shader-node math" x="312" y="264" width="42" height="32" rx="8"/>
+      <rect class="shader-node output" x="394" y="242" width="48" height="36" rx="9"/>
+      <rect class="shader-node" x="474" y="234" width="42" height="32" rx="8"/>
+      <text class="micro" x="24" y="312">nodes stay visible so the learner can separate expression graph from renderer output</text>
+    </g>
+
+    <g transform="translate(692 150)">
+      <rect class="panel" x="0" y="0" width="330" height="124" rx="10"/>
+      <text class="label" x="18" y="28">uniform inputs</text>
+      <rect class="uniform-chip" x="20" y="52" width="62" height="24" rx="7"/>
+      <rect class="uniform-chip" x="92" y="52" width="62" height="24" rx="7"/>
+      <rect class="uniform-chip" x="164" y="52" width="62" height="24" rx="7"/>
+      <rect class="uniform-chip" x="236" y="52" width="62" height="24" rx="7"/>
+      <rect class="uniform-chip" x="20" y="84" width="62" height="24" rx="7"/>
+      <rect class="uniform-chip" x="92" y="84" width="62" height="24" rx="7"/>
+      <rect class="uniform-chip" x="164" y="84" width="62" height="24" rx="7"/>
+      <rect class="uniform-chip" x="236" y="84" width="62" height="24" rx="7"/>
+      <text class="micro" x="28" y="68">time</text>
+      <text class="micro" x="100" y="68">uv</text>
+      <text class="micro" x="172" y="68">noise</text>
+      <text class="micro" x="244" y="68">color</text>
+    </g>
+
+    <g transform="translate(692 304)">
+      <rect class="panel" x="0" y="0" width="330" height="160" rx="10"/>
+      <text class="label" x="18" y="28">material pass stack</text>
+      <rect class="material-pass" x="20" y="52" width="54" height="82" rx="8"/>
+      <rect class="material-pass" x="82" y="46" width="54" height="88" rx="8"/>
+      <rect class="material-pass" x="144" y="40" width="54" height="94" rx="8"/>
+      <rect class="material-pass" x="206" y="46" width="54" height="88" rx="8"/>
+      <rect class="material-pass" x="268" y="52" width="38" height="82" rx="8"/>
+      <rect class="compile-band" x="20" y="92" width="286" height="12" rx="6"/>
+      <text class="micro" x="28" y="146">color -> normal -> displacement -> bloom -> output</text>
+    </g>
+
+    <g transform="translate(82 508)">
+      <rect class="compute-lane" x="0" y="-2" width="104" height="18" rx="5"/>
+      <rect class="compute-lane" x="114" y="-2" width="104" height="18" rx="5"/>
+      <rect class="compute-lane" x="228" y="-2" width="104" height="18" rx="5"/>
+      <rect class="compute-lane" x="342" y="-2" width="104" height="18" rx="5"/>
+      <rect class="compute-lane" x="456" y="-2" width="104" height="18" rx="5"/>
+      <rect class="compute-lane" x="570" y="-2" width="104" height="18" rx="5"/>
+      <rect class="compute-lane" x="684" y="-2" width="104" height="18" rx="5"/>
+      <rect class="compute-lane" x="798" y="-2" width="104" height="18" rx="5"/>
+      <text class="micro" x="8" y="34">compute lanes: dispatch work before render, then feed material state into the visible pass stack</text>
+    </g>
+
+    <g transform="translate(82 548)">
+      <rect class="evidence" x="0" y="0" width="940" height="32" rx="8"/>
+      <text class="micro" x="18" y="20">local generated learning evidence only: no imported article screenshots, code snippets, shaders, demos, or media</text>
+    </g>
+  </svg>
+</body>
+</html>

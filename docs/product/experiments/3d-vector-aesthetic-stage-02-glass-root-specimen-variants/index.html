@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Glass Root Specimen Variant Lab</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --bg: #050706;
+      --panel: rgba(13, 19, 17, 0.82);
+      --line: rgba(241, 234, 215, 0.13);
+      --ink: #f1ead7;
+      --muted: #9b9a8b;
+      --cyan: #6dd9cf;
+      --amber: #d8955d;
+      --moss: #8da66f;
+      --glass: #d8f4ee;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 48% 18%, rgba(109, 217, 207, 0.12), transparent 28%),
+        radial-gradient(circle at 72% 78%, rgba(216, 149, 93, 0.1), transparent 28%),
+        linear-gradient(135deg, #040605, #0b1110 58%, #070807);
+      color: var(--ink);
+    }
+
+    .app {
+      height: 100dvh;
+      min-height: 520px;
+      display: grid;
+      grid-template-columns: minmax(280px, 340px) minmax(520px, 1fr) minmax(300px, 340px);
+      overflow: hidden;
+    }
+
+    .panel {
+      padding: 28px 24px;
+      background: var(--panel);
+      border-color: var(--line);
+      backdrop-filter: blur(18px);
+      overflow: auto;
+    }
+
+    .left {
+      border-right: 1px solid var(--line);
+    }
+
+    .right {
+      border-left: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--cyan);
+      font-size: 12px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      line-height: 1.06;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 12ch;
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 21px;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .variant-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .variant-button {
+      width: 100%;
+      min-height: 78px;
+      display: grid;
+      grid-template-columns: 18px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .variant-button[aria-selected="true"] {
+      border-color: rgba(109, 217, 207, 0.48);
+      background: rgba(109, 217, 207, 0.08);
+    }
+
+    .swatch {
+      width: 14px;
+      height: 48px;
+      border-radius: 99px;
+      background: var(--accent);
+      box-shadow: 0 0 18px color-mix(in srgb, var(--accent), transparent 48%);
+    }
+
+    .button-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1.18;
+    }
+
+    .button-subtitle {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .priority {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 99px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 12px;
+    }
+
+    .stage {
+      position: relative;
+      min-width: 0;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .stage-note {
+      position: absolute;
+      left: 34px;
+      right: 34px;
+      bottom: 30px;
+      z-index: 3;
+      padding: 13px 14px;
+      border: 1px solid rgba(216, 149, 93, 0.24);
+      border-radius: 8px;
+      background: rgba(5, 7, 6, 0.68);
+      color: rgba(241, 234, 215, 0.76);
+      font-size: 12px;
+      line-height: 1.45;
+      backdrop-filter: blur(14px);
+    }
+
+    .contract-list,
+    .reject-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .contract-item,
+    .reject-item {
+      padding: 11px 12px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .contract-item strong {
+      display: block;
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .contract-item span,
+    .reject-item {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .prompt-box {
+      margin: 18px 0 0;
+      padding: 12px;
+      border: 1px solid rgba(241, 234, 215, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      color: rgba(241, 234, 215, 0.75);
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .status-note {
+      margin-top: 22px;
+      padding: 13px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(216, 149, 93, 0.22);
+      background: rgba(216, 149, 93, 0.07);
+      color: rgba(241, 234, 215, 0.78);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1180px) {
+      .app {
+        height: auto;
+        grid-template-columns: 1fr;
+        overflow: auto;
+      }
+
+      .left,
+      .right {
+        border: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .stage {
+        height: 72dvh;
+        min-height: 680px;
+      }
+
+      h1 {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" data-vector-stage-product="2026-06-stage-02-glass-root-specimen-variant-lab">
+    <aside class="panel left">
+      <p class="eyebrow">Glass Root Specimen</p>
+      <h1>Variant generation lab.</h1>
+      <p>
+        Three tighter prompts for external 3D generation. The goal is not final polish yet:
+        reject quickly if the shape becomes a bottle, terrarium, or decorative object.
+      </p>
+      <div class="variant-list" id="variantList"></div>
+      <div class="status-note">
+        Current first try: Suspended Root Lens. It keeps the specimen horizontal, so the form is less likely to become perfume or medicine packaging.
+      </div>
+    </aside>
+
+    <main class="stage" aria-label="Glass root specimen variant preview">
+      <canvas id="variantCanvas" width="1440" height="1080"></canvas>
+      <div class="stage-note" id="stageNote">
+        These are 2D silhouette previews for GLB generation prompts, not final models.
+      </div>
+    </main>
+
+    <aside class="panel right">
+      <p class="eyebrow">Variant spec</p>
+      <h2 id="variantTitle"></h2>
+      <p id="variantWhy"></p>
+      <div class="contract-list" id="contractList"></div>
+      <p class="eyebrow" style="margin-top: 24px;">Reject if</p>
+      <div class="reject-list" id="rejectList"></div>
+      <p class="eyebrow" style="margin-top: 24px;">Prompt</p>
+      <pre class="prompt-box" id="promptBox"></pre>
+    </aside>
+  </div>
+
+  <script>
+    const VARIANTS = [
+      {
+        id: "suspended-root-lens",
+        label: "Suspended Root Lens",
+        priority: 1,
+        accent: "#6dd9cf",
+        why: "Least likely to become a bottle. A horizontal glass lens reads as a technical specimen object and gives roots more believable space.",
+        model_prompt: "Single centered GLB-ready 3D asset, premium suspended root lens specimen, horizontal clear glass lens capsule with soft oval silhouette, compact dark mineral core floating in the center, delicate root network suspended between two transparent glass membranes, subtle cyan signal veins following the roots, three tiny warm amber signal buds attached to internal root endpoints, quiet scientific botanical archive object, luxury museum material, no background scene, no text, no logo, no characters, no mascot.",
+        spatial_contract: {
+          glass_shell: "horizontal oval glass lens, not a vertical bottle",
+          core: "dark mineral core floats at center and anchors all roots",
+          roots: "roots stay fully inside lens volume and never pierce glass",
+          signals: "cyan veins follow root paths or membrane channels",
+          buds: "three tiny amber buds attach to internal root endpoints"
+        },
+        reject_if: ["looks like a contact lens case", "roots escape through glass", "core is missing or reads as dirt", "amber buds become flowers"]
+      },
+      {
+        id: "oval-archive-vessel",
+        label: "Oval Archive Vessel",
+        priority: 2,
+        accent: "#8da66f",
+        why: "Most literal specimen vessel. Good if generated glass is clean, risky if it becomes a bottle.",
+        model_prompt: "Single centered GLB-ready 3D asset, transparent oval archive vessel, one-piece clear glass shell with flattened base and rounded shoulders, compact dark graphite mineral garden core inside, delicate roots contained inside the vessel, cyan data veins running through roots and subtle glass channels, three tiny amber signal buds attached to the internal core, quiet museum specimen, premium material separation, no text, no label, no logo, no characters, no mascot.",
+        spatial_contract: {
+          glass_shell: "oval glass vessel with no neck, cap, label, or product-bottle cues",
+          core: "compact mineral garden core sits inside lower middle",
+          roots: "roots curve around core inside vessel walls",
+          signals: "cyan routes are internal and sparse",
+          buds: "amber buds remain tiny signal nodes, not flowers"
+        },
+        reject_if: ["looks like perfume, medicine, candle, or bottle packaging", "glass is a generic blob", "roots pierce the shell", "internal core becomes muddy terrain"]
+      },
+      {
+        id: "core-reliquary",
+        label: "Core Reliquary",
+        priority: 3,
+        accent: "#d8955d",
+        why: "Most premium and sculptural, but it risks drifting into a decorative object rather than technical specimen.",
+        model_prompt: "Single centered GLB-ready 3D asset, glass and graphite botanical reliquary, asymmetrical clear glass shell around a dark mineral core, root filaments suspended like preserved scientific material, sparse cyan signal veins, three tiny amber data buds locked into small sockets, refined museum object, technical archive specimen, clean silhouette, no religious symbol, no text, no logo, no characters, no mascot.",
+        spatial_contract: {
+          glass_shell: "asymmetrical protective glass shell with visible thickness",
+          core: "dark mineral core is sculptural but still technical",
+          roots: "root filaments are preserved inside shell, not decorative vines",
+          signals: "cyan veins stay sparse and precise",
+          buds: "amber buds appear as data sockets"
+        },
+        reject_if: ["looks religious or ornamental", "becomes generic crystal decor", "roots read as vines wrapped outside", "signals become random neon lines"]
+      }
+    ];
+
+    const state = { selected: 0, t: 0 };
+    const canvas = document.getElementById("variantCanvas");
+    const ctx = canvas.getContext("2d");
+    const variantList = document.getElementById("variantList");
+    const variantTitle = document.getElementById("variantTitle");
+    const variantWhy = document.getElementById("variantWhy");
+    const contractList = document.getElementById("contractList");
+    const rejectList = document.getElementById("rejectList");
+    const promptBox = document.getElementById("promptBox");
+    const stageNote = document.getElementById("stageNote");
+
+    function current() {
+      return VARIANTS[state.selected];
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function renderControls() {
+      variantList.innerHTML = "";
+      VARIANTS.forEach((variant, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "variant-button";
+        button.style.setProperty("--accent", variant.accent);
+        button.setAttribute("aria-selected", String(index === state.selected));
+        button.innerHTML = `
+          <span class="swatch"></span>
+          <span>
+            <span class="button-title">${variant.label}</span>
+            <span class="button-subtitle">${variant.id}</span>
+          </span>
+          <span class="priority">${variant.priority}</span>
+        `;
+        button.addEventListener("click", () => {
+          state.selected = index;
+          renderControls();
+          renderInspector();
+        });
+        variantList.appendChild(button);
+      });
+    }
+
+    function renderInspector() {
+      const variant = current();
+      variantTitle.textContent = variant.label;
+      variantWhy.textContent = variant.why;
+      promptBox.textContent = variant.model_prompt;
+      stageNote.textContent = `${variant.label}: use this as the next GLB generation prompt, then inspect spatial logic before material polish.`;
+      contractList.innerHTML = "";
+      Object.entries(variant.spatial_contract).forEach(([key, value]) => {
+        const item = document.createElement("div");
+        item.className = "contract-item";
+        item.innerHTML = `<strong>${key.replaceAll("_", " ")}</strong><span>${value}</span>`;
+        contractList.appendChild(item);
+      });
+      rejectList.innerHTML = "";
+      variant.reject_if.forEach((reason) => {
+        const item = document.createElement("div");
+        item.className = "reject-item";
+        item.textContent = reason;
+        rejectList.appendChild(item);
+      });
+    }
+
+    function rgba(hex, alpha) {
+      const value = hex.replace("#", "");
+      const r = parseInt(value.slice(0, 2), 16);
+      const g = parseInt(value.slice(2, 4), 16);
+      const b = parseInt(value.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function drawBackground(w, h, variant) {
+      ctx.fillStyle = "#050706";
+      ctx.fillRect(0, 0, w, h);
+      const glow = ctx.createRadialGradient(w * 0.5, h * 0.42, 20, w * 0.5, h * 0.48, w * 0.54);
+      glow.addColorStop(0, rgba(variant.accent, 0.13));
+      glow.addColorStop(0.5, "rgba(241,234,215,0.026)");
+      glow.addColorStop(1, "rgba(5,7,6,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    function ellipse(cx, cy, rx, ry, fill, stroke = null, lineWidth = 1, rotation = 0) {
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, rotation, 0, Math.PI * 2);
+      ctx.fillStyle = fill;
+      ctx.fill();
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
+      }
+    }
+
+    function line(points, color, width = 2, alpha = 1) {
+      ctx.save();
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = rgba(color, alpha * 0.24);
+      ctx.lineWidth = width * 4;
+      path(points);
+      ctx.stroke();
+      ctx.strokeStyle = rgba(color, alpha);
+      ctx.lineWidth = width;
+      path(points);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function path(points) {
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], points[0][1]);
+      for (let i = 1; i < points.length - 1; i += 1) {
+        const midX = (points[i][0] + points[i + 1][0]) / 2;
+        const midY = (points[i][1] + points[i + 1][1]) / 2;
+        ctx.quadraticCurveTo(points[i][0], points[i][1], midX, midY);
+      }
+      const last = points[points.length - 1];
+      ctx.lineTo(last[0], last[1]);
+    }
+
+    function drawSuspendedRootLens(w, h, variant) {
+      const cx = w * 0.5;
+      const cy = h * 0.46;
+      const s = Math.min(w, h) / 720;
+      ellipse(cx, cy + 134 * s, 230 * s, 42 * s, "rgba(0,0,0,0.34)");
+      ellipse(cx, cy, 230 * s, 96 * s, "rgba(216,244,238,0.045)", "rgba(216,244,238,0.34)", 1.7);
+      ellipse(cx, cy - 8 * s, 182 * s, 54 * s, "rgba(255,255,255,0.035)", "rgba(255,255,255,0.12)", 1);
+      ellipse(cx, cy + 10 * s, 58 * s, 36 * s, "rgba(22,30,26,0.88)", "rgba(241,234,215,0.14)", 1);
+      const roots = [
+        [[-20, 8], [-80, -10], [-135, 22]],
+        [[-8, 14], [-62, 42], [-118, 50]],
+        [[10, 10], [76, -18], [146, -8]],
+        [[18, 20], [70, 42], [132, 54]],
+        [[0, -10], [-12, -52], [-44, -74]],
+        [[14, -6], [42, -48], [82, -66]]
+      ];
+      roots.forEach((pts) => line(pts.map(([x, y]) => [cx + x * s, cy + y * s]), "#d8f4ee", 1.8 * s, 0.58));
+      line([[cx - 142 * s, cy + 18 * s], [cx - 54 * s, cy - 2 * s], [cx + 42 * s, cy + 12 * s], [cx + 146 * s, cy - 8 * s]], variant.accent, 2.3 * s, 0.7);
+      [[-118, 22], [52, 12], [132, -8]].forEach(([x, y]) => ellipse(cx + x * s, cy + y * s, 7 * s, 7 * s, "rgba(216,149,93,0.76)"));
+    }
+
+    function drawOvalArchiveVessel(w, h, variant) {
+      const cx = w * 0.5;
+      const cy = h * 0.45;
+      const s = Math.min(w, h) / 720;
+      ellipse(cx, cy + 152 * s, 176 * s, 40 * s, "rgba(0,0,0,0.34)");
+      ellipse(cx, cy, 118 * s, 172 * s, "rgba(216,244,238,0.052)", "rgba(216,244,238,0.34)", 1.7);
+      ellipse(cx - 26 * s, cy - 28 * s, 58 * s, 118 * s, "rgba(255,255,255,0.04)");
+      ellipse(cx, cy + 36 * s, 58 * s, 42 * s, "rgba(24,32,28,0.9)", "rgba(241,234,215,0.13)", 1);
+      for (let i = 0; i < 8; i += 1) {
+        const a = -1.1 + i * 0.31;
+        line([[cx, cy + 24 * s], [cx + Math.cos(a) * 52 * s, cy + 58 * s + i * 4 * s], [cx + Math.cos(a) * 80 * s, cy + 108 * s]], "#d8f4ee", 1.5 * s, 0.52);
+      }
+      line([[cx - 55 * s, cy + 24 * s], [cx - 12 * s, cy - 10 * s], [cx + 50 * s, cy + 8 * s]], variant.accent, 2 * s, 0.72);
+      [[-36, -16], [18, -4], [44, 28]].forEach(([x, y]) => ellipse(cx + x * s, cy + y * s, 8 * s, 8 * s, "rgba(216,149,93,0.7)"));
+    }
+
+    function drawCoreReliquary(w, h, variant) {
+      const cx = w * 0.5;
+      const cy = h * 0.46;
+      const s = Math.min(w, h) / 720;
+      ellipse(cx, cy + 150 * s, 178 * s, 42 * s, "rgba(0,0,0,0.34)");
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(-0.12);
+      ellipse(0, 0, 118 * s, 158 * s, "rgba(216,244,238,0.045)", "rgba(216,244,238,0.3)", 1.6);
+      ellipse(18 * s, 4 * s, 62 * s, 72 * s, "rgba(24,32,28,0.9)", "rgba(241,234,215,0.12)", 1);
+      ctx.restore();
+      const rootBase = [[cx + 10 * s, cy + 4 * s], [cx - 50 * s, cy + 42 * s], [cx - 88 * s, cy + 94 * s]];
+      line(rootBase, "#d8f4ee", 1.5 * s, 0.55);
+      line([[cx + 12 * s, cy], [cx + 66 * s, cy - 34 * s], [cx + 92 * s, cy - 82 * s]], "#d8f4ee", 1.4 * s, 0.5);
+      line([[cx - 48 * s, cy + 36 * s], [cx - 2 * s, cy - 20 * s], [cx + 70 * s, cy - 28 * s]], variant.accent, 2 * s, 0.7);
+      [[-64, 44], [36, -28], [74, -2]].forEach(([x, y]) => ellipse(cx + x * s, cy + y * s, 7 * s, 7 * s, "rgba(216,149,93,0.7)"));
+    }
+
+    function draw(now) {
+      state.t = now / 1000;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+      const variant = current();
+      drawBackground(w, h, variant);
+      if (variant.id === "suspended-root-lens") drawSuspendedRootLens(w, h, variant);
+      if (variant.id === "oval-archive-vessel") drawOvalArchiveVessel(w, h, variant);
+      if (variant.id === "core-reliquary") drawCoreReliquary(w, h, variant);
+      requestAnimationFrame(draw);
+    }
+
+    window.__GLASS_ROOT_SPECIMEN_VARIANTS__ = VARIANTS;
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    renderControls();
+    renderInspector();
+    requestAnimationFrame(draw);
+  </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Matrix Sentinels Trail Tunnel Minimal Rebuild</title>
+  <style>
+    :root { color-scheme: dark; background:#04070b; color:#ecfff8; font-family:Arial,sans-serif; }
+    body {
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      background:
+        radial-gradient(circle at 52% 48%, rgba(76,255,190,.15), transparent 30%),
+        radial-gradient(circle at 74% 34%, rgba(77,196,255,.12), transparent 24%),
+        linear-gradient(rgba(72,132,118,.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(72,132,118,.14) 1px, transparent 1px),
+        #04070b;
+      background-size:auto, auto, 56px 56px, 56px 56px;
+    }
+    svg { width:min(100vw,960px); aspect-ratio:16/9; display:block; overflow:visible; }
+    .panel { fill:#0b1318; stroke:#64a88f; stroke-width:1; }
+    .label { fill:#ecfff8; font-size:19px; font-weight:700; letter-spacing:0; }
+    .note { fill:#d9f7eb; font-size:16px; letter-spacing:0; }
+    .tunnel-grid { fill:none; stroke:#3d6d65; stroke-width:1; opacity:.58; }
+    .trail-route { fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-width:5; opacity:.86; animation: trace 3.4s ease-in-out infinite alternate; }
+    .history-slice { fill:#4cffbe; opacity:.54; animation: trace 3s ease-in-out infinite alternate; }
+    .sentinel-head { fill:#f8ffb8; stroke:#4cffbe; stroke-width:2; animation: trace 2.8s ease-in-out infinite alternate; }
+    .flow-vector { stroke:#79cfff; stroke-width:1.5; stroke-linecap:round; opacity:.72; }
+    .cyan { stroke:#79cfff; } .mint { stroke:#4cffbe; } .gold { stroke:#f8ffb8; } .pink { stroke:#ff6fb6; }
+    @keyframes trace {
+      from { transform:translate(-14px, 8px); opacity:.56; }
+      to { transform:translate(12px, -7px); opacity:1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Offline SVG/CSS approximation for learning review; it does not run WebGPU, TSL compute, storage buffers, or copy Codrops demo assets. -->
+  <svg viewBox="0 0 960 540" role="img" aria-label="Local generated Matrix Sentinels particle trail tunnel rebuild" data-trail-field="generated">
+    <rect class="panel" x="34" y="32" width="610" height="104" />
+    <text class="label" x="50" y="66">Matrix Sentinels trail tunnel minimal rebuild</text>
+    <text class="note" x="50" y="104">history buffer + flow vectors + particle trail heads</text>
+
+    <g>
+      <ellipse class="tunnel-grid" cx="488" cy="284" rx="338" ry="128" />
+      <ellipse class="tunnel-grid" cx="488" cy="284" rx="262" ry="96" />
+      <ellipse class="tunnel-grid" cx="488" cy="284" rx="184" ry="66" />
+      <ellipse class="tunnel-grid" cx="488" cy="284" rx="96" ry="34" />
+      <line class="tunnel-grid" x1="150" y1="284" x2="826" y2="284" />
+      <line class="tunnel-grid" x1="204" y1="210" x2="772" y2="358" />
+      <line class="tunnel-grid" x1="204" y1="358" x2="772" y2="210" />
+      <line class="tunnel-grid" x1="488" y1="156" x2="488" y2="412" />
+    </g>
+
+    <g>
+      <path class="trail-route mint" d="M112 404 C220 330 330 356 448 286 C560 218 680 190 826 146" />
+      <path class="trail-route cyan" d="M96 356 C220 306 332 320 446 260 C590 184 700 186 850 214" />
+      <path class="trail-route gold" d="M126 300 C250 276 360 292 470 244 C620 178 724 238 834 300" />
+      <path class="trail-route pink" d="M150 246 C288 244 382 260 504 230 C650 196 742 286 806 360" />
+      <path class="trail-route mint" d="M166 432 C276 378 392 386 506 322 C634 252 730 306 842 390" />
+      <path class="trail-route cyan" d="M188 198 C298 226 398 238 520 210 C650 180 760 220 872 256" />
+      <path class="trail-route gold" d="M204 454 C318 400 430 412 544 348 C668 282 762 336 884 428" />
+      <path class="trail-route pink" d="M226 162 C348 210 456 218 574 196 C702 172 792 196 902 244" />
+    </g>
+
+    <g>
+      <circle class="history-slice" cx="182" cy="362" r="3" /><circle class="history-slice" cx="230" cy="336" r="3" /><circle class="history-slice" cx="282" cy="326" r="4" /><circle class="history-slice" cx="334" cy="330" r="4" />
+      <circle class="history-slice" cx="390" cy="306" r="5" /><circle class="history-slice" cx="448" cy="286" r="5" /><circle class="history-slice" cx="506" cy="250" r="5" /><circle class="history-slice" cx="566" cy="220" r="4" />
+      <circle class="history-slice" cx="624" cy="202" r="4" /><circle class="history-slice" cx="684" cy="188" r="3" /><circle class="history-slice" cx="742" cy="170" r="3" /><circle class="history-slice" cx="806" cy="150" r="3" />
+      <circle class="history-slice" cx="178" cy="334" r="3" /><circle class="history-slice" cx="244" cy="310" r="3" /><circle class="history-slice" cx="314" cy="310" r="4" /><circle class="history-slice" cx="386" cy="292" r="4" />
+      <circle class="history-slice" cx="456" cy="258" r="5" /><circle class="history-slice" cx="524" cy="222" r="5" /><circle class="history-slice" cx="590" cy="194" r="4" /><circle class="history-slice" cx="660" cy="190" r="4" />
+      <circle class="history-slice" cx="728" cy="202" r="3" /><circle class="history-slice" cx="796" cy="212" r="3" /><circle class="history-slice" cx="222" cy="298" r="3" /><circle class="history-slice" cx="302" cy="284" r="3" />
+      <circle class="history-slice" cx="382" cy="282" r="4" /><circle class="history-slice" cx="462" cy="246" r="5" /><circle class="history-slice" cx="548" cy="210" r="4" /><circle class="history-slice" cx="630" cy="198" r="4" />
+      <circle class="history-slice" cx="706" cy="238" r="3" /><circle class="history-slice" cx="776" cy="286" r="3" /><circle class="history-slice" cx="294" cy="390" r="4" /><circle class="history-slice" cx="406" cy="382" r="4" />
+    </g>
+
+    <g>
+      <circle class="sentinel-head" cx="826" cy="146" r="7" />
+      <circle class="sentinel-head" cx="850" cy="214" r="7" />
+      <circle class="sentinel-head" cx="834" cy="300" r="7" />
+      <circle class="sentinel-head" cx="806" cy="360" r="7" />
+      <circle class="sentinel-head" cx="842" cy="390" r="7" />
+      <circle class="sentinel-head" cx="872" cy="256" r="7" />
+      <circle class="sentinel-head" cx="884" cy="428" r="7" />
+      <circle class="sentinel-head" cx="902" cy="244" r="7" />
+    </g>
+
+    <g>
+      <line class="flow-vector" x1="180" y1="190" x2="220" y2="176" /><line class="flow-vector" x1="244" y1="212" x2="286" y2="198" /><line class="flow-vector" x1="310" y1="188" x2="354" y2="174" /><line class="flow-vector" x1="376" y1="214" x2="420" y2="198" />
+      <line class="flow-vector" x1="442" y1="184" x2="488" y2="170" /><line class="flow-vector" x1="508" y1="210" x2="554" y2="194" /><line class="flow-vector" x1="574" y1="184" x2="620" y2="170" /><line class="flow-vector" x1="640" y1="214" x2="686" y2="198" />
+      <line class="flow-vector" x1="706" y1="188" x2="752" y2="174" /><line class="flow-vector" x1="772" y1="212" x2="818" y2="198" /><line class="flow-vector" x1="156" y1="286" x2="204" y2="274" /><line class="flow-vector" x1="226" y1="302" x2="274" y2="290" />
+      <line class="flow-vector" x1="296" y1="282" x2="344" y2="270" /><line class="flow-vector" x1="366" y1="304" x2="414" y2="292" /><line class="flow-vector" x1="436" y1="278" x2="484" y2="266" /><line class="flow-vector" x1="506" y1="302" x2="554" y2="290" />
+      <line class="flow-vector" x1="576" y1="280" x2="624" y2="268" /><line class="flow-vector" x1="646" y1="304" x2="694" y2="292" /><line class="flow-vector" x1="716" y1="282" x2="764" y2="270" /><line class="flow-vector" x1="786" y1="304" x2="834" y2="292" />
+    </g>
+
+    <rect class="panel" x="92" y="438" width="510" height="56" />
+    <text class="note" x="110" y="472">trail_state: position history buffer + flow-field tunnel</text>
+    <rect class="panel" x="650" y="414" width="280" height="96" />
+    <text class="note" x="668" y="442">local generated evidence</text>
+    <text class="note" x="668" y="476">not copied from Matrix Sentinels demo</text>
+  </svg>
+</body>
+</html>

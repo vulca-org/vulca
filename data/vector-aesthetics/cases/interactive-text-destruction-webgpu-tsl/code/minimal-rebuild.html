@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interactive Text Destruction Minimal Rebuild</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      background: #070a10;
+      color: #eef6ff;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(rgba(120, 170, 210, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120, 170, 210, 0.08) 1px, transparent 1px),
+        #070a10;
+      background-size: 60px 60px;
+    }
+
+    svg {
+      width: min(100vw, 960px);
+      aspect-ratio: 16 / 9;
+      display: block;
+      overflow: visible;
+    }
+
+    .panel {
+      fill: #0d141d;
+      stroke: #678baf;
+      stroke-width: 1;
+    }
+
+    .label {
+      fill: #ebf4fc;
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .note {
+      fill: #cbdce8;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    .field {
+      fill: none;
+      stroke: #4fe3ff;
+      stroke-width: 1;
+      opacity: 0.44;
+    }
+
+    .word-face {
+      fill: #e8f6ff;
+      font-size: 134px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .word-shadow-cyan {
+      fill: #2ee2f4;
+      opacity: 0.32;
+      font-size: 134px;
+      font-weight: 800;
+    }
+
+    .word-shadow-magenta {
+      fill: #ff4eb5;
+      opacity: 0.25;
+      font-size: 134px;
+      font-weight: 800;
+    }
+
+    .fragment {
+      rx: 2;
+      animation: drift 3.2s ease-in-out infinite alternate;
+    }
+
+    .particle {
+      animation: drift 2.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift {
+      from {
+        transform: translate(var(--dx), var(--dy));
+        opacity: 0.7;
+      }
+      to {
+        transform: translate(0, 0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg viewBox="0 0 960 540" role="img" aria-label="Local generated interactive text destruction rebuild">
+    <rect class="panel" x="34" y="32" width="506" height="104" />
+    <text class="label" x="50" y="66">Interactive Text Destruction minimal rebuild</text>
+    <text class="note" x="50" y="103">3D text volume + pointer field + spring-back fragments</text>
+
+    <circle class="field" cx="557" cy="270" r="78" />
+    <circle class="field" cx="557" cy="270" r="138" />
+    <circle class="field" cx="557" cy="270" r="216" />
+    <line class="field" x1="535" y1="270" x2="579" y2="270" />
+    <line class="field" x1="557" y1="248" x2="557" y2="292" />
+
+    <g data-word="VULCA" transform="translate(184 330)">
+      <text class="word-shadow-cyan" x="-4" y="0">VULCA</text>
+      <text class="word-shadow-magenta" x="5" y="5">VULCA</text>
+      <text class="word-face" x="0" y="0">VULCA</text>
+    </g>
+
+    <g>
+      <rect class="fragment" x="174" y="220" width="12" height="34" fill="#35e5f5" style="--dx:-28px;--dy:-6px" />
+      <rect class="fragment" x="202" y="279" width="16" height="22" fill="#ff4eb5" style="--dx:-48px;--dy:18px" />
+      <rect class="fragment" x="228" y="323" width="18" height="12" fill="#ffd84a" style="--dx:-34px;--dy:24px" />
+      <rect class="fragment" x="262" y="214" width="11" height="30" fill="#eef6ff" style="--dx:-18px;--dy:-30px" />
+      <rect class="fragment" x="292" y="282" width="15" height="25" fill="#35e5f5" style="--dx:-46px;--dy:-2px" />
+      <rect class="fragment" x="330" y="333" width="21" height="10" fill="#ffd84a" style="--dx:-26px;--dy:32px" />
+      <rect class="fragment" x="366" y="207" width="14" height="26" fill="#ff4eb5" style="--dx:-14px;--dy:-42px" />
+      <rect class="fragment" x="392" y="287" width="18" height="14" fill="#eef6ff" style="--dx:-30px;--dy:18px" />
+      <rect class="fragment" x="430" y="239" width="12" height="36" fill="#35e5f5" style="--dx:-12px;--dy:-18px" />
+      <rect class="fragment" x="462" y="314" width="20" height="12" fill="#ff4eb5" style="--dx:-18px;--dy:36px" />
+      <rect class="fragment" x="496" y="194" width="16" height="22" fill="#ffd84a" style="--dx:18px;--dy:-46px" />
+      <rect class="fragment" x="516" y="256" width="12" height="28" fill="#eef6ff" style="--dx:36px;--dy:-18px" />
+      <rect class="fragment" x="542" y="309" width="19" height="15" fill="#35e5f5" style="--dx:52px;--dy:26px" />
+      <rect class="fragment" x="576" y="202" width="13" height="31" fill="#ff4eb5" style="--dx:64px;--dy:-42px" />
+      <rect class="fragment" x="604" y="278" width="22" height="14" fill="#ffd84a" style="--dx:82px;--dy:-2px" />
+      <rect class="fragment" x="632" y="331" width="16" height="20" fill="#eef6ff" style="--dx:70px;--dy:34px" />
+      <rect class="fragment" x="666" y="218" width="18" height="17" fill="#35e5f5" style="--dx:88px;--dy:-30px" />
+      <rect class="fragment" x="692" y="296" width="14" height="31" fill="#ff4eb5" style="--dx:104px;--dy:16px" />
+      <rect class="fragment" x="724" y="336" width="21" height="11" fill="#ffd84a" style="--dx:112px;--dy:38px" />
+      <rect class="fragment" x="748" y="205" width="12" height="34" fill="#35e5f5" style="--dx:126px;--dy:-32px" />
+      <rect class="fragment" x="776" y="272" width="20" height="13" fill="#eef6ff" style="--dx:116px;--dy:8px" />
+      <rect class="fragment" x="806" y="318" width="17" height="24" fill="#ffd84a" style="--dx:94px;--dy:34px" />
+      <rect class="fragment" x="842" y="235" width="13" height="29" fill="#ff4eb5" style="--dx:72px;--dy:-18px" />
+      <rect class="fragment" x="858" y="302" width="20" height="14" fill="#35e5f5" style="--dx:54px;--dy:26px" />
+    </g>
+
+    <g>
+      <circle class="particle" cx="512" cy="230" r="2" fill="#35e5f5" style="--dx:-42px;--dy:-34px" />
+      <circle class="particle" cx="535" cy="250" r="2" fill="#ffd84a" style="--dx:-28px;--dy:-18px" />
+      <circle class="particle" cx="557" cy="270" r="5" fill="#ffffff" style="--dx:0px;--dy:0px" />
+      <circle class="particle" cx="586" cy="258" r="3" fill="#ff4eb5" style="--dx:42px;--dy:-24px" />
+      <circle class="particle" cx="614" cy="285" r="2" fill="#35e5f5" style="--dx:76px;--dy:16px" />
+      <circle class="particle" cx="642" cy="244" r="2" fill="#ffd84a" style="--dx:96px;--dy:-48px" />
+      <circle class="particle" cx="482" cy="292" r="2" fill="#ff4eb5" style="--dx:-82px;--dy:22px" />
+      <circle class="particle" cx="588" cy="326" r="2" fill="#eef6ff" style="--dx:36px;--dy:62px" />
+    </g>
+
+    <rect class="panel" x="640" y="414" width="290" height="96" />
+    <text class="note" x="658" y="441">local generated evidence</text>
+    <text class="note" x="658" y="475">not copied from Codrops demo</text>
+  </svg>
+</body>
+</html>

@@ -1,0 +1,164 @@
+{
+  "author_or_studio": "Spline",
+  "canonical_sources": [
+    "https://spline.design/"
+  ],
+  "canonical_url": "https://spline.design/",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Canonical Spline site link for attribution and product/workflow framing; local evidence below is generated from scratch for learning review.",
+      "path_or_url": "https://spline.design/",
+      "rights_status": "source_link_only",
+      "source_url": "https://spline.design/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "screenshot",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "spatial_ui_state",
+      "notes": "Local generated rebuild screenshot showing layered 3D UI panels, spatial nodes, state tracks, hotspots, and depth lines; not copied from Spline scenes.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
+      "source_url": "https://spline.design/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "video",
+      "id": "minimal-rebuild-motion",
+      "interaction": "timeline_morph",
+      "notes": "Local generated motion clip isolates panel morph, node motion, and hotspot state changes; not copied from Spline scenes.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://spline.design/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise reconstructing the primitive with generated panels, nodes, state tracks, hotspots, and CSS-only morph motion.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://spline.design/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
+      "source_url": "https://spline.design/",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "still_current",
+  "id": "spline-contemporary-3d-web",
+  "modules": [
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "ui_sculpture",
+      "payload": {
+        "hotspot_count": 6,
+        "learning_primitive": "layered spatial UI sculpture",
+        "panel_count": 5,
+        "spatial_node_count": 12,
+        "state_track_count": 4,
+        "ui_layers": [
+          "floating panels",
+          "spatial nodes",
+          "state tracks",
+          "event hotspots",
+          "depth grid"
+        ],
+        "visual_role": "teaches how a 3D object scene becomes an interface with states and actions"
+      },
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and code note all show the same spatial UI primitive.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "interaction_state",
+      "payload": {
+        "input_model": "hotspots stand in for hover/click event targets",
+        "learning_primitive": "timeline morph and event-state UI",
+        "motion_model": "panels, nodes, and hotspots shift together to reveal state transitions",
+        "state_names": [
+          "idle_layer_stack",
+          "hover_hotspot",
+          "timeline_morph",
+          "node_focus"
+        ],
+        "verification_command": "PYTHONPATH=src pytest tests/test_vector_aesthetics_gold_cases.py -q"
+      },
+      "review_notes": "Interaction state is represented as named states plus still and motion evidence.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local PNG proves spatial UI structure, local GIF proves morph state, HTML note proves the layer taxonomy",
+        "learning_primitive": "review workspace as spatial UI sculpture",
+        "review_gap": "canonical Spline site remains link-only; local rebuild teaches mechanics without Spline scenes or runtime",
+        "route_decision": "use panels for review surfaces, nodes for evidence anchors, state tracks for workflow transitions, hotspots for reviewer actions, and morph motion for state changes",
+        "source_trail": "canonical Spline site plus generated local reconstruction",
+        "uncertainty": "exact Spline scene library, renderer, templates, and export behavior are not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 3,
+    "license_safety": 2,
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
+  },
+  "review_status": "shortlist",
+  "source_type": "product_ref",
+  "summary": "Contemporary 3D web product reference rebuilt as a local spatial UI sculpture primitive with panels, nodes, state tracks, hotspots, motion, code, and asset evidence.",
+  "title": "Spline Contemporary 3D Web References",
+  "visual_families": [
+    "ui_sculpture"
+  ],
+  "why_relevant": "Completes the atlas's UI-sculpture branch by teaching spatial interface composition and event-state design without importing Spline scenes.",
+  "year": 2025
+}

@@ -1,0 +1,80 @@
+{
+  "direction_id": "stage-02-evidence-garden",
+  "status": "selected_working_direction",
+  "selected_model_candidate_id": "glass-root-specimen",
+  "selected_model_variant_id": "suspended-root-lens",
+  "asset_target": {
+    "format": "glb",
+    "subject": "single centered 3D glass root specimen object",
+    "do_not_generate": [
+      "full webpage",
+      "poster",
+      "text",
+      "logo",
+      "characters",
+      "mascot",
+      "dashboard UI",
+      "brand mark"
+    ]
+  },
+  "base_prompt": "Single centered 3D asset, premium transparent glass root specimen, clear oval glass vessel containing a compact dark mineral garden core, delicate root network suspended inside the glass, subtle cyan data veins running through the roots, three tiny warm amber signal buds inside the vessel, scientific botanical archive object, quiet luxury museum lighting response, clean premium silhouette, no text, no logo, no characters, no mascot, export as GLB.",
+  "negative_prompt": "No text, no typography, no logo, no brand mark, no UI labels, no dashboard UI, no characters, no mascot, no bottle label, no medicine vial, no perfume bottle, no cute fantasy terrarium, no cartoon flowers, no oversized leaves, no house, no path, no buildings, no landscape background, no roots piercing glass, no flat poster, no image-only render.",
+  "tool_prompts": {
+    "spline_ai": {
+      "prompt": "A single centered 3D object: premium transparent glass root specimen, oval glass vessel, compact dark mineral garden core suspended inside, delicate visible root network, subtle cyan signal veins, three tiny amber signal buds. Quiet scientific botanical archive object, clean premium silhouette. No text, no logos, no characters.",
+      "use": "Fast visual ideation. Keep only candidates with strong silhouette."
+    },
+    "tripo": {
+      "prompt": "Single centered GLB-ready 3D asset, transparent glass root specimen, clear oval glass shell containing compact dark mineral core, internal root network, cyan data veins running through roots, three tiny amber signal buds, scientific botanical archive object, quiet luxury material, no text, no logo, no characters, clean silhouette.",
+      "use": "Generate downloadable GLB candidates for model smoke tests."
+    },
+    "meshy": {
+      "prompt": "A GLB-ready 3D model of a premium glass root specimen: transparent oval vessel, dark mineral garden core inside, contained translucent root network, subtle cyan data veins, three tiny amber signal buds, technical botanical archive style, centered object, no background scene, no text, no logo, no characters.",
+      "use": "Generate and compare GLB/FBX/OBJ outputs; use remesh if silhouette is good."
+    },
+    "image_to_3d_seed": {
+      "prompt": "Front three-quarter concept render of a centered transparent glass root specimen, oval glass vessel, compact dark mineral garden core inside, delicate root network, cyan signal veins, three tiny amber signal buds, dark neutral background, quiet museum specimen style, high silhouette clarity, no text or logos.",
+      "use": "If text-to-3D is weak, first generate a reference image and then use image-to-3D."
+    }
+  },
+  "state_requirements": [
+    {
+      "id": "dormant_specimen",
+      "label": "Dormant Specimen",
+      "visual_change": "glass shell, compact mineral core, dim internal roots and faint route veins",
+      "web_runtime_layer": "base GLB plus soft environment light"
+    },
+    {
+      "id": "root_scan",
+      "label": "Root Scan",
+      "visual_change": "cyan scan plane reveals glass roots",
+      "web_runtime_layer": "animated scan ring or clipping plane"
+    },
+    {
+      "id": "data_bloom",
+      "label": "Data Bloom",
+      "visual_change": "tiny amber signal buds brighten inside the vessel",
+      "web_runtime_layer": "emissive material pulse and small transform offsets"
+    },
+    {
+      "id": "archive_constellation",
+      "label": "Archive Constellation",
+      "visual_change": "small particles rise into sparse archive field",
+      "web_runtime_layer": "procedural particles and subtle camera pullback"
+    }
+  ],
+  "scoring": {
+    "first_frame_beauty": "0-3",
+    "silhouette_strength": "0-3",
+    "material_quality": "0-3",
+    "scroll_state_potential": "0-3",
+    "model_cleanup_effort": "0-3 where 3 means low effort",
+    "rights_and_originality_safety": "0-3"
+  },
+  "minimum_pass": {
+    "first_frame_beauty": 2,
+    "silhouette_strength": 2,
+    "scroll_state_potential": 3,
+    "rights_and_originality_safety": 3
+  }
+}

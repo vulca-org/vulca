@@ -1,0 +1,178 @@
+{
+  "author_or_studio": "Three.js",
+  "canonical_sources": [
+    "https://threejs.org/docs/pages/WebGPURenderer.html",
+    "https://threejs.org/docs/pages/TSL.html"
+  ],
+  "canonical_url": "https://threejs.org/docs/pages/WebGPURenderer.html",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Official Three.js docs links for WebGPURenderer and TSL attribution and implementation framing; local evidence below is generated from scratch for learning review.",
+      "path_or_url": "https://threejs.org/docs/pages/WebGPURenderer.html",
+      "rights_status": "source_link_only",
+      "source_url": "https://threejs.org/docs/pages/WebGPURenderer.html",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-tsl-source",
+      "interaction": "none",
+      "notes": "Official Three.js TSL docs link used for node material framing; local evidence below is generated from scratch for learning review.",
+      "path_or_url": "https://threejs.org/docs/pages/TSL.html",
+      "rights_status": "source_link_only",
+      "source_url": "https://threejs.org/docs/pages/TSL.html",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "screenshot",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "backend_contract_state",
+      "notes": "Local generated rebuild screenshot showing backend decision panels, TSL node-material blocks, fallback routes, and resource buffers; not copied from Three.js docs.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
+      "source_url": "https://threejs.org/docs/pages/WebGPURenderer.html",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "video",
+      "id": "minimal-rebuild-motion",
+      "interaction": "fallback_route_loop",
+      "notes": "Local generated motion clip isolates fallback route state, backend readiness, node-material stability, and buffer ownership; not copied from Three.js docs.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://threejs.org/docs/pages/WebGPURenderer.html",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise reconstructing the primitive with generated backend panels, node materials, fallback routes, buffer blocks, and CSS-only fallback motion.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://threejs.org/docs/pages/WebGPURenderer.html",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
+      "source_url": "https://threejs.org/docs/pages/WebGPURenderer.html",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "still_current",
+  "id": "threejs-webgpu-tsl-docs",
+  "modules": [
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "shader_material",
+      "payload": {
+        "buffer_block_count": 8,
+        "fallback_route_count": 4,
+        "learning_primitive": "WebGPU renderer contract plus TSL node material",
+        "node_material_count": 6,
+        "renderer_backend_count": 3,
+        "visual_layers": [
+          "renderer backend",
+          "fallback route",
+          "TSL node material",
+          "resource buffer",
+          "documentation rule"
+        ],
+        "visual_role": "teaches how shader aesthetics depend on renderer capability and resource contracts"
+      },
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and code note all show the same documentation primitive.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "performance_runtime",
+      "payload": {
+        "fallback_model": "backend panels and routes represent device support and WebGL2 fallback planning",
+        "learning_primitive": "renderer capability as aesthetic constraint",
+        "runtime_risks": [
+          "WebGPU support variance",
+          "WebGL2 fallback parity",
+          "node-material API change",
+          "render target and buffer ownership",
+          "documentation drift"
+        ],
+        "verification_command": "PYTHONPATH=src pytest tests/test_vector_aesthetics_gold_cases.py -q"
+      },
+      "review_notes": "Performance layer is complete as a source-bounded implementation planning model, not a benchmark.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local PNG proves backend/material/resource taxonomy, local GIF proves fallback motion, HTML proves the implementation-constraint rebuild recipe",
+        "learning_primitive": "renderer readiness map for review artifacts",
+        "review_gap": "official docs remain link-only; local rebuild teaches constraints without docs screenshots, examples, renderer source, or demos",
+        "route_decision": "use backend panels for environment readiness, fallback routes for implementation risk, node-material blocks for visual logic ownership, and buffer blocks for evidence-resource budgets",
+        "source_trail": "official Three.js WebGPURenderer and TSL docs plus generated local reconstruction",
+        "uncertainty": "exact renderer internals, future API stability, and device-specific behavior are not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 3,
+    "license_safety": 2,
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
+  },
+  "review_status": "shortlist",
+  "source_type": "documentation",
+  "summary": "Official Three.js WebGPU/TSL documentation rebuilt as a local implementation-constraint primitive with backend panels, fallback routes, node-material blocks, buffers, motion, code, and asset evidence.",
+  "title": "Three.js WebGPURenderer and TSL Documentation",
+  "visual_families": [
+    "shader_material"
+  ],
+  "why_relevant": "Completes the atlas's implementation baseline for contemporary shader materials by making renderer capability and fallback constraints visible.",
+  "year": 2025
+}

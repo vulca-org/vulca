@@ -1,0 +1,114 @@
+{
+  "status": "internal_technical_proof_only",
+  "date": "2026-06-21",
+  "lane": "Lane B / AI publishability and generated asset context",
+  "public_example_boundary": "Seedream / BytePlus are public model/tool context examples only. They are not VULCA customers, partners, endorsers, authorization sources, or audit targets.",
+  "local_sources": [
+    {
+      "id": "seedream_45_official_page",
+      "path": "../capture-batch-02/seedream-45-official-page.jpg",
+      "sha256": "5e1118cd33a669f4da61e74e7f81416b7a62d4b4029760c2d1f62d4e2edf7959",
+      "image_size": [1440, 1100],
+      "public_url": "https://seed.bytedance.com/en/seedream4_5",
+      "source_type": "official public model page",
+      "field_roles": [
+        "source.record",
+        "model.context",
+        "owner.route"
+      ],
+      "use": "Internal proof of public model surface and API/try route. Customer-facing copy must stay version-neutral unless a specific model version is selected later."
+    },
+    {
+      "id": "byteplus_modelark_model_list",
+      "path": "../capture-batch-02/byteplus-model-list-seedream-5.jpg",
+      "sha256": "46dbe1719882b2a5a27802cd5e61ca4882b0d7506677e9f8cb3e81735f837cf0",
+      "image_size": [1440, 1100],
+      "public_url": "https://docs.byteplus.com/en/docs/ModelArk/1330310",
+      "source_type": "official documentation / model-list page",
+      "field_roles": [
+        "source.record",
+        "model.context"
+      ],
+      "use": "Internal proof of model registry/category context. Contains cookie overlay and should be recaptured or redrawn before external use."
+    },
+    {
+      "id": "byteplus_seedream_tutorial",
+      "path": "../capture-batch-02/byteplus-seedream-4-5-tutorial.jpg",
+      "sha256": "9ea705387b46087dca76c2b79c68c60e035099524521b7a24b0b4895d2eda090",
+      "image_size": [1440, 1100],
+      "public_url": "https://docs.byteplus.com/en/docs/ModelArk/1824121",
+      "source_type": "official documentation / tutorial page",
+      "field_roles": [
+        "input.mode",
+        "source.record",
+        "owner.route"
+      ],
+      "use": "Internal proof of prompt/reference, region/API, and input-mode context. Contains cookie overlay and should be recaptured or redrawn before external use."
+    },
+    {
+      "id": "byteplus_seedream_model_page",
+      "path": "../capture-batch-02/byteplus-seedream-model-page.jpg",
+      "sha256": "00e1e3460896af86033ab8a23a1c9bbb170a93c0f534b77a6972a656eaf0d1dc",
+      "image_size": [1440, 1100],
+      "public_url": "https://docs.byteplus.com/en/docs/ModelArk/1829186",
+      "source_type": "official documentation / model page",
+      "field_roles": [
+        "output.state",
+        "model.context",
+        "source.record"
+      ],
+      "use": "Internal proof of model page, input/output row, and output-context fields. Contains cookie overlay and should be recaptured or redrawn before external use."
+    }
+  ],
+  "generated_artifacts": [
+    {
+      "id": "seedream_byteplus_field_overlay_v1",
+      "path": "annotations/seedream-byteplus-field-overlay-v1.png",
+      "manifest_path": "annotations/seedream-byteplus-field-overlay-v1.json",
+      "sha256": "0d11638111c953abac140cc912ea70d05a84008c30605ff6a4df402163b0c876",
+      "image_size": [2400, 1500],
+      "role": "internal field overlay showing how true source screenshots are read into VULCA publishability fields"
+    },
+    {
+      "id": "seedream_byteplus_source_safe_distilled_card_v1",
+      "path": "source-safe/seedream-byteplus-source-safe-distilled-card-v1.png",
+      "manifest_path": "source-safe/seedream-byteplus-source-safe-distilled-card-v1.json",
+      "sha256": "cf50dc6e0fd307c061723ef94b97d431bafe51073eade1fcc2d75b40b158715e",
+      "image_size": [1800, 1240],
+      "role": "customer-facing candidate distilled from the internal proof; contains no raw UI screenshots"
+    }
+  ],
+  "vulca_fields": [
+    {
+      "field": "source.record",
+      "meaning": "Official URL, page role, source owner, source type, and capture metadata."
+    },
+    {
+      "field": "model.context",
+      "meaning": "Model family, registry/category, tutorial surface, and version-neutral customer copy."
+    },
+    {
+      "field": "input.mode",
+      "meaning": "Prompt, reference, product/source material, region/API route, and missing input packet."
+    },
+    {
+      "field": "output.state",
+      "meaning": "Generated state, output format, demo/export state, and prompt-result pairing needs."
+    },
+    {
+      "field": "label.posture",
+      "meaning": "Visible AI label, internal mark, channel disclosure, or no-label owner decision."
+    },
+    {
+      "field": "owner.route",
+      "meaning": "Product, platform, creative, or release owner receives unresolved questions."
+    }
+  ],
+  "customer_facing_use": "Use the source-safe distilled card or a redrawn docs strip to explain the workflow. Do not export raw UI screenshots by default.",
+  "must_not_claim": [
+    "Seedream, BytePlus, ByteDance, or ModelArk is a VULCA customer, partner, endorser, or authorization source.",
+    "VULCA certifies model quality, model safety, copyright clearance, legal approval, platform-policy compliance, benchmark superiority, or release readiness.",
+    "A specific model version is the customer-facing recommendation unless explicitly selected later.",
+    "The source pages prove a generated asset is safe to publish without human owner review."
+  ]
+}

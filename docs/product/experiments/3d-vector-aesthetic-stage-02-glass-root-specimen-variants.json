@@ -1,0 +1,84 @@
+{
+  "direction_id": "stage-02-evidence-garden",
+  "model_candidate_id": "glass-root-specimen",
+  "status": "variant_prompt_pack_ready",
+  "selected_variant_id": "suspended-root-lens",
+  "iteration_rule": "Generate 2-3 variants, reject by silhouette and spatial logic first, then evaluate material quality. Never one-shot accept.",
+  "shared_negative_prompt": "No text, no logo, no brand mark, no character, no mascot, no perfume bottle, no medicine vial, no lab bottle label, no cute terrarium, no soil clump mess, no oversized plant, no decorative flowers, no landscape background, no roots piercing glass, no random cables, no dashboard UI.",
+  "asset_slots": [
+    {
+      "variant_id": "suspended-root-lens",
+      "expected_glb_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-evidence-garden/assets/generated/glass-root-specimen-suspended-root-lens.glb"
+    },
+    {
+      "variant_id": "oval-archive-vessel",
+      "expected_glb_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-evidence-garden/assets/generated/glass-root-specimen-oval-archive-vessel.glb"
+    },
+    {
+      "variant_id": "core-reliquary",
+      "expected_glb_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-evidence-garden/assets/generated/glass-root-specimen-core-reliquary.glb"
+    }
+  ],
+  "variants": [
+    {
+      "id": "suspended-root-lens",
+      "label": "Suspended Root Lens",
+      "priority": 1,
+      "why": "Least likely to become a bottle. A horizontal glass lens reads as a technical specimen object and gives roots more believable space.",
+      "model_prompt": "Single centered GLB-ready 3D asset, premium suspended root lens specimen, horizontal clear glass lens capsule with soft oval silhouette, compact dark mineral core floating in the center, delicate root network suspended between two transparent glass membranes, subtle cyan signal veins following the roots, three tiny warm amber signal buds attached to internal root endpoints, quiet scientific botanical archive object, luxury museum material, no background scene, no text, no logo, no characters, no mascot.",
+      "spatial_contract": {
+        "glass_shell": "horizontal oval glass lens, not a vertical bottle",
+        "core": "dark mineral core floats at center and anchors all roots",
+        "roots": "roots stay fully inside lens volume and never pierce glass",
+        "signals": "cyan veins follow root paths or membrane channels",
+        "buds": "three tiny amber buds attach to internal root endpoints"
+      },
+      "reject_if": [
+        "looks like a contact lens case",
+        "roots escape through glass",
+        "core is missing or reads as dirt",
+        "amber buds become flowers"
+      ]
+    },
+    {
+      "id": "oval-archive-vessel",
+      "label": "Oval Archive Vessel",
+      "priority": 2,
+      "why": "Most literal specimen vessel. Good if generated glass is clean, risky if it becomes a bottle.",
+      "model_prompt": "Single centered GLB-ready 3D asset, transparent oval archive vessel, one-piece clear glass shell with flattened base and rounded shoulders, compact dark graphite mineral garden core inside, delicate roots contained inside the vessel, cyan data veins running through roots and subtle glass channels, three tiny amber signal buds attached to the internal core, quiet museum specimen, premium material separation, no text, no label, no logo, no characters, no mascot.",
+      "spatial_contract": {
+        "glass_shell": "oval glass vessel with no neck, cap, label, or product-bottle cues",
+        "core": "compact mineral garden core sits inside lower middle",
+        "roots": "roots curve around core inside vessel walls",
+        "signals": "cyan routes are internal and sparse",
+        "buds": "amber buds remain tiny signal nodes, not flowers"
+      },
+      "reject_if": [
+        "looks like perfume, medicine, candle, or bottle packaging",
+        "glass is a generic blob",
+        "roots pierce the shell",
+        "internal core becomes muddy terrain"
+      ]
+    },
+    {
+      "id": "core-reliquary",
+      "label": "Core Reliquary",
+      "priority": 3,
+      "why": "Most premium and sculptural, but it risks drifting into a decorative object rather than technical specimen.",
+      "model_prompt": "Single centered GLB-ready 3D asset, glass and graphite botanical reliquary, asymmetrical clear glass shell around a dark mineral core, root filaments suspended like preserved scientific material, sparse cyan signal veins, three tiny amber data buds locked into small sockets, refined museum object, technical archive specimen, clean silhouette, no religious symbol, no text, no logo, no characters, no mascot.",
+      "spatial_contract": {
+        "glass_shell": "asymmetrical protective glass shell with visible thickness",
+        "core": "dark mineral core is sculptural but still technical",
+        "roots": "root filaments are preserved inside shell, not decorative vines",
+        "signals": "cyan veins stay sparse and precise",
+        "buds": "amber buds appear as data sockets"
+      },
+      "reject_if": [
+        "looks religious or ornamental",
+        "becomes generic crystal decor",
+        "roots read as vines wrapped outside",
+        "signals become random neon lines"
+      ]
+    }
+  ]
+}

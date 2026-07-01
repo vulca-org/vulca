@@ -1,0 +1,208 @@
+{
+  "author_or_studio": "Codrops",
+  "canonical_sources": [
+    "https://tympanus.net/codrops/2026/01/28/webgpu-gommage-effect-dissolving-msdf-text-into-dust-and-petals-with-three-js-tsl/"
+  ],
+  "canonical_url": "https://tympanus.net/codrops/2026/01/28/webgpu-gommage-effect-dissolving-msdf-text-into-dust-and-petals-with-three-js-tsl/",
+  "captures": [
+    {
+      "capture_method": "source_read",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "external_doc",
+      "id": "canonical-source",
+      "interaction": "none",
+      "notes": "Canonical Codrops tutorial link for attribution and technical framing; local evidence below is generated from scratch for learning review.",
+      "path_or_url": "https://tympanus.net/codrops/2026/01/28/webgpu-gommage-effect-dissolving-msdf-text-into-dust-and-petals-with-three-js-tsl/",
+      "rights_status": "source_link_only",
+      "source_url": "https://tympanus.net/codrops/2026/01/28/webgpu-gommage-effect-dissolving-msdf-text-into-dust-and-petals-with-three-js-tsl/",
+      "viewport": "none"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "screenshot",
+      "id": "minimal-rebuild-desktop",
+      "interaction": "dissolve_edge_state",
+      "notes": "Local generated rebuild screenshot showing readable MSDF-like text, noise dissolve edge, glyph fragments, dust particles, petal vectors, and bloom proxy; not copied from the Codrops demo.",
+      "path_or_url": "screenshots/minimal-rebuild-desktop.png",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2026/01/28/webgpu-gommage-effect-dissolving-msdf-text-into-dust-and-petals-with-three-js-tsl/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "video",
+      "id": "minimal-rebuild-motion",
+      "interaction": "dust_petal_release",
+      "notes": "Local generated motion clip isolates typography dissolve timing, dust release, petal drift, and bloom emphasis; not copied from the Codrops demo.",
+      "path_or_url": "videos/minimal-rebuild-motion.gif",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2026/01/28/webgpu-gommage-effect-dissolving-msdf-text-into-dust-and-petals-with-three-js-tsl/",
+      "viewport": "960x540"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "code_note",
+      "id": "minimal-rebuild-code",
+      "interaction": "implementation_note",
+      "notes": "Standalone local HTML/SVG exercise reconstructing the primitive with generated glyph fragments, dust particles, petal vectors, dissolve band, and CSS-only motion.",
+      "path_or_url": "code/minimal-rebuild.html",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2026/01/28/webgpu-gommage-effect-dissolving-msdf-text-into-dust-and-petals-with-three-js-tsl/",
+      "viewport": "responsive_svg"
+    },
+    {
+      "capture_method": "user_supplied",
+      "captured_at": "2026-06-30",
+      "confidence": "high",
+      "evidence_type": "asset_manifest",
+      "id": "local-asset-manifest",
+      "interaction": "asset_inventory",
+      "notes": "Manifest lists only generated local learning evidence plus source-link attribution boundaries.",
+      "path_or_url": "assets/asset_manifest.json",
+      "rights_status": "local_capture",
+      "source_url": "https://tympanus.net/codrops/2026/01/28/webgpu-gommage-effect-dissolving-msdf-text-into-dust-and-petals-with-three-js-tsl/",
+      "viewport": "none"
+    }
+  ],
+  "currentness": "2025_plus",
+  "id": "webgpu-gommage-msdf-dissolve",
+  "modules": [
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "typography_3d",
+      "payload": {
+        "dissolve_state": "word stays readable while its outgoing edge breaks into glyph fragments",
+        "learning_primitive": "MSDF-like typography dissolve",
+        "rebuild_scope": "local generated typography study from the public tutorial concept, not a capture of upstream font geometry",
+        "text_volume_model": "bold word face, warm chromatic shadows, and rectangular glyph fragments imply a signed-distance text material",
+        "word": "VULCA"
+      },
+      "review_notes": "Complete for first-pass learning: still image, motion clip, and HTML note all represent the same typography-to-debris primitive.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "particle_vector",
+      "payload": {
+        "dust_particles": 42,
+        "learning_primitive": "typography debris particle system",
+        "motion_model": "dust samples and petal vectors move on separate arcs from the dissolve edge",
+        "petal_vectors": 16,
+        "shape_roles": [
+          "rectangular glyph fragments",
+          "round dust particles",
+          "curved petal silhouettes"
+        ],
+        "visual_role": "separates weak evidence decay from salient evidence bursts instead of using one generic scatter field"
+      },
+      "review_notes": "Particle vector layer is explicit enough to teach debris taxonomy and release timing separately from the text material.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "shader_material",
+      "payload": {
+        "bloom_proxy": "pink and gold halos approximate selective bloom/MRT emphasis without claiming the upstream renderer",
+        "learning_primitive": "noise-threshold typography material",
+        "material_states": [
+          "readable MSDF-like face",
+          "noise dissolve edge",
+          "emissive debris field",
+          "bloom attention zone"
+        ],
+        "palette": [
+          "warm white text",
+          "gold dissolve edge",
+          "pink petal bloom",
+          "peach dust accents"
+        ],
+        "source_boundary": "does not claim Codrops shader code, TSL nodes, MRT setup, or exact animation curves"
+      },
+      "review_notes": "Material notes are complete for teaching shader-material anatomy while keeping upstream implementation claims bounded.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code"
+      ],
+      "module_type": "asset_pipeline",
+      "payload": {
+        "learning_primitive": "text-to-particles asset split",
+        "pipeline_steps": [
+          "author readable word surface",
+          "derive glyph fragments",
+          "sample dust particles",
+          "place petal vector shapes",
+          "compose bloom proxy"
+        ],
+        "runtime_target": "offline SVG/CSS review exercise; production analogue would use Three.js WebGPU and TSL"
+      },
+      "review_notes": "Asset pipeline is represented as a clean split between text surface, fragments, dust, petals, and bloom proxy.",
+      "review_status": "complete"
+    },
+    {
+      "confidence": "high",
+      "evidence_refs": [
+        "minimal-rebuild-desktop",
+        "minimal-rebuild-motion",
+        "minimal-rebuild-code",
+        "local-asset-manifest"
+      ],
+      "module_type": "vulca_translation",
+      "payload": {
+        "evidence_layer": "local PNG proves dissolve state, local GIF proves debris release timing, HTML note proves the rebuild recipe",
+        "learning_primitive": "claim label dissolving into evidence particles",
+        "review_gap": "canonical tutorial remains link-only; local rebuild teaches mechanics without upstream media",
+        "route_decision": "use readable text for stable claims, dissolve threshold for uncertainty, dust for weak evidence decay, petals for salient evidence bursts, and bloom for attention",
+        "source_trail": "canonical tutorial plus generated local reconstruction",
+        "uncertainty": "exact upstream WebGPU/TSL/MRT implementation is not claimed"
+      },
+      "review_notes": "VULCA mapping is complete because source, evidence, review gap, route decision, and uncertainty are all represented.",
+      "review_status": "complete"
+    }
+  ],
+  "quality_scores": {
+    "aesthetic_relevance": 3,
+    "interaction_clarity": 3,
+    "license_safety": 2,
+    "multimodal_completeness": 3,
+    "technical_learnability": 3,
+    "vulca_transfer_value": 3
+  },
+  "review_status": "shortlist",
+  "source_type": "tutorial",
+  "summary": "2026 MSDF text dissolve tutorial rebuilt as a local typography, shader-material, dust, and petal-particle learning primitive with still, motion, code, and asset evidence.",
+  "title": "WebGPU Gommage Effect",
+  "visual_families": [
+    "typography_3d",
+    "particle_vector",
+    "shader_material"
+  ],
+  "why_relevant": "Strong teaching case for converting readable technical labels into shader-driven debris states, useful for review uncertainty and evidence decay metaphors.",
+  "year": 2026
+}

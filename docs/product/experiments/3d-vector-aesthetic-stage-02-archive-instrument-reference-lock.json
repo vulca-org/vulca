@@ -1,0 +1,130 @@
+{
+  "lock_id": "stage-02-archive-instrument-reference-lock",
+  "status": "reference_lock_before_next_archive_instrument_pass",
+  "created": "2026-07-01",
+  "selected_direction": "realistic specimen plus luxury scientific instrument",
+  "direction_statement": "Archive Instrument = realistic preserved specimen + luxury instrument object + restrained scientific inspection.",
+  "prototype_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html",
+  "reference_board_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-reference-board/index.html",
+  "reference_discovery_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-reference-discovery.md",
+  "references": [
+    {
+      "id": "archive-instrument-current-prototype",
+      "label": "Archive Instrument Current Prototype",
+      "source_kind": "local_prototype",
+      "url": "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html",
+      "dimension": "baseline",
+      "borrow": "Keep the central object, warmer materiality, four-state logic, and reduced root abstraction as the current baseline.",
+      "do_not_copy": "Do not treat the current procedural geometry as final object design.",
+      "quality_line": "Baseline is directionally useful but still lacks specimen fidelity, glass thickness, and model-asset quality.",
+      "confidence": "high"
+    },
+    {
+      "id": "natural-history-museum-spirit-collection",
+      "label": "Natural History Museum Spirit Collection",
+      "source_kind": "museum_science_reference",
+      "url": "https://www.nhm.ac.uk/discover/14-must-see-spirit-collection.html",
+      "dimension": "specimen",
+      "borrow": "Borrow the preserved-specimen seriousness: real organic form, suspended volume, and quiet institutional inspection.",
+      "do_not_copy": "Do not copy museum photography, specimen identities, labels, or collection presentation.",
+      "quality_line": "Specimen must read as a preserved real object before any diagram, scan, or symbolic layer.",
+      "confidence": "high"
+    },
+    {
+      "id": "apple-vision-pro-formed-glass",
+      "label": "Apple Vision Pro Formed Glass",
+      "source_kind": "product_material_reference",
+      "url": "https://www.apple.com/apple-vision-pro/",
+      "dimension": "glass",
+      "borrow": "Borrow the cue of shaped thick glass with controlled edge highlights and luxury material restraint.",
+      "do_not_copy": "Do not copy Apple product silhouette, interface language, brand cues, or industrial design details.",
+      "quality_line": "Glass must feel like a physical vitrine or wet-specimen container, not a thin transparent UI shell.",
+      "confidence": "medium"
+    },
+    {
+      "id": "zeiss-microscopy-instrument-system",
+      "label": "ZEISS Microscopy Instrument System",
+      "source_kind": "scientific_instrument_reference",
+      "url": "https://www.zeiss.com/microscopy/us/home.html",
+      "dimension": "instrument",
+      "borrow": "Borrow the restrained precision of scientific inspection hardware: stable support, optical hierarchy, and clean control zones.",
+      "do_not_copy": "Do not copy ZEISS product forms, logos, product naming, or proprietary instrument layouts.",
+      "quality_line": "The support and inspection logic should read as deliberate instrument design rather than decorative sci-fi hardware.",
+      "confidence": "medium"
+    },
+    {
+      "id": "iyo-webgl-exploded-view",
+      "label": "iyO WebGL Exploded View",
+      "source_kind": "external_inspiration",
+      "url": "https://www.awwwards.com/inspiration/interactive-webgl-exploded-view-iyo",
+      "dimension": "sectioning",
+      "borrow": "Borrow component hierarchy and sectioning grammar so inspection states reveal named internal layers.",
+      "do_not_copy": "Do not copy the iyO product, page composition, hardware identity, or promotional framing.",
+      "quality_line": "Sectioning must clarify specimen, glass, root, support, and signal layers instead of scattering parts.",
+      "confidence": "medium"
+    },
+    {
+      "id": "webgpu-scanning-depth-maps",
+      "label": "WebGPU Scanning Depth Maps",
+      "source_kind": "shader_demo_reference",
+      "url": "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+      "dimension": "scanning",
+      "borrow": "Borrow scan-depth behavior where the sweep changes what can be inspected, not only a surface overlay.",
+      "do_not_copy": "Do not copy the demo assets, exact shader look, or scanning composition.",
+      "quality_line": "Scan state should expose depth, root paths, and specimen structure with an instrument-mode purpose.",
+      "confidence": "high"
+    },
+    {
+      "id": "spline-ai-single-object-rule",
+      "label": "Spline AI Single Object Rule",
+      "source_kind": "tool_documentation",
+      "url": "https://docs.spline.design/spline-ai/ai-3d-generation",
+      "dimension": "asset_pipeline",
+      "borrow": "Borrow the single-object asset discipline: make or source one stronger specimen object before page polish.",
+      "do_not_copy": "Do not ask generation tools for the full page, UI, brand, or final composition.",
+      "quality_line": "Next pass should improve the asset basis instead of endlessly tuning procedural placeholder geometry.",
+      "confidence": "high"
+    },
+    {
+      "id": "codrops-meshline-family",
+      "label": "Codrops MeshLine Family",
+      "source_kind": "creative_coding_family",
+      "url": "https://tympanus.net/codrops/hub/tag/three-js/",
+      "dimension": "root_routes",
+      "borrow": "Borrow authored route families and line-weight control for readable root paths and support geometry.",
+      "do_not_copy": "Do not drift into retro plotter art, generic line demos, or copied Three.js examples.",
+      "quality_line": "Root and support lines must read as intentional biological or instrument routes, never legs or random strokes.",
+      "confidence": "medium"
+    }
+  ],
+  "current_diagnosis": {
+    "improved": [
+      "central object",
+      "warmer materiality",
+      "four-state logic",
+      "less abstract roots"
+    ],
+    "still_weak": [
+      "real-world specimen fidelity",
+      "glass thickness",
+      "bottom support readability",
+      "reference-level lighting",
+      "lack of high-quality model or texture assets"
+    ],
+    "risk": "continuing to polish procedural shapes will hide the core asset and material weakness instead of fixing it."
+  },
+  "visual_criteria": [
+    "The specimen reads as a real object before reading as a diagram.",
+    "The glass reads as a vitrine or wet-specimen container, not a transparent UI shell.",
+    "The root and support geometry cannot be mistaken for legs or random lines.",
+    "Each scroll state changes inspection logic, not just position or opacity.",
+    "The palette has warm material contrast and does not collapse into gray-green technical UI."
+  ],
+  "next_pass_moves": [
+    "replace or supplement procedural plant geometry with a better modeled or generated specimen asset",
+    "rebuild glass as a believable thick container with edge highlights and refraction cues",
+    "define one strong hero camera and only modest scroll-state camera changes",
+    "reduce annotation density and make scan/section states behave like instrument modes",
+    "add screenshot-based browser review checkpoints for mobile and desktop"
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "board_id": "stage-02-central-scroll-object-reference-board",
+  "status": "reference_gate_before_next_visual_iteration",
+  "created": "2026-07-01",
+  "working_page": "docs/product/experiments/3d-vector-aesthetic-stage-02-suspended-root-lens-preview/index.html",
+  "diagnosis": "Current Suspended Root Lens preview is technically stable but visually weak because it was generated from implementation primitives before reference constraints were translated into shape, material, and state rules.",
+  "decision": {
+    "keep": "central scroll object, four visual states, glass/root/archive subject",
+    "reject": "continuing to polish a procedural object without reference-driven silhouette and material targets",
+    "next_move": "Use references to choose a stronger object grammar before further Three.js or GLB work.",
+    "selected_card_id": "archive-instrument",
+    "selected_prototype": "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html"
+  },
+  "references": [
+    {
+      "id": "codrops-scroll-driven-3d-world",
+      "label": "Scroll-driven 3D World",
+      "source_kind": "external_case_study",
+      "url": "https://tympanus.net/codrops/2026/04/28/more-than-a-portfolio-building-a-scroll-driven-3d-world-with-something-to-say/",
+      "evidence_basis": "Source describes a scroll-driven 3D environment built with Three.js, GSAP, WebGL, and Blender, where sections are composed scenes and scroll maps to camera movement and object animation.",
+      "shape_language": "place-like scene composition, not isolated icon",
+      "material_language": "lit architectural/environmental forms with atmosphere",
+      "state_language": "single camera-take progression through composed scenes",
+      "borrow": "Treat scroll states as cinematic scene beats and camera choreography.",
+      "avoid": "Do not copy the portfolio identity, personal narrative, or specific scene models.",
+      "current_preview_gap": "Our object changes state, but the surrounding scene still feels like a black demo canvas.",
+      "translation_command": "Add one spatial context layer: shallow plinth, horizon membrane, or archive field that makes the object feel placed."
+    },
+    {
+      "id": "weleda-open-garden",
+      "label": "Weleda Open Garden",
+      "source_kind": "external_case_study",
+      "url": "https://www.makemepulse.com/case-study/weleda-the-open-garden",
+      "evidence_basis": "Source frames the experience as an immersive online garden with 360 environments, WebGL rendering, AR botanicals, smooth transitions, and meditative mobile-first exploration.",
+      "shape_language": "curated botanical environment with meaningful nature details",
+      "material_language": "soft botanical tactility, natural specimen richness, meditative depth",
+      "state_language": "exploration and discovery through connected garden moments",
+      "borrow": "Make the botanical/root subject feel curated and alive rather than a technical placeholder.",
+      "avoid": "Do not copy Weleda brand, plant assets, 360 environment, or soft wellness tone.",
+      "current_preview_gap": "Our roots are abstract tubes; they do not yet feel like a selected specimen.",
+      "translation_command": "Replace generic tubes with fewer, more deliberate root paths and endpoint buds with botanical logic."
+    },
+    {
+      "id": "iyo-webgl-exploded-view",
+      "label": "iyO WebGL Exploded View",
+      "source_kind": "external_inspiration",
+      "url": "https://www.awwwards.com/inspiration/interactive-webgl-exploded-view-iyo",
+      "evidence_basis": "Awwwards tags the element as WebGL, exploded view, scroll animation, 3D product exploration, and hardware interaction.",
+      "shape_language": "central object with readable component hierarchy",
+      "material_language": "product-grade surfaces, separation, and parts clarity",
+      "state_language": "closed object to exploded or inspected object",
+      "borrow": "Use exploded-view grammar for scan and archive states.",
+      "avoid": "Do not turn the lens into generic hardware product advertising.",
+      "current_preview_gap": "Our object has internal pieces but no clear hierarchy or intentional separation.",
+      "translation_command": "Define 3 to 5 named internal layers: shell, membrane, core, roots, signals; animate them separately."
+    },
+    {
+      "id": "spline-ai-single-object-rule",
+      "label": "Spline AI Single Object Rule",
+      "source_kind": "tool_documentation",
+      "url": "https://docs.spline.design/spline-ai/ai-3d-generation",
+      "evidence_basis": "Spline AI docs recommend focusing on a single object, close-ups for detail, and objects that do not require high precision.",
+      "shape_language": "one strong object, close-up first-frame, no full composition prompt",
+      "material_language": "simple enough for generated geometry, material polish added later",
+      "state_language": "asset-first; runtime adds state transitions",
+      "borrow": "Keep generation prompts object-only and use the web layer for scan/bloom/archive states.",
+      "avoid": "Do not ask AI generation for the full page or complex cinematic scene.",
+      "current_preview_gap": "The procedural preview is already too page-specific and not enough asset-specific.",
+      "translation_command": "Before final code, generate or model the object as a clean asset with no page text or background."
+    },
+    {
+      "id": "false-earth-webgpu-world",
+      "label": "False Earth",
+      "source_kind": "local_db_case",
+      "url": "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/",
+      "evidence_basis": "Local DB records this as a WebGPU-world UI sculpture with curved horizon, grass field, cosmic beams, wave rings, lifecycle markers, and bounded procedural systems.",
+      "shape_language": "world-scale technical UI sculpture",
+      "material_language": "atmosphere, beams, dense procedural field, lifecycle glow",
+      "state_language": "world subsystems change together",
+      "borrow": "A surrounding field can make the object feel like part of a world rather than a floating diagram.",
+      "avoid": "Do not make a full landscape or copy grass/flower motifs.",
+      "current_preview_gap": "Our archive particles are too sparse and disconnected from the object.",
+      "translation_command": "Turn archive particles into a bounded field emitted from root endpoints, not random dust."
+    },
+    {
+      "id": "webgpu-scanning-depth-maps",
+      "label": "WebGPU Scanning Depth Maps",
+      "source_kind": "local_db_case",
+      "url": "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+      "evidence_basis": "Local seed identifies this as a scan-depth and shader-material reference for technical reveal and inspection aesthetics.",
+      "shape_language": "depth-aware reveal surface",
+      "material_language": "scan plane, depth gradient, precise reveal pass",
+      "state_language": "inspection sweep exposes hidden structure",
+      "borrow": "Make Root Scan a real volumetric inspection moment.",
+      "avoid": "Do not use scan lines as decorative neon overlay.",
+      "current_preview_gap": "Our scan plane is visible but does not reveal anything new.",
+      "translation_command": "Bind scan progress to root opacity, membrane brightness, and core slice highlight."
+    },
+    {
+      "id": "matrix-sentinels-particle-trails-tsl",
+      "label": "Matrix Sentinels Trails",
+      "source_kind": "local_db_case",
+      "url": "https://tympanus.net/codrops/2025/05/05/matrix-sentinels-building-dynamic-particle-trails-with-tsl/",
+      "evidence_basis": "Local seed frames this as a TSL particle-trail and dynamic motion structure reference.",
+      "shape_language": "trail-driven motion bodies",
+      "material_language": "particles as structured traces, not loose sparkle",
+      "state_language": "motion leaves readable trails",
+      "borrow": "Use particles as trace memory from the roots.",
+      "avoid": "Do not add generic floating dots.",
+      "current_preview_gap": "Archive particles currently read as background dust.",
+      "translation_command": "Emit particle trails from specific amber buds and keep their arcs countable."
+    },
+    {
+      "id": "codrops-meshline-family",
+      "label": "Codrops MeshLine Family",
+      "source_kind": "local_db_case",
+      "url": "https://tympanus.net/codrops/hub/tag/three-js/",
+      "evidence_basis": "Local DB records this as thickened vector routes, wire-grid scaffolding, shader ribbons, and sweep opacity states.",
+      "shape_language": "route sculpture and line families",
+      "material_language": "crisp route over wider translucent shader ribbon",
+      "state_language": "subtle sweep offsets and route emphasis",
+      "borrow": "Make root paths behave like authored route families, not random curves.",
+      "avoid": "Do not drift into retro plotter/vector art.",
+      "current_preview_gap": "Our root paths are curves but not a designed route system.",
+      "translation_command": "Group roots into 2 to 3 visible route families with different width, opacity, and rhythm."
+    }
+  ],
+  "recommended_cards": [
+    {
+      "id": "archive-instrument",
+      "label": "Archive Instrument",
+      "summary": "Keep the glass lens, but make it more like a compact evidence instrument with separable shell, membrane, core, root, and signal layers.",
+      "best_sources": ["iyo-webgl-exploded-view", "webgpu-scanning-depth-maps", "spline-ai-single-object-rule"],
+      "visual_ops": ["component hierarchy", "volumetric scan", "closed-to-inspected state"],
+      "risk": "Can become generic sci-fi product if too metallic."
+    },
+    {
+      "id": "living-specimen",
+      "label": "Living Specimen",
+      "summary": "Keep the botanical logic, but make roots fewer, more intentional, and curated like a preserved scientific specimen.",
+      "best_sources": ["weleda-open-garden", "codrops-meshline-family", "matrix-sentinels-particle-trails-tsl"],
+      "visual_ops": ["deliberate root anatomy", "endpoint buds", "trace particles"],
+      "risk": "Can become cute terrarium or wellness garden."
+    },
+    {
+      "id": "contained-world",
+      "label": "Contained World",
+      "summary": "Make the lens a small world cell with a shallow archive field or horizon membrane so the object feels placed, not floating on black.",
+      "best_sources": ["codrops-scroll-driven-3d-world", "false-earth-webgpu-world", "weleda-open-garden"],
+      "visual_ops": ["spatial context", "atmospheric field", "camera scene beats"],
+      "risk": "Can grow into a full environment and lose the single-object constraint."
+    }
+  ],
+  "next_recommendation": "Do not continue polishing the current geometry directly. Pick one recommended card, then rebuild the object grammar around that card."
+}

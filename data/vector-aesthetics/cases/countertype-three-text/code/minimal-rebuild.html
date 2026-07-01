@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Countertype three-text minimal rebuild</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --paper: #f8f1de;
+      --ink: #101418;
+      --aqua: #53d0c8;
+      --mint: #a4e47a;
+      --coral: #ff7468;
+      --violet: #8b78ff;
+      --gold: #ffd166;
+      --grid: rgba(248, 241, 222, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #101418;
+      color: var(--paper);
+      font: 14px/1.4 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .stage {
+      width: min(100vw, 1120px);
+      aspect-ratio: 16 / 9;
+      display: block;
+      background: #101418;
+    }
+
+    .panel {
+      fill: rgba(248, 241, 222, 0.045);
+      stroke: rgba(248, 241, 222, 0.18);
+      stroke-width: 1.1;
+    }
+
+    .title {
+      fill: var(--paper);
+      font-size: 28px;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .label {
+      fill: rgba(248, 241, 222, 0.76);
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    .micro {
+      fill: rgba(248, 241, 222, 0.58);
+      font-size: 11px;
+      letter-spacing: 0;
+    }
+
+    .layout-line {
+      stroke: rgba(248, 241, 222, 0.3);
+      stroke-width: 1.2;
+      stroke-dasharray: 5 7;
+    }
+
+    .text-block {
+      fill: rgba(20, 24, 28, 0.72);
+      stroke: rgba(83, 208, 200, 0.34);
+      stroke-width: 1.1;
+    }
+
+    .glyph-mesh {
+      fill: rgba(83, 208, 200, 0.74);
+      stroke: rgba(248, 241, 222, 0.82);
+      stroke-width: 0.9;
+      animation: retessellate 4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .glyph-mesh.depth {
+      fill: rgba(139, 120, 255, 0.5);
+      stroke: rgba(139, 120, 255, 0.82);
+      animation-delay: -1.2s;
+    }
+
+    .glyph-mesh.accent {
+      fill: rgba(255, 116, 104, 0.72);
+      stroke: rgba(255, 209, 102, 0.82);
+      animation-delay: -2.1s;
+    }
+
+    .mesh-edge {
+      stroke: rgba(248, 241, 222, 0.25);
+      stroke-width: 1;
+    }
+
+    .cache-cell {
+      fill: rgba(164, 228, 122, 0.13);
+      stroke: rgba(164, 228, 122, 0.52);
+      stroke-width: 1;
+    }
+
+    .cache-cell.hot {
+      fill: rgba(164, 228, 122, 0.42);
+    }
+
+    .axis-rail {
+      stroke: rgba(255, 209, 102, 0.42);
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    .axis-handle {
+      fill: var(--gold);
+      stroke: #101418;
+      stroke-width: 2;
+    }
+
+    .axis-handle.alt {
+      fill: var(--coral);
+    }
+
+    .flow {
+      fill: none;
+      stroke: rgba(83, 208, 200, 0.46);
+      stroke-width: 2;
+      stroke-dasharray: 8 10;
+      animation: route 5s linear infinite;
+    }
+
+    .evidence {
+      fill: rgba(248, 241, 222, 0.06);
+      stroke: rgba(255, 209, 102, 0.35);
+      stroke-width: 1;
+    }
+
+    @keyframes retessellate {
+      0%, 100% { transform: translateY(0) skewX(-4deg) scaleY(1); opacity: 0.72; }
+      50% { transform: translateY(-5px) skewX(3deg) scaleY(1.08); opacity: 0.96; }
+    }
+
+    @keyframes route {
+      to { stroke-dashoffset: -120; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="stage" viewBox="0 0 1120 630" role="img" aria-label="Generated Countertype three-text learning rebuild showing glyph meshes, paragraph baselines, geometry cache cells, and variable font axis handles." data-three-text="generated">
+    <rect width="1120" height="630" fill="#101418"/>
+
+    <g opacity="0.78">
+      <path class="mesh-edge" d="M72 520 L440 112 L1014 168"/>
+      <path class="mesh-edge" d="M72 520 L742 528 L1014 168"/>
+      <path class="mesh-edge" d="M218 460 L534 160 L968 226"/>
+      <path class="mesh-edge" d="M146 320 H1024"/>
+      <path class="mesh-edge" d="M202 254 H900"/>
+      <path class="mesh-edge" d="M310 198 L864 506"/>
+    </g>
+
+    <rect class="panel" x="54" y="48" width="1012" height="534" rx="12"/>
+    <text class="title" x="86" y="92">Countertype three-text minimal rebuild</text>
+    <text class="label" x="88" y="120">Primitive: font geometry + paragraph layout + cache + variable axis retessellation</text>
+
+    <g transform="translate(80 150)">
+      <rect class="text-block" x="0" y="0" width="640" height="334" rx="10"/>
+      <text class="label" x="20" y="28">paragraph layout volume</text>
+      <line class="layout-line" x1="22" y1="68" x2="606" y2="68"/>
+      <line class="layout-line" x1="22" y1="124" x2="606" y2="124"/>
+      <line class="layout-line" x1="22" y1="180" x2="606" y2="180"/>
+      <line class="layout-line" x1="22" y1="236" x2="606" y2="236"/>
+      <line class="layout-line" x1="22" y1="292" x2="606" y2="292"/>
+
+      <g transform="translate(36 52)">
+        <rect class="glyph-mesh depth" x="8" y="16" width="34" height="44" rx="4"/>
+        <rect class="glyph-mesh" x="48" y="8" width="32" height="52" rx="4"/>
+        <rect class="glyph-mesh accent" x="86" y="16" width="48" height="44" rx="5"/>
+        <rect class="glyph-mesh" x="142" y="8" width="28" height="52" rx="4"/>
+        <rect class="glyph-mesh depth" x="176" y="16" width="44" height="44" rx="5"/>
+        <rect class="glyph-mesh" x="226" y="8" width="34" height="52" rx="4"/>
+        <rect class="glyph-mesh accent" x="266" y="16" width="46" height="44" rx="5"/>
+        <rect class="glyph-mesh" x="318" y="8" width="30" height="52" rx="4"/>
+      </g>
+
+      <g transform="translate(56 108)">
+        <path class="glyph-mesh" d="M0 54 L16 0 H42 L58 54 H40 L36 39 H20 L16 54 Z"/>
+        <path class="glyph-mesh depth" d="M72 0 H126 V15 H90 V20 H120 V34 H90 V39 H128 V54 H72 Z"/>
+        <path class="glyph-mesh accent" d="M142 0 H160 L188 30 V0 H206 V54 H188 L160 24 V54 H142 Z"/>
+        <path class="glyph-mesh" d="M222 0 H276 V15 H258 V54 H240 V15 H222 Z"/>
+        <path class="glyph-mesh depth" d="M292 0 H330 Q352 0 352 20 Q352 37 334 42 L354 54 H326 L310 44 V54 H292 Z"/>
+        <path class="glyph-mesh accent" d="M370 0 H424 V15 H388 V20 H418 V34 H388 V39 H426 V54 H370 Z"/>
+      </g>
+
+      <g transform="translate(36 170)">
+        <rect class="glyph-mesh" x="0" y="0" width="34" height="44" rx="4"/>
+        <rect class="glyph-mesh depth" x="42" y="0" width="32" height="44" rx="4"/>
+        <rect class="glyph-mesh" x="82" y="0" width="48" height="44" rx="5"/>
+        <rect class="glyph-mesh accent" x="138" y="0" width="28" height="44" rx="4"/>
+        <rect class="glyph-mesh" x="174" y="0" width="44" height="44" rx="5"/>
+        <rect class="glyph-mesh depth" x="226" y="0" width="34" height="44" rx="4"/>
+        <rect class="glyph-mesh" x="268" y="0" width="46" height="44" rx="5"/>
+        <rect class="glyph-mesh accent" x="322" y="0" width="30" height="44" rx="4"/>
+        <rect class="glyph-mesh" x="360" y="0" width="42" height="44" rx="5"/>
+        <rect class="glyph-mesh depth" x="410" y="0" width="34" height="44" rx="4"/>
+      </g>
+
+      <g transform="translate(58 226)">
+        <rect class="glyph-mesh accent" x="0" y="0" width="50" height="48" rx="5"/>
+        <rect class="glyph-mesh" x="58" y="0" width="34" height="48" rx="4"/>
+        <rect class="glyph-mesh depth" x="100" y="0" width="44" height="48" rx="5"/>
+        <rect class="glyph-mesh" x="152" y="0" width="34" height="48" rx="4"/>
+        <rect class="glyph-mesh accent" x="194" y="0" width="56" height="48" rx="5"/>
+        <rect class="glyph-mesh" x="258" y="0" width="34" height="48" rx="4"/>
+      </g>
+
+      <text class="micro" x="24" y="316">five baselines keep variable text readable while glyph geometry shifts in depth</text>
+    </g>
+
+    <path class="flow" d="M720 296 C772 236 784 190 842 174 S970 150 1016 206"/>
+    <path class="flow" d="M710 386 C770 418 826 442 910 406 S1014 346 1034 284"/>
+
+    <g transform="translate(760 146)">
+      <rect class="panel" x="0" y="0" width="270" height="176" rx="10"/>
+      <text class="label" x="18" y="28">geometry cache</text>
+      <text class="micro" x="18" y="48">glyph instances, line boxes, mesh reuse</text>
+      <g transform="translate(20 66)">
+        <rect class="cache-cell hot" x="0" y="0" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="40" y="0" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="80" y="0" width="32" height="24" rx="4"/>
+        <rect class="cache-cell hot" x="120" y="0" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="160" y="0" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="200" y="0" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="0" y="34" width="32" height="24" rx="4"/>
+        <rect class="cache-cell hot" x="40" y="34" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="80" y="34" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="120" y="34" width="32" height="24" rx="4"/>
+        <rect class="cache-cell hot" x="160" y="34" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="200" y="34" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="0" y="68" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="40" y="68" width="32" height="24" rx="4"/>
+        <rect class="cache-cell hot" x="80" y="68" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="120" y="68" width="32" height="24" rx="4"/>
+        <rect class="cache-cell" x="160" y="68" width="32" height="24" rx="4"/>
+        <rect class="cache-cell hot" x="200" y="68" width="32" height="24" rx="4"/>
+      </g>
+    </g>
+
+    <g transform="translate(760 352)">
+      <rect class="panel" x="0" y="0" width="270" height="150" rx="10"/>
+      <text class="label" x="18" y="28">variable font axes</text>
+      <text class="micro" x="18" y="48">weight, width, depth retessellate</text>
+      <line class="axis-rail" x1="24" y1="76" x2="236" y2="76"/>
+      <line class="axis-rail" x1="24" y1="104" x2="236" y2="104"/>
+      <line class="axis-rail" x1="24" y1="132" x2="236" y2="132"/>
+      <circle class="axis-handle" cx="70" cy="76" r="9"/>
+      <circle class="axis-handle alt" cx="156" cy="76" r="9"/>
+      <circle class="axis-handle" cx="104" cy="104" r="9"/>
+      <circle class="axis-handle alt" cx="206" cy="104" r="9"/>
+      <circle class="axis-handle" cx="132" cy="132" r="9"/>
+      <circle class="axis-handle alt" cx="226" cy="132" r="9"/>
+    </g>
+
+    <g transform="translate(88 516)">
+      <rect class="evidence" x="0" y="0" width="940" height="42" rx="8"/>
+      <text class="micro" x="18" y="17">local generated learning evidence: static SVG/CSS only, no imported Countertype screenshots, runtime, fonts, adapters, or code</text>
+      <text class="micro" x="18" y="32">review path: source link only -> generated minimal rebuild -> asset manifest -> lesson primitives</text>
+    </g>
+  </svg>
+</body>
+</html>

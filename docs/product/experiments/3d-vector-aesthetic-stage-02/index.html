@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>VULCA depth typography poster</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #060909;
+      --jade: #0c1715;
+      --paper: #efe6d0;
+      --muted: rgba(239, 230, 208, 0.62);
+      --cold: #6dd9cf;
+      --warm: #d8955d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100dvh;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      display: block;
+      background: var(--ink);
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.22;
+      mix-blend-mode: overlay;
+      background-image:
+        repeating-radial-gradient(circle at 18% 27%, rgba(255,255,255,0.055) 0 1px, transparent 1px 5px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 160px 160px, 5px 5px;
+      mask-image: radial-gradient(circle at 46% 46%, black 0%, transparent 82%);
+    }
+
+    .title {
+      position: fixed;
+      left: max(28px, env(safe-area-inset-left));
+      top: max(24px, env(safe-area-inset-top));
+      display: grid;
+      gap: 8px;
+      pointer-events: none;
+      max-width: min(440px, calc(100vw - 56px));
+    }
+
+    .title strong {
+      font-size: clamp(18px, 2vw, 30px);
+      line-height: 0.95;
+      font-weight: 760;
+      color: rgba(239, 230, 208, 0.88);
+    }
+
+    .title span {
+      color: var(--muted);
+      font: 11px/1.3 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      text-transform: uppercase;
+    }
+
+    .caption {
+      position: fixed;
+      left: max(28px, env(safe-area-inset-left));
+      bottom: max(24px, env(safe-area-inset-bottom));
+      width: min(520px, calc(100vw - 56px));
+      color: rgba(239, 230, 208, 0.58);
+      font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    .edition {
+      position: fixed;
+      right: max(28px, env(safe-area-inset-right));
+      bottom: max(24px, env(safe-area-inset-bottom));
+      color: rgba(109, 217, 207, 0.58);
+      font: 11px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      pointer-events: none;
+    }
+
+    @media (max-width: 720px) {
+      .caption {
+        display: none;
+      }
+
+      .edition {
+        left: max(28px, env(safe-area-inset-left));
+        right: auto;
+      }
+    }
+  </style>
+</head>
+<body data-vector-stage-product="2026-06-stage-02">
+  <canvas id="stage" aria-label="VULCA depth typography poster visualization"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="title" aria-hidden="true">
+    <strong>VULCA</strong>
+    <span>Depth typography poster / scan field</span>
+  </div>
+  <div class="caption" aria-hidden="true">3D vector technical aesthetics, rebuilt as a visual-first dynamic visual poster.</div>
+  <div class="edition" aria-hidden="true">STAGE 02</div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const canvas = document.getElementById("stage");
+      const ctx = canvas.getContext("2d", { alpha: false });
+      const fieldCanvas = document.createElement("canvas");
+      const field = fieldCanvas.getContext("2d", { willReadFrequently: true });
+      const query = new URLSearchParams(window.location.search);
+      const recordMode = query.get("record") === "1";
+
+      const PALETTE = {
+        ink: "#060909",
+        jade: "#0c1715",
+        deep: "#102520",
+        paper: "#efe6d0",
+        cold: "#6dd9cf",
+        coldDim: "#3f8f88",
+        warm: "#d8955d",
+        shadow: "#020303"
+      };
+
+      const DPR_MAX = 2;
+      const glyphPoints = [];
+      const dust = [];
+      let dpr = 1;
+      let width = 1;
+      let height = 1;
+      let centerX = 0;
+      let centerY = 0;
+      let visualScale = 1;
+      let portraitBias = 0;
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function lerp(a, b, n) {
+        return a + (b - a) * n;
+      }
+
+      function hexToRgb(hex) {
+        const clean = hex.replace("#", "");
+        return {
+          r: parseInt(clean.slice(0, 2), 16),
+          g: parseInt(clean.slice(2, 4), 16),
+          b: parseInt(clean.slice(4, 6), 16)
+        };
+      }
+
+      function rgba(hex, alpha) {
+        const c = hexToRgb(hex);
+        return `rgba(${c.r},${c.g},${c.b},${alpha})`;
+      }
+
+      function mixHex(a, b, n) {
+        const ca = hexToRgb(a);
+        const cb = hexToRgb(b);
+        const r = Math.round(lerp(ca.r, cb.r, n));
+        const g = Math.round(lerp(ca.g, cb.g, n));
+        const blue = Math.round(lerp(ca.b, cb.b, n));
+        return `rgb(${r},${g},${blue})`;
+      }
+
+      function noise(seed) {
+        const x = Math.sin(seed * 12.9898) * 43758.5453;
+        return x - Math.floor(x);
+      }
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, DPR_MAX);
+        width = Math.max(1, Math.floor(window.innerWidth));
+        height = Math.max(1, Math.floor(window.innerHeight));
+        portraitBias = clamp((height / Math.max(width, 1) - 1.05) * 0.8, 0, 1);
+        centerX = width * (0.5 - portraitBias * 0.02);
+        centerY = height * (0.5 - portraitBias * 0.04);
+        visualScale = Math.min(width / 1500, height / 860) * (portraitBias > 0.4 ? 1.32 : 1);
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function buildDepthTypography() {
+        const ow = 980;
+        const oh = 310;
+        fieldCanvas.width = ow;
+        fieldCanvas.height = oh;
+        field.clearRect(0, 0, ow, oh);
+        field.textAlign = "center";
+        field.textBaseline = "middle";
+        field.fillStyle = "#fff";
+        field.font = "900 170px Arial Black, Arial, sans-serif";
+        field.fillText("VECTOR", ow / 2, 140);
+        field.font = "800 44px Arial, sans-serif";
+        field.fillText("FIELD", ow / 2, 235);
+
+        const pixels = field.getImageData(0, 0, ow, oh).data;
+        glyphPoints.length = 0;
+        for (let y = 8; y < oh - 8; y += 6) {
+          for (let x = 8; x < ow - 8; x += 6) {
+            const alpha = pixels[(y * ow + x) * 4 + 3];
+            if (alpha < 64) continue;
+            const sample = noise(x * 3.2 + y * 7.1);
+            if (sample < 0.28) continue;
+            const nx = (x - ow / 2) / (ow / 2);
+            const ny = (y - oh / 2) / (oh / 2);
+            const edge = Math.abs(nx) * 0.7 + Math.abs(ny) * 0.3;
+            glyphPoints.push({
+              x: (x - ow / 2) * 1.22,
+              y: (y - oh / 2) * 1.12,
+              z: (sample - 0.5) * 260 + Math.sin(nx * Math.PI) * 70,
+              edge,
+              seed: x * 23 + y * 31
+            });
+          }
+        }
+      }
+
+      function buildDust() {
+        dust.length = 0;
+        for (let i = 0; i < 240; i++) {
+          dust.push({
+            x: noise(i * 2.7) * 2 - 1,
+            y: noise(i * 6.2) * 2 - 1,
+            depth: noise(i * 9.5),
+            size: 0.4 + noise(i * 12.1) * 1.8,
+            seed: i * 17.3
+          });
+        }
+      }
+
+      function drawBackground(time) {
+        const main = ctx.createRadialGradient(
+          centerX - width * 0.08,
+          centerY - height * 0.08,
+          0,
+          centerX,
+          centerY,
+          Math.max(width, height) * 0.72
+        );
+        main.addColorStop(0, "#19322d");
+        main.addColorStop(0.36, PALETTE.jade);
+        main.addColorStop(1, PALETTE.ink);
+        ctx.fillStyle = main;
+        ctx.fillRect(0, 0, width, height);
+
+        const warm = ctx.createRadialGradient(width * 0.72, height * 0.68, 0, width * 0.72, height * 0.68, width * 0.35);
+        warm.addColorStop(0, "rgba(216,149,93,0.12)");
+        warm.addColorStop(0.5, "rgba(216,149,93,0.025)");
+        warm.addColorStop(1, "rgba(216,149,93,0)");
+        ctx.fillStyle = warm;
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        for (const p of dust) {
+          const drift = Math.sin(time * 0.00018 + p.seed) * 0.035;
+          const x = centerX + (p.x + drift) * width * 0.46;
+          const y = centerY + (p.y - drift * 0.5) * height * 0.42;
+          const alpha = 0.025 + p.depth * 0.08;
+          ctx.fillStyle = rgba(PALETTE.paper, alpha);
+          ctx.fillRect(x, y, p.size, p.size);
+        }
+        ctx.restore();
+      }
+
+      function project(point, time) {
+        const slow = time * 0.00022;
+        const ry = Math.sin(slow) * 0.13;
+        const rx = -0.05 + Math.cos(slow * 0.8) * 0.035;
+        let x = point.x;
+        let y = point.y;
+        let z = point.z;
+
+        const cy = Math.cos(ry), sy = Math.sin(ry);
+        const x1 = x * cy + z * sy;
+        const z1 = -x * sy + z * cy;
+        const cx = Math.cos(rx), sx = Math.sin(rx);
+        const y2 = y * cx - z1 * sx;
+        const z2 = y * sx + z1 * cx;
+        const focal = 880;
+        const depth = z2 + 1120;
+        const scale = focal / depth;
+        return {
+          x: centerX + x1 * scale * visualScale,
+          y: centerY + y2 * scale * visualScale,
+          depth,
+          scale
+        };
+      }
+
+      function drawGhostType(time) {
+        const size = clamp(Math.min(width, height) * (portraitBias > 0.45 ? 0.145 : 0.17), 84, 214);
+        const y = centerY - size * (portraitBias > 0.45 ? 0.68 : 0.2);
+        ctx.save();
+        ctx.translate(centerX, y);
+        ctx.rotate(Math.sin(time * 0.00022) * 0.012);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = `900 ${size}px Arial Black, Arial, sans-serif`;
+        ctx.lineWidth = Math.max(1.1, size * 0.018);
+        ctx.globalCompositeOperation = "screen";
+        ctx.shadowColor = rgba(PALETTE.cold, 0.55);
+        ctx.shadowBlur = 26;
+        ctx.strokeStyle = rgba(PALETTE.paper, 0.16);
+        ctx.strokeText("VECTOR", 0, 0);
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = rgba(PALETTE.cold, 0.18);
+        ctx.strokeText("VECTOR", size * 0.028, size * 0.035);
+        ctx.fillStyle = rgba(PALETTE.paper, 0.035);
+        ctx.fillText("VECTOR", 0, 0);
+        ctx.restore();
+      }
+
+      function drawDepthTypography(time) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        const scanX = centerX + Math.sin(time * 0.00052) * Math.min(width, height) * 0.28;
+        for (let i = 0; i < glyphPoints.length; i++) {
+          const p = glyphPoints[i];
+          const wobble = Math.sin(time * 0.001 + p.seed * 0.017) * 16;
+          const projected = project({ x: p.x, y: p.y + wobble * 0.18, z: p.z + wobble }, time);
+          const distanceToScan = Math.abs(projected.x - scanX);
+          const scanBoost = clamp(1 - distanceToScan / (150 * visualScale), 0, 1);
+          const depthTone = clamp((projected.depth - 820) / 520, 0, 1);
+          const alpha = 0.18 + scanBoost * 0.48 + (1 - p.edge) * 0.1;
+          const color = scanBoost > 0.45
+            ? mixHex(PALETTE.cold, PALETTE.paper, 0.35 + scanBoost * 0.45)
+            : mixHex(PALETTE.coldDim, PALETTE.paper, 0.18 + (1 - depthTone) * 0.22);
+          const size = clamp(projected.scale * visualScale * (2.2 + scanBoost * 4.4), 0.7, 4.8);
+          ctx.fillStyle = color.replace("rgb(", "rgba(").replace(")", `,${alpha})`);
+          ctx.beginPath();
+          ctx.arc(projected.x, projected.y, size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function cubic(a, b, c, d, t) {
+        const mt = 1 - t;
+        return mt * mt * mt * a + 3 * mt * mt * t * b + 3 * mt * t * t * c + t * t * t * d;
+      }
+
+      function drawCurve(points, color, alpha, widthValue, blur) {
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        ctx.shadowColor = color;
+        ctx.shadowBlur = blur;
+        ctx.strokeStyle = rgba(color, alpha);
+        ctx.lineWidth = widthValue;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+          ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawComposedRibbons(time) {
+        const specs = [
+          { y: -0.16, amp: 0.12, color: PALETTE.cold, alpha: 0.38, w: 3.2, phase: 0 },
+          { y: 0.07, amp: 0.09, color: PALETTE.paper, alpha: 0.20, w: 2.2, phase: 1.3 },
+          { y: 0.2, amp: 0.11, color: PALETTE.warm, alpha: 0.26, w: 2.6, phase: 2.4 },
+          { y: -0.29, amp: 0.07, color: PALETTE.coldDim, alpha: 0.18, w: 1.6, phase: 3.7 }
+        ];
+        const span = Math.min(width, height * 1.8);
+        for (const spec of specs) {
+          const points = [];
+          const drift = Math.sin(time * 0.00035 + spec.phase) * 0.08;
+          for (let i = 0; i <= 130; i++) {
+            const t = i / 130;
+            const x = centerX + (t - 0.5) * span * 1.25;
+            const yBase = centerY + spec.y * height + drift * height;
+            const y = yBase + Math.sin(t * Math.PI * 2 + spec.phase + time * 0.00042) * spec.amp * height;
+            const lift = Math.sin(t * Math.PI + spec.phase) * 90 * visualScale;
+            points.push({
+              x: x + Math.sin(t * 9 + spec.phase) * 10 * visualScale,
+              y: y - lift * 0.2
+            });
+          }
+          drawCurve(points, spec.color, spec.alpha, spec.w * visualScale, 22 * visualScale);
+          drawCurve(points.filter((_, i) => i % 2 === 0), PALETTE.paper, spec.alpha * 0.34, Math.max(0.7, visualScale), 0);
+        }
+      }
+
+      function drawScanVeil(time) {
+        const sweep = centerX + Math.sin(time * 0.00052) * Math.min(width, height) * 0.28;
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        const veil = ctx.createLinearGradient(sweep - 160 * visualScale, 0, sweep + 160 * visualScale, 0);
+        veil.addColorStop(0, "rgba(109,217,207,0)");
+        veil.addColorStop(0.48, "rgba(109,217,207,0.09)");
+        veil.addColorStop(0.52, "rgba(239,230,208,0.13)");
+        veil.addColorStop(1, "rgba(109,217,207,0)");
+        ctx.fillStyle = veil;
+        ctx.fillRect(sweep - 170 * visualScale, 0, 340 * visualScale, height);
+
+        ctx.strokeStyle = rgba(PALETTE.paper, 0.16);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(sweep, height * 0.16);
+        ctx.lineTo(sweep, height * 0.84);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawDepthPlane(time) {
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        ctx.strokeStyle = rgba(PALETTE.coldDim, 0.1);
+        ctx.lineWidth = 1;
+        const horizon = centerY + height * 0.2;
+        for (let i = 0; i < 16; i++) {
+          const k = i / 15;
+          const y = lerp(horizon, height * 0.86, k * k);
+          ctx.beginPath();
+          ctx.moveTo(width * 0.08, y);
+          ctx.quadraticCurveTo(centerX, y - Math.sin(time * 0.0003 + i) * 16, width * 0.92, y + 4);
+          ctx.stroke();
+        }
+        for (let i = -8; i <= 8; i++) {
+          const x = centerX + i * width * 0.055;
+          ctx.beginPath();
+          ctx.moveTo(x, horizon);
+          ctx.lineTo(centerX + i * width * 0.18, height * 0.9);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function drawPosterFrame(time) {
+        ctx.save();
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = rgba(PALETTE.paper, 0.16);
+        ctx.lineWidth = 1;
+        const m = Math.max(24, Math.min(width, height) * 0.045);
+        const l = Math.max(34, Math.min(width, height) * 0.07);
+        const corners = [
+          [m, m, m + l, m, m, m + l],
+          [width - m, m, width - m - l, m, width - m, m + l],
+          [m, height - m, m + l, height - m, m, height - m - l],
+          [width - m, height - m, width - m - l, height - m, width - m, height - m - l]
+        ];
+        for (const c of corners) {
+          ctx.beginPath();
+          ctx.moveTo(c[0], c[1]);
+          ctx.lineTo(c[2], c[3]);
+          ctx.moveTo(c[0], c[1]);
+          ctx.lineTo(c[4], c[5]);
+          ctx.stroke();
+        }
+
+        const vignette = ctx.createRadialGradient(centerX, centerY, Math.min(width, height) * 0.22, centerX, centerY, Math.max(width, height) * 0.78);
+        vignette.addColorStop(0, "rgba(255,255,255,0.01)");
+        vignette.addColorStop(0.58, "rgba(0,0,0,0)");
+        vignette.addColorStop(1, "rgba(0,0,0,0.62)");
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, width, height);
+        ctx.restore();
+      }
+
+      function drawFrame(time) {
+        drawBackground(time);
+        drawDepthPlane(time);
+        drawGhostType(time);
+        drawComposedRibbons(time);
+        drawScanVeil(time);
+        drawDepthTypography(time);
+        drawPosterFrame(time);
+      }
+
+      function renderAt(time) {
+        drawFrame(time);
+      }
+
+      function animate(time) {
+        renderAt(time);
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener("resize", resize, { passive: true });
+
+      buildDepthTypography();
+      buildDust();
+      resize();
+
+      if (recordMode) {
+        window.__VULCA_RENDER_FRAME__ = (frame, fps = 24) => {
+          const time = Math.max(0, frame) * (1000 / Math.max(1, fps));
+          renderAt(time);
+          return { frame, fps, time };
+        };
+        renderAt(0);
+      } else {
+        requestAnimationFrame(animate);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stage 02 Reference Board</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --bg: #050706;
+      --panel: rgba(13, 19, 17, 0.84);
+      --line: rgba(241, 234, 215, 0.13);
+      --ink: #f1ead7;
+      --muted: #a6a091;
+      --dim: rgba(241, 234, 215, 0.44);
+      --cyan: #6dd9cf;
+      --amber: #d8955d;
+      --moss: #8da66f;
+      --rose: #c97877;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(109, 217, 207, 0.12), transparent 28vw),
+        radial-gradient(circle at 82% 14%, rgba(216, 149, 93, 0.1), transparent 26vw),
+        linear-gradient(135deg, #030504 0%, #0a1110 62%, #050706 100%);
+      color: var(--ink);
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1480px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 34px 0 48px;
+    }
+
+    .hero {
+      min-height: 260px;
+      display: grid;
+      grid-template-columns: minmax(280px, 0.9fr) minmax(420px, 1.4fr);
+      gap: 34px;
+      align-items: end;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow,
+    .meta,
+    .tag {
+      margin: 0;
+      color: var(--cyan);
+      font-size: 11px;
+      line-height: 1.3;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      letter-spacing: 0;
+      line-height: 1.04;
+    }
+
+    h1 {
+      margin-top: 12px;
+      max-width: 11ch;
+      font-size: clamp(42px, 7vw, 96px);
+    }
+
+    h2 {
+      font-size: clamp(22px, 3vw, 38px);
+    }
+
+    h3 {
+      font-size: 17px;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .diagnosis {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .diagnosis strong {
+      color: var(--ink);
+    }
+
+    .decision-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .decision {
+      min-height: 126px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .decision p {
+      margin-bottom: 0;
+    }
+
+    .section {
+      margin-top: 34px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .section-head p {
+      max-width: 64ch;
+      margin: 0;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(230px, 1fr));
+      gap: 12px;
+    }
+
+    .ref-card,
+    .direction-card {
+      position: relative;
+      min-height: 420px;
+      display: grid;
+      grid-template-rows: 142px auto;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .ref-card[data-kind="local_db_case"] {
+      border-color: rgba(109, 217, 207, 0.22);
+    }
+
+    .ref-card[data-kind="external_case_study"],
+    .ref-card[data-kind="external_inspiration"] {
+      border-color: rgba(216, 149, 93, 0.22);
+    }
+
+    .sketch {
+      position: relative;
+      min-height: 142px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 52%, rgba(109, 217, 207, 0.12), transparent 42%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0));
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sketch svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .card-body {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 3px 8px;
+      border: 1px solid rgba(241, 234, 215, 0.13);
+      border-radius: 99px;
+      color: var(--dim);
+      background: rgba(255, 255, 255, 0.035);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .ops {
+      display: grid;
+      gap: 8px;
+    }
+
+    .op {
+      padding-top: 8px;
+      border-top: 1px solid rgba(241, 234, 215, 0.08);
+    }
+
+    .op strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--ink);
+      font-size: 11px;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .op span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .command {
+      padding: 11px;
+      border: 1px solid rgba(109, 217, 207, 0.18);
+      border-radius: 8px;
+      background: rgba(109, 217, 207, 0.07);
+      color: rgba(241, 234, 215, 0.86);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .source {
+      color: var(--cyan);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .direction-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .direction-card {
+      min-height: 320px;
+      grid-template-rows: auto;
+      padding: 18px;
+    }
+
+    .direction-card[data-card="archive-instrument"] {
+      border-color: rgba(109, 217, 207, 0.34);
+    }
+
+    .direction-card[data-card="living-specimen"] {
+      border-color: rgba(141, 166, 111, 0.34);
+    }
+
+    .direction-card[data-card="contained-world"] {
+      border-color: rgba(216, 149, 93, 0.34);
+    }
+
+    .source-list,
+    .ops-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .verdict {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid rgba(201, 120, 119, 0.22);
+      border-radius: 8px;
+      background: rgba(201, 120, 119, 0.06);
+    }
+
+    @media (max-width: 1180px) {
+      .hero,
+      .decision-strip,
+      .direction-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card-grid {
+        grid-template-columns: repeat(2, minmax(230px, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page {
+        width: min(100vw - 24px, 1480px);
+        padding-top: 22px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page" data-vector-stage-product="2026-07-stage-02-reference-board">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Stage 02 / Reference gate</p>
+        <h1>Central object board.</h1>
+      </div>
+      <div class="diagnosis">
+        <p><strong>Diagnosis:</strong> the current Suspended Root Lens is technically stable but ugly because implementation came before reference constraints.</p>
+        <p><strong>Rule:</strong> no more polishing the procedural object until we select an object grammar from references.</p>
+        <div class="decision-strip">
+          <div class="decision"><p class="tag">Keep</p><p>central scroll object, four states, glass/root/archive subject.</p></div>
+          <div class="decision"><p class="tag">Reject</p><p>generic black canvas, random tubes, decorative particles, UI demo feel.</p></div>
+          <div class="decision"><p class="tag">Next</p><p>choose Archive Instrument, Living Specimen, or Contained World.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Reference Cases</h2>
+        <p>Each source is translated into shape language, material language, state language, and a concrete correction for our current page.</p>
+      </div>
+      <div class="card-grid" id="referenceGrid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Direction Cards</h2>
+        <p>These are not final designs. They are the three viable grammars for the next implementation pass.</p>
+      </div>
+      <div class="direction-grid" id="directionGrid"></div>
+      <div class="verdict">
+        <p class="tag">Recommendation</p>
+        <p>Do not continue direct polish. Pick one card, then rebuild shape and material rules around it. My current vote: <strong>Archive Instrument</strong>, because it gives the clearest fix for the ugly part: hierarchy, scan logic, and component separation.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const REFERENCE_CARDS = [
+      {
+        id: "codrops-scroll-driven-3d-world",
+        label: "Scroll-driven 3D World",
+        source_kind: "external_case_study",
+        url: "https://tympanus.net/codrops/2026/04/28/more-than-a-portfolio-building-a-scroll-driven-3d-world-with-something-to-say/",
+        shape_language: "place-like scene composition, not isolated icon",
+        material_language: "lit architectural/environmental forms with atmosphere",
+        state_language: "single camera-take progression through composed scenes",
+        borrow: "Treat scroll states as cinematic scene beats and camera choreography.",
+        avoid: "Do not copy the portfolio identity, personal narrative, or specific scene models.",
+        current_preview_gap: "Our object changes state, but the surrounding scene still feels like a black demo canvas.",
+        translation_command: "Add one spatial context layer: shallow plinth, horizon membrane, or archive field that makes the object feel placed."
+      },
+      {
+        id: "weleda-open-garden",
+        label: "Weleda Open Garden",
+        source_kind: "external_case_study",
+        url: "https://www.makemepulse.com/case-study/weleda-the-open-garden",
+        shape_language: "curated botanical environment with meaningful nature details",
+        material_language: "soft botanical tactility, natural specimen richness, meditative depth",
+        state_language: "exploration and discovery through connected garden moments",
+        borrow: "Make the botanical/root subject feel curated and alive rather than a technical placeholder.",
+        avoid: "Do not copy Weleda brand, plant assets, 360 environment, or soft wellness tone.",
+        current_preview_gap: "Our roots are abstract tubes; they do not yet feel like a selected specimen.",
+        translation_command: "Replace generic tubes with fewer, more deliberate root paths and endpoint buds with botanical logic."
+      },
+      {
+        id: "iyo-webgl-exploded-view",
+        label: "iyO WebGL Exploded View",
+        source_kind: "external_inspiration",
+        url: "https://www.awwwards.com/inspiration/interactive-webgl-exploded-view-iyo",
+        shape_language: "central object with readable component hierarchy",
+        material_language: "product-grade surfaces, separation, and parts clarity",
+        state_language: "closed object to exploded or inspected object",
+        borrow: "Use exploded-view grammar for scan and archive states.",
+        avoid: "Do not turn the lens into generic hardware product advertising.",
+        current_preview_gap: "Our object has internal pieces but no clear hierarchy or intentional separation.",
+        translation_command: "Define 3 to 5 named internal layers: shell, membrane, core, roots, signals; animate them separately."
+      },
+      {
+        id: "spline-ai-single-object-rule",
+        label: "Spline AI Single Object Rule",
+        source_kind: "tool_documentation",
+        url: "https://docs.spline.design/spline-ai/ai-3d-generation",
+        shape_language: "one strong object, close-up first-frame, no full composition prompt",
+        material_language: "simple enough for generated geometry, material polish added later",
+        state_language: "asset-first; runtime adds state transitions",
+        borrow: "Keep generation prompts object-only and use the web layer for scan/bloom/archive states.",
+        avoid: "Do not ask AI generation for the full page or complex cinematic scene.",
+        current_preview_gap: "The procedural preview is already too page-specific and not enough asset-specific.",
+        translation_command: "Before final code, generate or model the object as a clean asset with no page text or background."
+      },
+      {
+        id: "false-earth-webgpu-world",
+        label: "False Earth",
+        source_kind: "local_db_case",
+        url: "https://tympanus.net/codrops/2026/04/21/false-earth-from-webgl-limits-to-a-webgpu-driven-world/",
+        shape_language: "world-scale technical UI sculpture",
+        material_language: "atmosphere, beams, dense procedural field, lifecycle glow",
+        state_language: "world subsystems change together",
+        borrow: "A surrounding field can make the object feel like part of a world rather than a floating diagram.",
+        avoid: "Do not make a full landscape or copy grass/flower motifs.",
+        current_preview_gap: "Our archive particles are too sparse and disconnected from the object.",
+        translation_command: "Turn archive particles into a bounded field emitted from root endpoints, not random dust."
+      },
+      {
+        id: "webgpu-scanning-depth-maps",
+        label: "WebGPU Scanning Depth Maps",
+        source_kind: "local_db_case",
+        url: "https://tympanus.net/codrops/2025/03/31/webgpu-scanning-effect-with-depth-maps/",
+        shape_language: "depth-aware reveal surface",
+        material_language: "scan plane, depth gradient, precise reveal pass",
+        state_language: "inspection sweep exposes hidden structure",
+        borrow: "Make Root Scan a real volumetric inspection moment.",
+        avoid: "Do not use scan lines as decorative neon overlay.",
+        current_preview_gap: "Our scan plane is visible but does not reveal anything new.",
+        translation_command: "Bind scan progress to root opacity, membrane brightness, and core slice highlight."
+      },
+      {
+        id: "matrix-sentinels-particle-trails-tsl",
+        label: "Matrix Sentinels Trails",
+        source_kind: "local_db_case",
+        url: "https://tympanus.net/codrops/2025/05/05/matrix-sentinels-building-dynamic-particle-trails-with-tsl/",
+        shape_language: "trail-driven motion bodies",
+        material_language: "particles as structured traces, not loose sparkle",
+        state_language: "motion leaves readable trails",
+        borrow: "Use particles as trace memory from the roots.",
+        avoid: "Do not add generic floating dots.",
+        current_preview_gap: "Archive particles currently read as background dust.",
+        translation_command: "Emit particle trails from specific amber buds and keep their arcs countable."
+      },
+      {
+        id: "codrops-meshline-family",
+        label: "Codrops MeshLine Family",
+        source_kind: "local_db_case",
+        url: "https://tympanus.net/codrops/hub/tag/three-js/",
+        shape_language: "route sculpture and line families",
+        material_language: "crisp route over wider translucent shader ribbon",
+        state_language: "subtle sweep offsets and route emphasis",
+        borrow: "Make root paths behave like authored route families, not random curves.",
+        avoid: "Do not drift into retro plotter/vector art.",
+        current_preview_gap: "Our root paths are curves but not a designed route system.",
+        translation_command: "Group roots into 2 to 3 visible route families with different width, opacity, and rhythm."
+      }
+    ];
+
+    const DIRECTION_CARDS = [
+      {
+        id: "archive-instrument",
+        label: "Archive Instrument",
+        summary: "Keep the glass lens, but make it more like a compact evidence instrument with separable shell, membrane, core, root, and signal layers.",
+        best_sources: ["iyO WebGL Exploded View", "WebGPU Scanning Depth Maps", "Spline single object rule"],
+        visual_ops: ["component hierarchy", "volumetric scan", "closed-to-inspected state"],
+        risk: "Can become generic sci-fi product if too metallic."
+      },
+      {
+        id: "living-specimen",
+        label: "Living Specimen",
+        summary: "Keep the botanical logic, but make roots fewer, more intentional, and curated like a preserved scientific specimen.",
+        best_sources: ["Weleda Open Garden", "Codrops MeshLine Family", "Matrix Sentinels Trails"],
+        visual_ops: ["deliberate root anatomy", "endpoint buds", "trace particles"],
+        risk: "Can become cute terrarium or wellness garden."
+      },
+      {
+        id: "contained-world",
+        label: "Contained World",
+        summary: "Make the lens a small world cell with a shallow archive field or horizon membrane so the object feels placed, not floating on black.",
+        best_sources: ["Scroll-driven 3D World", "False Earth", "Weleda Open Garden"],
+        visual_ops: ["spatial context", "atmospheric field", "camera scene beats"],
+        risk: "Can grow into a full environment and lose the single-object constraint."
+      }
+    ];
+
+    const sketchKinds = {
+      "codrops-scroll-driven-3d-world": "world",
+      "weleda-open-garden": "garden",
+      "iyo-webgl-exploded-view": "exploded",
+      "spline-ai-single-object-rule": "object",
+      "false-earth-webgpu-world": "field",
+      "webgpu-scanning-depth-maps": "scan",
+      "matrix-sentinels-particle-trails-tsl": "trail",
+      "codrops-meshline-family": "meshline"
+    };
+
+    function sketchSvg(kind) {
+      const common = '<rect width="100%" height="100%" fill="rgba(5,7,6,.18)"/>';
+      const map = {
+        world: '<path d="M20 92 C68 48 146 42 214 88" stroke="#6dd9cf" stroke-width="1.5" fill="none" opacity=".55"/><circle cx="120" cy="62" r="28" fill="rgba(216,149,93,.16)" stroke="rgba(241,234,215,.22)"/><path d="M56 84 L190 58" stroke="#f1ead7" opacity=".2"/>',
+        garden: '<ellipse cx="120" cy="84" rx="76" ry="26" fill="rgba(141,166,111,.16)" stroke="rgba(141,166,111,.38)"/><path d="M70 76 C100 40 126 112 164 48" stroke="#d8f4ee" stroke-width="2" fill="none" opacity=".58"/><circle cx="72" cy="74" r="6" fill="#d8955d"/><circle cx="164" cy="48" r="5" fill="#d8955d"/>',
+        exploded: '<ellipse cx="120" cy="74" rx="58" ry="22" fill="rgba(109,217,207,.12)" stroke="rgba(109,217,207,.4)"/><circle cx="78" cy="74" r="10" fill="rgba(241,234,215,.2)"/><circle cx="120" cy="74" r="16" fill="rgba(216,149,93,.22)"/><circle cx="166" cy="74" r="10" fill="rgba(241,234,215,.2)"/><path d="M88 74 H104 M136 74 H156" stroke="#6dd9cf"/>',
+        object: '<ellipse cx="120" cy="72" rx="74" ry="26" fill="rgba(216,244,238,.1)" stroke="rgba(216,244,238,.38)"/><circle cx="120" cy="72" r="20" fill="rgba(20,27,24,.9)"/><path d="M64 72 H176" stroke="#6dd9cf" opacity=".55"/>',
+        field: '<path d="M30 92 C76 60 160 56 212 88" stroke="#8da66f" opacity=".5" fill="none"/><path d="M58 36 V86 M96 24 V90 M150 28 V88 M188 44 V92" stroke="#6dd9cf" opacity=".22"/><circle cx="118" cy="82" r="34" fill="rgba(109,217,207,.08)"/>',
+        scan: '<ellipse cx="120" cy="74" rx="76" ry="26" fill="rgba(216,244,238,.08)" stroke="rgba(216,244,238,.3)"/><rect x="84" y="28" width="16" height="92" fill="rgba(109,217,207,.2)"/><path d="M58 72 C88 44 120 104 184 62" stroke="#d8f4ee" fill="none" opacity=".48"/>',
+        trail: '<path d="M42 92 C78 18 108 106 142 40 S188 64 206 32" stroke="#6dd9cf" stroke-width="2" fill="none"/><circle cx="42" cy="92" r="5" fill="#d8955d"/><circle cx="142" cy="40" r="4" fill="#d8955d"/><circle cx="206" cy="32" r="3" fill="#f1ead7"/>',
+        meshline: '<path d="M28 88 C76 46 108 112 168 48 S206 50 216 38" stroke="#6dd9cf" stroke-width="3" fill="none"/><path d="M30 96 C82 58 120 116 190 54" stroke="#d8f4ee" stroke-width="1" fill="none" opacity=".32"/><path d="M42 42 H208 M56 64 H198 M38 82 H218" stroke="#f1ead7" opacity=".12"/>'
+      };
+      return `<svg viewBox="0 0 240 142" role="img" aria-label="${kind} schematic">${common}${map[kind] || map.object}</svg>`;
+    }
+
+    function referenceCard(card) {
+      const sketch = sketchSvg(sketchKinds[card.id]);
+      return `
+        <article class="ref-card" data-kind="${card.source_kind}" data-reference-id="${card.id}">
+          <div class="sketch">${sketch}</div>
+          <div class="card-body">
+            <div>
+              <p class="meta">${card.source_kind.replaceAll("_", " ")}</p>
+              <h3>${card.label}</h3>
+            </div>
+            <div class="ops">
+              <div class="op"><strong>Shape</strong><span>${card.shape_language}</span></div>
+              <div class="op"><strong>Material</strong><span>${card.material_language}</span></div>
+              <div class="op"><strong>State</strong><span>${card.state_language}</span></div>
+              <div class="op"><strong>Gap</strong><span>${card.current_preview_gap}</span></div>
+            </div>
+            <div class="command">${card.translation_command}</div>
+            <a class="source" href="${card.url}" target="_blank" rel="noreferrer">Open source</a>
+          </div>
+        </article>
+      `;
+    }
+
+    function directionCard(card) {
+      return `
+        <article class="direction-card" data-card="${card.id}">
+          <p class="meta">${card.id.replaceAll("-", " ")}</p>
+          <h3>${card.label}</h3>
+          <p>${card.summary}</p>
+          <div class="source-list">${card.best_sources.map((source) => `<span class="pill">${source}</span>`).join("")}</div>
+          <div class="ops-list">${card.visual_ops.map((op) => `<span class="pill">${op}</span>`).join("")}</div>
+          <div class="op"><strong>Risk</strong><span>${card.risk}</span></div>
+        </article>
+      `;
+    }
+
+    document.getElementById("referenceGrid").innerHTML = REFERENCE_CARDS.map(referenceCard).join("");
+    document.getElementById("directionGrid").innerHTML = DIRECTION_CARDS.map(directionCard).join("");
+    window.__STAGE02_REFERENCE_BOARD__ = {
+      referenceCount: REFERENCE_CARDS.length,
+      directionCount: DIRECTION_CARDS.length,
+      recommended: "archive-instrument"
+    };
+  </script>
+</body>
+</html>
