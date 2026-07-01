@@ -294,6 +294,32 @@
       color: var(--amber);
     }
 
+    .ordered-list li.criterion-primary {
+      margin-left: -10px;
+      padding: 10px 12px 10px 14px;
+      border: 1px solid rgba(210, 154, 93, 0.42);
+      border-radius: 8px;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(210, 154, 93, 0.16), rgba(239, 226, 196, 0.035));
+      box-shadow: inset 3px 0 0 rgba(210, 154, 93, 0.8);
+    }
+
+    .ordered-list li.criterion-primary::before {
+      content: "Primary read";
+      display: block;
+      margin-bottom: 5px;
+      color: var(--amber);
+      font-size: 11px;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .ordered-list li.criterion-primary::marker {
+      color: #efc084;
+      font-weight: 700;
+    }
+
     .mode-strip {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -579,7 +605,7 @@
       renderTagList("anatomyTags", SPECIMEN_PASS.required_anatomy_parts);
       renderTagList("avoidTags", SPECIMEN_PASS.not_read_as, "avoid");
       renderList("traitList", SPECIMEN_PASS.candidate_traits);
-      renderList("criteriaList", SPECIMEN_PASS.visual_criteria);
+      renderCriteriaList("criteriaList", SPECIMEN_PASS.visual_criteria);
       renderList("successList", SPECIMEN_PASS.secondary_success_criteria);
       renderList("handoffList", SPECIMEN_PASS.handoff_notes);
     }
@@ -604,6 +630,20 @@
         node.textContent = item;
         target.append(node);
       }
+    }
+
+    function renderCriteriaList(id, items) {
+      const target = document.getElementById(id);
+      items.forEach((item, index) => {
+        const node = document.createElement("li");
+        node.textContent = item;
+        if (index === 0) {
+          node.classList.add("criterion-primary");
+          node.dataset.criterionPriority = "primary";
+          node.setAttribute("aria-label", `Primary visual criterion: ${item}`);
+        }
+        target.append(node);
+      });
     }
 
     function addLights(targetScene) {

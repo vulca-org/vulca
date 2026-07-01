@@ -137,6 +137,13 @@ def test_stage02_archive_instrument_specimen_asset_pass01_html_review_contract()
     assert CURRENT_PROTOTYPE_HREF in html_text
     assert REFERENCE_LOCK_HREF in html_text
     assert "referenceCount" not in html_text
+    assert 'renderCriteriaList("criteriaList", SPECIMEN_PASS.visual_criteria)' in html_text
+    assert "function renderCriteriaList" in html_text
+    assert "if (index === 0)" in html_text
+    assert 'node.classList.add("criterion-primary")' in html_text
+    assert 'node.dataset.criterionPriority = "primary"' in html_text
+    assert 'node.setAttribute("aria-label", `Primary visual criterion: ${item}`)' in html_text
+    assert ".ordered-list li.criterion-primary" in html_text
 
 
 def test_stage02_archive_instrument_specimen_asset_pass01_threejs_specimen_contract():
