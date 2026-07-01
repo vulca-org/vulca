@@ -1,0 +1,1189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Archive Instrument Specimen Asset Pass 01</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --bg: #080906;
+      --panel: #11120e;
+      --panel-2: #171812;
+      --line: rgba(239, 226, 196, 0.16);
+      --line-strong: rgba(239, 226, 196, 0.3);
+      --ink: #f2ebd8;
+      --muted: #b9ad95;
+      --dim: #a1937c;
+      --amber: #d29a5d;
+      --amber-soft: rgba(210, 154, 93, 0.16);
+      --olive: #93a167;
+      --glass: #a9d6ca;
+      --earth: #765036;
+      --shadow: rgba(0, 0, 0, 0.38);
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(210, 154, 93, 0.08) 0%, rgba(8, 9, 6, 0) 360px),
+        linear-gradient(135deg, #070806 0%, #11130e 58%, #070806 100%);
+      color: var(--ink);
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    p,
+    li {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    ul,
+    ol,
+    dl {
+      margin: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      letter-spacing: 0;
+      line-height: 1.08;
+    }
+
+    h1 {
+      font-size: 46px;
+      line-height: 1.14;
+      max-width: 11ch;
+    }
+
+    h2 {
+      font-size: 22px;
+    }
+
+    h3 {
+      font-size: 15px;
+    }
+
+    .page {
+      width: min(1420px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.72fr);
+      gap: 20px;
+      align-items: stretch;
+      min-height: 720px;
+    }
+
+    .specimen-stage {
+      position: relative;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(239, 226, 196, 0.06), rgba(239, 226, 196, 0.02)),
+        #0a0b08;
+      box-shadow: 0 30px 80px var(--shadow);
+    }
+
+    .canvas-wrap {
+      position: absolute;
+      inset: 0;
+      min-height: 520px;
+    }
+
+    #specimenCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .stage-readout {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .readout-pill,
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: rgba(10, 11, 8, 0.72);
+      font-size: 11px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .readout-pill[data-tone="amber"] {
+      border-color: rgba(210, 154, 93, 0.34);
+      color: #e5bd83;
+    }
+
+    .review-panel,
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(17, 18, 14, 0.9);
+    }
+
+    .review-panel {
+      display: grid;
+      align-content: start;
+      gap: 18px;
+      min-width: 0;
+      padding: 20px;
+    }
+
+    .eyebrow,
+    .label {
+      color: var(--amber);
+      font-size: 11px;
+      line-height: 1.35;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .question {
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .copy {
+      display: grid;
+      gap: 12px;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.035);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible {
+      border-color: var(--line-strong);
+      background: rgba(255, 255, 255, 0.06);
+      outline: none;
+    }
+
+    .fact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .fact {
+      min-width: 0;
+      padding-top: 10px;
+      border-top: 1px solid rgba(239, 226, 196, 0.1);
+    }
+
+    .fact dt {
+      margin-bottom: 4px;
+      color: var(--dim);
+      font-size: 11px;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .fact dd {
+      margin: 0;
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tag {
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .tag[data-kind="avoid"] {
+      border-color: rgba(172, 104, 76, 0.34);
+      color: #d0a08d;
+    }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .panel {
+      min-width: 0;
+      padding: 16px;
+    }
+
+    .panel h2 {
+      margin-bottom: 12px;
+    }
+
+    .ordered-list,
+    .plain-list {
+      display: grid;
+      gap: 10px;
+      padding-left: 18px;
+    }
+
+    .plain-list {
+      padding-left: 16px;
+    }
+
+    .ordered-list li::marker,
+    .plain-list li::marker {
+      color: var(--amber);
+    }
+
+    .mode-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .mode {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(23, 24, 18, 0.7);
+    }
+
+    .mode strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .mode span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 1060px) {
+      h1 {
+        font-size: 38px;
+      }
+
+      .hero,
+      .review-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: 0;
+      }
+
+      .specimen-stage {
+        min-height: 640px;
+      }
+
+      .canvas-wrap {
+        min-height: 640px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 24px, 680px);
+        padding-top: 16px;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+
+      .review-panel {
+        padding: 16px;
+      }
+
+      .specimen-stage,
+      .canvas-wrap {
+        min-height: 560px;
+      }
+
+      .fact-grid,
+      .mode-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-vector-stage-product="2026-07-stage-02-archive-instrument-specimen-asset-pass-01">
+  <main class="page">
+    <section class="hero" aria-label="Specimen candidate review">
+      <div class="specimen-stage">
+        <div class="canvas-wrap">
+          <canvas id="specimenCanvas" aria-label="Preserved botanical specimen in a scientific vitrine"></canvas>
+        </div>
+        <div class="stage-readout" aria-hidden="true">
+          <span class="readout-pill" data-tone="amber">first read: preserved organic sample</span>
+          <span class="readout-pill">warm brown</span>
+          <span class="readout-pill">olive leaf</span>
+          <span class="readout-pill">amber mounting wire</span>
+        </div>
+      </div>
+
+      <aside class="review-panel">
+        <div class="copy">
+          <p class="eyebrow">Specimen Asset Pass 01</p>
+          <h1>Specimen Asset Pass 01</h1>
+          <p class="question">Does the central specimen read as a preserved real object before it reads as a diagram?</p>
+          <p>This candidate isolates the botanical asset before any merge into the Archive Instrument prototype.</p>
+        </div>
+
+        <nav class="nav" aria-label="Archive instrument links">
+          <a href="../3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html">Current prototype</a>
+          <a href="../3d-vector-aesthetic-stage-02-archive-instrument-reference-lock/index.html">Reference lock</a>
+        </nav>
+
+        <dl class="fact-grid">
+          <div class="fact">
+            <dt>Direction</dt>
+            <dd>realistic preserved specimen plus luxury scientific instrument</dd>
+          </div>
+          <div class="fact">
+            <dt>Status</dt>
+            <dd>specimen asset candidate before prototype merge</dd>
+          </div>
+          <div class="fact">
+            <dt>Approach</dt>
+            <dd>separate procedural specimen candidate</dd>
+          </div>
+          <div class="fact">
+            <dt>Non goal</dt>
+            <dd>do not modify the current Archive Instrument prototype in this pass</dd>
+          </div>
+        </dl>
+
+        <section aria-label="Required anatomy">
+          <p class="label">Required anatomy</p>
+          <ul class="tag-list" id="anatomyTags"></ul>
+        </section>
+
+        <section aria-label="Not read as">
+          <p class="label">Not read as</p>
+          <ul class="tag-list" id="avoidTags"></ul>
+        </section>
+      </aside>
+    </section>
+
+    <section class="mode-strip" aria-label="Inspection logic states">
+      <div class="mode">
+        <strong>Specimen</strong>
+        <span>Object first, quiet vitrine second.</span>
+      </div>
+      <div class="mode">
+        <strong>Leaf attachment</strong>
+        <span>Petioles visibly bridge blade and woody stem.</span>
+      </div>
+      <div class="mode">
+        <strong>Root crown</strong>
+        <span>Roots emerge from sockets instead of reading as legs.</span>
+      </div>
+      <div class="mode">
+        <strong>Support</strong>
+        <span>Mounting wires cradle the sample as specimen support.</span>
+      </div>
+    </section>
+
+    <section class="review-grid" aria-label="Candidate review details">
+      <article class="panel">
+        <h2>Candidate Traits</h2>
+        <ul class="plain-list" id="traitList"></ul>
+      </article>
+      <article class="panel">
+        <h2>Visual Criteria</h2>
+        <ol class="ordered-list" id="criteriaList"></ol>
+      </article>
+      <article class="panel">
+        <h2>Secondary Success Criteria</h2>
+        <ul class="plain-list" id="successList"></ul>
+      </article>
+      <article class="panel">
+        <h2>Handoff Notes</h2>
+        <ul class="plain-list" id="handoffList"></ul>
+      </article>
+    </section>
+  </main>
+
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.165.0/build/three.module.js";
+
+    const SPECIMEN_PASS = {
+      "candidate_id": "stage-02-archive-instrument-specimen-asset-pass-01",
+      "status": "specimen_asset_candidate_before_prototype_merge",
+      "created": "2026-07-01",
+      "direction": "realistic preserved specimen plus luxury scientific instrument",
+      "goal": "Does the central specimen read as a preserved real object before it reads as a diagram?",
+      "current_prototype_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-prototype/index.html",
+      "reference_lock_path": "docs/product/experiments/3d-vector-aesthetic-stage-02-archive-instrument-reference-lock/index.html",
+      "recommended_approach": "separate procedural specimen candidate",
+      "explicit_non_goal": "do not modify the current Archive Instrument prototype in this pass",
+      "required_anatomy_parts": [
+        "woody stem",
+        "leaf cluster",
+        "petiole",
+        "root crown",
+        "fine roots",
+        "mounting wire"
+      ],
+      "candidate_traits": [
+        "asymmetric woody stem with taper, knots, scars, and bark rings",
+        "5 to 7 leaves with varied size, age, bend, pitch, and yaw",
+        "petioles visibly attach leaves to the stem",
+        "root crown or soil plug with roots emerging from believable sockets",
+        "short branching fine roots and root hairs",
+        "mounting wires read as specimen support, not legs",
+        "warm brown, olive, pale vein, and amber material accents"
+      ],
+      "first_read": "preserved organic sample",
+      "not_read_as": [
+        "plant icon",
+        "wireframe diagram",
+        "random tubes",
+        "technical toy"
+      ],
+      "visual_criteria": [
+        "The specimen reads as a real object before reading as a diagram.",
+        "The glass reads as a vitrine or wet-specimen container, not a transparent UI shell.",
+        "The root and support geometry cannot be mistaken for legs or random lines.",
+        "Each scroll state changes inspection logic, not just position or opacity.",
+        "The palette has warm material contrast and does not collapse into gray-green technical UI."
+      ],
+      "secondary_success_criteria": [
+        "roots no longer read as legs",
+        "leaves have credible attachment and orientation",
+        "root crown feels physically connected to the stem",
+        "material palette is warmer and less gray-green",
+        "the candidate can be moved into the current prototype without changing the direction"
+      ],
+      "handoff_notes": [
+        "accepted: merge candidate anatomy into the main Archive Instrument prototype",
+        "still weak: move to generated GLB or modeled-asset exploration",
+        "glass/instrument/scroll-state changes remain later passes"
+      ]
+    };
+
+    window.__ARCHIVE_SPECIMEN_ASSET_PASS_01__ = {
+      candidateId: SPECIMEN_PASS.candidate_id,
+      anatomyCount: SPECIMEN_PASS.required_anatomy_parts.length,
+      criteriaCount: SPECIMEN_PASS.visual_criteria.length
+    };
+
+    const canvas = document.getElementById("specimenCanvas");
+    const canvasWrap = canvas.parentElement;
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+      preserveDrawingBuffer: true
+    });
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color("#080906");
+
+    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+    camera.position.set(0, 0.18, 8.8);
+
+    const reviewObject = new THREE.Group();
+    reviewObject.name = "Archive Instrument specimen asset review object";
+    scene.add(reviewObject);
+
+    const specimen = createSpecimenCandidate();
+    specimen.position.set(0, -0.08, 0.05);
+    reviewObject.add(createInstrumentFrame());
+    reviewObject.add(specimen);
+
+    addLights(scene);
+    renderPayloadLists();
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let animationHandle = null;
+
+    resizeRenderer();
+    window.addEventListener("resize", resizeRenderer);
+    if (typeof reducedMotion.addEventListener === "function") {
+      reducedMotion.addEventListener("change", handleMotionPreference);
+    }
+    handleMotionPreference();
+
+    function renderPayloadLists() {
+      renderTagList("anatomyTags", SPECIMEN_PASS.required_anatomy_parts);
+      renderTagList("avoidTags", SPECIMEN_PASS.not_read_as, "avoid");
+      renderList("traitList", SPECIMEN_PASS.candidate_traits);
+      renderList("criteriaList", SPECIMEN_PASS.visual_criteria);
+      renderList("successList", SPECIMEN_PASS.secondary_success_criteria);
+      renderList("handoffList", SPECIMEN_PASS.handoff_notes);
+    }
+
+    function renderTagList(id, items, kind = "") {
+      const target = document.getElementById(id);
+      for (const item of items) {
+        const node = document.createElement("li");
+        node.className = "tag";
+        if (kind) {
+          node.dataset.kind = kind;
+        }
+        node.textContent = item;
+        target.append(node);
+      }
+    }
+
+    function renderList(id, items) {
+      const target = document.getElementById(id);
+      for (const item of items) {
+        const node = document.createElement("li");
+        node.textContent = item;
+        target.append(node);
+      }
+    }
+
+    function addLights(targetScene) {
+      const hemisphere = new THREE.HemisphereLight(0xf3ecd9, 0x15140f, 1.8);
+      targetScene.add(hemisphere);
+
+      const key = new THREE.DirectionalLight(0xffead1, 2.4);
+      key.position.set(3.6, 4.8, 4.2);
+      targetScene.add(key);
+
+      const warmPoint = new THREE.PointLight(0xd79558, 1.6, 8.5, 1.5);
+      warmPoint.position.set(-2.2, -0.55, 2.3);
+      targetScene.add(warmPoint);
+
+      const rim = new THREE.DirectionalLight(0xbcdcd2, 1.45);
+      rim.position.set(-3.2, 2.2, -3.4);
+      targetScene.add(rim);
+    }
+
+    function createMaterials() {
+      return {
+        stem: new THREE.MeshStandardMaterial({
+          color: 0x6f4329,
+          roughness: 0.88,
+          metalness: 0.02
+        }),
+        bark: new THREE.MeshStandardMaterial({
+          color: 0x3e2518,
+          roughness: 0.96,
+          metalness: 0
+        }),
+        scar: new THREE.MeshStandardMaterial({
+          color: 0xb78257,
+          roughness: 0.9,
+          metalness: 0.01
+        }),
+        leaf: new THREE.MeshStandardMaterial({
+          color: 0x5f6f3d,
+          roughness: 0.72,
+          metalness: 0.01,
+          side: THREE.DoubleSide
+        }),
+        youngLeaf: new THREE.MeshStandardMaterial({
+          color: 0x879356,
+          roughness: 0.7,
+          metalness: 0.01,
+          side: THREE.DoubleSide
+        }),
+        vein: new THREE.MeshStandardMaterial({
+          color: 0xd8c899,
+          roughness: 0.62,
+          metalness: 0
+        }),
+        crown: new THREE.MeshStandardMaterial({
+          color: 0x53331f,
+          roughness: 0.95,
+          metalness: 0
+        }),
+        root: new THREE.MeshStandardMaterial({
+          color: 0xa98361,
+          roughness: 0.86,
+          metalness: 0
+        }),
+        rootHair: new THREE.MeshStandardMaterial({
+          color: 0xd9c5a2,
+          roughness: 0.78,
+          metalness: 0
+        }),
+        mountingWire: new THREE.MeshStandardMaterial({
+          color: 0xc89659,
+          roughness: 0.34,
+          metalness: 0.72
+        }),
+        glass: new THREE.MeshPhysicalMaterial({
+          color: 0xb7d7ce,
+          transparent: true,
+          opacity: 0.17,
+          roughness: 0.05,
+          metalness: 0,
+          transmission: 0.35,
+          thickness: 0.6,
+          side: THREE.DoubleSide
+        }),
+        brass: new THREE.MeshStandardMaterial({
+          color: 0xbc854b,
+          roughness: 0.38,
+          metalness: 0.72
+        }),
+        blackenedSteel: new THREE.MeshStandardMaterial({
+          color: 0x181814,
+          roughness: 0.42,
+          metalness: 0.64
+        }),
+        shadow: new THREE.MeshStandardMaterial({
+          color: 0x0b0b08,
+          roughness: 0.74,
+          metalness: 0.18
+        })
+      };
+    }
+
+    function createInstrumentFrame() {
+      const materials = createMaterials();
+      const group = new THREE.Group();
+      group.name = "luxury scientific instrument vitrine";
+
+      const glass = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.17, 1.23, 4.92, 96, 1, true),
+        materials.glass
+      );
+      glass.name = "vitrine glass chamber";
+      glass.position.y = 0.12;
+      group.add(glass);
+
+      const topRing = new THREE.Mesh(new THREE.TorusGeometry(1.18, 0.027, 10, 96), materials.brass);
+      topRing.name = "warm brass upper vitrine rim";
+      topRing.rotation.x = Math.PI / 2;
+      topRing.position.y = 2.58;
+      group.add(topRing);
+
+      const bottomRing = topRing.clone();
+      bottomRing.name = "warm brass lower vitrine rim";
+      bottomRing.position.y = -2.34;
+      group.add(bottomRing);
+
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(1.42, 1.54, 0.24, 96), materials.blackenedSteel);
+      base.name = "blackened inspection plinth";
+      base.position.y = -2.56;
+      group.add(base);
+
+      const brassBase = new THREE.Mesh(new THREE.CylinderGeometry(1.24, 1.34, 0.08, 96), materials.brass);
+      brassBase.name = "brushed amber instrument accent";
+      brassBase.position.y = -2.4;
+      group.add(brassBase);
+
+      const tickMaterial = materials.brass;
+      for (let i = 0; i < 36; i += 1) {
+        const angle = (i / 36) * Math.PI * 2;
+        const tick = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.04, i % 6 === 0 ? 0.16 : 0.08), tickMaterial);
+        tick.name = "calibrated instrument tick";
+        tick.position.set(Math.cos(angle) * 1.36, -2.28, Math.sin(angle) * 1.36);
+        tick.rotation.y = -angle;
+        group.add(tick);
+      }
+
+      const floor = new THREE.Mesh(new THREE.CircleGeometry(1.18, 96), materials.shadow);
+      floor.name = "dark wet-specimen floor";
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -2.27;
+      group.add(floor);
+
+      return group;
+    }
+
+    function createSpecimenCandidate() {
+      const materials = createMaterials();
+      const group = new THREE.Group();
+      group.name = "preserved botanical cutting with woody stem, leaf cluster, root crown, fine roots, and mounting wire";
+
+      const stemPoints = [
+        new THREE.Vector3(0.02, -1.85, 0.02),
+        new THREE.Vector3(-0.08, -1.32, 0.06),
+        new THREE.Vector3(0.13, -0.72, -0.03),
+        new THREE.Vector3(0.02, -0.12, 0.05),
+        new THREE.Vector3(0.18, 0.56, -0.01),
+        new THREE.Vector3(0.06, 1.28, 0.04)
+      ];
+      const radii = [0.125, 0.116, 0.102, 0.084, 0.066, 0.052];
+      for (let i = 0; i < stemPoints.length - 1; i += 1) {
+        const segment = cylinderBetween(stemPoints[i], stemPoints[i + 1], radii[i + 1], radii[i], materials.stem, 18);
+        segment.name = "asymmetric tapered woody stem segment";
+        group.add(segment);
+      }
+
+      addBarkDetails(group, stemPoints, radii, materials);
+      addRootCrown(group, materials);
+      addLeaves(group, materials);
+      group.add(createFineRoots(materials));
+      group.add(createMountingWires(materials));
+
+      return group;
+    }
+
+    function addBarkDetails(group, stemPoints, radii, materials) {
+      const ringStops = [
+        { t: 0.12, radius: 0.126 },
+        { t: 0.24, radius: 0.112 },
+        { t: 0.37, radius: 0.104 },
+        { t: 0.52, radius: 0.086 },
+        { t: 0.68, radius: 0.071 },
+        { t: 0.84, radius: 0.058 }
+      ];
+      for (const stop of ringStops) {
+        const p = samplePolyline(stemPoints, stop.t);
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(stop.radius, 0.006, 6, 32), materials.bark);
+        ring.name = "bark ring on woody stem";
+        ring.rotation.x = Math.PI / 2;
+        ring.position.copy(p);
+        group.add(ring);
+      }
+
+      const scarData = [
+        { position: [-0.115, -1.03, 0.105], scale: [0.07, 0.026, 0.034] },
+        { position: [0.19, -0.44, 0.055], scale: [0.052, 0.024, 0.03] },
+        { position: [0.13, 0.21, 0.1], scale: [0.046, 0.022, 0.026] },
+        { position: [-0.015, 0.86, 0.102], scale: [0.038, 0.018, 0.022] }
+      ];
+      for (const item of scarData) {
+        const scar = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 10), materials.scar);
+        scar.name = "amber scar and knot on preserved bark";
+        scar.position.set(...item.position);
+        scar.scale.set(...item.scale);
+        group.add(scar);
+      }
+
+      const knot = new THREE.Mesh(new THREE.SphereGeometry(0.055, 18, 12), materials.bark);
+      knot.name = "raised bark knot";
+      knot.position.set(0.005, -0.1, 0.12);
+      knot.scale.set(1.2, 0.8, 0.72);
+      group.add(knot);
+    }
+
+    function addRootCrown(group, materials) {
+      const crown = new THREE.Mesh(new THREE.DodecahedronGeometry(0.24, 2), materials.crown);
+      crown.name = "root crown soil plug with believable sockets";
+      crown.position.set(0.01, -1.98, 0.02);
+      crown.scale.set(1.14, 0.72, 0.88);
+      group.add(crown);
+
+      const socketMaterial = new THREE.MeshStandardMaterial({
+        color: 0x25170f,
+        roughness: 0.92,
+        metalness: 0
+      });
+      const sockets = [
+        [-0.12, -2.0, 0.15],
+        [0.13, -2.02, 0.12],
+        [-0.04, -2.08, -0.18],
+        [0.18, -1.95, -0.06],
+        [-0.18, -1.94, -0.03]
+      ];
+      for (const socketPosition of sockets) {
+        const socket = new THREE.Mesh(new THREE.SphereGeometry(0.034, 12, 8), socketMaterial);
+        socket.name = "dark root socket";
+        socket.position.set(...socketPosition);
+        socket.scale.set(1, 0.52, 0.74);
+        group.add(socket);
+      }
+    }
+
+    function addLeaves(group, materials) {
+      const leafSpecs = [
+        {
+          anchor: new THREE.Vector3(-0.04, -0.72, 0.04),
+          end: new THREE.Vector3(-0.48, -0.47, 0.18),
+          length: 0.86,
+          width: 0.27,
+          bend: 0.075,
+          material: materials.leaf,
+          rotation: [0.22, -0.62, 0.62],
+          veinBias: -0.02
+        },
+        {
+          anchor: new THREE.Vector3(0.11, -0.46, 0.01),
+          end: new THREE.Vector3(0.55, -0.2, 0.08),
+          length: 0.74,
+          width: 0.23,
+          bend: -0.055,
+          material: materials.youngLeaf,
+          rotation: [0.08, 0.7, -0.52],
+          veinBias: 0.015
+        },
+        {
+          anchor: new THREE.Vector3(0.02, -0.04, 0.05),
+          end: new THREE.Vector3(-0.42, 0.2, 0.15),
+          length: 0.96,
+          width: 0.3,
+          bend: 0.09,
+          material: materials.leaf,
+          rotation: [0.3, -0.42, 0.78],
+          veinBias: -0.01
+        },
+        {
+          anchor: new THREE.Vector3(0.17, 0.34, -0.01),
+          end: new THREE.Vector3(0.58, 0.52, 0.12),
+          length: 0.7,
+          width: 0.2,
+          bend: -0.04,
+          material: materials.youngLeaf,
+          rotation: [0.14, 0.56, -0.42],
+          veinBias: 0.02
+        },
+        {
+          anchor: new THREE.Vector3(0.12, 0.62, 0.02),
+          end: new THREE.Vector3(-0.22, 0.85, 0.11),
+          length: 0.82,
+          width: 0.24,
+          bend: 0.045,
+          material: materials.leaf,
+          rotation: [0.36, -0.22, 0.33],
+          veinBias: -0.015
+        },
+        {
+          anchor: new THREE.Vector3(0.07, 1.04, 0.03),
+          end: new THREE.Vector3(0.34, 1.28, 0.12),
+          length: 0.54,
+          width: 0.15,
+          bend: 0.035,
+          material: materials.youngLeaf,
+          rotation: [0.18, 0.28, -0.32],
+          veinBias: 0.01
+        }
+      ];
+
+      const leafCluster = new THREE.Group();
+      leafCluster.name = "leaf cluster with visible petiole attachments";
+      for (const spec of leafSpecs) {
+        const petiole = tubeFromPoints([spec.anchor, spec.end], 0.018, materials.vein, 10, 7);
+        petiole.name = "petiole visibly attaches leaf to woody stem";
+        leafCluster.add(petiole);
+
+        const blade = createLeafBlade({
+          length: spec.length,
+          width: spec.width,
+          bend: spec.bend,
+          material: spec.material,
+          veinMaterial: materials.vein,
+          veinBias: spec.veinBias
+        });
+        blade.name = "varied preserved leaf blade";
+        blade.position.copy(spec.end);
+        blade.rotation.set(...spec.rotation);
+        leafCluster.add(blade);
+      }
+      group.add(leafCluster);
+    }
+
+    function createLeafBlade(options) {
+      const group = new THREE.Group();
+      const shape = new THREE.Shape();
+      const length = options.length;
+      const width = options.width;
+      shape.moveTo(0, 0);
+      shape.bezierCurveTo(width * 0.92, length * 0.18, width * 0.72, length * 0.76, 0, length);
+      shape.bezierCurveTo(-width * 0.84, length * 0.72, -width * 0.75, length * 0.18, 0, 0);
+
+      const geometry = new THREE.ShapeGeometry(shape, 30);
+      const position = geometry.attributes.position;
+      for (let i = 0; i < position.count; i += 1) {
+        const x = position.getX(i);
+        const y = position.getY(i);
+        const along = Math.max(0, Math.min(1, y / length));
+        const centerLift = Math.sin(along * Math.PI) * options.bend;
+        const sideCurl = x * 0.055 + options.veinBias;
+        position.setZ(i, centerLift + sideCurl);
+      }
+      geometry.computeVertexNormals();
+
+      const mesh = new THREE.Mesh(geometry, options.material);
+      mesh.name = "preserved olive leaf blade with bend, pitch, and yaw";
+      group.add(mesh);
+
+      const midrib = tubeFromPoints(
+        [
+          new THREE.Vector3(0, 0.02, 0.018),
+          new THREE.Vector3(options.veinBias, length * 0.52, 0.04 + options.bend * 0.45),
+          new THREE.Vector3(0, length * 0.94, 0.025)
+        ],
+        0.0065,
+        options.veinMaterial,
+        16,
+        6
+      );
+      midrib.name = "pale central leaf vein";
+      group.add(midrib);
+
+      for (const side of [-1, 1]) {
+        for (const along of [0.28, 0.45, 0.62, 0.76]) {
+          const vein = tubeFromPoints(
+            [
+              new THREE.Vector3(options.veinBias * 0.5, length * along, 0.035),
+              new THREE.Vector3(side * width * (0.28 - along * 0.08), length * (along + 0.12), 0.045)
+            ],
+            0.0035,
+            options.veinMaterial,
+            6,
+            5
+          );
+          vein.name = "short pale leaf vein";
+          group.add(vein);
+        }
+      }
+
+      return group;
+    }
+
+    function createFineRoots(materials) {
+      const group = new THREE.Group();
+      group.name = "fine roots emerging from root crown sockets with root hairs";
+      const rootPaths = [
+        [
+          [-0.13, -2.0, 0.14],
+          [-0.34, -2.12, 0.19],
+          [-0.52, -2.04, 0.08],
+          [-0.68, -2.18, -0.02]
+        ],
+        [
+          [0.13, -2.03, 0.12],
+          [0.32, -2.14, 0.19],
+          [0.51, -2.2, 0.05],
+          [0.72, -2.14, -0.11]
+        ],
+        [
+          [-0.04, -2.08, -0.18],
+          [-0.18, -2.22, -0.28],
+          [-0.34, -2.15, -0.42]
+        ],
+        [
+          [0.19, -1.96, -0.07],
+          [0.38, -2.06, -0.18],
+          [0.56, -2.02, -0.35]
+        ],
+        [
+          [-0.18, -1.95, -0.04],
+          [-0.33, -2.05, -0.16],
+          [-0.47, -1.97, -0.32]
+        ]
+      ];
+
+      rootPaths.forEach((path, rootIndex) => {
+        const points = path.map((point) => new THREE.Vector3(...point));
+        const root = tubeFromPoints(points, rootIndex < 2 ? 0.017 : 0.013, materials.root, 18, 7);
+        root.name = "short branching fine roots";
+        group.add(root);
+
+        for (let i = 1; i < points.length; i += 1) {
+          const base = points[i];
+          const branchDirection = new THREE.Vector3(
+            rootIndex % 2 === 0 ? -0.08 : 0.08,
+            -0.045,
+            i % 2 === 0 ? 0.1 : -0.08
+          );
+          const branch = tubeFromPoints(
+            [
+              base,
+              base.clone().add(branchDirection)
+            ],
+            0.007,
+            materials.root,
+            5,
+            5
+          );
+          branch.name = "short lateral root branch";
+          group.add(branch);
+
+          const hairCount = 4;
+          for (let h = 0; h < hairCount; h += 1) {
+            const hairAngle = (h / hairCount) * Math.PI * 2 + rootIndex * 0.35;
+            const hairStart = base.clone().lerp(points[Math.max(0, i - 1)], 0.26 + h * 0.08);
+            const hairEnd = hairStart.clone().add(
+              new THREE.Vector3(Math.cos(hairAngle) * 0.052, -0.018 - h * 0.004, Math.sin(hairAngle) * 0.052)
+            );
+            const hair = tubeFromPoints([hairStart, hairEnd], 0.0028, materials.rootHair, 3, 4);
+            hair.name = "fine root hair";
+            group.add(hair);
+          }
+        }
+      });
+
+      return group;
+    }
+
+    function createMountingWires(materials) {
+      const group = new THREE.Group();
+      group.name = "mounting wire support that does not read as legs";
+      const wirePaths = [
+        [
+          [-0.56, -1.64, -0.36],
+          [-0.66, -0.48, -0.46],
+          [-0.42, 0.8, -0.38],
+          [-0.16, 1.5, -0.26]
+        ],
+        [
+          [0.55, -1.7, -0.38],
+          [0.67, -0.4, -0.48],
+          [0.42, 0.95, -0.35],
+          [0.18, 1.58, -0.24]
+        ]
+      ];
+
+      for (const path of wirePaths) {
+        const wire = tubeFromPoints(path.map((point) => new THREE.Vector3(...point)), 0.011, materials.mountingWire, 24, 8);
+        wire.name = "subtle amber specimen support mounting wire";
+        group.add(wire);
+      }
+
+      const crossWire = tubeFromPoints(
+        [
+          new THREE.Vector3(-0.42, -1.38, -0.34),
+          new THREE.Vector3(-0.04, -1.26, -0.3),
+          new THREE.Vector3(0.38, -1.42, -0.34)
+        ],
+        0.008,
+        materials.mountingWire,
+        16,
+        6
+      );
+      crossWire.name = "low cradle mounting wire";
+      group.add(crossWire);
+
+      return group;
+    }
+
+    function tubeFromPoints(points, radius, material, segments = 12, radialSegments = 6) {
+      const curve = new THREE.CatmullRomCurve3(points);
+      const geometry = new THREE.TubeGeometry(curve, segments, radius, radialSegments, false);
+      return new THREE.Mesh(geometry, material);
+    }
+
+    function cylinderBetween(start, end, radiusTop, radiusBottom, material, radialSegments = 12) {
+      const direction = end.clone().sub(start);
+      const length = direction.length();
+      const geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, length, radialSegments, 1, false);
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.copy(start).add(end).multiplyScalar(0.5);
+      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+      return mesh;
+    }
+
+    function samplePolyline(points, t) {
+      const clamped = Math.max(0, Math.min(1, t));
+      const scaled = clamped * (points.length - 1);
+      const index = Math.min(points.length - 2, Math.floor(scaled));
+      const local = scaled - index;
+      return points[index].clone().lerp(points[index + 1], local);
+    }
+
+    function resizeRenderer() {
+      const width = Math.max(320, canvasWrap.clientWidth);
+      const height = Math.max(520, canvasWrap.clientHeight);
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      renderer.setPixelRatio(pixelRatio);
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderScene(performance.now());
+    }
+
+    function renderScene(time) {
+      if (!reducedMotion.matches) {
+        reviewObject.rotation.y = Math.sin(time * 0.00022) * 0.09 + time * 0.000035;
+        specimen.rotation.z = Math.sin(time * 0.00028) * 0.018;
+      } else {
+        reviewObject.rotation.y = -0.08;
+        specimen.rotation.z = 0;
+      }
+      renderer.render(scene, camera);
+      window.__ARCHIVE_SPECIMEN_ASSET_PASS_01_RENDERED__ = true;
+    }
+
+    function animationLoop(time) {
+      renderScene(time);
+      if (!reducedMotion.matches) {
+        animationHandle = window.requestAnimationFrame(animationLoop);
+      } else {
+        animationHandle = null;
+      }
+    }
+
+    function handleMotionPreference() {
+      if (reducedMotion.matches) {
+        if (animationHandle !== null) {
+          window.cancelAnimationFrame(animationHandle);
+          animationHandle = null;
+        }
+        renderScene(performance.now());
+      } else if (animationHandle === null) {
+        animationHandle = window.requestAnimationFrame(animationLoop);
+      }
+    }
+  </script>
+</body>
+</html>
