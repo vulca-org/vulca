@@ -78,6 +78,13 @@ def test_archive_instrument_prototype_has_four_state_hierarchy_not_random_demo()
         assert logic in html_text
     for motion_param in ["specimenTurn", "leafOpen", "leaf-cluster", "baseRotation", "openBias"]:
         assert motion_param in html_text
+    for specimen_detail in [
+        "museum-rear-backdrop",
+        "specimen-contact-shadow",
+        "preserving-fluid-depth",
+        "specimen-mount-wire",
+    ]:
+        assert specimen_detail in html_text
     assert "random tubes" not in html_text.lower()
     assert "poster" not in html_text.lower()
     assert "<button" not in html_text.lower()

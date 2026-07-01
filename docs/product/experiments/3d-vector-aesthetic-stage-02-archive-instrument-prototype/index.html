@@ -7,14 +7,14 @@
   <link rel="icon" href="data:," />
   <style>
     :root {
-      --bg: #0a0f0c;
+      --bg: #090d0a;
       --ink: #f4efe5;
       --muted: rgba(244, 239, 229, 0.64);
       --dim: rgba(244, 239, 229, 0.34);
       --line: rgba(244, 239, 229, 0.13);
-      --accent: #b5c486;
-      --scan: #c1e5de;
-      --specimen: #ecd8b8;
+      --accent: #c4d58b;
+      --scan: #b8dfd0;
+      --specimen: #e6c69b;
       font-family: "Avenir Next", "SF Pro Display", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
       color-scheme: dark;
     }
@@ -35,10 +35,9 @@
     body {
       min-height: 430vh;
       background:
-        radial-gradient(circle at 46% 30%, rgba(193, 229, 222, 0.18), transparent 25vw),
-        radial-gradient(circle at 57% 70%, rgba(205, 133, 62, 0.26), transparent 26vw),
-        radial-gradient(circle at 27% 50%, rgba(120, 146, 76, 0.22), transparent 28vw),
-        linear-gradient(135deg, #070908 0%, #0e1711 48%, #16100a 100%);
+        linear-gradient(90deg, rgba(4, 7, 6, 0.94), rgba(13, 18, 13, 0.5) 48%, rgba(4, 7, 6, 0.95)),
+        radial-gradient(ellipse at 50% 44%, rgba(206, 195, 138, 0.16), transparent 50%),
+        linear-gradient(135deg, #050706 0%, #10170f 55%, #211507 100%);
     }
 
     body::before {
@@ -87,7 +86,7 @@
       position: absolute;
       inset: 0;
       z-index: 3;
-      opacity: 0.22;
+      opacity: 0.16;
       background-image:
         linear-gradient(90deg, rgba(244, 239, 229, 0.035), transparent 1px),
         radial-gradient(ellipse at 50% 60%, rgba(181, 196, 134, 0.14), transparent 34vw),
@@ -124,8 +123,9 @@
 
     h1 {
       margin-top: 10px;
-      font-size: clamp(21px, 2.2vw, 30px);
-      font-weight: 620;
+      font-size: clamp(18px, 1.9vw, 26px);
+      font-weight: 580;
+      opacity: 0.88;
       text-wrap: balance;
     }
 
@@ -304,9 +304,9 @@
         title: "Section",
         body: "The vitrine opens into a shallow section, separating glass, liquid, soil, root paths, and the living cutting.",
         logic: "section view separates the physical layers",
-        camera: new THREE.Vector3(0.18, 0.28, 4.9),
+        camera: new THREE.Vector3(0.14, 0.22, 5.5),
         scan: 0.45,
-        separate: 1,
+        separate: 0.78,
         traces: 0.22,
         bloom: 0.62,
         specimenTurn: 0.16,
@@ -339,10 +339,10 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.18;
+    renderer.toneMappingExposure = 1.26;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0b0d0c, 0.035);
+    scene.fog = new THREE.FogExp2(0x0c0d0a, 0.032);
 
     const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
     camera.position.copy(STATES[0].camera);
@@ -352,31 +352,31 @@
     scene.add(root);
 
     const clock = new THREE.Clock();
-    const scanColor = new THREE.Color("#c1e5de");
-    const accentColor = new THREE.Color("#b5c486");
+    const scanColor = new THREE.Color("#b8dfd0");
+    const accentColor = new THREE.Color("#c4d58b");
     const glass = new THREE.Color("#e4f0ee");
-    const specimen = new THREE.Color("#ecd8b8");
+    const specimen = new THREE.Color("#e6c69b");
     const soilColor = new THREE.Color("#4a3423");
-    const leafColor = new THREE.Color("#7fa75a");
+    const leafColor = new THREE.Color("#91b966");
     const lookTarget = new THREE.Vector3(0, -0.02, 0);
 
     function createLights() {
-      const ambient = new THREE.HemisphereLight(0xf4efe5, 0x070b08, 1.08);
+      const ambient = new THREE.HemisphereLight(0xf8efdf, 0x070b08, 1.16);
       scene.add(ambient);
 
-      const key = new THREE.DirectionalLight(0xf4efe5, 2.65);
+      const key = new THREE.DirectionalLight(0xf7eedc, 2.95);
       key.position.set(-3.2, 4.8, 4.1);
       scene.add(key);
 
-      const rim = new THREE.PointLight(0xb8eee5, 13, 8);
+      const rim = new THREE.PointLight(0xb5eadc, 10, 8);
       rim.position.set(2.8, 1.8, 2.9);
       scene.add(rim);
 
-      const warm = new THREE.PointLight(0xd19355, 11, 7);
+      const warm = new THREE.PointLight(0xe1a05b, 15, 7);
       warm.position.set(-2.4, -0.95, 2.4);
       scene.add(warm);
 
-      const shelf = new THREE.PointLight(0xf4efe5, 6, 4);
+      const shelf = new THREE.PointLight(0xf2dfc4, 8, 4);
       shelf.position.set(0, -1.1, 2.2);
       scene.add(shelf);
       return { rim, warm, shelf };
@@ -421,23 +421,30 @@
       group.userData.base = new THREE.Vector3(0, 0, 0);
 
       const plinthMaterial = new THREE.MeshStandardMaterial({
-        color: 0x21160f,
+        color: 0x2a1b10,
         roughness: 0.62,
         metalness: 0.1,
         emissive: 0x090503,
         emissiveIntensity: 0.22
       });
       const topMaterial = new THREE.MeshStandardMaterial({
-        color: 0x5a351f,
+        color: 0x704323,
         roughness: 0.44,
         metalness: 0.12,
-        emissive: 0x1d0e06,
-        emissiveIntensity: 0.28
+        emissive: 0x211006,
+        emissiveIntensity: 0.24
       });
       const glassPlateMaterial = new THREE.MeshBasicMaterial({
         color: 0xe6f2ef,
         transparent: true,
         opacity: 0.12,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      const rearPanelMaterial = new THREE.MeshBasicMaterial({
+        color: 0x2e3528,
+        transparent: true,
+        opacity: 0.16,
         depthWrite: false,
         side: THREE.DoubleSide
       });
@@ -473,12 +480,31 @@
       plate.position.set(0, -0.86, 0.08);
       group.add(plate);
 
+      const rearPanel = new THREE.Mesh(new THREE.PlaneGeometry(1.18, 1.92), rearPanelMaterial);
+      rearPanel.position.set(0, 0.05, -0.46);
+      rearPanel.userData.kind = "museum-rear-backdrop";
+      group.add(rearPanel);
+
+      const contactShadowMaterial = new THREE.MeshBasicMaterial({
+        color: 0x090504,
+        transparent: true,
+        opacity: 0.28,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      const contactShadow = new THREE.Mesh(new THREE.CircleGeometry(0.58, 96), contactShadowMaterial);
+      contactShadow.scale.set(1.28, 0.46, 1);
+      contactShadow.rotation.x = -Math.PI / 2;
+      contactShadow.position.set(0, -0.845, 0.12);
+      contactShadow.userData.kind = "specimen-contact-shadow";
+      group.add(contactShadow);
+
       const clampMaterial = new THREE.MeshStandardMaterial({
-        color: 0x6f765a,
-        roughness: 0.3,
-        metalness: 0.5,
+        color: 0x5f664b,
+        roughness: 0.36,
+        metalness: 0.42,
         emissive: 0x11150d,
-        emissiveIntensity: 0.24
+        emissiveIntensity: 0.14
       });
 
       const railGeometry = new THREE.BoxGeometry(0.06, 0.76, 0.055);
@@ -492,9 +518,9 @@
       });
 
       const cradleMaterial = new THREE.LineBasicMaterial({
-        color: 0xb5c486,
+        color: 0x8c8e63,
         transparent: true,
-        opacity: 0.08
+        opacity: 0.014
       });
       const cradle = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(-0.86, -0.6, 0.1),
@@ -673,33 +699,33 @@
       });
       const leafMaterial = new THREE.MeshStandardMaterial({
         color: leafColor,
-        roughness: 0.58,
+        roughness: 0.62,
         metalness: 0.02,
-        emissive: 0x17220f,
-        emissiveIntensity: 0.18,
+        emissive: 0x18240e,
+        emissiveIntensity: 0.12,
         side: THREE.DoubleSide
       });
       const youngLeafMaterial = new THREE.MeshStandardMaterial({
-        color: 0xafb86d,
+        color: 0xc0c979,
         roughness: 0.54,
         metalness: 0.02,
         emissive: 0x222810,
-        emissiveIntensity: 0.16,
+        emissiveIntensity: 0.12,
         side: THREE.DoubleSide
       });
       const leafVeinMaterial = new THREE.MeshBasicMaterial({
-        color: 0xd8e6b8,
+        color: 0xe0e9bb,
         transparent: true,
-        opacity: 0.42,
+        opacity: 0.34,
         depthWrite: false
       });
       const fluidMaterial = new THREE.MeshPhysicalMaterial({
         color: 0xcadfd2,
-        roughness: 0.08,
+        roughness: 0.14,
         metalness: 0,
-        transmission: 0.5,
+        transmission: 0.42,
         transparent: true,
-        opacity: 0.1,
+        opacity: 0.075,
         depthWrite: false,
         side: THREE.DoubleSide
       });
@@ -710,10 +736,22 @@
       fluid.userData.kind = "preserving-fluid";
       group.add(fluid);
 
+      const fluidDepthMaterial = new THREE.MeshBasicMaterial({
+        color: 0xa3b29b,
+        transparent: true,
+        opacity: 0.048,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      const fluidDepth = new THREE.Mesh(new THREE.PlaneGeometry(0.84, 1.58), fluidDepthMaterial);
+      fluidDepth.position.set(0, -0.04, -0.28);
+      fluidDepth.userData.kind = "preserving-fluid-depth";
+      group.add(fluidDepth);
+
       const meniscusMaterial = new THREE.MeshBasicMaterial({
         color: 0xe2f0e8,
         transparent: true,
-        opacity: 0.16,
+        opacity: 0.12,
         depthWrite: false,
         side: THREE.DoubleSide
       });
@@ -758,6 +796,21 @@
         bark.rotation.z = index * 0.28;
         bark.userData.kind = "bark-ring";
         group.add(bark);
+      });
+
+      const mountWireMaterial = new THREE.MeshBasicMaterial({
+        color: 0xb88f5b,
+        transparent: true,
+        opacity: 0.14,
+        depthWrite: false
+      });
+      [
+        [[-0.22, -0.5, 0.12], [-0.1, -0.28, 0.16], [0.02, -0.08, 0.12]],
+        [[0.22, -0.5, 0.06], [0.13, -0.24, 0.12], [0.03, 0.04, 0.1]]
+      ].forEach((route) => {
+        const wire = tubeFromPoints(route, 0.0038, mountWireMaterial.clone(), 32);
+        wire.userData.kind = "specimen-mount-wire";
+        group.add(wire);
       });
 
       const leafSpecs = [
@@ -817,43 +870,43 @@
       group.userData.layer = "roots";
       group.userData.base = new THREE.Vector3(0, 0, 0);
       const rootMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0xd5b48a,
-        roughness: 0.62,
+        color: 0xa9835f,
+        roughness: 0.86,
         metalness: 0,
-        transmission: 0.04,
+        transmission: 0,
         transparent: true,
-        opacity: 0.58,
+        opacity: 0.3,
         depthWrite: false
       });
       const hairMaterial = new THREE.MeshBasicMaterial({
-        color: 0xd9c3a4,
+        color: 0xb89570,
         transparent: true,
-        opacity: 0.14,
+        opacity: 0.065,
         depthWrite: false
       });
       const routes = [
-        [[-0.02, -0.38, 0.06], [-0.1, -0.52, 0.1], [-0.22, -0.68, 0.08], [-0.34, -0.82, 0.03]],
-        [[0.04, -0.38, -0.02], [0.14, -0.52, -0.08], [0.28, -0.68, -0.1], [0.4, -0.84, -0.04]],
-        [[-0.01, -0.36, 0.02], [0.0, -0.52, -0.04], [-0.03, -0.69, -0.08], [-0.08, -0.86, -0.02]],
-        [[0.02, -0.38, 0.02], [0.07, -0.54, 0.14], [0.02, -0.72, 0.17], [0.1, -0.88, 0.11]],
-        [[-0.04, -0.4, 0.04], [-0.14, -0.56, -0.02], [-0.2, -0.72, -0.08], [-0.26, -0.86, -0.12]]
+        [[-0.02, -0.42, 0.06], [-0.07, -0.5, 0.09], [-0.13, -0.58, 0.06], [-0.19, -0.65, 0.03]],
+        [[0.04, -0.42, -0.02], [0.09, -0.5, -0.06], [0.16, -0.58, -0.07], [0.22, -0.66, -0.02]],
+        [[-0.01, -0.42, 0.02], [0.0, -0.52, -0.03], [-0.03, -0.61, -0.05], [-0.05, -0.69, -0.01]],
+        [[0.02, -0.43, 0.02], [0.04, -0.52, 0.1], [0.02, -0.61, 0.11], [0.06, -0.69, 0.06]],
+        [[-0.04, -0.44, 0.04], [-0.09, -0.53, -0.01], [-0.12, -0.61, -0.04], [-0.16, -0.68, -0.07]]
       ];
       routes.forEach((route, index) => {
-        const tube = tubeFromPoints(route, index < 2 ? 0.017 : 0.011, rootMaterial.clone(), 96);
+        const tube = tubeFromPoints(route, index < 2 ? 0.0075 : 0.005, rootMaterial.clone(), 96);
         tube.userData.kind = index < 2 ? "primary-root-route" : "secondary-root-route";
         group.add(tube);
       });
-      for (let i = 0; i < 48; i += 1) {
+      for (let i = 0; i < 34; i += 1) {
         const side = i % 2 === 0 ? -1 : 1;
-        const y = -0.45 - (i % 20) * 0.025;
-        const baseX = Math.sin(i * 1.27) * 0.15;
-        const z = Math.cos(i * 1.9) * 0.12;
-        const length = 0.07 + (i % 5) * 0.018;
+        const y = -0.47 - (i % 13) * 0.014;
+        const baseX = Math.sin(i * 1.27) * 0.09;
+        const z = Math.cos(i * 1.9) * 0.08;
+        const length = 0.03 + (i % 5) * 0.008;
         const hair = tubeFromPoints([
           [baseX, y, z],
-          [baseX + side * length * 0.4, y - 0.04, z + Math.sin(i) * 0.03],
-          [baseX + side * length, y - 0.08, z + Math.cos(i) * 0.04]
-        ], 0.0024, hairMaterial.clone(), 32);
+          [baseX + side * length * 0.4, y - 0.018, z + Math.sin(i) * 0.016],
+          [baseX + side * length, y - 0.036, z + Math.cos(i) * 0.02]
+        ], 0.0013, hairMaterial.clone(), 32);
         hair.userData.kind = "root-hair";
         group.add(hair);
       }
@@ -1025,12 +1078,12 @@
 
     function layerOffset(layer, separate) {
       const offsets = {
-        frame: new THREE.Vector3(0, -0.12, -0.12),
-        shell: new THREE.Vector3(0, 0.03, 0.22),
-        membrane: new THREE.Vector3(0, 0.06, 0.1),
+        frame: new THREE.Vector3(0, -0.08, -0.1),
+        shell: new THREE.Vector3(0, 0.03, 0.17),
+        membrane: new THREE.Vector3(0, 0.05, 0.08),
         core: new THREE.Vector3(0, 0, 0),
-        roots: new THREE.Vector3(-0.08, -0.02, -0.07),
-        signals: new THREE.Vector3(0.08, 0.04, 0.12),
+        roots: new THREE.Vector3(-0.05, -0.015, -0.05),
+        signals: new THREE.Vector3(0.06, 0.035, 0.1),
         scan: new THREE.Vector3(0, 0, 0),
         "trace-particles": new THREE.Vector3(0, 0, 0)
       };
@@ -1065,8 +1118,8 @@
       camera.lookAt(lookTarget);
 
       const pulse = 0.5 + Math.sin(time * 1.7) * 0.5;
-      root.rotation.y = -0.22 + Math.sin(time * 0.18) * 0.045 + state.separate * 0.14;
-      root.rotation.x = -0.02 + state.scan * -0.02 + state.separate * 0.05;
+      root.rotation.y = -0.22 + Math.sin(time * 0.18) * 0.045 + state.separate * 0.1;
+      root.rotation.x = -0.02 + state.scan * -0.02 + state.separate * 0.035;
 
       applyLayerSeparation(state.separate);
 
@@ -1074,13 +1127,13 @@
         if (!child.material) return;
         if (child.userData.kind === "glass-front") {
           child.position.y = state.separate * 0.08;
-          child.position.z = 0.18 + state.separate * 0.3;
+          child.position.z = 0.18 + state.separate * 0.22;
           child.material.opacity = 0.18 + state.scan * 0.035 - state.separate * 0.04;
           return;
         }
         if (child.userData.kind === "glass-rear") {
           child.position.y = state.separate * -0.08;
-          child.position.z = -0.18 - state.separate * 0.24;
+          child.position.z = -0.18 - state.separate * 0.18;
           child.material.opacity = 0.1 + state.scan * 0.02 - state.separate * 0.02;
           return;
         }
